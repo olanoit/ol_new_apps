@@ -14,6 +14,8 @@
                 <field name="module_count"/>
                 <field name="ml_low" optional="show"/>
                 <field name="ml_high" optional="show"/>
+                <field name="ml_full" optional="show"/>
+                <field name="ml_total" optional="hide"/>
                 <field name="bom_id" optional="show"/>
                 <field name="module_assembly_amount" optional="show" sum="Total"/>
                 <field name="space_contract_amount" optional="show" sum="Total"/>
@@ -53,6 +55,8 @@
                             <field name="module_count"/>
                             <field name="ml_low"/>
                             <field name="ml_high"/>
+                            <field name="ml_full"/>
+                            <field name="ml_total"/>
                             <field name="module_assembly_amount"/>
                             <field name="space_contract_amount"/>
                             <field name="currency_id" invisible="1"/>

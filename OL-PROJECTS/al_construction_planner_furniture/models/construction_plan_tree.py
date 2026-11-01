@@ -2,6 +2,8 @@
 """Metros lineales y módulos en el árbol de recursos (rubro mobiliario)."""
 from odoo import api, models
 
+from odoo.addons.al_construction_planner.models.common import ML_COUNTED
+
 
 class ConstructionResourcePlan(models.Model):
     _inherit = 'construction.resource.plan'
@@ -12,18 +14,18 @@ class ConstructionResourcePlan(models.Model):
         self.ensure_one()
         return bool(self.env['construction.typology'].search_count([
             ('project_id', '=', self.project_id.id),
-            '|', ('ml_low', '>', 0), ('ml_high', '>', 0)], limit=1)) or super()._tree_show_ml()
+            ('ml_total', '>', 0)], limit=1)) or super()._tree_show_ml()
 
     @api.model
     def _tree_space_ml(self, spaces):
-        """ML de cada ambiente: bajo + alto de su tipología."""
-        return {space.id: (space.construction_typology_id.ml_low or 0.0)
-                + (space.construction_typology_id.ml_high or 0.0) for space in spaces}
+        """ML de cada ambiente: el total de su tipología (bajo, alto y mueble
+        completo, M116-10)."""
+        return {space.id: space.construction_typology_id.ml_total or 0.0 for space in spaces}
 
     @api.model
     def _tree_module_info(self, task):
         ml = (task.construction_width_mm or 0) / 1000.0 \
-            if task.construction_ml_group in ('low', 'high') else 0.0
+            if task.construction_ml_group in ML_COUNTED else 0.0
         return ml, task.construction_module_code or ''
 
     @api.model
@@ -33,7 +35,7 @@ class ConstructionResourcePlan(models.Model):
         ml = {}
         for module in self.env['project.task'].search([('construction_level', '=', 'module'),
                                                        (task_field, 'in', children.ids)]):
-            if module.construction_ml_group in ('low', 'high'):
+            if module.construction_ml_group in ML_COUNTED:
                 key = module[task_field].id
                 ml[key] = ml.get(key, 0.0) + (module.construction_width_mm or 0) / 1000.0
         for task in children:
@@ -47,5 +49,5 @@ class ConstructionResourcePlan(models.Model):
         ancho si es de un grupo ML."""
         loose = self.env['project.task'].search(module_domain + [
             ('construction_space_task_id', 'not in', spaces.ids),
-            ('construction_ml_group', 'in', ('low', 'high'))])
+            ('construction_ml_group', 'in', ML_COUNTED)])
         return sum(loose.mapped('construction_width_mm')) / 1000.0

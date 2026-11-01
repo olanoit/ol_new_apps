@@ -107,8 +107,12 @@ MODULE_TYPES = [
 ML_GROUPS = [
     ('low', 'Mueble bajo'),
     ('high', 'Mueble alto'),
+    # Paquete 1.16, M116-10: closets, baños, lavanderías y ductos.
+    ('full', 'Mueble completo'),
     ('none', 'Sin ML'),
 ]
+# Grupos cuyos metros cuentan para la obra (control de alcance, ML total).
+ML_COUNTED = ('low', 'high', 'full')
 
 UNIT_STATES = [
     ('planned', 'Planificado'),
@@ -144,6 +148,7 @@ TYPOLOGY_ALIAS_SOURCES = [
 FURNITURE_GROUPS = [
     ('low', 'Bajo'),
     ('high', 'Alto'),
+    ('full', 'Completo'),
     ('other', 'Otro'),
 ]
 

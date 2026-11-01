@@ -1,0 +1,313 @@
+# -*- coding: utf-8 -*-
+"""«Importar Excel a la hoja» (paquete 1.13, M113-04).
+
+Lee un libro con el formato del maestro y lo lleva a las pestañas de la hoja
+de trabajo, sin tocar sus fórmulas. El servidor lee el libro, lo analiza con
+el importador del maestro (sin escribir en la obra) y prepara las filas por
+clave de columna; la hoja las escribe en el navegador (columna de cada clave,
+desde _CLAVES o el encabezado) y amplía sus filas si no alcanzan.
+"""
+import base64
+import datetime
+import logging
+from io import BytesIO
+
+from markupsafe import Markup
+
+from odoo import api, fields, models
+from odoo.exceptions import UserError
+
+from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import (
+    SHEETS, norm, sheet_key,
+)
+
+from ..models.project_project import CATEGORY_SEPARATOR, PICK_SEPARATOR, category_parts
+
+_logger = logging.getLogger(__name__)
+
+# Pestañas del libro que no se copian aunque no sean del maestro.
+SKIPPED_SHEETS = ('LEEME', 'README', 'INSTRUCCIONES')
+
+
+def _cell(value):
+    """Texto de una celda para la hoja (o-spreadsheet guarda texto)."""
+    if value is None:
+        return ''
+    if isinstance(value, datetime.datetime):
+        return value.date().isoformat() if not value.time() else value.isoformat(' ')
+    if isinstance(value, datetime.date):
+        return value.isoformat()
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value).strip() if isinstance(value, str) else str(value)
+
+
+class ConstructionSpreadsheetImportWizard(models.TransientModel):
+    _name = 'construction.spreadsheet.import.wizard'
+    _description = 'Importar Excel a la hoja de trabajo'
+
+    document_id = fields.Many2one('documents.document', string='Hoja de trabajo', required=True,
+                                  ondelete='cascade')
+    project_id = fields.Many2one(related='document_id.construction_project_id', string='Obra')
+    file = fields.Binary(string='Archivo (.xlsx)', attachment=False)
+    filename = fields.Char(string='Nombre del archivo')
+    mode = fields.Selection([
+        ('replace', 'Reemplaza las pestañas del archivo'),
+        ('append', 'Agrega filas al final'),
+    ], string='Cómo escribe', default='replace', required=True)
+    expand_rows = fields.Boolean(string='Ampliar las filas si no alcanzan', default=True)
+    keep_extra = fields.Boolean(string='Conservar columnas y pestañas que no son del maestro',
+                                default=True)
+    save_version = fields.Boolean(string='Guardar una versión de la hoja antes de escribir',
+                                  default=True)
+    review_html = fields.Html(string='Revisión', compute='_compute_review', sanitize=False)
+
+    # ------------------------------------------------------------------
+    # Lectura
+    # ------------------------------------------------------------------
+    @api.model
+    def _sheet_columns(self, name):
+        """[(clave, [textos aceptados])] de una pestaña: las del maestro y las
+        que agrega la hoja (Producto, Grupo de categoría)."""
+        columns = [(key, [header]) for key, header, _r, _h in SHEETS[name][1]]
+        keys = {key for key, _t in columns}
+        if name in ('PIEZAS', 'BOM'):
+            if 'product_name' not in keys:
+                columns.append(('product_name', ['Producto']))
+            columns.append(('categ_group', ['Grupo de categoría']))
+        return columns
+
+    def _read_file(self):
+        """``{'sheets': {pestaña: {'keys', 'rows', 'extra_headers',
+        'extra_rows'}}, 'other': {pestaña: filas}}``."""
+        self.ensure_one()
+        if not self.file:
+            return {'sheets': {}, 'other': {}}
+        content = self._file_content()
+        try:
+            from openpyxl import load_workbook
+            workbook = load_workbook(BytesIO(base64.b64decode(content)), read_only=True,
+                                     data_only=True)
+        except Exception as exc:  # noqa: BLE001 - cualquier archivo que no sea un libro
+            _logger.info('Libro no válido para la hoja de trabajo: %s', exc)
+            raise UserError(self.env._('El archivo no es un libro Excel (.xlsx) válido.')) \
+                from exc
+        sheets, other = {}, {}
+        for worksheet in workbook.worksheets:
+            rows = [list(row) for row in worksheet.iter_rows(values_only=True)]
+            while rows and not any(value not in (None, '') for value in rows[-1]):
+                rows.pop()
+            name = sheet_key(worksheet.title)
+            if not name:
+                if norm(worksheet.title).upper() not in SKIPPED_SHEETS and rows:
+                    other[worksheet.title[:31]] = [[_cell(v) for v in row] for row in rows]
+                continue
+            header = rows[0] if rows else []
+            by_text = {}
+            for key, texts in self._sheet_columns(name):
+                for text in [key] + texts:
+                    by_text.setdefault(norm(text), key)
+            positions, extra = {}, []
+            for index, text in enumerate(header):
+                key = by_text.get(norm(text))
+                if key and key not in positions:
+                    positions[key] = index
+                elif text not in (None, ''):
+                    extra.append(index)
+            keys = list(positions)
+            data_rows, extra_rows = [], []
+            for row in rows[1:]:
+                if not any(value not in (None, '') for value in row):
+                    continue
+                data_rows.append([_cell(row[positions[key]]) if positions[key] < len(row)
+                                  else '' for key in keys])
+                extra_rows.append([_cell(row[i]) if i < len(row) else '' for i in extra])
+            texts = dict(self._sheet_columns(name))
+            sheets[name] = {'keys': keys, 'rows': data_rows,
+                            'headers': {key: texts.get(key, [key]) for key in keys},
+                            'extra_headers': [_cell(header[i]) for i in extra],
+                            'extra_rows': extra_rows}
+        workbook.close()
+        return {'sheets': sheets, 'other': other}
+
+    def _file_content(self):
+        """El archivo en base64. En el formulario (registro nuevo) se lee tal
+        cual: leerlo con otro contexto le quitaba el archivo al formulario. Ya
+        guardado, sin ``bin_size`` (el cliente web relee con el tamaño)."""
+        self.ensure_one()
+        if not isinstance(self.id, int):
+            return self.file
+        return self.with_context(bin_size=False).file
+
+    def _company(self):
+        return self.project_id.company_id or self.env.company
+
+    def _prepare(self, data):
+        """El producto como lo elige la hoja («nombre · unidad · código»), su
+        categoría y grupo si el archivo no los trae, y los códigos que no
+        están en el maestro en PRODUCTOS NUEVOS."""
+        sheets = data['sheets']
+        codes = set()
+        for name in ('PIEZAS', 'BOM'):
+            spec = sheets.get(name)
+            if spec and 'product_code' in spec['keys']:
+                index = spec['keys'].index('product_code')
+                codes |= {row[index] for row in spec['rows'] if row[index]}
+        company = self._company()
+        products = {}
+        for product in self.env['product.product'].with_context(active_test=False).search([
+                ('default_code', 'in', list(codes)), ('company_id', 'in', (company.id, False))]):
+            products.setdefault(product.default_code, product)
+        new_spec = sheets.get('PRODUCTOS NUEVOS')
+        new_codes = set()
+        if new_spec and 'code' in new_spec['keys']:
+            index = new_spec['keys'].index('code')
+            new_codes = {row[index] for row in new_spec['rows']}
+        added = []
+        for name in ('PIEZAS', 'BOM'):
+            spec = sheets.get(name)
+            if not spec or 'product_code' not in spec['keys']:
+                continue
+            for key in ('product_name', 'categ', 'categ_group'):
+                if key not in spec['keys']:
+                    spec['keys'].append(key)
+                    spec['headers'][key] = dict(self._sheet_columns(name)).get(key, [key])
+                    for row in spec['rows']:
+                        row.append('')
+            index = {key: i for i, key in enumerate(spec['keys'])}
+            for row in spec['rows']:
+                code = row[index['product_code']]
+                if not code:
+                    continue
+                product = products.get(code)
+                if product:
+                    row[index['product_name']] = PICK_SEPARATOR.join(
+                        [product.name, product.uom_id.name or '', code])
+                    group, short, _last = category_parts(product.categ_id.complete_name)
+                    if not row[index['categ']]:
+                        row[index['categ']] = short
+                    elif CATEGORY_SEPARATOR not in row[index['categ']] and \
+                            row[index['categ']] == _last:
+                        row[index['categ']] = short
+                    if not row[index['categ_group']]:
+                        row[index['categ_group']] = group
+                    continue
+                # Código que no está en el maestro: queda como texto y va a
+                # PRODUCTOS NUEVOS con el nombre del archivo.
+                name_text = row[index['product_name']]
+                row[index['product_name']] = code
+                if code not in new_codes:
+                    new_codes.add(code)
+                    added.append([code, name_text if name_text and name_text != code else code])
+        if added:
+            spec = sheets.setdefault('PRODUCTOS NUEVOS', {
+                'keys': ['code', 'name'], 'rows': [], 'extra_headers': [], 'extra_rows': [],
+                'headers': dict(self._sheet_columns('PRODUCTOS NUEVOS'))})
+            for key in ('code', 'name'):
+                if key not in spec['keys']:
+                    spec['keys'].append(key)
+                    spec['headers'][key] = dict(self._sheet_columns('PRODUCTOS NUEVOS'))[key]
+                    for row in spec['rows']:
+                        row.append('')
+            index = {key: i for i, key in enumerate(spec['keys'])}
+            for code, name in added:
+                row = [''] * len(spec['keys'])
+                row[index.get('code', 0)] = code
+                if 'name' in index:
+                    row[index['name']] = name
+                spec['rows'].append(row)
+                spec['extra_rows'].append([''] * len(spec['extra_headers']))
+        data['added_products'] = len(added)
+        return data
+
+    def _analysis(self):
+        """Errores y avisos del importador del maestro sobre el archivo, sin
+        escribir en la obra."""
+        self.ensure_one()
+        wizard = self.env['construction.master.import.wizard'].create({
+            'project_id': self.project_id.id, 'file': self._file_content(),
+            'filename': self.filename, 'create_missing_products': True})
+        # Sin unlink: borrar dentro del cálculo de la revisión limpia la caché
+        # y el formulario perdía el archivo; el transitorio se limpia solo.
+        data = wizard._analyze()
+        return wizard._construction_issues(data)
+
+    @api.depends('file', 'mode', 'keep_extra')
+    def _compute_review(self):
+        modes = dict(self._fields['mode'].selection)
+        for wizard in self:
+            if not wizard.file or not wizard.document_id:
+                wizard.review_html = False
+                continue
+            try:
+                data = wizard._read_file()
+            except UserError as error:
+                wizard.review_html = Markup('<div class="alert alert-danger">%s</div>') % \
+                    error.args[0]
+                continue
+            lines = []
+            for name, spec in data['sheets'].items():
+                lines.append(Markup(
+                    '<tr><td>%s</td><td class="text-end">%s</td><td>%s</td><td>%s</td>'
+                    '<td>%s</td></tr>') % (
+                    name, len(spec['rows']), len(spec['keys']),
+                    ', '.join(h for h in spec['extra_headers'] if h) or '—',
+                    modes[wizard.mode]))
+            for name, rows in data['other'].items():
+                lines.append(Markup(
+                    '<tr><td>%s</td><td class="text-end">%s</td><td>—</td><td>—</td>'
+                    '<td>%s</td></tr>') % (
+                    name, max(len(rows) - 1, 0),
+                    self.env._('Se copia como pestaña nueva') if wizard.keep_extra
+                    else self.env._('No se copia')))
+            issues = wizard._analysis() if data['sheets'] else []
+            errors = sum(1 for issue in issues if issue[4] == 'error')
+            warnings = len(issues) - errors
+            wizard.review_html = Markup(
+                '<table class="table table-sm o_main_table"><thead><tr><th>%s</th>'
+                '<th class="text-end">%s</th><th>%s</th><th>%s</th><th>%s</th></tr></thead>'
+                '<tbody>%s</tbody></table><p class="%s">%s</p>') % (
+                self.env._('Pestaña'), self.env._('Filas'), self.env._('Columnas reconocidas'),
+                self.env._('Columnas extra'), self.env._('Acción'), Markup('').join(lines),
+                'text-danger' if errors else 'text-muted',
+                self.env._('Análisis del maestro: %(errors)s errores · %(warnings)s avisos '
+                           '(el detalle queda en ERRORES al importar).',
+                           errors=errors, warnings=warnings))
+
+    # ------------------------------------------------------------------
+    # Acciones
+    # ------------------------------------------------------------------
+    def action_review(self):
+        """«Solo revisar»: vuelve a mostrar el asistente con la revisión, sin
+        cambiar la hoja."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window', 'res_model': self._name, 'res_id': self.id,
+            'view_mode': 'form', 'views': [(False, 'form')], 'target': 'new',
+            'name': self.env._('Importar Excel a la hoja'),
+        }
+
+    def action_import(self):
+        """Guarda una versión (si se pidió) y entrega a la hoja lo que debe
+        escribir; la hoja lo escribe al cerrarse el asistente."""
+        self.ensure_one()
+        if not self.file:
+            raise UserError(self.env._('Suba el archivo .xlsx.'))
+        data = self._prepare(self._read_file())
+        if not data['sheets'] and not data['other']:
+            raise UserError(self.env._(
+                'El archivo no tiene ninguna pestaña del maestro (%s).', ', '.join(SHEETS)))
+        if self.save_version:
+            self.document_id._construction_save_version(
+                self.env._('Antes de importar %s', self.filename or self.env._('un Excel')))
+        payload = {
+            'filename': self.filename or '',
+            'mode': self.mode,
+            'expand_rows': self.expand_rows,
+            'sheets': data['sheets'],
+            'other': data['other'] if self.keep_extra else {},
+            'keep_extra': self.keep_extra,
+            'added_products': data['added_products'],
+        }
+        return {'type': 'ir.actions.act_window_close',
+                'infos': {'construction_sheet_import': payload}}

@@ -1,12 +1,37 @@
-import { registries } from "@odoo/o-spreadsheet";
+import { registries, UIPlugin } from "@odoo/o-spreadsheet";
+import { useSubEnv } from "@odoo/owl";
 import { SpreadsheetAction } from "@documents_spreadsheet/bundle/actions/spreadsheet_action";
-import { usePlugin } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
+import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
-import { useSubEnv } from "@web/owl2/utils";
 
-const { topbarMenuRegistry } = registries;
+const { featurePluginRegistry, topbarMenuRegistry } = registries;
+
+const BATCH_COMMAND = "AL_CONSTRUCTION_BATCH";
+const BATCH_SIZE = 2000;
+
+/**
+ * Agrupa muchos comandos en una sola revisión de la hoja: cada dispatch
+ * suelto es una revisión que viaja sola al servidor, y una importación de
+ * miles de celdas no terminaba de guardarse (paquete 1.13, M113-04).
+ */
+class ConstructionBatchPlugin extends UIPlugin {
+    handle(cmd) {
+        if (cmd.type === BATCH_COMMAND) {
+            for (const [type, payload] of cmd.commands) {
+                this.dispatch(type, payload);
+            }
+        }
+    }
+}
+featurePluginRegistry.add("al_construction_batch", ConstructionBatchPlugin);
+
+/** Despacha ``commands`` ([tipo, datos]) en revisiones de 2 000 comandos. */
+export function dispatchBatch(model, commands) {
+    for (let start = 0; start < commands.length; start += BATCH_SIZE) {
+        model.dispatch(BATCH_COMMAND, { commands: commands.slice(start, start + BATCH_SIZE) });
+    }
+}
 
 export const KEYS_SHEET = "_CLAVES";
 export const ERRORS_SHEET = "ERRORES";
@@ -18,7 +43,7 @@ const isEmpty = (value) => value === null || value === undefined || value === ""
  * las celdas que existen (paquete 1.13, M113-02): una hoja de 8 000 filas
  * con fórmulas vacías no se recorre entera.
  */
-function lastDataRow(getters, sheetId) {
+export function lastDataRow(getters, sheetId) {
     let last = -1;
     for (const cellId of Object.keys(getters.getCells(sheetId))) {
         const position = getters.getCellPosition(cellId);
@@ -96,16 +121,21 @@ export function ensureSheet(model, name) {
 
 /** Escribe ``rows`` desde la fila ``startRow`` (0 = la primera), columna A. */
 export function writeRows(model, sheetId, rows, startRow) {
+    const commands = [];
     rows.forEach((values, rowIndex) => {
         values.forEach((value, col) => {
-            model.dispatch("UPDATE_CELL", {
-                sheetId,
-                col,
-                row: startRow + rowIndex,
-                content: isEmpty(value) || value === false ? "" : String(value),
-            });
+            commands.push([
+                "UPDATE_CELL",
+                {
+                    sheetId,
+                    col,
+                    row: startRow + rowIndex,
+                    content: isEmpty(value) || value === false ? "" : String(value),
+                },
+            ]);
         });
     });
+    dispatchBatch(model, commands);
 }
 
 /** Borra los datos de la pestaña desde la fila ``fromRow`` (0 = la primera). */
@@ -129,7 +159,7 @@ function activateSheet(model, sheetId) {
 patch(SpreadsheetAction.prototype, {
     setup() {
         super.setup(...arguments);
-        const notification = usePlugin(NotificationPlugin);
+        const notification = useService("notification");
         useSubEnv({
             constructionSheetKind: () =>
                 this.data?.construction_project_id || this.data?.construction_sheet_kind
@@ -138,7 +168,15 @@ patch(SpreadsheetAction.prototype, {
             constructionSendSheets: () => this.data?.construction_send_sheets || null,
             constructionCall: (method, ...args) =>
                 this.orm.call("documents.document", method, [[this.resId], ...args]),
-            constructionDoAction: (action) => this.actionService.doAction(action),
+            constructionDoAction: (action, options = {}) =>
+                this.actionService.doAction(action, options),
+            constructionResId: () => this.resId,
+            constructionSheetRows: () => this.data?.construction_sheet_rows || 0,
+            constructionSetSheetRows: (rows) => {
+                if (this.data) {
+                    this.data.construction_sheet_rows = rows;
+                }
+            },
             constructionNotify: (message, type = "success") => notification.add(message, { type }),
             constructionOfferLocked: () => Boolean(this.data?.construction_offer_locked),
         });
@@ -196,7 +234,7 @@ export function writeErrors(model, result) {
     return sheetId;
 }
 
-async function validate(env, { quiet = false } = {}) {
+export async function validate(env, { quiet = false } = {}) {
     const result = await env.constructionCall(
         "action_construction_validate",
         collectForSend(env)
@@ -239,22 +277,22 @@ async function updateCosts(env) {
     const codes = rows.slice(1).map((row) => row[0]).filter(Boolean);
     const costs = await env.constructionCall("construction_current_costs", codes);
     let updated = 0;
+    const commands = [];
     rows.slice(1).forEach((row, index) => {
         const current = costs[row[0]];
         if (current && priceCol >= 0) {
-            model.dispatch("UPDATE_CELL", {
-                sheetId,
-                col: priceCol,
-                row: index + 1,
-                content: String(current[0]),
-            });
+            commands.push([
+                "UPDATE_CELL",
+                { sheetId, col: priceCol, row: index + 1, content: String(current[0]) },
+            ]);
             updated++;
         }
     });
+    dispatchBatch(model, commands);
     env.constructionNotify(_t("%s insumos con el costo vigente del maestro.", updated));
 }
 
-const normText = (text) =>
+export const normText = (text) =>
     String(text || "")
         .normalize("NFD")
         .replace(/[̀-ͯ]/g, "")
@@ -293,19 +331,24 @@ function writeKeyed(model, name, spec, keys) {
         }
         columns[key] = col;
     }
+    const commands = [];
     spec.rows.forEach((values, rowIndex) => {
         spec.keys.forEach((key, index) => {
             if (columns[key] === undefined) {
                 return;
             }
-            model.dispatch("UPDATE_CELL", {
-                sheetId,
-                col: columns[key],
-                row: rowIndex + 1,
-                content: isEmpty(values[index]) ? "" : String(values[index]),
-            });
+            commands.push([
+                "UPDATE_CELL",
+                {
+                    sheetId,
+                    col: columns[key],
+                    row: rowIndex + 1,
+                    content: isEmpty(values[index]) ? "" : String(values[index]),
+                },
+            ]);
         });
     });
+    dispatchBatch(model, commands);
 }
 
 async function bringFromOdoo(env) {

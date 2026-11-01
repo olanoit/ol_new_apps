@@ -177,7 +177,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         # por ML (se apoya en su ML bajo y alto: especificación v1.4, hoja
         # TIPOLOGIAS del maestro, decisión de diseño 5).
         ml_activities = self.env['construction.labor.activity'].search([
-            ('ml_based', '=', True), ('ml_group', 'in', ('low', 'high')),
+            ('ml_based', '=', True), ('ml_group', 'in', ('low', 'high', 'full')),
             ('company_id', 'in', (plan.company_id.id, False))], order='code, id')
         project_ml = ml_activities.filtered(
             lambda a: any(rate.project_id == project for rate in a.rate_ids))
@@ -278,8 +278,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                     if activity.stage not in stages:
                         continue
                     if listed_qty is None:
-                        listed_qty = typology.ml_low if activity.ml_group == 'low' \
-                            else typology.ml_high
+                        listed_qty = typology._ml_of_group(activity.ml_group)
                         if not listed_qty and not has_widths:
                             continue
                     price, basis, basis_date = rate(activity)

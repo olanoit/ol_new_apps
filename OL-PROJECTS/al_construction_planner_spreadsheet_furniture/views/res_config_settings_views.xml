@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.13, M113-06: raíz de las listas de materiales de la hoja. -->
+    <record id="res_config_settings_view_form_construction_sheet_furniture" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.sheet.furniture</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <block name="construction_planner_features" position="after">
+                <block title="Hoja de trabajo de mobiliario" name="construction_sheet_furniture">
+                    <setting id="construction_sheet_material_categ"
+                             help="Las listas de grupo, categoría y producto de la hoja muestran solo lo que cuelga de esta categoría (por ejemplo, la de materia prima). Vacía: todas. Rige para las hojas que se creen desde ahora.">
+                        <field name="construction_sheet_material_categ_id" options="{'no_create': True}"/>
+                    </setting>
+                </block>
+            </block>
+        </field>
+    </record>
+</odoo>
