@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '66.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Las columnas de nombre (nivel, producto, actividad, recurso) tienen un ancho fijo de lectura: el nombre se parte en dos o tres renglones y la lista se desplaza a lo ancho si no cabe."
   - version: '65.20261101'
     fecha: 01/11/2026
     cambios:
