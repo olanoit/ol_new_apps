@@ -18,7 +18,9 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import COLUMNS
 
-from .project_project import PRESUPUESTO_HEADERS, cell_text, data_keys, presupuesto_row
+from .project_project import (
+    PRESUPUESTO_HEADERS, ROW_KEYS, TEMPLATE_LABELS, cell_text, presupuesto_row,
+)
 from .sheet_keys import KEYS_SHEET, apply_keys
 
 SHEET_KINDS = [
@@ -62,6 +64,11 @@ class DocumentsDocument(models.Model):
     # anteriores, que no se amplían.
     construction_sheet_rows = fields.Integer(string='Filas de la hoja', readonly=True,
                                              copy=False)
+    # Paquete 1.16, CR-22 g: orden de las columnas de la hoja de presupuesto.
+    # Desde el 2 el código va al final y la receta se elige por nombre; las
+    # hojas anteriores tienen 0 y conservan su orden.
+    construction_sheet_layout = fields.Integer(string='Orden de columnas de la hoja',
+                                               readonly=True)
     construction_source_id = fields.Many2one(
         'documents.document', string='Hoja de trabajo vigente', readonly=True, copy=False,
         ondelete='set null', help='En una copia numerada: la hoja de la que se copió.')
@@ -290,8 +297,12 @@ class DocumentsDocument(models.Model):
         # fórmulas, para que una hoja anterior quede con las columnas A a W.
         keyed = {}
         for name in KEYED_SHEETS:
-            keys = data_keys(name) + (['code'] if name == 'APU_DETALLE' else [])
+            # Las filas llegan en el orden de ROW_KEYS; la hoja escribe cada
+            # valor en la columna de su clave (la de una hoja anterior o la de
+            # la plantilla, con el código al final).
+            keys = ROW_KEYS[name]
             aliases = {key: list(texts) for key, texts, _required in COLUMNS[name]}
+            aliases.update({key: [label] for key, label in TEMPLATE_LABELS.items()})
             keyed[name] = {'keys': keys, 'aliases': {key: aliases.get(key, [key])
                                                      for key in keys},
                            'rows': [[cell_text(value) for value in row]
@@ -303,7 +314,7 @@ class DocumentsDocument(models.Model):
         # y no pisa las columnas de fórmula.
         result['_keyed'] = keyed
         result['PRESUPUESTO'] = [PRESUPUESTO_HEADERS] + [
-            presupuesto_row(values, number) for number, values in
+            presupuesto_row(values, number, self.construction_sheet_layout) for number, values in
             enumerate(rows['PRESUPUESTO'], start=2)]
         result['_from_top'] = ['OBRA', 'PRESUPUESTO']
         return result
@@ -324,6 +335,14 @@ class DocumentsDocument(models.Model):
             'sent', construction_send_version=copy.construction_version,
             construction_send_date=now, construction_send_message_id=message.id or False)
         return copy
+
+    def construction_version_before(self, reason):
+        """Guarda una copia numerada antes de que una acción de la hoja
+        escriba (paquete 1.13, M113-08) y devuelve su número."""
+        self.ensure_one()
+        copy, _message = self._construction_copy_version(reason or self.env._(
+            'Antes de una acción de planificación'))
+        return copy.construction_version
 
     def _construction_save_version(self, reason):
         copy, _message = self._construction_copy_version(reason)

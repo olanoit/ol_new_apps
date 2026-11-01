@@ -16,7 +16,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b) y aceptada |
-| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloques 4a y 4b desarrollados; 4c, parte 1 desarrollada (pestañas, estado y CONTROL); falta la parte 2 (panel y acciones) |
+| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloques 4a, 4b y 4c desarrollados (4c en dos partes: pestañas, estado y CONTROL; panel, acciones y hojas existentes) |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
 empezar la siguiente.
@@ -1011,14 +1011,92 @@ hoja nace con 300 filas y la importación la amplía.
   - el recorrido `al_construction_furniture_planning` importa un libro con la
     obra ya en el planificador y comprueba los valores de INICIO, FICHA,
     PROGRAMA y CONTROL.
-- **Parte 2 (pendiente):**
-  - panel «Planificación» y sus acciones (copiar piso, asignar tipología,
-    numerar ambientes repetidos, crear variante y reemplazar un material);
-  - menú del clic derecho;
-  - filas agrupadas por piso;
-  - materiales de la obra primero en la lista;
-  - agregar las pestañas nuevas a hojas existentes;
-  - de CR-22 g, la receta por nombre y la banda de color en APU_DETALLE.
+- **Parte 2:** ver «4c · Implementación (parte 2)».
+
+### 4c · Implementación (parte 2)
+
+- **Panel «Planificación» (M113-08):** se abre desde el menú (`sidePanelRegistry`,
+  `static/src/planning_panel.js`) y muestra:
+  - la pestaña activa: filas con datos, errores y avisos de la última
+    validación (de ERRORES);
+  - la ayuda de la columna seleccionada: el texto de `SHEETS`, si es
+    obligatoria y los valores de su lista. Llega en los metadatos de la hoja
+    (`construction_column_help`);
+  - en ARBOL, los ambientes, módulos y ML del piso de la fila, frente a
+    FUENTES si existe;
+  - «Abrir la obra» y «Abrir el árbol en el planificador»
+    (`construction_open_link`).
+- **Acciones:** cada una guarda antes una copia numerada
+  (`construction_version_before`, común a las dos hojas).
+  - ARBOL:
+    - copiar un piso a otros pisos: «3-9» o «3, 5, 7», con el número del piso
+      y del departamento cambiado (201 → 301). No copia sobre un piso que ya
+      tiene ambientes;
+    - asignar una tipología de TIPOLOGIAS a las filas seleccionadas;
+    - numerar los ambientes repetidos de un mismo departamento («Closet 1»,
+      «Closet 2»);
+    - agrupar las filas por piso.
+  - TIPOLOGIAS y FICHA: crear una variante con sufijo (03 → 03A). Copia sus
+    filas de TIPOLOGIAS (con «Variante de»), MUEBLES, MODULOS, ACTIVIDADES,
+    PIEZAS y BOM. ACTIVIDADES no está en el pedido, pero sin ella la variante
+    no tendría contratas.
+  - BOM y PIEZAS: reemplazar un material por otro del maestro, en la tipología
+    de la fila o en toda la hoja. Cambia el producto, la categoría y el grupo.
+  - Todas: ver la ficha de la tipología.
+  - Si una acción necesita más filas que las de la hoja, la amplía como la
+    importación.
+- **Clic derecho (`cellMenuRegistry`):** «Ver ficha de la tipología», «Copiar
+  este piso a…», que abre el panel con el piso, e «Ir a la fila de origen
+  (FUENTES)», que busca por piso, departamento y ambiente.
+- **Filas agrupadas por piso (M113-08, punto 4):**
+  - «Importar Excel a la hoja» y «Traer de Odoo» agrupan ARBOL al terminar;
+    copiar un piso reagrupa si ARBOL ya estaba agrupado (`floor_groups.js`);
+  - cada piso lleva encima una fila de resumen con ambientes, módulos y ML, en
+    la columna «Resumen del piso» a la derecha del maestro, y sus filas van en
+    un grupo nativo que se pliega;
+  - el envío y las cuentas de INICIO saltan esa fila porque no tiene datos en
+    las columnas del maestro.
+- **Materiales de la obra (M113-06, punto 7):**
+  - pestaña MATERIALES OBRA, con el material elegido de todo el maestro y su
+    categoría y código calculados;
+  - en `_LISTAS`, la lista de cada categoría es `UNIQUE(VSTACK(…))`, con los
+    materiales de la obra primero.
+- **Hojas ya creadas:** «Actualizar a la plantilla vigente…» del menú
+  (`construction_sheet_upgrade`), con confirmación.
+  - Guarda una versión y rehace la hoja con la plantilla de hoy: INICIO,
+    FICHA, PROGRAMA, CONTROL, columnas calculadas, listas y MATERIALES OBRA.
+  - Escribe los datos de cada pestaña del maestro por clave o encabezado, sin
+    las fórmulas. Un código de producto sin «Producto» pasa a «Producto», y la
+    fórmula lo lee igual.
+  - Las columnas que no son del maestro van a la derecha. Las pestañas que no
+    son de la plantilla, como FUENTES, se copian con su contenido.
+  - Se pierden los formatos propios de las pestañas del maestro. La versión
+    anterior queda guardada y las revisiones se borran.
+  - Es una acción del usuario, no una migración: las hojas de dev1 y
+    creval-dev cambian solo si alguien la ejecuta.
+- **CR-22 g, el resto (hoja de presupuesto):**
+  - INSUMOS: tipo, nombre, unidad, precio y otros datos, y el código al final;
+  - APU: nombre, unidad, rendimiento, horas, modalidad y etapa, con el código
+    al final; además, la columna calculada «Para elegir» («nombre · código»);
+  - APU_DETALLE: «Receta (nombre · código)» con lista que filtra al escribir,
+    y «Código de la receta» calculado;
+  - banda de color por receta: formato condicional sobre «Receta n.º (calc.)»,
+    el orden de la receta en APU;
+  - las fórmulas buscan con `XLOOKUP` por la letra de cada columna, y
+    «Actualizar insumos» lee el código por su clave;
+  - `documents.document.construction_sheet_layout` (2) marca este orden. Las
+    hojas anteriores (0) conservan el suyo, y «Traer de Odoo» les escribe las
+    fórmulas de PRESUPUESTO con `VLOOKUP` sobre la columna A;
+  - las filas no se agrupan por receta con un grupo nativo: «Traer de Odoo»
+    las escribe seguidas y la banda marca el cambio.
+- **Pruebas:**
+  - `al_construction_planner_spreadsheet/tests/test_package_116_stage4c.py`,
+    con el recorrido `al_construction_budget_formulas`, que calcula en el
+    navegador el costo de una receta (43.7838) y el de una partida;
+  - `al_construction_planner_spreadsheet_furniture/tests/test_package_116_stage4c2.py`,
+    con el recorrido `al_construction_furniture_panel`, que agrupa ARBOL,
+    copia el piso 2 a los pisos 3 y 4, numera, asigna, crea la variante C01A
+    y reemplaza un material.
 
 ### Pruebas de la etapa 4
 

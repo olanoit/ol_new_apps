@@ -38,7 +38,11 @@ INSTRUCTIONS = [
     'versión.',
 ]
 # Columnas calculadas (gris) de cada pestaña: (encabezado, fórmula con {r} =
-# fila y {c:clave} = letra de la columna de la pestaña).
+# fila, {n} = última fila, {c:clave} = letra de la columna de la pestaña y
+# {i:clave}, {a:clave}, {d:clave} = letra de la columna en INSUMOS, APU y
+# APU_DETALLE). Las claves pueden ser de una columna calculada
+# (CALCULATED_KEYS). Desde el paquete 1.16 (CR-22 g) el código va al final,
+# así que las fórmulas buscan con XLOOKUP por la letra de cada columna.
 CALCULATED = {
     'INSUMOS': [
         # CR-22 g: para elegir el insumo por nombre en APU_DETALLE.
@@ -46,31 +50,44 @@ CALCULATED = {
                         '&" · "&{c:code}{r})'),
     ],
     'APU': [
-        ('Costo unitario', '=IF({c:code}{r}="","",SUMIF(APU_DETALLE!$A$2:$A${n},{c:code}{r},'
-                           'APU_DETALLE!{d:parcial}$2:{d:parcial}${n}))'),
+        ('Costo unitario', '=IF({c:code}{r}="","",SUMIF(APU_DETALLE!{d:apu}$2:{d:apu}${n},'
+                           '{c:code}{r},APU_DETALLE!{d:parcial}$2:{d:parcial}${n}))'),
+        # CR-22 g: la receta se elige por nombre en APU_DETALLE.
+        ('Para elegir', '=IF({c:code}{r}="","",{c:name}{r}&" · "&{c:code}{r})'),
     ],
     'APU_DETALLE': [
-        # CR-22 g: el código del insumo sale de «tipo · nombre · unidad ·
-        # código» elegido en la columna anterior.
+        # CR-22 g: los códigos salen de «nombre · código» de la receta y de
+        # «tipo · nombre · unidad · código» del insumo elegidos.
+        ('Código de la receta', '=IF({c:apu_pick}{r}="","",IFERROR(%s,{c:apu_pick}{r}))'
+         % last_part('{c:apu_pick}{r}', '" · "')),
         ('Código del insumo', '=IF({c:pick}{r}="","",IFERROR(%s,{c:pick}{r}))'
          % last_part('{c:pick}{r}', '" · "')),
-        ('Tipo (calc.)', '=IF({c:code}{r}="","",IFERROR(VLOOKUP({c:code}{r},INSUMOS!$A$2:$C${n},'
-                         '3,0),""))'),
-        ('Cantidad (calc.)', '=IF({c:apu}{r}="","",IF(AND({c:crew}{r}<>"",IFERROR(VLOOKUP('
-                             '{c:apu}{r},APU!$A$2:$D${n},4,0),0)<>0),{c:crew}{r}*IF(IFERROR('
-                             'VLOOKUP({c:apu}{r},APU!$A$2:$E${n},5,0),"")="",8,VLOOKUP({c:apu}{r},'
-                             'APU!$A$2:$E${n},5,0))/VLOOKUP({c:apu}{r},APU!$A$2:$D${n},4,0),'
+        ('Tipo (calc.)', '=IF({c:code}{r}="","",IFERROR(XLOOKUP({c:code}{r},INSUMOS!{i:code}$2:'
+                         '{i:code}${n},INSUMOS!{i:kind}$2:{i:kind}${n}),""))'),
+        ('Cantidad (calc.)', '=IF({c:apu}{r}="","",IF(AND({c:crew}{r}<>"",IFERROR(XLOOKUP('
+                             '{c:apu}{r},APU!{a:code}$2:{a:code}${n},APU!{a:productivity}$2:'
+                             '{a:productivity}${n}),0)<>0),{c:crew}{r}*IF(IFERROR(XLOOKUP('
+                             '{c:apu}{r},APU!{a:code}$2:{a:code}${n},APU!{a:hours}$2:{a:hours}${n}'
+                             '),"")="",8,XLOOKUP({c:apu}{r},APU!{a:code}$2:{a:code}${n},'
+                             'APU!{a:hours}$2:{a:hours}${n}))/XLOOKUP({c:apu}{r},APU!{a:code}$2:'
+                             '{a:code}${n},APU!{a:productivity}$2:{a:productivity}${n}),'
                              'IFERROR(VALUE({c:qty}{r}),0)))'),
         ('Precio (calc.)', '=IF({c:code}{r}="","",IF({c:price}{r}<>"",{c:price}{r},IFERROR('
-                           'VLOOKUP({c:code}{r},INSUMOS!$A$2:$E${n},5,0),0)))'),
+                           'XLOOKUP({c:code}{r},INSUMOS!{i:code}$2:{i:code}${n},INSUMOS!'
+                           '{i:price}$2:{i:price}${n}),0)))'),
         ('Parcial MO (calc.)', '=IF(OR({x:Tipo (calc.)}{r}="Mano de obra",{x:Tipo (calc.)}{r}='
                                '"Subcontrato"),{x:Cantidad (calc.)}{r}*{x:Precio (calc.)}{r},0)'),
         ('Parcial (calc.)', '=IF({c:apu}{r}="","",IF(OR({c:pct}{r}<>"",{x:Tipo (calc.)}{r}='
-                            '"Herramienta %MO"),IFERROR(VALUE({c:pct}{r}),0)/100*SUMIF($A$2:$A${n},{c:apu}{r},'
-                            '{x:Parcial MO (calc.)}$2:{x:Parcial MO (calc.)}${n}),'
-                            '{x:Cantidad (calc.)}{r}*{x:Precio (calc.)}{r}))'),
+                            '"Herramienta %MO"),IFERROR(VALUE({c:pct}{r}),0)/100*SUMIF({c:apu}$2:'
+                            '{c:apu}${n},{c:apu}{r},{x:Parcial MO (calc.)}$2:{x:Parcial MO (calc.)}'
+                            '${n}),{x:Cantidad (calc.)}{r}*{x:Precio (calc.)}{r}))'),
+        # CR-22 g: banda de color al cambiar de receta (formato condicional
+        # sobre el número de la receta en APU).
+        ('Receta n.º (calc.)', '=IF({c:apu}{r}="","",IFERROR(MATCH({c:apu}{r},APU!{a:code}$2:'
+                               '{a:code}${n},0),""))'),
     ],
 }
+BAND_FILL = '#EAF1FB'
 # PRESUPUESTO (CR-18, c): columnas A a W en el orden del libro 6.6; las
 # fórmulas usan la letra de cada clave ({clave}) y los porcentajes van en %.
 PRESUPUESTO_KEYS = [key for key, _aliases, _required in COLUMNS['PRESUPUESTO']]
@@ -79,7 +96,8 @@ PRESUPUESTO_FORMULA_TEXT = {
     'qty_offered': '=IF({qty_real}{r}="","",{qty_real}{r}*(1+IFERROR(VALUE({qty_slack_pct}{r}),0)/100)'
                    '+IFERROR(VALUE({qty_slack}{r}),0))',
     'unit_cost': '=IF({apu}{r}="",IF({cost_no_apu}{r}="","",{cost_no_apu}{r}),'
-                 'IFERROR(VLOOKUP({apu}{r},APU!$A:${apu_unit},{apu_unit_index},0),0))',
+                 'IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code},APU!${apu_unit}:'
+                 '${apu_unit}),0))',
     'cost_offered': '=IF({unit_cost}{r}="","",{unit_cost}{r}*(1+IFERROR(VALUE({cost_slack_pct}{r}),0)/100)'
                     '+IFERROR(VALUE({cost_slack}{r}),0))',
     'price_unit': '=IF({cost_offered}{r}="","",{cost_offered}{r}*(1+IFERROR(VALUE({margin_pct}{r}),0)/100)'
@@ -93,7 +111,12 @@ PRESUPUESTO_FORMULA_TEXT = {
                '{amount_offered}{r}-{cost_real}{r})',
 }
 # Unidad de la partida con APU: la del APU.
-PRESUPUESTO_UOM_FORMULA = '=IFERROR(VLOOKUP({apu}{r},APU!$A:$C,3,0),"")'
+PRESUPUESTO_UOM_FORMULA = '=IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code},APU!${apu_uom}:' \
+                          '${apu_uom}),"")'
+# Orden de las columnas de la plantilla (paquete 1.16, CR-22 g). Las hojas
+# creadas antes tienen el código en la columna A (``construction_sheet_layout``
+# 0 o 1); «Traer de Odoo» les escribe las fórmulas de su orden.
+BUDGET_LAYOUT = 2
 # Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
 FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
                 ('profit', 'Utilidad %'), ('discount', 'Descuento %')]
@@ -128,56 +151,119 @@ def cell_text(value):
     return value if isinstance(value, str) else str(value)
 
 
-def presupuesto_formula(key, row):
-    """Fórmula de la columna ``key`` de PRESUPUESTO en la fila ``row``."""
+def presupuesto_formula(key, row, layout=BUDGET_LAYOUT):
+    """Fórmula de la columna ``key`` de PRESUPUESTO en la fila ``row``.
+    ``layout`` < 2: hoja anterior, con el código del APU en la columna A."""
     letters = {k: _col(i) for i, k in enumerate(PRESUPUESTO_KEYS)}
-    apu_headers = sheet_headers('APU')[0]
     text = PRESUPUESTO_FORMULA_TEXT[key] if key != 'uom' else PRESUPUESTO_UOM_FORMULA
-    text = text.replace('{apu_unit_index}', str(len(apu_headers) + 1)).replace(
-        '{apu_unit}', _col(len(apu_headers))).replace('{r}', str(row))
+    if layout < BUDGET_LAYOUT:
+        apu = template_letters('APU', layout=layout)
+        text = text.replace(
+            'IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code},APU!${apu_unit}:${apu_unit}),0)',
+            'IFERROR(VLOOKUP({apu}{r},APU!$A:$%s,%s,0),0)' % (
+                apu['Costo unitario'], _letter_number(apu['Costo unitario']))).replace(
+            'IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code},APU!${apu_uom}:${apu_uom}),"")',
+            'IFERROR(VLOOKUP({apu}{r},APU!$A:$C,3,0),"")')
+    else:
+        apu = template_letters('APU')
+        text = text.replace('{apu_code}', apu['code']).replace(
+            '{apu_unit}', apu['Costo unitario']).replace('{apu_uom}', apu['uom'])
+    text = text.replace('{r}', str(row))
     for name, letter in letters.items():
         text = text.replace('{%s}' % name, letter)
     return text
 
 
-def presupuesto_row(values, row):
+def presupuesto_row(values, row, layout=BUDGET_LAYOUT):
     """Fila completa de PRESUPUESTO: los datos de ``values`` y las fórmulas
     grises; la unidad, con fórmula si hay APU."""
     result = []
     for key in PRESUPUESTO_KEYS:
         if key in PRESUPUESTO_FORMULAS:
-            result.append(presupuesto_formula(key, row))
+            result.append(presupuesto_formula(key, row, layout))
         elif key == 'uom' and values.get('apu'):
-            result.append(presupuesto_formula('uom', row))
+            result.append(presupuesto_formula('uom', row, layout))
         else:
             result.append(cell_text(values.get(key)))
     return result
 
 
-# Columnas de datos de la plantilla, en su orden, cuando no es el del libro:
-# en APU_DETALLE el insumo se elige por nombre y su código es una fórmula
-# (paquete 1.16, CR-22 g).
+# Columnas de datos de la plantilla, en su orden, cuando no es el del libro
+# (paquete 1.16, CR-22 g): nombre primero y código al final. En APU_DETALLE la
+# receta y el insumo se eligen por nombre y sus códigos son fórmulas.
 TEMPLATE_KEYS = {
+    'INSUMOS': ['kind', 'name', 'uom', 'price', 'currency', 'date', 'source', 'worker_category',
+                'code'],
+    'APU': ['name', 'uom', 'productivity', 'hours', 'mode', 'stage', 'code'],
+    'APU_DETALLE': ['apu_pick', 'pick', 'crew', 'pct', 'qty', 'price', 'stage'],
+}
+# Orden de las hojas anteriores (código en la columna A).
+LEGACY_TEMPLATE_KEYS = {
     'APU_DETALLE': ['apu', 'pick', 'crew', 'pct', 'qty', 'price', 'stage'],
 }
+# Encabezados de las columnas que no son del libro.
+TEMPLATE_LABELS = {'apu_pick': 'Receta (nombre · código)'}
 # Columnas calculadas que el envío lee con una clave.
-CALCULATED_KEYS = {('APU_DETALLE', 'Código del insumo'): 'code'}
+CALCULATED_KEYS = {('APU_DETALLE', 'Código de la receta'): 'apu',
+                   ('APU_DETALLE', 'Código del insumo'): 'code'}
+
+# Orden de los valores de cada fila de ``_construction_budget_rows``.
+ROW_KEYS = {
+    'INSUMOS': ['code', 'name', 'kind', 'uom', 'price', 'currency'],
+    'APU': ['code', 'name', 'uom', 'productivity', 'hours', 'mode'],
+    'APU_DETALLE': ['apu', 'pick', 'crew', 'pct', 'qty', 'price', 'stage', 'code', 'apu_pick'],
+}
 
 
-def data_keys(name):
+def data_keys(name, layout=BUDGET_LAYOUT):
     """Claves de las columnas de datos de la plantilla, en su orden."""
-    if name in TEMPLATE_KEYS:
+    if layout < BUDGET_LAYOUT and name in LEGACY_TEMPLATE_KEYS:
+        return list(LEGACY_TEMPLATE_KEYS[name])
+    if layout >= BUDGET_LAYOUT and name in TEMPLATE_KEYS:
         return list(TEMPLATE_KEYS[name])
     return [key for key, _aliases, _required in COLUMNS[name]
             if (name, key) not in (('APU', 'unit_cost'), ('PRESUPUESTO', 'cost_real'))
             and key != 'pick']
 
 
-def sheet_headers(name):
+def calculated(name, layout=BUDGET_LAYOUT):
+    """Columnas calculadas de la pestaña (las hojas anteriores no tienen las
+    de la receta por nombre)."""
+    items = CALCULATED.get(name, [])
+    if layout < BUDGET_LAYOUT:
+        items = [(header, formula) for header, formula in items if header not in (
+            'Código de la receta', 'Receta n.º (calc.)') and not (
+            name == 'APU' and header == 'Para elegir')]
+    return items
+
+
+def sheet_headers(name, layout=BUDGET_LAYOUT):
     """Encabezados de datos y calculados de una pestaña del libro."""
     labels = {key: aliases[0] for key, aliases, _required in COLUMNS[name]}
-    data = [labels[key] for key in data_keys(name)]
-    return data, [header for header, _formula in CALCULATED.get(name, [])]
+    labels.update(TEMPLATE_LABELS)
+    data = [labels[key] for key in data_keys(name, layout)]
+    return data, [header for header, _formula in calculated(name, layout)]
+
+
+def template_letters(name, layout=BUDGET_LAYOUT):
+    """{clave o encabezado calculado: letra} de una pestaña de la plantilla."""
+    data_headers, calc_headers = sheet_headers(name, layout)
+    letters = {key: _col(i) for i, key in enumerate(data_keys(name, layout))}
+    for index, header in enumerate(calc_headers):
+        letter = _col(len(data_headers) + index)
+        letters[header] = letter
+        key = CALCULATED_KEYS.get((name, header))
+        if key:
+            letters[key] = letter
+    return letters
+
+
+def _letter_number(letters):
+    """Número de la columna (A → 1)."""
+    number = 0
+    for char in letters:
+        number = number * 26 + ord(char) - 64
+    return number
 
 
 class ProjectProject(models.Model):
@@ -276,6 +362,7 @@ class ProjectProject(models.Model):
                                                DEFAULT_ROWS, 10),
                 'construction_sale_order_id': self.construction_sale_order_id.id
                 if kind == 'budget' else False,
+                'construction_sheet_layout': BUDGET_LAYOUT if kind == 'budget' else 0,
             }
             folder = self['documents_folder_id'] if 'documents_folder_id' in self._fields \
                 else False
@@ -366,7 +453,9 @@ class ProjectProject(models.Model):
                     line.qty if line.calc_method == 'qty' else '',
                     line.price_unit or '', stage_names.get(line.stage, line.stage or ''),
                     # El código va al final: en las hojas anteriores es dato.
-                    code])
+                    code,
+                    # CR-22 g: la receta por nombre, con el código al final.
+                    '%s · %s' % (recipe.name, recipe.code)])
         rows['INSUMOS'] = list(insumos.values())
         if order:
             section = subsection = ''
@@ -505,33 +594,36 @@ class ProjectProject(models.Model):
                     letters[key] = letter
                     key_columns[name].append((key, len(data_headers) + calc_headers.index(header)))
             letters_by_sheet[name] = (letters, calc_letters)
-        detail_calc = letters_by_sheet['APU_DETALLE'][1]
-        apu_letters, apu_calc = letters_by_sheet['APU']
-        unit_letter = apu_calc['Costo unitario']
-        unit_index = len(sheet_headers('APU')[0]) + 1
-        for position, name in enumerate(('INSUMOS', 'APU', 'APU_DETALLE'), 2):
+        # Letras de las otras pestañas para las fórmulas ({i:}, {a:}, {d:}).
+        others = {prefix: dict(letters_by_sheet[sheet][0], **letters_by_sheet[sheet][1])
+                  for prefix, sheet in (('i', 'INSUMOS'), ('a', 'APU'), ('d', 'APU_DETALLE'))}
+        others['d']['parcial'] = others['d']['Parcial (calc.)']
+        for name in ('INSUMOS', 'APU', 'APU_DETALLE'):
             data_headers, calc_headers = sheet_headers(name)
             letters, calc_letters = letters_by_sheet[name]
             cells, styles = {}, {}
             for i, header in enumerate(data_headers + calc_headers):
                 cells['%s1' % _col(i)] = header
                 styles['%s1' % _col(i)] = DATA_STYLE if i < len(data_headers) else CALC_STYLE
+            # Los datos llegan en el orden de ROW_KEYS; cada uno va a la
+            # columna de su clave (las calculadas no se escriben).
+            data_letters = {key: letters[key] for key in data_keys(name)}
             for number, row in enumerate(values[name], start=2):
-                for i, value in enumerate(row[:len(data_headers)]):
-                    if value not in (None, '', False):
-                        cells['%s%s' % (_col(i), number)] = cell_text(value)
+                for key, value in zip(ROW_KEYS[name], row):
+                    if key in data_letters and value not in (None, '', False):
+                        cells['%s%s' % (data_letters[key], number)] = cell_text(value)
             for header, formula in CALCULATED.get(name, []):
                 column = calc_letters[header]
+                template = formula.replace('{n}', str(last))
+                for key, letter in letters.items():
+                    template = template.replace('{c:%s}' % key, letter)
+                for calc_header, letter in calc_letters.items():
+                    template = template.replace('{x:%s}' % calc_header, letter)
+                for prefix, sheet_letters in others.items():
+                    for key, letter in sheet_letters.items():
+                        template = template.replace('{%s:%s}' % (prefix, key), letter)
                 for number in range(2, rows + 2):
-                    text = formula.replace('{r}', str(number)).replace('{n}', str(last))
-                    for key, letter in letters.items():
-                        text = text.replace('{c:%s}' % key, letter)
-                    for calc_header, letter in calc_letters.items():
-                        text = text.replace('{x:%s}' % calc_header, letter)
-                    text = text.replace('{d:parcial}', detail_calc['Parcial (calc.)'])
-                    text = text.replace('{a:unit}', unit_letter).replace(
-                        '{a:unit_index}', str(unit_index))
-                    cells['%s%s' % (column, number)] = text
+                    cells['%s%s' % (column, number)] = template.replace('{r}', str(number))
             rules = []
             for key, list_name in (('kind', 'Tipo de insumo'), ('mode', 'Modalidad')):
                 if key in letters:
@@ -539,15 +631,28 @@ class ProjectProject(models.Model):
                                   'ranges': ['%s2:%s%s' % (letters[key], letters[key], last)],
                                   'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
                                                 'values': LISTS[list_name]}})
+            conditional = []
             if name == 'APU_DETALLE':
-                # CR-22 g: el insumo se elige escribiendo su tipo o su nombre
-                # (el desplegable nativo filtra al escribir).
-                pick_letter = letters_by_sheet['INSUMOS'][1]['Para elegir']
-                rules.append({'id': 'APU_DETALLE_pick', 'isBlocking': False,
-                              'ranges': ['%s2:%s%s' % (letters['pick'], letters['pick'], last)],
-                              'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
-                                            'values': ['INSUMOS!$%s$2:$%s$%s' % (
-                                                pick_letter, pick_letter, last)]}})
+                # CR-22 g: la receta y el insumo se eligen escribiendo parte
+                # del nombre (el desplegable nativo filtra al escribir).
+                for key, sheet, letter in (
+                        ('apu_pick', 'APU', letters_by_sheet['APU'][1]['Para elegir']),
+                        ('pick', 'INSUMOS', letters_by_sheet['INSUMOS'][1]['Para elegir'])):
+                    rules.append({'id': 'APU_DETALLE_%s' % key, 'isBlocking': False,
+                                  'ranges': ['%s2:%s%s' % (letters[key], letters[key], last)],
+                                  'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                                'values': ['%s!$%s$2:$%s$%s' % (
+                                                    sheet, letter, letter, last)]}})
+                # Banda de color al cambiar de receta: las recetas impares de
+                # APU en celeste.
+                band = calc_letters['Receta n.º (calc.)']
+                conditional.append({
+                    'id': 'APU_DETALLE_band', 'stopIfTrue': False,
+                    'ranges': ['A2:%s%s' % (_col(len(data_headers) + len(calc_headers) - 1),
+                                            last)],
+                    'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                             'values': ['=ISODD(IFERROR(VALUE($%s2),0))' % band],
+                             'style': {'fillColor': BAND_FILL}}})
                 if stage_count:
                     rules.append({'id': 'APU_DETALLE_stage', 'isBlocking': False,
                                   'ranges': ['%s2:%s%s' % (letters['stage'], letters['stage'],
@@ -565,6 +670,7 @@ class ProjectProject(models.Model):
                 'cols': {str(i): {'size': max(110, 8 * len(header))}
                          for i, header in enumerate(headers)},
                 'dataValidationRules': rules,
+                'conditionalFormats': conditional,
             })
         sheets.append(self._construction_presupuesto_sheet(values['PRESUPUESTO'], rows, last))
         plan_cells = {'%s1' % _col(i): header for i, header in enumerate(PLAN_COLUMNS)}
@@ -687,5 +793,6 @@ class SaleOrder(models.Model):
                 'construction_sale_order_id': self.id,
                 'construction_project_id': project.id,
                 'construction_sheet_kind': 'budget',
+                'construction_sheet_layout': BUDGET_LAYOUT,
             })
         return document.action_open_spreadsheet()

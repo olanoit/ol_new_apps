@@ -10,6 +10,7 @@ import {
     validate,
     writeRows,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
+import { TREE_SHEET, clearFloorGroups, groupTreeByFloor } from "./floor_groups";
 
 const { topbarMenuRegistry } = registries;
 
@@ -28,7 +29,7 @@ function parseRef(ref) {
 }
 
 /** La pestaña tiene al menos ``rows`` filas. */
-function ensureRows(model, sheetId, rows) {
+export function ensureRows(model, sheetId, rows) {
     const current = model.getters.getNumberRows(sheetId);
     if (current < rows) {
         model.dispatch("ADD_COLUMNS_ROWS", {
@@ -196,6 +197,34 @@ function writeSheet(model, name, spec, payload, keys) {
 }
 
 /**
+ * Amplía el maestro si sus filas con fórmulas y listas no alcanzan para
+ * ``needed`` filas de datos (M113-05): las del pedido más un 10 %. Las hojas
+ * anteriores al paquete 1.16 no se amplían y lo avisan.
+ */
+export async function ensureCapacity(env, needed) {
+    const current = env.constructionSheetRows();
+    if (needed <= current) {
+        return true;
+    }
+    if (!current) {
+        env.constructionNotify(
+            _t(
+                "Esta hoja es anterior al paquete 1.16 y no amplía sus fórmulas: las filas nuevas quedan sin listas ni columnas calculadas."
+            ),
+            "warning"
+        );
+        return false;
+    }
+    const target = Math.ceil(needed * 1.1);
+    const extension = await env.constructionCall("construction_sheet_extension", target);
+    if (extension && extension.rows) {
+        applyExtension(env.model, extension);
+        env.constructionSetSheetRows(extension.rows);
+    }
+    return true;
+}
+
+/**
  * Escribe en la hoja lo que entregó el servidor (un Excel o los datos de
  * Odoo): amplía las filas si no alcanzan, escribe por clave y valida.
  * Con ``logImport`` deja la importación en el historial y el estado de la hoja.
@@ -203,6 +232,12 @@ function writeSheet(model, name, spec, payload, keys) {
 export async function applyImport(env, payload, { logImport = true } = {}) {
     const model = env.model;
     const getters = model.getters;
+    // M113-08 punto 4: ARBOL se vuelve a agrupar por piso; antes se quitan
+    // las filas de resumen para que los datos queden seguidos.
+    const tree = Boolean(payload.sheets[TREE_SHEET]);
+    if (tree) {
+        clearFloorGroups(model);
+    }
     const keys = keyColumns(model);
     // Filas que necesita cada pestaña (M113-05).
     let needed = 0;
@@ -211,23 +246,8 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         const base = payload.mode === "append" && sheetId ? lastDataRow(getters, sheetId) : 0;
         needed = Math.max(needed, base + spec.rows.length);
     }
-    const current = env.constructionSheetRows();
-    if (payload.expand_rows && needed > current) {
-        if (current) {
-            const target = Math.ceil(needed * 1.1);
-            const extension = await env.constructionCall("construction_sheet_extension", target);
-            if (extension && extension.rows) {
-                applyExtension(model, extension);
-                env.constructionSetSheetRows(extension.rows);
-            }
-        } else {
-            env.constructionNotify(
-                _t(
-                    "Esta hoja es anterior al paquete 1.16 y no amplía sus fórmulas: las filas nuevas quedan sin listas ni columnas calculadas."
-                ),
-                "warning"
-            );
-        }
+    if (payload.expand_rows) {
+        await ensureCapacity(env, needed);
     }
     for (const [name, spec] of Object.entries(payload.sheets)) {
         writeSheet(model, name, spec, payload, keys);
@@ -243,6 +263,9 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         }
         ensureRows(model, sheetId, rows.length + 1);
         writeRows(model, sheetId, rows, 0);
+    }
+    if (tree) {
+        groupTreeByFloor(model);
     }
     const sheetCount =
         Object.keys(payload.sheets).length + Object.keys(payload.other || {}).length;

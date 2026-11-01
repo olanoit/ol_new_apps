@@ -105,7 +105,7 @@ patch(SpreadsheetAction.prototype, {
 // CONTROL (M113-11)
 // ---------------------------------------------------------------------------
 /** Filas de FUENTES con Piso, Muebles, Módulos y ML (el origen de OT). */
-function originRows(model) {
+export function originRows(model) {
     const rows = collectSheets(model, ["FUENTES"]).FUENTES || [];
     const header = (rows[0] || []).map(normText);
     const columns = ["piso", "muebles", "modulos", "ml"].map((name) => header.indexOf(name));

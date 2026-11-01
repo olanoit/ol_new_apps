@@ -17,6 +17,9 @@ import re
 from odoo.tests import TransactionCase, tagged
 
 from odoo.addons.al_construction_planner_spreadsheet.models import sheet_migration
+from odoo.addons.al_construction_planner_spreadsheet.models.project_project import (
+    PRESUPUESTO_KEYS, presupuesto_row,
+)
 from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import (
     KEYS_SHEET, apply_keys, keys_rows,
 )
@@ -74,6 +77,54 @@ class TestPackage116Stage4Budget(TestBudgetBook):
         self.assertEqual(styles[str(presupuesto['styles']['M1'])]['fillColor'], '#D9D9D9')
         self.assertEqual(styles[str(presupuesto['styles']['A1'])]['fillColor'], '#FFF2CC')
 
+    def test_budget_layout_name_first_code_last(self):
+        """CR-22 g: nombre primero y código al final en INSUMOS y APU; la
+        receta se elige por nombre en APU_DETALLE, con su código calculado y
+        una banda de color por receta. Las hojas anteriores conservan su
+        orden al traer de Odoo."""
+        document = self._document()
+        self.assertEqual(document.construction_sheet_layout, 2)
+        data = json.loads(document.spreadsheet_data)
+        sheets = {sheet['name']: sheet for sheet in data['sheets']}
+        keys = sheets[KEYS_SHEET]
+        rows = {(keys['cells'].get('A%s' % n), keys['cells'].get('B%s' % n)):
+                keys['cells'].get('C%s' % n) for n in range(2, 300)}
+
+        def letter(sheet, key):
+            return re.search(r'!([A-Z]+)1', rows[(sheet, key)]).group(1)
+
+        insumos = sheets['INSUMOS']['cells']
+        self.assertEqual(insumos['A1'], 'Tipo de insumo')
+        self.assertEqual(insumos['%s1' % letter('INSUMOS', 'code')], 'Código')
+        self.assertGreater(letter('INSUMOS', 'code'), letter('INSUMOS', 'worker_category'))
+        apu = sheets['APU']['cells']
+        self.assertEqual(apu['A1'], 'Descripción')
+        self.assertEqual(apu['%s1' % letter('APU', 'code')], 'Código')
+        self.assertIn('Para elegir', apu.values())
+        detail = sheets['APU_DETALLE']
+        self.assertEqual(detail['cells']['A1'], 'Receta (nombre · código)')
+        apu_col = letter('APU_DETALLE', 'apu')
+        self.assertEqual(detail['cells']['%s1' % apu_col], 'Código de la receta')
+        self.assertTrue(detail['cells']['%s2' % apu_col].startswith('=IF(A2=""'))
+        self.assertIn('APU_DETALLE_apu_pick', [rule['id'] for rule in
+                                               detail['dataValidationRules']])
+        band = detail['conditionalFormats'][0]
+        self.assertEqual(band['id'], 'APU_DETALLE_band')
+        self.assertIn('ISODD', band['rule']['values'][0])
+        # Las fórmulas buscan por la letra de cada columna, no por la A.
+        formulas = [content for name in ('APU', 'APU_DETALLE', 'PRESUPUESTO')
+                    for content in sheets[name]['cells'].values()
+                    if isinstance(content, str) and content.startswith('=')]
+        self.assertFalse([f for f in formulas if 'VLOOKUP' in f and '$A$' in f])
+        # «Traer de Odoo» en una hoja anterior: PRESUPUESTO con VLOOKUP sobre
+        # la columna A de APU, como su orden.
+        index = PRESUPUESTO_KEYS.index('unit_cost')
+        self.assertIn('VLOOKUP(E2,APU!$A:$H,8,0)', presupuesto_row({'apu': 'R1'}, 2, 0)[index])
+        self.assertIn('XLOOKUP(E2,APU!$G:$G,APU!$H:$H)',
+                      presupuesto_row({'apu': 'R1'}, 2, 2)[index])
+        self.assertIn('VLOOKUP(E2,APU!$A:$C,3,0)', presupuesto_row(
+            {'apu': 'R1'}, 2, 0)[PRESUPUESTO_KEYS.index('uom')])
+
     def test_renamed_header_and_missing_column(self):
         document = self._document()
         sheets = _sheets_from_book(base64.b64decode(self._book()))
@@ -116,9 +167,11 @@ class TestPackage116Stage4Budget(TestBudgetBook):
         self.assertEqual(float(recipe['productivity']), 19.0)   # CR-22 e
         self.assertTrue(recipe['hours'])
         detail = keyed['APU_DETALLE']
-        self.assertEqual(detail['keys'][-1], 'code')
+        self.assertIn('code', detail['keys'])
         line = dict(zip(detail['keys'], detail['rows'][0]))
         self.assertTrue(line['pick'].endswith(' · %s' % line['code']))
+        # CR-22 g: la receta por nombre, con el código al final.
+        self.assertTrue(line['apu_pick'].endswith(' · %s' % line['apu']))
         self.assertNotIn('[', line['pick'])                      # CR-22 g
         insumos = keyed['INSUMOS']
         names = [dict(zip(insumos['keys'], row))['name'] for row in insumos['rows']]
