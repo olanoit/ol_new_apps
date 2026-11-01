@@ -24,8 +24,8 @@ class TestConstructionSpreadsheet(PlannerCommon):
         # Paquete 1.13, M113-07 a 11: la hoja abre en INICIO y suma FICHA,
         # PROGRAMA, CONTROL y ERRORES.
         self.assertEqual(names, ['INICIO', 'LEEME', 'RESUMEN'] + list(SHEETS) +
-                         ['REFERENCIAS', '_LISTAS', 'FICHA', 'PROGRAMA', 'CONTROL', 'ERRORES',
-                          '_CLAVES'])
+                         ['MATERIALES OBRA', 'REFERENCIAS', '_LISTAS', 'FICHA', 'PROGRAMA',
+                          'CONTROL', 'ERRORES', '_CLAVES'])
         arbol = next(sheet for sheet in data['sheets'] if sheet['name'] == 'ARBOL')
         self.assertEqual(arbol['cells']['A1'], SHEETS['ARBOL'][1][0][1])
         self.assertEqual({lst['model'] for lst in data['lists'].values()},

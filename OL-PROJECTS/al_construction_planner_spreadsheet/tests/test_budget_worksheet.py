@@ -45,7 +45,8 @@ class TestBudgetWorksheet(TestBudgetBook):
         # CR-18, c: columnas A a W del libro 6.6; M es el costo unitario.
         self.assertEqual(budget['cells']['F1'], 'Costo unitario sin APU')
         self.assertEqual(budget['cells']['W1'], 'Reserva por holguras')
-        self.assertIn('VLOOKUP', budget['cells']['M2'])
+        # Paquete 1.16, CR-22 g: el código del APU va al final de APU.
+        self.assertIn('XLOOKUP', budget['cells']['M2'])
         # CR-18, a: ninguna celda se guarda como número.
         for sheet in data['sheets']:
             for ref, content in sheet.get('cells', {}).items():

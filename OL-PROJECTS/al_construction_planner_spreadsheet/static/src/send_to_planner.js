@@ -281,15 +281,20 @@ async function updateCosts(env) {
     }
     const rows = collectSheets(model, ["INSUMOS"]).INSUMOS || [];
     const header = rows[0] || [];
-    const priceCol = header.findIndex((name) =>
-        ["Precio sin IGV", "Precio", "Costo vigente"].includes(name)
-    );
-    const codes = rows.slice(1).map((row) => row[0]).filter(Boolean);
+    // Código y precio por su clave (paquete 1.16: el código va al final);
+    // en una hoja anterior, el código en la columna A y el precio por su
+    // encabezado.
+    const keys = keyColumns(model).INSUMOS || {};
+    const codeCol = keys.code ?? 0;
+    const priceCol =
+        keys.price ??
+        header.findIndex((name) => ["Precio sin IGV", "Precio", "Costo vigente"].includes(name));
+    const codes = rows.slice(1).map((row) => row[codeCol]).filter(Boolean);
     const costs = await env.constructionCall("construction_current_costs", codes);
     let updated = 0;
     const commands = [];
     rows.slice(1).forEach((row, index) => {
-        const current = costs[row[0]];
+        const current = costs[row[codeCol]];
         if (current && priceCol >= 0) {
             commands.push([
                 "UPDATE_CELL",

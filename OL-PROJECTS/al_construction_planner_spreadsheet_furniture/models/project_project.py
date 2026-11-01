@@ -52,6 +52,10 @@ CODE_FROM_PICK = ('=IF({p}{r}="","",IF(LEFT({p}{r},1)="[",IFERROR(MID({p}{r},2,F
                   '-2),{p}{r}),IFERROR(%s,{p}{r})))' % last_part('{p}{r}', '"%s"' % PICK_SEPARATOR))
 DEFAULT_ROWS = 300
 MAX_PRODUCTS = 20000
+# Paquete 1.13, M113-06 punto 7: materiales base de la obra (tablero, canto,
+# bisagra…). Van primero en la lista de su categoría.
+WORK_MATERIALS_SHEET = 'MATERIALES OBRA'
+WORK_MATERIALS_ROWS = 30
 EXCLUDED_CATEGORIES = ('Deliveries', 'Expenses')
 
 # Columnas calculadas que agrega la plantilla a una hoja del maestro:
@@ -566,6 +570,8 @@ class ProjectProject(models.Model):
                 'conditionalFormats': parts[name]['conditional'],
             })
 
+        sheets.append(self._construction_work_materials_sheet(last_product))
+
         # REFERENCIAS: listas vivas de Odoo.
         company = self.company_id or self.env.company
         reference_lists = [
@@ -651,10 +657,15 @@ class ProjectProject(models.Model):
             row = n_groups + index
             list_cells['A%s' % row] = '=IFERROR(INDEX(%s!$W$3:$W$%s,%s),"")' % (
                 ref, n_shorts + 2, index)
+            # Los materiales de la obra de esa categoría primero (M113-06,
+            # punto 7); sin ellos, la misma lista dos veces y UNIQUE la deja
+            # en una.
+            catalog = 'FILTER({ref}!$P$3:$P${p},{ref}!$O$3:$O${p}=A{i},{ref}!$S$3:$S${p}=1)'
             list_cells['B%s' % row] = (
-                '=IF(A{i}="","",IFERROR(TRANSPOSE(FILTER({ref}!$P$3:$P${p},'
-                '{ref}!$O$3:$O${p}=A{i},{ref}!$S$3:$S${p}=1)),""))').format(
-                i=row, ref=ref, p=last_product)
+                '=IF(A{i}="","",IFERROR(TRANSPOSE(UNIQUE(VSTACK(IFERROR(FILTER({w}!$A$2:$A${m},'
+                '{w}!$B$2:$B${m}=A{i}),%s),%s))),""))' % (catalog, catalog)).format(
+                i=row, ref=ref, p=last_product, w=sheet_ref(WORK_MATERIALS_SHEET),
+                m=WORK_MATERIALS_ROWS + 1)
         list_cells.update(parts[LISTS_SHEET]['cells'])
         sheets.append({'id': 'sheet_listas', 'name': LISTS_SHEET,
                        'colNumber': layout['width'] + 2,
@@ -683,6 +694,31 @@ class ProjectProject(models.Model):
             'pivots': pivots,
             'pivotNextId': len(pivots) + 1,
             'revisionId': 'START_REVISION',
+        }
+
+    def _construction_work_materials_sheet(self, last_product):
+        """MATERIALES OBRA (M113-06, punto 7): los materiales base de la obra,
+        elegidos de todo el maestro, con su categoría y su código."""
+        cells = {'A1': 'Material', 'B1': 'Categoría (calc.)', 'C1': 'Código (calc.)',
+                 'E1': 'Los materiales de esta lista van primero en la lista de su categoría '
+                       '(BOM y PIEZAS). «Reemplazar un material…» del panel Planificación '
+                       'cambia uno por otro en la hoja.'}
+        for row in range(2, WORK_MATERIALS_ROWS + 2):
+            cells['C%s' % row] = CODE_FROM_PICK.replace('{p}', 'A').replace('{r}', str(row))
+            cells['B%s' % row] = ('=IF(C{r}="","",IFERROR(XLOOKUP(C{r},{ref}!$K$3:$K${p},'
+                                  '{ref}!$O$3:$O${p}),""))').format(
+                r=row, ref=REFERENCE_SHEET, p=last_product)
+        return {
+            'id': 'sheet_materiales_obra', 'name': WORK_MATERIALS_SHEET, 'colNumber': 8,
+            'rowNumber': WORK_MATERIALS_ROWS + 10, 'cells': cells,
+            'styles': {'A1': DATA_STYLE, 'B1': CALC_STYLE, 'C1': CALC_STYLE},
+            'cols': {'0': {'size': 380}, '1': {'size': 220}, '2': {'size': 120}},
+            'panes': {'xSplit': 0, 'ySplit': 1},
+            'dataValidationRules': [{
+                'id': 'work_materials', 'isBlocking': False,
+                'ranges': ['A2:A%s' % (WORK_MATERIALS_ROWS + 1)],
+                'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                              'values': ['%s!$P$3:$P$%s' % (REFERENCE_SHEET, last_product)]}}],
         }
 
     def _construction_spreadsheet_template(self, kind):

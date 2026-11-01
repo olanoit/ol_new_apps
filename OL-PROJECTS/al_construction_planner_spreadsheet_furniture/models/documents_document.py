@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 from io import BytesIO
 
 from odoo import fields, models
@@ -10,9 +11,166 @@ from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout 
 )
 from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import KEYS_SHEET
 
+from .project_project import (
+    CALCULATED, DEFAULT_ROWS, FIXED_LISTS, GROUP_HEADER, HEADER_STYLE, PRODUCT_PICK, _col,
+)
+
+# Pestañas que arma la plantilla: «Actualizar a la plantilla vigente» no las
+# copia de la hoja anterior (las demás, como FUENTES, sí).
+TEMPLATE_ONLY_SHEETS = ('INICIO', 'LEEME', 'RESUMEN', 'REFERENCIAS', '_LISTAS', 'FICHA',
+                        'PROGRAMA', 'CONTROL', 'ERRORES', KEYS_SHEET)
+
 
 class DocumentsDocument(models.Model):
     _inherit = 'documents.document'
+
+    def _get_spreadsheet_metadata(self, access_token=None):
+        data = super()._get_spreadsheet_metadata(access_token)
+        if data.get('construction_sheet_kind') == 'furniture':
+            # M113-08: la ayuda de cada columna para el panel Planificación.
+            data['construction_column_help'] = self._construction_column_help()
+        return data
+
+    def _construction_column_help(self):
+        """``{pestaña: {clave o encabezado: [encabezado, ayuda, obligatoria,
+        valores]}}`` de las pestañas del maestro (SHEETS) y sus columnas
+        calculadas."""
+        result = {}
+        for name, (_description, columns) in SHEETS.items():
+            sheet = result.setdefault(name, {})
+            for key, header, required, help_text in columns:
+                sheet[key] = [header, help_text, bool(required),
+                              FIXED_LISTS.get((name, key), [])]
+            if name in PRODUCT_PICK:
+                sheet['categ_group'] = [GROUP_HEADER, self.env._(
+                    'Elija el grupo y después la categoría: la lista de productos muestra solo '
+                    'los de esa categoría, con los materiales de la obra primero.'), False, []]
+                sheet['product_name'] = [sheet.get('product_name', ['Producto'])[0], self.env._(
+                    'Escriba parte del nombre: la lista filtra al escribir. Se muestra «nombre · '
+                    'unidad · código».'), False, []]
+            for header, _formula in CALCULATED.get(name, []):
+                sheet[header] = [header, self.env._(
+                    'Columna calculada (gris): no se escribe.'), False, []]
+        return result
+
+    def construction_open_link(self, kind):
+        """Enlaces del panel Planificación (M113-08): la obra o el árbol de
+        recursos de su plan vigente."""
+        self.ensure_one()
+        project = self.construction_project_id
+        if not project:
+            raise UserError(self.env._('La hoja no está vinculada a una obra.'))
+        if kind == 'tree':
+            return project.action_construction_open_tree()
+        return {'type': 'ir.actions.act_window', 'res_model': 'project.project',
+                'res_id': project.id, 'view_mode': 'form', 'views': [(False, 'form')]}
+
+    def construction_sheet_upgrade(self, sheets):
+        """«Actualizar a la plantilla vigente» (paquete 1.13, M113-07 a 11 en
+        las hojas ya creadas): guarda una versión y rehace la hoja con la
+        plantilla de hoy (INICIO, FICHA, PROGRAMA, CONTROL, columnas
+        calculadas, listas, MATERIALES OBRA) y los datos de la hoja anterior.
+
+        :param sheets: ``{'master': {pestaña: {'rows': [[valor]], 'keys':
+            {clave: columna}, 'formula_cols': [columna]}}, 'other': {pestaña:
+            {'cells': {ref: contenido}}}}``, lo que lee la hoja en el navegador.
+        :return: la acción que abre la hoja actualizada.
+        """
+        self.ensure_one()
+        if self.construction_sheet_kind != 'furniture' or not self.construction_project_id:
+            raise UserError(self.env._('Solo el maestro de mobiliario se actualiza así.'))
+        project = self.construction_project_id
+        master = (sheets or {}).get('master') or {}
+        others = (sheets or {}).get('other') or {}
+        needed = max([len(spec.get('rows') or []) for spec in master.values()] + [0])
+        rows = max(project.construction_spreadsheet_rows or DEFAULT_ROWS,
+                   self.construction_sheet_rows, int(needed * 1.1) + 1, 10)
+        self._construction_copy_version(self.env._('Antes de actualizar a la plantilla vigente'))
+        data = project._construction_spreadsheet_data(rows)
+        layout = project._construction_sheet_layout()
+        by_name = {sheet['name']: sheet for sheet in data['sheets']}
+        for name, spec in master.items():
+            sheet = by_name.get(name)
+            if not sheet or name not in layout['sheets']:
+                continue
+            self._construction_upgrade_master(sheet, layout['sheets'][name], name, spec)
+        position = 0
+        for name, spec in others.items():
+            if name in by_name or name in TEMPLATE_ONLY_SHEETS or name.startswith('_'):
+                continue
+            position += 1
+            data['sheets'].append({
+                'id': 'sheet_copy_%s' % position, 'name': name,
+                'colNumber': 26, 'rowNumber': max(100, len(spec.get('cells') or {}) + 10),
+                'cells': {ref: str(content) for ref, content in (spec.get('cells') or {}).items()
+                          if content not in (None, '', False)},
+            })
+        self.write({
+            'raw': json.dumps(data).encode(),
+            'construction_sheet_rows': rows,
+        })
+        self._delete_collaborative_data()
+        self.construction_project_id.sudo().message_post(
+            author_id=self.env.user.partner_id.id, body=self.env._(
+                'Hoja de trabajo actualizada a la plantilla vigente (versión anterior guardada).'))
+        return self.action_open_spreadsheet()
+
+    @staticmethod
+    def _construction_upgrade_master(sheet, info, name, spec):
+        """Escribe en la pestaña ``sheet`` de la plantilla las filas de la hoja
+        anterior: cada clave en su columna; las columnas que no son del maestro
+        ni fórmulas, a la derecha."""
+        rows = spec.get('rows') or []
+        if len(rows) < 2:
+            return
+        header = [norm(text) for text in rows[0]]
+        old_keys = {key: int(col) for key, col in (spec.get('keys') or {}).items()
+                    if isinstance(col, (int, float))}
+        formula_cols = set(spec.get('formula_cols') or [])
+        letters = dict(info['letters'])
+        headers = dict(info['columns'])
+        # El código del producto es fórmula desde «Producto»: no se copia.
+        pick = PRODUCT_PICK.get(name)
+        if pick:
+            letters.pop('product_code', None)
+        mapping = {}
+        for key, letter in letters.items():
+            col = old_keys.get(key)
+            if col is None:
+                texts = [norm(key), norm(headers.get(key, ''))]
+                col = next((index for index, text in enumerate(header) if text in texts), None)
+            if col is not None and col not in formula_cols:
+                mapping[letter] = col
+        used = set(mapping.values()) | formula_cols
+        old_code = old_keys.get('product_code')
+        if old_code is None and pick:
+            old_code = next((index for index, text in enumerate(header)
+                             if text in (norm('product_code'), norm('Código del producto'))),
+                            None)
+        extras = [index for index, text in enumerate(rows[0])
+                  if index not in used and index != old_code and str(text or '').strip()]
+        cells = sheet['cells']
+        first_extra = len(info['headers'])
+        for offset, index in enumerate(extras):
+            ref = '%s1' % _col(first_extra + offset)
+            cells[ref] = str(rows[0][index])
+            sheet.setdefault('styles', {})[ref] = HEADER_STYLE
+        for number, values in enumerate(rows[1:], start=2):
+            for letter, col in mapping.items():
+                value = values[col] if col < len(values) else ''
+                if value not in (None, '', False):
+                    cells['%s%s' % (letter, number)] = str(value)
+            # Una hoja anterior al «nombre · unidad · código» trae solo el
+            # código: el producto lo toma y la fórmula lo lee igual.
+            if pick and old_code is not None and 'product_name' in letters:
+                ref = '%s%s' % (letters['product_name'], number)
+                code = values[old_code] if old_code < len(values) else ''
+                if ref not in cells and code not in (None, '', False):
+                    cells[ref] = str(code)
+            for offset, index in enumerate(extras):
+                value = values[index] if index < len(values) else ''
+                if value not in (None, '', False):
+                    cells['%s%s' % (_col(first_extra + offset), number)] = str(value)
 
     def _construction_send_sheet_names(self):
         """Solo las pestañas del maestro y _CLAVES (paquete 1.13, M113-02)."""
