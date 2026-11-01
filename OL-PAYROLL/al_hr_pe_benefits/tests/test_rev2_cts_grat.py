@@ -411,13 +411,22 @@ class TestRev2CtsGrat(BenefitsCaseBase):
             lambda line: line.employee_id == incomplete))
         line.action_compute()
         self.assertEqual((line.total_grat, line.bonus_essalud), (600.0, 0.0))
+        # Sin input configurado: por la regla SUBV_AD, no por la
+        # gratificación (GRA, 0406).
+        self.param.trainee_subsidy_input_id = False
+        grati.action_export_to_payslips()
+        slip = self.batch_jun.slip_ids.filtered(
+            lambda slip: slip.employee_id == complete)
+        self.assertEqual(slip.line_ids.filtered(
+            lambda l: l.code == 'SUBV_AD').total, 600.0)
+        self.assertFalse(slip.line_ids.filtered(
+            lambda l: l.code == 'GRA').total)
         # Exportación por el input propio de la media subvención.
+        grati.action_draft()
         own_input = self.env.ref('al_hr_pe.salary_rule_INDEM').copy(
             {'name': 'Media subvención', 'code': 'TSUBV'})
         self.param.trainee_subsidy_input_id = own_input
         grati.action_export_to_payslips()
-        slip = self.batch_jun.slip_ids.filtered(
-            lambda slip: slip.employee_id == complete)
         exported = slip.input_line_ids.filtered(
             lambda inp: inp.salary_rule_id == own_input)
         self.assertEqual(exported.amount, 600.0)

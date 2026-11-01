@@ -261,9 +261,11 @@ class HrGratification(models.Model):
             amounts = [(grat_input, line.total_grat),
                        (param.bonus_nine_input_id, line.bonus_essalud)]
             if line.labor_regime == 'practicante':
-                # Media subvención (Ley 28518): su propio input si está
-                # configurado; sin bonificación.
-                amounts = [(param.trainee_subsidy_input_id or grat_input,
+                # Media subvención (Ley 28518): no es gratificación (GRA,
+                # 0406). Va por el input configurado o por la regla
+                # SUBV_AD, sin bonificación.
+                amounts = [(param.trainee_subsidy_input_id
+                            or self.env.ref('al_hr_pe.salary_rule_SUBV_AD'),
                             line.total_grat)]
             for input_type, amount in amounts:
                 input_line = slip.input_line_ids.filtered(

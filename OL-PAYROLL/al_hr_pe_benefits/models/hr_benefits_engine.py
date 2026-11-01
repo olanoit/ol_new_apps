@@ -190,7 +190,8 @@ class HrMainParameter(models.Model):
         string='Input media subvención (practicantes)',
         help='Input por el que se paga la subvención adicional de los '
              'practicantes (media subvención cada 6 meses de convenio, Ley '
-             '28518 art. 47). Vacío: se usa el input de gratificación.')
+             '28518 art. 47). Vacío: se usa la regla «Subvención adicional '
+             '(practicantes)» (SUBV_AD), sin aportes.')
     bonus_sr_ids = fields.Many2many(
         'hr.salary.rule', 'sr_bonus_main_parameter_rel',
         'main_parameter_id', 'sr_id',

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 26.20261101 — 01/11/2026
+
+- Gratificación: la media subvención de los practicantes se exporta a la boleta por la regla «Subvención adicional (practicantes)» y ya no por la de gratificación.
+
 ## 25.20261101 — 01/11/2026
 
 - CTS y gratificación: asignación familiar con la RMV vigente a la fecha, gratificación con la remuneración vigente al pago, bonificación de la Ley 30334 aunque la versión no tenga seguro, boletas anuladas fuera de los promedios, sin descontar faltas de meses que no cuentan; comisión como remuneración principal promediada sin la regla de 3 de 6 meses; un solo promedio de variables para todas las truncas.

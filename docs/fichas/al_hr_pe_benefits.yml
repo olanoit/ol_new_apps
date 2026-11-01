@@ -803,6 +803,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: '26.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Gratificación: la media subvención de los practicantes se exporta a la boleta por la regla «Subvención adicional (practicantes)» y ya no por la de gratificación."
   - version: '25.20261101'
     fecha: 01/11/2026
     cambios:
