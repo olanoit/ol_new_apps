@@ -178,11 +178,13 @@ def second_part(text, sep):
     return 'TRIM(TEXTBEFORE(TEXTAFTER(%s&%s,%s,1)&%s,%s,1))' % (text, sep, sep, sep, sep)
 
 
-_REPT = r'SUBSTITUTE\(([^,()]+),("[^"]*"),REPT\(" ",200\)\)'
+# Cualquier ancho (200 en las plantillas de 1.16, 100 en las anteriores) y
+# cualquier separador («" · "», «" / "», «"/"»).
+_REPT = r'SUBSTITUTE\(([^,()]+),("[^"]*"),REPT\(" ",\d+\)\)'
 _REPT_FORMULAS = (
-    (re.compile(r'TRIM\(RIGHT\(%s,200\)\)' % _REPT), last_part),
-    (re.compile(r'TRIM\(LEFT\(%s,200\)\)' % _REPT), first_part),
-    (re.compile(r'TRIM\(MID\(%s,201,200\)\)' % _REPT), second_part),
+    (re.compile(r'TRIM\(RIGHT\(%s,\d+\)\)' % _REPT), last_part),
+    (re.compile(r'TRIM\(LEFT\(%s,\d+\)\)' % _REPT), first_part),
+    (re.compile(r'TRIM\(MID\(%s,\d+,\d+\)\)' % _REPT), second_part),
 )
 
 

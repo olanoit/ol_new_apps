@@ -953,7 +953,7 @@ hoja nace con 300 filas y la importación la amplía.
     categoría de REFERENCIAS. Daban `#NAME?`, así que el costo vivo y las
     listas por categoría no funcionaban en la hoja.
   - Ahora usan `TEXTBEFORE` y `TEXTAFTER`.
-  - La migración `al_construction_planner_spreadsheet` 11.20261101 reescribe
+  - La migración `al_construction_planner_spreadsheet` 12.20261101 reescribe
     esas fórmulas en las hojas ya creadas: datos, última foto y revisiones.
   - El recorrido nuevo evalúa las fórmulas en el navegador para que esto no
     vuelva a pasar.
