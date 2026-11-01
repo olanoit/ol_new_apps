@@ -28,7 +28,10 @@ bases de desarrollo, la principal y la de staging.
 Queda una prueba, que depende de un insumo externo:
 
 - la prueba de punta a punta del 1.13 con el libro real de la obra de
-  mobiliario (M113-07 y M113-08).
+  mobiliario (M113-07 y M113-08). Ya está preparada en
+  [`pruebas/libro_real_1_13.py`](pruebas/libro_real_1_13.py): analiza el libro,
+  lo importa en una obra temporal y entrega las cifras de M113-01, 07, 08 y 09.
+  Al final deshace todo.
 
 ## Etapa 1
 
