@@ -180,7 +180,11 @@ class ConstructionMasterImportWizard(models.TransientModel):
         result = {'errors': [], 'warnings': defaultdict(list), 'stats': {},
                   'catalog': [], 'typologies': {}, 'modules': {}, 'activities': {}, 'bom': {},
                   'products_to_create': {}, 'tree': [], 'eto': defaultdict(list),
-                  'furniture': {}, 'overrides': []}
+                  'furniture': {}, 'overrides': [],
+                  # Paquete 1.16, M113-01: (hoja, fila, columna, mensaje, tipo)
+                  # para la pestaña ERRORES de la hoja de trabajo; tipo es
+                  # «error» (bloquea el envío desde la hoja) o «warning».
+                  'issues': []}
         if not self.file or not self.project_id:
             return result
         sheets, errors = self._read_workbook()
@@ -208,6 +212,8 @@ class ConstructionMasterImportWizard(models.TransientModel):
             warn['invalid_value'].append(self.env._(
                 '%(sheet)s fila %(row)s: %(column)s «%(value)s»',
                 sheet=sheet, row=row['_row'], column=column, value=_text(value)))
+            result['issues'].append((sheet, row['_row'], column, self.env._(
+                'Valor no reconocido «%s»: la fila no se importa.', _text(value)), 'warning'))
 
         # Actividades: las del catálogo de la compañía (o compartidas) y las de
         # la hoja CATALOGO.
@@ -422,6 +428,16 @@ class ConstructionMasterImportWizard(models.TransientModel):
             if not all(path[1:]):
                 invalid('ARBOL', row, self.env._('Piso, departamento y ambiente'), _fmt_path(path))
                 continue
+            if path[0] and not group_depth:
+                # M113-01, caso 4: la plantilla de niveles no tiene agrupador.
+                # En el asistente es un aviso (se importa como hoy); desde la
+                # hoja de trabajo bloquea el envío.
+                warn['group_without_levels'].append(self.env._(
+                    'ARBOL fila %(row)s: %(group)s', row=row['_row'],
+                    group=_text(row.get('group'))))
+                result['issues'].append(('ARBOL', row['_row'], self.env._('Agrupador'), self.env._(
+                    'La plantilla de niveles de la obra no tiene Torre o Etapa: agregue el nivel '
+                    'en Configuración de la obra o deje vacío el Agrupador.'), 'error'))
             if path[0] and group_depth and len(path[0]) != group_depth:
                 invalid('ARBOL', row, self.env._('Agrupador (%s niveles)', group_depth),
                         _text(row.get('group')))
@@ -673,6 +689,9 @@ class ConstructionMasterImportWizard(models.TransientModel):
             'unit_floor_mismatch': self.env._(
                 'Unidades cuyo número no corresponde a su piso (revise el árbol)'),
             'invalid_value': self.env._('Valores no reconocidos (filas omitidas)'),
+            'group_without_levels': self.env._(
+                'Ambientes con Agrupador en una obra cuya plantilla de niveles no tiene Torre ni '
+                'Etapa (agregue el nivel o deje vacío el Agrupador)'),
         }
 
     @api.depends('file', 'project_id', 'create_missing_products')
@@ -685,6 +704,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
             'VARIANTES': self.env._('Variantes de unidades'),
             'ACTIVIDADES': self.env._('Actividades por ambiente'),
             'BOM': self.env._('Filas de BOM'),
+            'PIEZAS': self.env._('Piezas de los módulos'),
             'PRODUCTOS': self.env._('Productos por crear'),
             'ARBOL': self.env._('Ambientes del árbol'),
             'ETO': self.env._('Módulos del ETO'),
@@ -699,7 +719,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
             rows = Markup('').join(
                 Markup('<tr><td>%s</td><td class="text-end">%s</td><td class="text-end">%s</td>'
                        '<td class="text-end">%s</td></tr>') % (
-                    labels[key], read or '—', new, updated)
+                    labels.get(key, key), read or '—', new, updated)
                 for key, (read, new, updated) in data['stats'].items()
                 if read or new or updated)
             wizard.preview_html = Markup(

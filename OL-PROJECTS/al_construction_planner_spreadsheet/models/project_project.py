@@ -13,6 +13,8 @@ from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import 
     COLUMNS, PRESUPUESTO_FORMULAS,
 )
 
+from .sheet_keys import keys_sheet
+
 SPREADSHEET_VERSION = '18.5.10'
 HEADER_STYLE, TITLE_STYLE, CALC_STYLE, DATA_STYLE = 1, 2, 3, 4
 DEFAULT_ROWS = 300
@@ -37,24 +39,33 @@ INSTRUCTIONS = [
 # Columnas calculadas (gris) de cada pestaña: (encabezado, fórmula con {r} =
 # fila y {c:clave} = letra de la columna de la pestaña).
 CALCULATED = {
+    'INSUMOS': [
+        # CR-22 g: para elegir el insumo por nombre en APU_DETALLE.
+        ('Para elegir', '=IF({c:code}{r}="","",{c:kind}{r}&" · "&{c:name}{r}&" · "&{c:uom}{r}'
+                        '&" · "&{c:code}{r})'),
+    ],
     'APU': [
         ('Costo unitario', '=IF({c:code}{r}="","",SUMIF(APU_DETALLE!$A$2:$A${n},{c:code}{r},'
                            'APU_DETALLE!{d:parcial}$2:{d:parcial}${n}))'),
     ],
     'APU_DETALLE': [
+        # CR-22 g: el código del insumo sale de «tipo · nombre · unidad ·
+        # código» elegido en la columna anterior.
+        ('Código del insumo', '=IF({c:pick}{r}="","",IFERROR(TRIM(RIGHT(SUBSTITUTE({c:pick}{r},'
+                              '" · ",REPT(" ",200)),200)),{c:pick}{r}))'),
         ('Tipo (calc.)', '=IF({c:code}{r}="","",IFERROR(VLOOKUP({c:code}{r},INSUMOS!$A$2:$C${n},'
                          '3,0),""))'),
         ('Cantidad (calc.)', '=IF({c:apu}{r}="","",IF(AND({c:crew}{r}<>"",IFERROR(VLOOKUP('
                              '{c:apu}{r},APU!$A$2:$D${n},4,0),0)<>0),{c:crew}{r}*IF(IFERROR('
                              'VLOOKUP({c:apu}{r},APU!$A$2:$E${n},5,0),"")="",8,VLOOKUP({c:apu}{r},'
                              'APU!$A$2:$E${n},5,0))/VLOOKUP({c:apu}{r},APU!$A$2:$D${n},4,0),'
-                             'N({c:qty}{r})))'),
+                             'IFERROR(VALUE({c:qty}{r}),0)))'),
         ('Precio (calc.)', '=IF({c:code}{r}="","",IF({c:price}{r}<>"",{c:price}{r},IFERROR('
                            'VLOOKUP({c:code}{r},INSUMOS!$A$2:$E${n},5,0),0)))'),
         ('Parcial MO (calc.)', '=IF(OR({x:Tipo (calc.)}{r}="Mano de obra",{x:Tipo (calc.)}{r}='
                                '"Subcontrato"),{x:Cantidad (calc.)}{r}*{x:Precio (calc.)}{r},0)'),
         ('Parcial (calc.)', '=IF({c:apu}{r}="","",IF(OR({c:pct}{r}<>"",{x:Tipo (calc.)}{r}='
-                            '"Herramienta %MO"),N({c:pct}{r})/100*SUMIF($A$2:$A${n},{c:apu}{r},'
+                            '"Herramienta %MO"),IFERROR(VALUE({c:pct}{r}),0)/100*SUMIF($A$2:$A${n},{c:apu}{r},'
                             '{x:Parcial MO (calc.)}$2:{x:Parcial MO (calc.)}${n}),'
                             '{x:Cantidad (calc.)}{r}*{x:Precio (calc.)}{r}))'),
     ],
@@ -64,14 +75,14 @@ CALCULATED = {
 PRESUPUESTO_KEYS = [key for key, _aliases, _required in COLUMNS['PRESUPUESTO']]
 PRESUPUESTO_HEADERS = [aliases[0] for _key, aliases, _required in COLUMNS['PRESUPUESTO']]
 PRESUPUESTO_FORMULA_TEXT = {
-    'qty_offered': '=IF({qty_real}{r}="","",{qty_real}{r}*(1+N({qty_slack_pct}{r})/100)'
-                   '+N({qty_slack}{r}))',
+    'qty_offered': '=IF({qty_real}{r}="","",{qty_real}{r}*(1+IFERROR(VALUE({qty_slack_pct}{r}),0)/100)'
+                   '+IFERROR(VALUE({qty_slack}{r}),0))',
     'unit_cost': '=IF({apu}{r}="",IF({cost_no_apu}{r}="","",{cost_no_apu}{r}),'
                  'IFERROR(VLOOKUP({apu}{r},APU!$A:${apu_unit},{apu_unit_index},0),0))',
-    'cost_offered': '=IF({unit_cost}{r}="","",{unit_cost}{r}*(1+N({cost_slack_pct}{r})/100)'
-                    '+N({cost_slack}{r}))',
-    'price_unit': '=IF({cost_offered}{r}="","",{cost_offered}{r}*(1+N({margin_pct}{r})/100)'
-                  '+N({margin}{r}))',
+    'cost_offered': '=IF({unit_cost}{r}="","",{unit_cost}{r}*(1+IFERROR(VALUE({cost_slack_pct}{r}),0)/100)'
+                    '+IFERROR(VALUE({cost_slack}{r}),0))',
+    'price_unit': '=IF({cost_offered}{r}="","",{cost_offered}{r}*(1+IFERROR(VALUE({margin_pct}{r}),0)/100)'
+                  '+IFERROR(VALUE({margin}{r}),0))',
     'cost_real': '=IF(OR({qty_real}{r}="",{unit_cost}{r}=""),"",{qty_real}{r}*{unit_cost}{r})',
     'amount_offered': '=IF(OR({qty_offered}{r}="",{cost_offered}{r}=""),"",'
                       '{qty_offered}{r}*{cost_offered}{r})',
@@ -142,10 +153,29 @@ def presupuesto_row(values, row):
     return result
 
 
+# Columnas de datos de la plantilla, en su orden, cuando no es el del libro:
+# en APU_DETALLE el insumo se elige por nombre y su código es una fórmula
+# (paquete 1.16, CR-22 g).
+TEMPLATE_KEYS = {
+    'APU_DETALLE': ['apu', 'pick', 'crew', 'pct', 'qty', 'price', 'stage'],
+}
+# Columnas calculadas que el envío lee con una clave.
+CALCULATED_KEYS = {('APU_DETALLE', 'Código del insumo'): 'code'}
+
+
+def data_keys(name):
+    """Claves de las columnas de datos de la plantilla, en su orden."""
+    if name in TEMPLATE_KEYS:
+        return list(TEMPLATE_KEYS[name])
+    return [key for key, _aliases, _required in COLUMNS[name]
+            if (name, key) not in (('APU', 'unit_cost'), ('PRESUPUESTO', 'cost_real'))
+            and key != 'pick']
+
+
 def sheet_headers(name):
     """Encabezados de datos y calculados de una pestaña del libro."""
-    data = [aliases[0] for key, aliases, _required in COLUMNS[name]
-            if not (name, key) in (('APU', 'unit_cost'), ('PRESUPUESTO', 'cost_real'))]
+    labels = {key: aliases[0] for key, aliases, _required in COLUMNS[name]}
+    data = [labels[key] for key in data_keys(name)]
     return data, [header for header, _formula in CALCULATED.get(name, [])]
 
 
@@ -158,9 +188,9 @@ class ProjectProject(models.Model):
              'hoja).')
 
     def _construction_spreadsheet_kind(self):
-        """Presupuesto y plan; el puente de mobiliario cambia a su maestro."""
+        """La hoja del perfil de la obra; sin ella, presupuesto y plan."""
         self.ensure_one()
-        return 'budget'
+        return self.construction_profile_id.construction_spreadsheet_kind or 'budget'
 
     def _construction_spreadsheet_template(self, kind):
         """(datos, nombre) de la hoja nueva de la obra."""
@@ -245,8 +275,21 @@ class ProjectProject(models.Model):
             recipes |= order.order_line.construction_execution_template_id.filtered(
                 lambda r: not r.project_id or r.project_id == project)
         insumos = {}
-        for recipe in recipes:
-            rows['APU'].append([recipe.code, recipe.name, recipe.uom_id.name or '', '', '',
+        # CR-22 g: unidades en español y la etapa por su nombre.
+        lang = 'es_PE' if 'es_PE' in dict(self.env['res.lang'].get_installed()) \
+            else self.env.lang
+        Stage = self.env['construction.stage'].with_context(lang=lang, active_test=False)
+        stage_names = {stage.code: stage._label() for stage in Stage.search([])}
+        hours_default = (project.company_id if project else
+                         (order.company_id if order else self.env.company)
+                         ).construction_workday_hours or 8.0  # como el envío
+        for recipe in recipes.with_context(lang=lang):
+            # CR-22 e: el rendimiento y las horas de la receta (líneas por
+            # cuadrilla), para que el envío recalcule la mano de obra.
+            crew_lines = recipe.line_ids.filtered('productivity')
+            productivity = crew_lines[:1].productivity or ''
+            rows['APU'].append([recipe.code, recipe.name, recipe.uom_id.name or '',
+                                productivity, hours_default if productivity else '',
                                 modes.get(recipe.execution_mode, '')])
             for line in recipe.line_ids:
                 record = line.activity_id or line.product_id
@@ -256,16 +299,21 @@ class ProjectProject(models.Model):
                     continue
                 kind = 'Herramienta %MO' if line.calc_method == 'pct_labor' else \
                     kinds.get(line.resource_type, 'Material')
-                insumos.setdefault(code, [code, record.display_name, kind,
-                                          line.product_uom_id.name or '',
+                # El nombre sin el código entre corchetes (CR-22 g).
+                name = record.name or record.display_name
+                uom = line.product_uom_id.name or ''
+                insumos.setdefault(code, [code, name, kind, uom,
                                           line.price_unit or line._construction_default_cost(),
                                           (line.line_currency_id or recipe.currency_id).name])
+                info = insumos[code]
                 rows['APU_DETALLE'].append([
-                    recipe.code, code,
+                    recipe.code, ' · '.join(str(v) for v in (info[2], info[1], info[3], code)),
                     line.crew_size if line.calc_method == 'crew' else '',
                     line.calc_pct if line.calc_method == 'pct_labor' else '',
                     line.qty if line.calc_method == 'qty' else '',
-                    line.price_unit or '', line.stage or ''])
+                    line.price_unit or '', stage_names.get(line.stage, line.stage or ''),
+                    # El código va al final: en las hojas anteriores es dato.
+                    code])
         rows['INSUMOS'] = list(insumos.values())
         if order:
             section = subsection = ''
@@ -389,13 +437,21 @@ class ProjectProject(models.Model):
                        'cells': obra_cells, 'styles': obra_styles,
                        'cols': {'0': {'size': 220}, '1': {'size': 260}}})
         letters_by_sheet = {}
+        stage_count = len(self.env['construction.stage']._offered_stages(project))
+        key_columns = {}
         for name in ('INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO'):
             data_headers, calc_headers = sheet_headers(name)
-            keys = [key for key, aliases, _required in COLUMNS[name]
-                    if aliases[0] in data_headers]
-            letters_by_sheet[name] = (
-                {key: _col(i) for i, key in enumerate(keys)},
-                {header: _col(len(data_headers) + i) for i, header in enumerate(calc_headers)})
+            keys = data_keys(name) if name != 'PRESUPUESTO' else PRESUPUESTO_KEYS
+            letters = {key: _col(i) for i, key in enumerate(keys)}
+            calc_letters = {header: _col(len(data_headers) + i)
+                            for i, header in enumerate(calc_headers)}
+            key_columns[name] = [(key, i) for i, key in enumerate(keys)]
+            for header, letter in calc_letters.items():
+                key = CALCULATED_KEYS.get((name, header))
+                if key:
+                    letters[key] = letter
+                    key_columns[name].append((key, len(data_headers) + calc_headers.index(header)))
+            letters_by_sheet[name] = (letters, calc_letters)
         detail_calc = letters_by_sheet['APU_DETALLE'][1]
         apu_letters, apu_calc = letters_by_sheet['APU']
         unit_letter = apu_calc['Costo unitario']
@@ -430,11 +486,29 @@ class ProjectProject(models.Model):
                                   'ranges': ['%s2:%s%s' % (letters[key], letters[key], last)],
                                   'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
                                                 'values': LISTS[list_name]}})
+            if name == 'APU_DETALLE':
+                # CR-22 g: el insumo se elige escribiendo su tipo o su nombre
+                # (el desplegable nativo filtra al escribir).
+                pick_letter = letters_by_sheet['INSUMOS'][1]['Para elegir']
+                rules.append({'id': 'APU_DETALLE_pick', 'isBlocking': False,
+                              'ranges': ['%s2:%s%s' % (letters['pick'], letters['pick'], last)],
+                              'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                            'values': ['INSUMOS!$%s$2:$%s$%s' % (
+                                                pick_letter, pick_letter, last)]}})
+                if stage_count:
+                    rules.append({'id': 'APU_DETALLE_stage', 'isBlocking': False,
+                                  'ranges': ['%s2:%s%s' % (letters['stage'], letters['stage'],
+                                                           last)],
+                                  'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                                'values': ['REFERENCIAS!$P$3:$P$%s' % (
+                                                    stage_count + 2)]}})
             headers = data_headers + calc_headers
             sheets.append({
                 'id': 'sheet_%s' % name.lower(), 'name': name,
                 'colNumber': max(26, len(headers)), 'rowNumber': rows + 50,
-                'cells': cells, 'styles': styles, 'panes': {'xSplit': 0, 'ySplit': 1},
+                'cells': cells, 'styles': styles,
+                # Encabezado y primeras columnas inmovilizados (CR-22 g).
+                'panes': {'xSplit': 0 if name == 'INSUMOS' else 2, 'ySplit': 1},
                 'cols': {str(i): {'size': max(110, 8 * len(header))}
                          for i, header in enumerate(headers)},
                 'dataValidationRules': rules,
@@ -507,10 +581,13 @@ class ProjectProject(models.Model):
             ref_cells['P%s' % number] = label
         sheets.append({'id': 'sheet_referencias', 'name': 'REFERENCIAS', 'colNumber': 26,
                        'rowNumber': 2010, 'cells': ref_cells, 'styles': ref_styles})
-        sheets.append({'id': 'sheet_errores', 'name': 'ERRORES', 'colNumber': 6, 'rowNumber': 300,
-                       'cells': {'A1': 'Hoja', 'B1': 'Fila', 'C1': 'Columna', 'D1': 'Mensaje'},
-                       'styles': {'%s1' % c: HEADER_STYLE for c in 'ABCD'},
+        sheets.append({'id': 'sheet_errores', 'name': 'ERRORES', 'colNumber': 8, 'rowNumber': 300,
+                       'cells': {'A2': 'Hoja', 'B2': 'Fila', 'C2': 'Columna', 'D2': 'Mensaje',
+                                 'E2': 'Tipo', 'F2': 'Ir'},
+                       'styles': {'%s2' % c: HEADER_STYLE for c in 'ABCDEF'},
                        'cols': {'3': {'size': 700}}})
+        # Clave interna de cada columna (paquete 1.16, M116-09 y CR-22 d).
+        sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))
         settings = self.env['documents.document']._empty_spreadsheet_data().get('settings', {})
         return {
             'version': SPREADSHEET_VERSION, 'sheets': sheets,

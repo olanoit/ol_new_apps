@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- El perfil Mobiliario abre el maestro de mobiliario (paquete 1.16):
+         solo si no tiene tipo de hoja, para no pisar lo que ajustó la base. -->
+    <function model="construction.vertical.profile" name="_construction_set_furniture_sheet"/>
+</odoo>

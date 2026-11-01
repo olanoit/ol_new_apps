@@ -29,11 +29,25 @@ import json
 from odoo import models
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
+from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import keys_sheet
 
 SPREADSHEET_VERSION = '18.5.10'
 REFERENCE_SHEET = 'REFERENCIAS'
 LISTS_SHEET = '_LISTAS'
-HEADER_STYLE, TITLE_STYLE, CALC_STYLE = 1, 2, 3
+HEADER_STYLE, TITLE_STYLE, CALC_STYLE, DATA_STYLE = 1, 2, 3, 4
+# Convención común de las hojas de trabajo (paquete 1.16, M116-09): amarillo
+# para el dato del usuario y gris para la fórmula.
+STYLES = {str(HEADER_STYLE): {'bold': True, 'fillColor': '#DDE4EE'},
+          str(TITLE_STYLE): {'bold': True, 'fontSize': 12},
+          str(CALC_STYLE): {'bold': True, 'fillColor': '#D9D9D9'},
+          str(DATA_STYLE): {'bold': True, 'fillColor': '#FFF2CC'}}
+# El producto se elige por nombre, con la unidad y el código al final
+# (M116-09): «nombre · unidad · código». El código calculado lee el último
+# tramo; un «[código] nombre» de una hoja anterior se sigue leyendo.
+PICK_SEPARATOR = ' · '
+CODE_FROM_PICK = ('=IF({p}{r}="","",IF(LEFT({p}{r},1)="[",IFERROR(MID({p}{r},2,FIND("]",{p}{r})'
+                  '-2),{p}{r}),IFERROR(TRIM(RIGHT(SUBSTITUTE({p}{r},"' + PICK_SEPARATOR +
+                  '",REPT(" ",200)),200)),{p}{r})))')
 DEFAULT_ROWS = 300
 MAX_PRODUCTS = 20000
 EXCLUDED_CATEGORIES = ('Deliveries', 'Expenses')
@@ -97,11 +111,10 @@ class ProjectProject(models.Model):
     _inherit = 'project.project'
 
     def _construction_spreadsheet_kind(self):
-        """Las obras de mobiliario (sin perfil o con uno que no es el de
-        construcción) llenan el maestro de muebles."""
+        """Las obras sin perfil llenan el maestro de muebles, como antes del
+        perfil; las demás, la hoja de su perfil (paquete 1.16)."""
         self.ensure_one()
-        profile = self.construction_profile_id
-        if not profile or profile.code != 'construction':
+        if not self.construction_profile_id:
             return 'furniture'
         return super()._construction_spreadsheet_kind()
 
@@ -150,6 +163,7 @@ class ProjectProject(models.Model):
 
         # Pestañas del maestro.
         positions = {}
+        key_columns = {}
         for index, name in enumerate(SHEETS, start=1):
             columns = self._construction_sheet_columns(name)
             calculated = CALCULATED.get(name, [])
@@ -157,7 +171,8 @@ class ProjectProject(models.Model):
             positions[name] = letters
             headers = [header for _key, header in columns] + [h for h, _f in calculated]
             cells = {'%s1' % _col(i): header for i, header in enumerate(headers)}
-            styles = {'%s1' % _col(i): HEADER_STYLE for i in range(len(headers))}
+            styles = {'%s1' % _col(i): DATA_STYLE for i in range(len(headers))}
+            key_columns[name] = [(key, i) for i, (key, _h) in enumerate(columns)]
             rules = []
 
             def fmt(formula, row, letters=letters):
@@ -172,13 +187,12 @@ class ProjectProject(models.Model):
                     cells['%s%s' % (col, row)] = fmt(formula, row)
                 styles['%s1' % col] = CALC_STYLE
             if name in PRODUCT_PICK:
-                # Código calculado desde «[código] nombre» del producto elegido.
+                # Código calculado desde «nombre · unidad · código».
                 pick = letters['product_name']
                 code = letters['product_code']
                 for row in range(2, rows + 2):
-                    cells['%s%s' % (code, row)] = (
-                        '=IF({p}{r}="","",IFERROR(MID({p}{r},2,FIND("]",{p}{r})-2),{p}{r}))'
-                        .replace('{p}', pick).replace('{r}', str(row)))
+                    cells['%s%s' % (code, row)] = CODE_FROM_PICK.replace(
+                        '{p}', pick).replace('{r}', str(row))
                 styles['%s1' % code] = CALC_STYLE
                 rules.append({'id': '%s_categ' % name, 'ranges': ['%s2:%s%s' % (
                     letters['categ'], letters['categ'], rows + 1)], 'isBlocking': False,
@@ -256,6 +270,13 @@ class ProjectProject(models.Model):
         for row in range(3, last_product + 1):
             cells['O%s' % row] = '=IFERROR(TRIM(RIGHT(SUBSTITUTE(N%s,"/",REPT(" ",100)),100)),' \
                                  'N%s)' % (row, row)
+        # Producto para elegir: «nombre · unidad · código» (M116-09).
+        cells['P2'] = 'Para elegir'
+        styles['P2'] = HEADER_STYLE
+        for row in range(3, last_product + 1):
+            cells['P%s' % row] = (
+                '=IF(K{r}="","",IFERROR(MID(J{r},FIND("] ",J{r})+2,500),J{r})&"{s}"&L{r}&"{s}"&K{r})'
+                .replace('{r}', str(row)).replace('{s}', PICK_SEPARATOR))
         cells['T1'] = 'Sub etapas'
         styles['T1'] = TITLE_STYLE
         for row, label in enumerate(stage_labels, start=3):
@@ -271,7 +292,7 @@ class ProjectProject(models.Model):
             categ = positions[name]['categ']
             for row in range(2, rows + 2):
                 list_cells['A%s' % (base + row - 1)] = (
-                    '=IFERROR(TRANSPOSE(FILTER(%s!$J$3:$J$%s,%s!$O$3:$O$%s=%s!%s%s)),"")' % (
+                    '=IFERROR(TRANSPOSE(FILTER(%s!$P$3:$P$%s,%s!$O$3:$O$%s=%s!%s%s)),"")' % (
                         REFERENCE_SHEET, last_product, REFERENCE_SHEET, last_product, name,
                         categ, row))
         sheets.append({'id': 'sheet_listas', 'name': LISTS_SHEET, 'colNumber': 60,
@@ -318,13 +339,13 @@ class ProjectProject(models.Model):
             column, line = anchor[0], int(anchor[1:])
             summary['cells']['%s%s' % (column, line + 1)] = formula + ')'
 
+        # Clave interna de cada columna del maestro (M116-09).
+        sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))
         settings = self.env['documents.document']._empty_spreadsheet_data().get('settings', {})
         return {
             'version': SPREADSHEET_VERSION,
             'sheets': sheets,
-            'styles': {str(HEADER_STYLE): {'bold': True, 'fillColor': '#DDE4EE'},
-                       str(TITLE_STYLE): {'bold': True, 'fontSize': 12},
-                       str(CALC_STYLE): {'bold': True, 'fillColor': '#E8F0E0'}},
+            'styles': STYLES,
             'settings': settings,
             'lists': lists,
             'listNextId': len(reference_lists) + 1,

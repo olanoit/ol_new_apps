@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.16, etapa 4: el perfil decide qué hoja de trabajo abre la obra. -->
+    <record id="construction_vertical_profile_view_form_spreadsheet" model="ir.ui.view">
+        <field name="name">construction.vertical.profile.form.spreadsheet</field>
+        <field name="model">construction.vertical.profile</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_vertical_profile_view_form"/>
+        <field name="arch" type="xml">
+            <field name="feature_measurement" position="after">
+                <field name="construction_spreadsheet_kind" placeholder="Presupuesto y plan"/>
+            </field>
+        </field>
+    </record>
+</odoo>
