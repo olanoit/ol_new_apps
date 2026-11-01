@@ -152,16 +152,16 @@ python3 scripts/gen_addons_table.py
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_account_base](OL-ACCOUNTING/al_account_base/) | 20.20261027 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
+[al_account_base](OL-ACCOUNTING/al_account_base/) | 22.20261030 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
 [al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 13.20261027 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](OL-ACCOUNTING/al_account_move_name_sequence/) | 14.20261027 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
-[al_account_payments](OL-ACCOUNTING/al_account_payments/) | 11.20261027 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
-[al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 23.20261027 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
+[al_account_payments](OL-ACCOUNTING/al_account_payments/) | 12.20261030 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
+[al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 24.20261029 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
 [al_l10n_pe_bank_collection](OL-ACCOUNTING/al_l10n_pe_bank_collection/) | 8.20261027 | OPL-1 | Recaudación por ventanilla, agentes y banca por internet: archivo de deudores para el banco, importación de la respuesta, pagos y conciliación automática. Formatos BCP (CREP), BBVA y Scotiabank incluidos y configurables.
 [al_l10n_pe_bank_guarantee](OL-ACCOUNTING/al_l10n_pe_bank_guarantee/) | 2.20261027 | OPL-1 | Cartas fianza emitidas por el banco a pedido de la empresa y recibidas de terceros: vigencia, renovación, liberación y ejecución, comisión, línea de crédito, cuentas de orden y avisos (plazo del art. 1898 del Código Civil).
 [al_l10n_pe_bank_loan](OL-ACCOUNTING/al_l10n_pe_bank_loan/) | 2.20261027 | OPL-1 | Préstamos y pagarés con cronograma francés, alemán o al vencimiento (TEA, gracia, desgravamen y comisiones): desembolso, devengo mensual, pago de cuotas, prepago, TCEA, porción corriente y uso de la línea de crédito.
 [al_l10n_pe_bank_statement_import](OL-ACCOUNTING/al_l10n_pe_bank_statement_import/) | 2.20261027 | OPL-1 | Importa los extractos que descargan los bancos peruanos (Excel, Excel en HTML, CSV o TXT) sin mapear columnas: reconoce la tabla por sus encabezados.
-[al_l10n_pe_batch_payment](OL-ACCOUNTING/al_l10n_pe_batch_payment/) | 6.20261027 | OPL-1 | Lotes de pago a proveedores con el archivo TXT de BCP, BBVA, Interbank, Scotiabank y Banco de la Nación: cuenta o CCI del proveedor, controles y totales del archivo.
+[al_l10n_pe_batch_payment](OL-ACCOUNTING/al_l10n_pe_batch_payment/) | 7.20261029 | OPL-1 | Lotes de pago a proveedores con el archivo TXT de BCP, BBVA, Interbank, Scotiabank y Banco de la Nación: cuenta o CCI del proveedor, controles y totales del archivo.
 [al_l10n_pe_cash_closing](OL-ACCOUNTING/al_l10n_pe_cash_closing/) | 3.20261027 | OPL-1 | Cierre diario de cada caja: saldo según libros, cobros y pagos por medio de pago, arqueo por denominación, asiento del faltante o sobrante y bloqueo del día cerrado.
 [al_l10n_pe_cash_forecast](OL-ACCOUNTING/al_l10n_pe_cash_forecast/) | 3.20261027 | OPL-1 | Proyección de cobros y pagos por semana o mes desde los saldos de bancos, las cuentas por cobrar y por pagar, cheques, depósitos a plazo y partidas manuales, con escenario editable y comparación con lo real.
 [al_l10n_pe_cash_fund](OL-ACCOUNTING/al_l10n_pe_cash_fund/) | 3.20261027 | OPL-1 | Entregas a rendir y cajas chicas a cargo de un responsable: aprobación, entrega, rendición con comprobantes y planilla de movilidad, devolución, reembolso o reposición, con sus asientos.
@@ -176,7 +176,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_detraction](OL-ACCOUNTING/al_l10n_pe_detraction/) | 26.20261027 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
 [al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 13.20261027 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
 [al_l10n_pe_factoring](OL-ACCOUNTING/al_l10n_pe_factoring/) | 11.20261027 | OPL-1 | Cesión de facturas a un factor con y sin recurso: asientos de cesión, desembolso, devengo de intereses, cobro del factor y recompra, con cuentas del PCGE configurables.
-[al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 5.20261028 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19, hoja de trabajo (formatos 1 y 2), cierre del ejercicio con la cascada de la clase 8 y EEFF por centro de costo.
+[al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 6.20261031 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19, hoja de trabajo (formatos 1 y 2), cierre del ejercicio con la cascada de la clase 8 y EEFF por centro de costo.
 [al_l10n_pe_fourth_category](OL-ACCOUNTING/al_l10n_pe_fourth_category/) | 5.20261027 | OPL-1 | Recibos por honorarios: retención del 8 % sobre el tope, suspensión (Formulario 1609), reporte y archivo .4ta para la PLAME y certificado anual.
 [al_l10n_pe_import_dua](OL-ACCOUNTING/al_l10n_pe_import_dua/) | 6.20261028 | OPL-1 | La DUA (tipo 50) como documento de compra: IGV e IPM con crédito fiscal, derechos aduaneros, percepción aduanera y costos en destino del producto.
 [al_l10n_pe_itf](OL-ACCOUNTING/al_l10n_pe_itf/) | 3.20261027 | OPL-1 | Impuesto a las Transacciones Financieras (0,005 %) registrado al confirmar los pagos y cobros de los diarios bancarios afectos.
@@ -189,8 +189,8 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_payment_term_currency](OL-ACCOUNTING/al_l10n_pe_payment_term_currency/) | 2.20261027 | OPL-1 | Plazos de pago con cuotas de importe fijo en soles que se convierten al tipo de cambio de la factura cuando esta es en dólares u otra moneda.
 [al_l10n_pe_perception](OL-ACCOUNTING/al_l10n_pe_perception/) | 5.20261027 | OPL-1 | Régimen de percepciones del IGV: comprobante de percepción electrónico (tipo 40) como agente, percepciones que nos cobran para el F.V. 621 y resumen del F.V. 697.
 [al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 27.20261027 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
-[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 25.20261027 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
-[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 23.20261027 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
+[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 26.20261030 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
+[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 25.20261030 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
 [al_l10n_pe_term_deposit](OL-ACCOUNTING/al_l10n_pe_term_deposit/) | 7.20261028 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
 [al_l10n_pe_treasury](OL-ACCOUNTING/al_l10n_pe_treasury/) | 3.20261027 | OPL-1 | Aplicación de tesorería para Perú: posición diaria de bancos y cajas, programación y aprobación de pagos, transferencias entre cuentas propias, compra y venta de moneda extranjera con T.C. pactado, líneas de crédito y control de bancarización.
 [al_l10n_pe_treasury_batch_payment](OL-ACCOUNTING/al_l10n_pe_treasury_batch_payment/) | 2.20261027 | OPL-1 | Al pagar una programación de Tesorería con el método «archivo TXT del banco», sus pagos quedan agrupados en un lote listo para generar el archivo.
@@ -209,6 +209,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 6.20261027 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
 [al_l10n_pe_edi_free](OL-INVOICING/al_l10n_pe_edi_free/) | 2.20261027 | OPL-1 | Facturas y boletas con transferencias gratuitas (retiros, bonificaciones, muestras): impuesto gratuito exonerado o inafecto, leyenda 1002, contado y validación de las reglas SUNAT al publicar.
 [al_l10n_pe_edi_purchase_settlement](OL-INVOICING/al_l10n_pe_edi_purchase_settlement/) | 5.20261027 | OPL-1 | Liquidación de compra electrónica (tipo 04) a personas naturales sin RUC: XML UBL 2.1 firmado y enviado, retención del IGV y del impuesto a la renta, PDF y reversión.
+[al_l10n_pe_edi_service](OL-INVOICING/al_l10n_pe_edi_service/) | 20.0.1.0.0 | OPL-1 | Firma, envío y consulta de comprobantes que no son facturas (retención, percepción, liquidación de compra y sus reversiones) con el operador electrónico de la compañía.
 [al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 22.20261027 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [al_ose_factory_hka](OL-INVOICING/al_ose_factory_hka/) | 5.20261027 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
 [al_sale_approval](OL-INVOICING/al_sale_approval/) | 3.20261027 | OPL-1 | Las ventas de productos marcados no se confirman sin una solicitud aprobada en Aprobaciones.
@@ -218,14 +219,14 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 36.20261027 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
+[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 44.20261101 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
 [al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 13.20261027 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
-[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 23.20261027 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
-[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 24.20261027 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
-[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 25.20261027 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
-[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 12.20261027 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
-[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 11.20261027 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
-[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 24.20261027 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
+[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 24.20261031 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
+[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 27.20261101 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
+[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 30.20261101 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
+[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 12.20261101 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
+[al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 13.20261031 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
+[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 25.20261031 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
 
 ### OL-POS
 
@@ -233,7 +234,7 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 17.20261027 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
 [al_l10n_pe_pos_loyalty](OL-POS/al_l10n_pe_pos_loyalty/) | 2.20261027 | OPL-1 | La venta de tarjetas de regalo y recargas del monedero no lleva comprobante y su canje es una forma de pago: la boleta o factura sale con el IGV completo.
-[al_pos_network_printer](OL-POS/al_pos_network_printer/) | 5.20261027 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
+[al_pos_network_printer](OL-POS/al_pos_network_printer/) | 6.20261030 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
 [al_pos_online_payment](OL-POS/al_pos_online_payment/) | 2.20261027 | OPL-1 | Corrige el TPV de Odoo 19 que, tras un cobro en línea, muestra el pago dos veces y un cambio igual al importe pagado.
 [al_pos_payment_gateway](OL-POS/al_pos_payment_gateway/) | 7.20261027 | OPL-1 | Cada pasarela (Izipay, Niubiz, Culqi…) como método de pago propio del TPV: el cliente paga con el QR en su teléfono y las devoluciones vuelven a su tarjeta.
 [al_pos_pe_partner_lookup](OL-POS/al_pos_pe_partner_lookup/) | 3.20261027 | OPL-1 | En la lista de clientes del TPV, un RUC o DNI que no está registrado se crea en un clic con los datos de SUNAT/RENIEC y queda elegido para la venta.
@@ -326,12 +327,11 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_city](OL-THIRD-PARTY/al_l10n_pe_city/) | 3.20261008 | LGPL-3 | Datos de la ciudad
-[base_tier_validation](OL-THIRD-PARTY/base_tier_validation/) | 19.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
-[prt_report_attachment_preview](OL-THIRD-PARTY/prt_report_attachment_preview/) | 19.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
-[purchase_request](OL-THIRD-PARTY/purchase_request/) | 19.0.1.0.2 | LGPL-3 | Use this module to have notification of requirements of materials and/or external services and keep track of such requirements.
-[purchase_tier_validation](OL-THIRD-PARTY/purchase_tier_validation/) | 19.0.1.0.0 | AGPL-3 | Extends the functionality of Purchase Orders to support a tier validation process.
-[queue_job](OL-THIRD-PARTY/queue_job/) | 19.0.2.1.0 | LGPL-3 | Job Queue
+[base_tier_validation](OL-THIRD-PARTY/base_tier_validation/) | 20.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
+[prt_report_attachment_preview](OL-THIRD-PARTY/prt_report_attachment_preview/) | 20.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
+[purchase_request](OL-THIRD-PARTY/purchase_request/) | 20.0.1.0.2 | LGPL-3 | Use this module to have notification of requirements of materials and/or external services and keep track of such requirements.
+[purchase_tier_validation](OL-THIRD-PARTY/purchase_tier_validation/) | 20.0.1.0.0 | AGPL-3 | Extends the functionality of Purchase Orders to support a tier validation process.
+[queue_job](OL-THIRD-PARTY/queue_job/) | 20.0.2.1.0 | LGPL-3 | Job Queue
 [//]: # (end addons-all)
 
 Licencias

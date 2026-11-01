@@ -1175,12 +1175,6 @@ def cola():
     registro(rec, 'queue.job')
 
 
-def ciudad():
-    mod = env['ir.module.module'].search([('name', '=', 'al_l10n_pe_city')])
-    igual(mod.state, 'uninstalled', 'al_l10n_pe_city no instalado')
-    omitido('al_l10n_pe_city', "manifest 'installable': False en Odoo 20 (depende de base_address_extended); no se valida")
-
-
 caso('al_docs_help', 'Ayuda contextual: entradas, UIT/RMV y respuesta al systray',
      'Un usuario interno pulsa el «?» de la barra superior en la pantalla de UIT/RMV.')
 correr(docs_help)
@@ -1202,5 +1196,3 @@ correr(preview)
 caso('queue_job', 'Encolar un job con with_delay y ejecutarlo',
      'Un proceso encola una escritura diferida y el job runner la ejecuta.')
 correr(cola)
-caso('al_l10n_pe_city', 'Módulo no instalable en Odoo 20', 'Solo constatar.')
-correr(ciudad)

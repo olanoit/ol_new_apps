@@ -20,7 +20,7 @@ from odoo.tests.common import TransactionCase
 OWN_PREFIXES = ('al_', 'ol_')
 OWN_MODULES = ('l10n_pe_vat_sunat',)
 # De terceros o gestionados aparte: no se revisan.
-EXCLUDED = ('ol_licencia_perpetua', 'al_l10n_pe_city')
+EXCLUDED = ('ol_licencia_perpetua',)
 SHARED_COMODELS = ('res.company', 'res.users', 'res.partner', 'res.currency')
 # Excepciones justificadas: el periodo SIRE es de la compañía raíz (el RUC) y
 # recoge comprobantes de sus sucursales; check_company solo admite la misma
