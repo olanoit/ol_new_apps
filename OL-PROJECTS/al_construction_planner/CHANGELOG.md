@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 67.20261101 — 01/11/2026
+
+- Los textos de las pestañas de un formulario vuelven a saltar de línea: la ficha de la obra ya no se desborda a lo ancho en «Ajustes» y «Facturación».
+
 ## 66.20261101 — 01/11/2026
 
 - Las columnas de nombre (nivel, producto, actividad, recurso) tienen un ancho fijo de lectura: el nombre se parte en dos o tres renglones y la lista se desplaza a lo ancho si no cabe.

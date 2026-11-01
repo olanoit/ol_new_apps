@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '67.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Los textos de las pestañas de un formulario vuelven a saltar de línea: la ficha de la obra ya no se desborda a lo ancho en «Ajustes» y «Facturación»."
   - version: '66.20261101'
     fecha: 01/11/2026
     cambios:
