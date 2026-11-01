@@ -7,3 +7,4 @@ from . import hr_conafovicer
 from . import hr_construction_wage_import
 from . import hr_construction_cost
 from . import hr_fifth_category
+from . import hr_subsidies

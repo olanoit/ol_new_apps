@@ -12,3 +12,4 @@ from . import test_construction_cost
 from . import test_review_construction
 from . import test_construction_fifth
 from . import test_construction_holiday_tareaje
+from . import test_rev2_construction

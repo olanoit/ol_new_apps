@@ -320,6 +320,47 @@ result = payslip._l10n_pe_construction_school()
             <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
+        <!-- ============ SUBSIDIOS ESSALUD ============
+             Mismos códigos, códigos SUNAT e input que SMAR/SENF de BASE:
+             «Importar subsidios» lleva el subsidio del mes a la regla de
+             la estructura de la boleta con ese código. Sin ellas el
+             subsidio de un obrero se marcaba pagado y no llegaba a la
+             boleta. Afectos a ONP/AFP, no a EsSalud ni CONAFOVICER: por
+             eso quedan fuera de TREM y las pensiones suman TREM + SMAR +
+             SENF (igual que AONP/AAFP de BASE). -->
+
+        <record id="rule_SMAR" model="hr.salary.rule">
+            <field name="name">Subsidio por Maternidad</field>
+            <field name="code">SMAR</field>
+            <field name="input_usage_payslip" eval="True"/>
+            <field name="sunat_code">0915</field>
+            <field name="sequence">150</field>
+            <field name="appears_on_payslip">always</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['SMAR'].amount if inputs['SMAR'] else 0
+            </field>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
+        </record>
+
+        <record id="rule_SENF" model="hr.salary.rule">
+            <field name="name">Subsidio por Enfermedad</field>
+            <field name="code">SENF</field>
+            <field name="input_usage_payslip" eval="True"/>
+            <field name="sunat_code">0916</field>
+            <field name="sequence">151</field>
+            <field name="appears_on_payslip">always</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['SENF'].amount if inputs['SENF'] else 0
+            </field>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
+        </record>
+
         <!-- ============ DESCUENTOS ============ -->
 
         <record id="rule_CONAF" model="hr.salary.rule">
@@ -417,7 +458,8 @@ result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
             <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
-        <!-- Pensiones del trabajador sobre TREM. Mismos códigos y códigos
+        <!-- Pensiones del trabajador sobre TREM (más los subsidios SMAR y
+             SENF, afectos a pensiones). Mismos códigos y códigos
              SUNAT que la estructura BASE de al_hr_pe (la PLAME los reconoce),
              pero con base TREM: las reglas del núcleo suman conceptos
              (BAS_M, AF, TOT_EXT…) que esta estructura no tiene. Importes en
@@ -436,7 +478,7 @@ result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
 # SNP: afiliación que no es AFP (ONP; «sin régimen» tiene tasa 0). Por
 # flag y tasas, nunca por el nombre de la entidad (igual que BASE).
 if payslip.membership_id and not payslip.membership_id.is_afp:
-    result = -payslip._l10n_pe_percent(TREM, payslip.l10n_pe_retirement_fund)
+    result = -payslip._l10n_pe_percent(TREM + SMAR + SENF, payslip.l10n_pe_retirement_fund)
 else:
     result = 0
             </field>
@@ -453,7 +495,7 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM + SMAR + SENF
 if payslip.membership_id.is_afp:
     result = -payslip._l10n_pe_percent(afp_base, payslip.l10n_pe_retirement_fund)
 else:
@@ -472,7 +514,7 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM + SMAR + SENF
 if (version.l10n_pe_commission_type == 'flow'
         and payslip.membership_id.is_afp):
     result = -payslip._l10n_pe_percent(afp_base, payslip.l10n_pe_commission)
@@ -492,7 +534,7 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM + SMAR + SENF
 if (version.l10n_pe_commission_type == 'mixed'
         and payslip.membership_id.is_afp):
     result = -payslip._l10n_pe_percent(afp_base, payslip.l10n_pe_commission)
@@ -515,7 +557,7 @@ else:
                  esta boleta, igual que en BASE. Con boletas semanales la
                  base nunca se acerca al tope, así que no se prorratea. -->
             <field name="amount_python_compute">
-afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM
+afp_base = 0 if version.l10n_pe_exception in ('I', 'O') else TREM + SMAR + SENF
 insured = min(afp_base, payslip.l10n_pe_insurable_remuneration or afp_base)
 if (not version.l10n_pe_is_older
         and payslip.membership_id.is_afp):
