@@ -20,6 +20,19 @@ class ConstructionResourcePlan(models.Model):
         budget = self._create_budget(parent_budget=previous.budget_analytic_id)
         return dict(values, budget_analytic_id=budget.id)
 
+    def _construction_refresh_budget(self):
+        """Las líneas del presupuesto nativo se rehacen con las combinaciones
+        de cuentas actuales (paquete 1.16, M116-05). El comprometido y lo real
+        los calcula Odoo desde las OC y los apuntes: no se pierden."""
+        res = super()._construction_refresh_budget()
+        for plan in self.filtered('budget_analytic_id'):
+            # sudo: mismo motivo que al crearlo (permisos de contabilidad).
+            budget_sudo = plan.budget_analytic_id.sudo()
+            values = plan._get_budget_line_values()
+            budget_sudo.write({'budget_line_ids': [Command.clear()] + [
+                Command.create(vals) for vals in values]})
+        return res
+
     def _construction_lines_added(self, lines):
         super()._construction_lines_added(lines)
         if self.budget_analytic_id:
@@ -69,6 +82,32 @@ class ConstructionResourcePlan(models.Model):
                 biggest = max(values, key=lambda v: abs(v['budget_amount']))
                 biggest['budget_amount'] = currency.round(biggest['budget_amount'] + difference)
         return values
+
+    def _construction_control_budget_lines(self, combo):
+        """Líneas del presupuesto con que se compara una combinación. Con
+        «Planes que controla el presupuesto» (paquete 1.16, D3), la
+        combinación se reduce a esos planes y se compara con la suma de las
+        líneas que coinciden en ellos; las cuentas de nivel y de rubro quedan
+        para el análisis. Sin planes marcados, la línea más específica que la
+        cubre, como antes."""
+        self.ensure_one()
+        plans = self.company_id.construction_budget_control_plan_ids
+        if not plans:
+            return self._construction_match_budget_line(combo)
+        columns = [plan._column_name() for plan in plans]
+        reduced = {column: combo.get(column) or False for column in columns}
+        if not any(reduced.values()):
+            return self.env['budget.line']
+        cache = self.env.context.get('construction_control_cache')
+        key = (self.id, tuple(sorted(reduced.items())))
+        if cache is not None and key in cache:
+            return cache[key]
+        lines = self.budget_analytic_id.budget_line_ids.filtered(lambda l: all(
+            (l[column].id if column in l._fields else False) == value
+            for column, value in reduced.items()))
+        if cache is not None:
+            cache[key] = lines
+        return lines
 
     def _construction_match_budget_line(self, combo):
         """Línea del presupuesto analítico del plan que cubre una combinación

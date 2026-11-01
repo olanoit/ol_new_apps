@@ -38,7 +38,9 @@ class PurchaseOrder(models.Model):
         (False)."""
         self.ensure_one()
         Account = self.env['account.analytic.account']
-        Plan = self.env['construction.resource.plan']
+        # Una sola lectura de las líneas del presupuesto por combinación de
+        # control (paquete 1.16, D3).
+        Plan = self.env['construction.resource.plan'].with_context(construction_control_cache={})
         company = self.company_id
         date = fields.Date.to_date(self.date_order) or fields.Date.context_today(self)
         amounts = defaultdict(float)
@@ -59,7 +61,7 @@ class PurchaseOrder(models.Model):
                     if not plan:
                         continue
                     combo = {acc.root_plan_id._column_name(): acc.id for acc in accounts}
-                    budget_line = plan._construction_match_budget_line(combo)
+                    budget_line = plan._construction_control_budget_lines(combo)
                     amounts[(plan, budget_line)] += subtotal * float(percentage) / 100.0
         return amounts
 
@@ -75,8 +77,9 @@ class PurchaseOrder(models.Model):
         # de la caché para ver las OC confirmadas en esta transacción.
         self.env['budget.line'].invalidate_model(['committed_amount', 'achieved_amount'])
         for (plan, budget_line), amount in self._construction_budget_amounts().items():
-            budget = budget_line.budget_amount if budget_line else 0.0
-            used = budget_line.committed_amount if budget_line else 0.0
+            # Con planes de control (paquete 1.16, D3) son varias líneas.
+            budget = sum(budget_line.mapped('budget_amount'))
+            used = sum(budget_line.mapped('committed_amount'))
             limit = budget * (1 + (plan.exceed_tolerance or 0.0) / 100.0)
             excess = used + amount - limit
             if currency.compare_amounts(excess, 0.0) > 0:
@@ -85,7 +88,8 @@ class PurchaseOrder(models.Model):
 
     def _construction_budget_text(self, rows):
         return '\n'.join('   · %s: %s' % (
-            budget_line.display_name if budget_line else self.env._(
+            ', '.join(budget_line[:3].mapped('display_name')) + (
+                ' …' if len(budget_line) > 3 else '') if budget_line else self.env._(
                 '%s (combinación fuera del presupuesto)', plan.display_name),
             formatLang(self.env, excess, currency_obj=self.company_id.currency_id))
             for plan, budget_line, _budget, _used, _amount, excess in rows)

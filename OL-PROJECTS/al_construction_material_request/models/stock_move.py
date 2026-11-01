@@ -10,9 +10,11 @@ class StockMove(models.Model):
     construction_request_line_id = fields.Many2one(
         'construction.material.request.line', string='Línea de requerimiento de obra',
         index='btree_not_null')
-    # En 19.0 stock.move no tiene analítica propia y un traslado interno no
-    # genera líneas analíticas (plan, F0.3): se guarda solo como trazabilidad
-    # para el consumo en obra. Nombre propio para no chocar con otros módulos.
+    # Analítica de la línea del requerimiento (obra, etapa, tipo de costo,
+    # niveles). Con «Costos analíticos» en el tipo de operación, el traslado
+    # a la obra sí crea su apunte (project_stock_account): desde el paquete
+    # 1.16 (I-01) el apunte nace con esta distribución y no solo con la obra.
+    # Nombre propio para no chocar con otros módulos.
     construction_analytic_distribution = fields.Json(string='Analítica de obra')
     # «Productos por despachar» (paquete 1.11, M111-08): se agrupa por el
     # requerimiento, no por el texto del documento origen.
@@ -21,6 +23,18 @@ class StockMove(models.Model):
         store=True, index='btree_not_null')
     construction_project_id = fields.Many2one(
         related='construction_request_id.project_id', string='Obra', store=True)
+
+    def _get_analytic_distribution(self):
+        """Paquete 1.16, I-01: el traslado de una línea de requerimiento de
+        obra a la ubicación de la obra lleva la analítica del requerimiento.
+        Corre en cada movimiento de stock: sale enseguida si no es de obra."""
+        line = self.construction_request_line_id
+        if not line or not self.construction_analytic_distribution:
+            return super()._get_analytic_distribution()
+        site = line._get_site_location()
+        if not site or not self.location_dest_id._child_of(site):
+            return super()._get_analytic_distribution()
+        return self.construction_analytic_distribution
 
     def _prepare_merge_moves_distinct_fields(self):
         # Un movimiento por línea del requerimiento: si se fusionan los del

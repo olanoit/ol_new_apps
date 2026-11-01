@@ -96,6 +96,7 @@
                             <field name="construction_space_task_id" invisible="construction_level not in ('furniture', 'module', 'work_sublevel') or construction_has_apu"/>
                             <field name="construction_apu_any_level" invisible="1"/>
                             <field name="construction_has_apu" invisible="not construction_apu_any_level"/>
+                            <field name="construction_analytic_account_id" invisible="not construction_level_line_id" groups="analytic.group_analytic_accounting" options="{'no_create': True}"/>
                             <field name="construction_furniture_task_id" invisible="construction_level != 'module' or not construction_furniture_task_id"/>
                             <field name="construction_typology_id" invisible="construction_level != 'space'" options="{'no_create': True}"/>
                         </group>

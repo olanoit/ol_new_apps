@@ -70,7 +70,8 @@ class StockMove(models.Model):
         rule_accounts = self.env['construction.analytic.rule'].sudo()._accounts_for(
             production.company_id, resource_type, stage, product.categ_id)
         reason_account = production.construction_reason_id.sudo().analytic_account_id
-        if not rule_accounts and not reason_account:
+        shares = production._construction_rubro_shares()
+        if not rule_accounts and not reason_account and not shares:
             return distribution
         Account = self.env['account.analytic.account'].sudo()
         result = defaultdict(float)
@@ -81,7 +82,11 @@ class StockMove(models.Model):
                     lambda a: a.root_plan_id != reason_account.root_plan_id) | reason_account
             plans = accounts.root_plan_id
             accounts |= rule_accounts.filtered(lambda a: a.root_plan_id not in plans)
-            result[','.join(str(account_id) for account_id in sorted(accounts.ids))] += percentage
+            # Paquete 1.16, D1: la clave se reparte entre las cuentas Rubro en
+            # proporción a lo planificado de cada ambiente de la orden.
+            for rubro, share in (shares or {Account: 1.0}).items():
+                key_accounts = accounts | rubro
+                result[','.join(str(a) for a in sorted(key_accounts.ids))] += percentage * share
         return dict(result)
 
     def _create_analytic_move(self):

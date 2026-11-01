@@ -17,13 +17,14 @@ Presupuesto analítico al aprobar el plan y control de la OC contra el presupues
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_budget/static/description/icon.png',
-    'version': '7.20261031',
+    'version': '8.20261101',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'account_budget_purchase'],
     'data': [
         'views/exceed_wizard_views.xml',
         'views/budget_views.xml',
+        'views/res_config_settings_views.xml',
     ],
     'installable': True,
     'application': False,

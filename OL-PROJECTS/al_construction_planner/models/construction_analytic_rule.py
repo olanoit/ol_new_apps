@@ -37,8 +37,9 @@ class ConstructionAnalyticRule(models.Model):
         'account.analytic.account', string='Etapa', check_company=True,
         help='Cuenta del plan Etapa: producción (PRD) o instalación (INS).')
     cost_account_id = fields.Many2one(
-        'account.analytic.account', string='Partida de costo', check_company=True,
-        help='Cuenta del plan Partida: tableros, cantos, accesorios, MODF, MODV, fletes…')
+        'account.analytic.account', string='Tipo de costo', check_company=True,
+        help='Cuenta del tipo de costo: tableros, cantos, accesorios, MODF, MODV, fletes… '
+             '(paquete 1.16, M116-05: «Partida» es el nivel del árbol de construcción).')
     area_account_id = fields.Many2one(
         'account.analytic.account', string='Área', check_company=True)
 

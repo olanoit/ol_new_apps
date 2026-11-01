@@ -35,3 +35,4 @@ from . import construction_board
 from . import construction_recipe_calc
 from . import construction_execution_mode
 from . import construction_equipment
+from . import construction_level_analytic

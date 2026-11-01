@@ -17,6 +17,12 @@
         <field name="model">construction.level.template</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_construction_apply_analytics" type="object"
+                            string="Aplicar analítica a las obras"
+                            confirm="Se crean las cuentas de los niveles con plan analítico y se recalcula la analítica de los planes abiertos de las obras con esta plantilla. ¿Continuar?"
+                            groups="al_construction_planner.group_planner_manager"/>
+                </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
                     <div class="oe_title">
@@ -45,6 +51,8 @@
                             <field name="is_delivery_unit" optional="hide"/>
                             <field name="stage_ids" widget="many2many_tags" optional="show"
                                    invisible="not has_stages" options="{'no_create': True}"/>
+                            <field name="analytic_plan_id" optional="show" options="{'no_create': True}"/>
+                            <field name="analytic_mode" optional="show" invisible="not analytic_plan_id"/>
                             <field name="level" optional="hide"/>
                         </list>
                     </field>
