@@ -17,7 +17,7 @@ SOAP e IAP): ``sendBill``, ``sendSummary``, ``getStatus`` y
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
-    'category': 'OL-INVOICING/Technical',
+    'category': 'OL-INVOICING/Apps',
     'version': '20.0.1.0.0',
     'license': 'OPL-1',
     'depends': ['l10n_pe_edi'],
