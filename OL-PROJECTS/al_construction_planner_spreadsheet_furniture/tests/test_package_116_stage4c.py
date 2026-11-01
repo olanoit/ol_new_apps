@@ -153,6 +153,10 @@ class TestPackage116Stage4cSheet(TestWorksheetV18):
         self.assertNotIn('REPT(', revision.commands)
         command = json.loads(revision.commands)['commands'][0]['commands'][0][1]
         self.assertIn('TEXTAFTER(" · "&C3," · ",-1)', command['content'])
+        # La forma de las hojas anteriores a 1.16 (ancho 100 y «/»).
+        self.assertEqual(
+            replace_rept('=IFERROR(TRIM(RIGHT(SUBSTITUTE(N5,"/",REPT(" ",100)),100)),N5)'),
+            '=IFERROR(TRIM(TEXTAFTER("/"&N5,"/",-1)),N5)')
         # Y la plantilla ya no lo usa.
         template = json.dumps(self.site._construction_spreadsheet_data(rows=12))
         self.assertNotIn('REPT(', template)
