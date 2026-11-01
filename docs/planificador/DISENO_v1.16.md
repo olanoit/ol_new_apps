@@ -15,7 +15,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 |---|---|---|
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
-| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Pendiente |
+| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Diseñada (puntos devueltos confirmados el 01-nov) |
 | 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Pendiente |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
@@ -365,6 +365,171 @@ Desarrollado. Detalles de la implementación:
 - `al_construction_planner_mrp_request`: M114-05.
 - Prueba de interfaz del selector del Cronograma (CR-21).
 
+## Etapa 3 · Cronograma
+
+Se entrega en dos bloques. Los dos se prueban juntos en las dos bases antes de
+la etapa 4.
+
+| Bloque | Contenido |
+|---|---|
+| 3a · Barra, panel y nombres largos | M115-01, M115-02, M115-03, M116-08 con CR-25, CR-26 |
+| 3b · Etapa de cada ambiente y carga semanal | M115-04 con M116-02, M115-05, M115-06 con M116-07 |
+
+### Rutas ya existentes que cambian el pedido (se devuelven antes de programar)
+
+1. **M115-04 punto 5 · el color de la etapa ya existe.** `construction.stage`
+   tiene «Color en el cronograma» (`color`), que se edita en Configuración ›
+   Etapas. Las barras de etapa y de etapa padre del Cronograma ya lo usan
+   (`stage_colors` en `gantt_data.py`, `color` de cada fila en
+   `schedule_action.js`). Hoy todas las etapas tienen el mismo azul porque
+   nadie lo cambió. Propuesta: no se programa el color. Los colores por
+   defecto del pedido se ponen en Configuración › Etapas de cada base, como
+   configuración. El desarrollo no los escribe en las bases existentes; solo
+   los trae una base nueva (datos `noupdate`). Pendiente, Medido y Entregado
+   no son etapas: llevan gris, azul y verde fijos en el puente de mobiliario.
+2. **M116-07 punto 2 · la obra no tiene calendario propio.** En Odoo 19
+   `project.project.resource_calendar_id` es un cálculo desde la compañía, no
+   un campo de la obra. Los días hábiles salen de la compañía
+   (`_construction_is_site_day`, I-14), sin código nuevo. La semana sale de la
+   obra (`_construction_period`, la misma de la liquidación, CR-10).
+3. **M115-01 criterio 3 · el nombre de la acción se puede cambiar, pero la
+   actualización del módulo lo vuelve a escribir.** El botón leerá el nombre
+   de la acción, como se pide. Un nombre cambiado a mano en la base vuelve al
+   del módulo en la siguiente actualización (las acciones no son
+   `noupdate`). Para que un nombre propio se conserve, se cambia con su
+   traducción (Ajustes › Traducciones), que la actualización no pisa. Es lo
+   que se propone documentar.
+4. **CR-26 · el ajuste «Producción» nombra la Fabricación.** El interruptor
+   de Ajustes que instala Fabricación dice «Órdenes de fabricación desde el
+   plan». Es la única pantalla de construcción que la nombra a propósito,
+   porque es la que la instala. Propuesta: se queda como está y es la
+   excepción del criterio.
+
+### Diseño
+
+**M115-01 · nombres desde la acción.** `TREE_ACTIONS` queda con xmlid, ícono
+y grupo de barra; `get_tree_actions` devuelve el nombre de la acción (con la
+traducción del usuario). Nombres nuevos en las acciones, títulos y botones
+finales de los asistentes de compras (`al_construction_planner_purchase`) y
+fabricación (`al_construction_planner_mrp`), como en la tabla del pedido. El
+mensaje y la lista que deja el asistente de fabricación siguen diciendo
+«Órdenes de fabricación».
+
+**M115-02 · filas por tipo de acción.** El Gantt base acepta `group` y
+`groupLabel` en cada botón de `extraToolbarButtons`. Sin ningún botón con
+grupo, la barra queda como hoy. Con grupos, una fila por grupo con su
+etiqueta a la izquierda; el contador «n fila(s) marcada(s) · Quitar» queda en
+la primera. Grupos: Consultar (Insumo-producto), Programar (compra masiva,
+materiales para obra, fabricación) y Ejecutar (asignar contrata, intervenir
+contrata, asignar cuadrilla, registrar avance, cambiar fechas). «Intervenir
+contrata» (etapa 2) va en Ejecutar. El Árbol de recursos usa las mismas filas.
+
+**M115-03 · panel ampliable.** Borde arrastrable de 280 a 720 px (doble clic,
+320), guardado en `localStorage`; botón «Ampliar / Reducir» (320 ↔ 640); con
+480 px o más, columnas Contrata o proveedor, Plan (cantidad y unidad),
+Ejecutado S/ y Saldo S/; «Pantalla completa» abre el mismo resumen en un
+diálogo con la opción «Por etapa». Las columnas en soles siguen el permiso de
+montos de hoy. `get_selection_summary` agrega el monto ejecutado por recurso
+(hoy trae la cantidad ejecutada).
+
+**M116-08 y CR-25 · nombres largos.** Ajuste de la compañía «Ancho máximo de
+los nombres» (`construction_name_max_width`, 360 px). La interfaz lo recibe
+con la sesión y lo pone en una variable CSS. Una clase común
+(`o_cp_wrap_names`) hace el salto de línea con ese ancho máximo en: los
+encabezados de fila del Análisis de control (pivote) y de los informes de la
+vertical, las listas de líneas del plan y el panel de M115-03. Las vistas de
+Odoo fuera de la vertical no cambian: la clase solo se pone en las vistas del
+planificador.
+
+**CR-26 · textos de mobiliario.** Las ayudas del núcleo que nombran la orden
+de fabricación o la planta pasan a hablar de producción en taller. Las
+ayudas, filtros y textos propios de Fabricación pasan al puente
+`al_construction_planner_mrp` (redefinen la ayuda del campo o heredan la
+vista), así solo se ven con Fabricación instalada. El tipo «Producción» no
+cambia.
+
+**M115-04 con M116-02 · etapa actual y plazo.**
+
+- Campo almacenado en el ambiente (la tarea con etapas,
+  `construction.space.stage.space_task_id`): `construction_current_stage`, una
+  selección con los estados de la obra en este orden: Pendiente, Medido, las
+  etapas hoja del catálogo por su secuencia y Entregado. Lleva
+  `construction_current_stage_progress` y `construction_current_partner_id`
+  (contrata de esa etapa), también almacenados.
+- Se recalcula con un método explícito
+  (`_construction_refresh_current_stage`). Lo llaman la validación o el
+  rechazo de un avance, el cambio de fechas de una etapa, la marca «Ambiente
+  medido» y el estado del módulo. El avance de la etapa es un cálculo sobre
+  las líneas del plan: no hay dependencia que el ORM pueda seguir sola.
+- Árbol 1, etapa actual. Los estados Pendiente, Medido y Entregado solo
+  existen si el perfil de la obra mide sus ambientes (M116-02); si no, solo
+  etapas.
+  1. Todas las etapas al 100 % y todos los módulos entregados: Entregado. Sin
+     estados de mobiliario: la última etapa al 100 %.
+  2. Si no, la primera etapa (por secuencia) con avance menor a 100 %. Si
+     es la primera de todas y su avance es 0: Medido si el ambiente está
+     medido, Pendiente si no. Si no, esa etapa con su %.
+- Árbol 2, plazo, sobre la etapa actual (cálculo no almacenado, porque
+  depende de hoy, con búsqueda para el filtro):
+  1. Avance 100 %: terminado.
+  2. Sin fechas: sin fechas.
+  3. Fin vencido: atrasada «n d» (rojo).
+  4. Inicio pasado y avance 0: en riesgo «debía iniciar dd/mm» (ámbar).
+  5. Avance esperado por días hábiles transcurridos menos el avance real
+     mayor que el margen: en riesgo (ámbar). Margen en Ajustes, 20 puntos.
+  6. Si no: a tiempo.
+- Cronograma, filas «Etapas»: columnas «Etapa actual» (distintivo con
+  nombre, % y color; borde punteado y «por iniciar» con 0 %; mini barra con
+  los estados) y «Plazo» (punto y texto). Pisos y departamentos: cuántos
+  ambientes hay en cada etapa y el peor plazo. Filtros nuevos: «Etapa
+  actual» (varias) y «Solo atrasados o en riesgo».
+
+**M115-05 · informe «Etapa de los ambientes».** Acción nativa en Informes
+sobre los ambientes: cuadro dinámico, gráfico de barras apiladas y lista.
+Para agrupar por los dos primeros niveles de la plantilla de la obra (piso y
+departamento en mobiliario, especialidad y sub-especialidad en CREVAL), la
+tarea guarda sus ancestros de nivel 1 y 2
+(`construction_level1_task_id`, `construction_level2_task_id`). Columnas por
+la etapa actual (en el orden de la selección), medida: número de ambientes.
+Agrupaciones guardadas: por departamento, tipología y contrata. Lo ve quien
+ve el Cronograma.
+
+**M115-06 con M116-07 · carga semanal.**
+
+- Semanas de la obra (`_construction_period`) y días hábiles de la compañía.
+  Cada semana trae su rango («jue 5 – mié 11 nov»).
+- Modos: Planificado, Ejecutado y Plan vs ejecutado (por defecto).
+  Ejecutado: avances validados por su fecha, contrata (o rol) y etapa, con el
+  filtro de etapas.
+- Filas por etapa con subtotal y color; «Sin asignar» pasa a «Por asignar».
+  Montos sin decimales; semana actual resaltada; columnas Plan total, Plan a
+  la fecha, Ejecutado y % a la fecha; fila «Diferencia ejecutado − plan».
+- Colores del %: verde desde 95, ámbar desde 70, rojo debajo. Los dos
+  umbrales en Ajustes.
+- El permiso es el de hoy: solo «ve montos».
+
+### Ajustes nuevos (Ajustes › Planificación de obra)
+
+| Ajuste | Por defecto | Requerimiento |
+|---|---|---|
+| Ancho máximo de los nombres | 360 px | M116-08, CR-25 |
+| Margen de «en riesgo» | 20 puntos | M115-04 |
+| Carga semanal: verde desde / ámbar desde | 95 % / 70 % | M115-06 |
+
+Son de la compañía. En las bases existentes toman el valor por defecto; no se
+cambia nada más.
+
+### Pruebas de la etapa 3
+
+- `al_construction_planner_suite/tests/test_package_116_stage3.py`: M115-01
+  (nombre de la acción, grupo de avance), M115-04 (una rama de cada árbol con
+  fecha fija), M115-05, M115-06 con M116-07 (dos semanas pasadas con avances
+  validados y uno reportado, una futura; semana de jueves y de viernes).
+- `al_construction_planner/tests/test_profiles_v17.py`: CR-26, ayudas con y
+  sin Fabricación.
+- Pruebas de interfaz en `al_construction_planner/static/tests/`: barra en
+  filas, panel ampliable y nombres largos.
+
 ## Estimación
 
 Días de desarrollo con pruebas automáticas, sin contar las pruebas en las
@@ -375,6 +540,6 @@ requerimientos; se precisan al diseñarlas.
 |---|---|---|
 | 1 · Base común | 1 (hecha) | — |
 | 2 · Requerimiento de obra y contratas | 8 a 10 | 2b (analítica, migración, D1 a D3): 4 a 5 · 2c (intervención): 2 a 3 · 2a: 2 |
-| 3 · Cronograma | 5 a 6 | M115-04 y 05 (etapa de cada ambiente e informe) y M115-06 con M116-07 (carga semanal) |
+| 3 · Cronograma | 6 a 7 | 3a: 2 (panel ampliable 1) · 3b: 4 a 5 (etapa actual con sus disparadores 2, carga semanal 1.5, informe 0.5) |
 | 4 · Hoja de trabajo | 7 a 9 | M113-01 a 04 y M116-09 (contrato de datos, pestaña ERRORES común, importar Excel) y las pestañas nuevas |
-| Total | 21 a 26 | |
+| Total | 22 a 27 | |
