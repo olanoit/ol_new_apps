@@ -78,6 +78,10 @@ class TestApprovalsRequest(ApprovalRoutesMixin, TestRequestScope):
         return self._submit(request)
 
     def test_without_changes_goes_to_warehouse(self):
+        # Sin cambios y con la compañía que aprueba al enviar (7.4); con
+        # «Pasar al jefe de la obra», el valor por defecto desde M116-03, lo
+        # prueba test_package_116_stage2.
+        self.company.construction_site_request_without_rule = 'approve'
         request = self._submit(self._fetched())
         self.assertEqual(request.state, 'approved')
         self.assertEqual(request.construction_approval_engine, 'approvals')
@@ -160,7 +164,9 @@ class TestApprovalsRequest(ApprovalRoutesMixin, TestRequestScope):
         self.assertEqual(request.state, 'draft')
         self.assertIn('Usar la silicona del stock de obra',
                       ' '.join(request.message_ids.mapped('body')))
-        # Se corrige y se vuelve a enviar: otra solicitud.
+        # Se corrige y se vuelve a enviar: sin cambios y con la compañía que
+        # aprueba al enviar (7.4), no abre otra solicitud.
+        self.company.construction_site_request_without_rule = 'approve'
         request.line_ids.filtered(lambda l: l.product_id == self.p_silicone).unlink()
         self._submit(request)
         self.assertEqual(request.state, 'approved')
