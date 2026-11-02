@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261102 — 02/11/2026
+
+- Selector de proyectos: nombres completos y la búsqueda en la misma línea que las etiquetas.
+
 ## 21.20261102 — 02/11/2026
 
 - Los proyectos se eligen como etiquetas (como un campo many2many_tags) en vez de un botón por proyecto.

@@ -104,5 +104,17 @@
     .algantt-project-selector {
         flex: 1 1 auto;
         min-width: 14rem;
+
+        // La búsqueda en la misma línea que las etiquetas, como en un campo
+        // many2many_tags de un formulario.
+        .o_multi_record_selector {
+            align-items: center;
+
+            > .o-autocomplete {
+                flex: 1 1 10rem;
+                min-width: 10rem;
+                width: auto;
+            }
+        }
     }
 }
