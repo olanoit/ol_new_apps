@@ -55,8 +55,15 @@ class ResPartner(models.Model):
 
     @api.model
     def _get_all_additional_identifiers_metadata(self):
+        metadata = super()._get_all_additional_identifiers_metadata()
+        # Odoo 20 retiró el selector de tipo de documento: el RUC es el
+        # ``vat`` y los demás documentos se agregan con el «+» junto a él, que
+        # pasa desapercibido. El DNI, el otro documento habitual en Perú, se
+        # muestra siempre bajo el RUC, listo para llenarse.
+        if 'PE_DNI' in metadata:
+            metadata['PE_DNI'] = {**metadata['PE_DNI'], 'display_optional': 'show'}
         return {
-            **super()._get_all_additional_identifiers_metadata(),
+            **metadata,
             PE_CE_KEY: {
                 'label': _lt('Carnet de Extranjería'),
                 'help': _lt('Carnet de Extranjería emitido por Migraciones.'),

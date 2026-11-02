@@ -101,3 +101,23 @@ class TestPeBaseFields(TransactionCase):
         })
         self.assertEqual(journal.l10n_pe_journal_kind, 'opening')
         self.assertTrue(journal.l10n_pe_exclude_from_books)
+
+    # ------------------------------------------------------------------
+    # Documento de identidad en el formulario
+    # ------------------------------------------------------------------
+    def test_dni_is_always_shown_for_peruvian_contacts(self):
+        """Sin el selector de Odoo 19, el DNI se ofrece siempre bajo el RUC;
+        los demás documentos siguen en el «+»."""
+        metadata = self.partner.available_additional_identifiers_metadata
+        self.assertEqual(metadata['PE_DNI'].get('display_optional'), 'show')
+        self.assertFalse(metadata['PE_CE'].get('display_optional'))
+        foreign = self.env['res.partner'].create({
+            'name': 'CONTACTO EXTRANJERO', 'country_id': self.env.ref('base.cl').id})
+        self.assertNotIn('PE_DNI', foreign.available_additional_identifiers_metadata)
+
+    def test_dni_typed_in_the_form_identifies_the_contact(self):
+        partner = self.env['res.partner'].create({
+            'name': 'PERSONA CON DNI', 'country_id': self.env.ref('base.pe').id,
+            'additional_identifiers': {'PE_DNI': '40000004'}})
+        self.assertEqual(partner.l10n_pe_sunat_id_code, '1')
+        self.assertEqual(partner.l10n_pe_document_label, 'DNI')

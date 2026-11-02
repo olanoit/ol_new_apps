@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261102 — 02/11/2026
+
+- Contactos peruanos: el DNI aparece siempre bajo el RUC, listo para llenarse. Odoo 20 quitó el selector de tipo de documento y el DNI solo se agregaba con el «+» junto al RUC; el carné de extranjería, el pasaporte y los demás siguen en ese «+».
+
 ## 20.20261027 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
