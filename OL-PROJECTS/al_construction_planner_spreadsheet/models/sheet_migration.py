@@ -3,10 +3,11 @@
 c, f y M116-09). Python puro: trabajan sobre los datos de o-spreadsheet
 (``spreadsheet_binary_data`` y ``spreadsheet_snapshot``); agregan o cambian
 formato, nunca borran lo que escribió el usuario."""
-import base64
 import json
 import re
 import unicodedata
+
+from odoo.tools import BinaryBytes
 
 from .sheet_keys import KEYS_SHEET, col_letter, keys_sheet
 
@@ -255,11 +256,12 @@ def migrate_documents(env, documents, transform):
             if not raw:
                 continue
             try:
-                data = json.loads(base64.b64decode(raw))
+                # Odoo 20: el binario es el contenido (JSON), no base64.
+                data = json.loads(raw.content)
             except ValueError:
                 continue
             if transform(data):
-                values[fname] = base64.b64encode(json.dumps(data).encode())
+                values[fname] = BinaryBytes(json.dumps(data).encode())
         if values:
             document.with_context(preserve_spreadsheet_revisions=True).write(values)
 

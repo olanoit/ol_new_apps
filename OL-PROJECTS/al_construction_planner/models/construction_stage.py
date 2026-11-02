@@ -234,11 +234,13 @@ class ConstructionStage(models.Model):
         obra puede tener registrado. ``None`` si no hay obra o su perfil no
         dice sus etapas: entonces vale todo el catálogo, como antes."""
         project = project or self.env['project.project']
-        profile = project[:1].construction_profile_id
+        # sudo: el perfil de la obra lo consulta también quien no es del
+        # planificador (fabricación, compras); solo se leen sus etapas.
+        profile = project[:1].sudo().construction_profile_id
         stages = profile.with_context(active_test=False).stage_ids if profile else self.browse()
         if not stages:
             return None
-        return stages._leaf_stages()
+        return stages._leaf_stages().with_env(self.env)
 
     @api.model
     def _restrict_to_project(self, stages, project=None):

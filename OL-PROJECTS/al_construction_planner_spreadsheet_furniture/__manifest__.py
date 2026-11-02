@@ -26,7 +26,7 @@ el plan de construcción.
     'countries': ['pe'],
     'depends': ['al_construction_planner_spreadsheet', 'al_construction_planner_furniture'],
     'data': [
-        'security/ir.model.access.csv',
+        'security/ir.access.csv',
         'data/profile_data.xml',
         'wizards/sheet_import_wizard_views.xml',
         'views/res_config_settings_views.xml',

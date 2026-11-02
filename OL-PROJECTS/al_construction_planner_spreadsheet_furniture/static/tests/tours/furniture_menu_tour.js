@@ -8,7 +8,7 @@ import { registry } from "@web/core/registry";
 registry.category("web_tour.tours").add("al_construction_furniture_sheet_menu", {
     steps: () => [
         {
-            trigger: "body",
+            trigger: ".o_main_navbar",
             run: async () => {
                 const env = odoo.__WOWL_DEBUG__.root.env;
                 const [sheet] = await env.services.orm.searchRead(

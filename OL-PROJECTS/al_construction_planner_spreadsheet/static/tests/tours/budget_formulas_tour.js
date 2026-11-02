@@ -49,8 +49,8 @@ function formulaErrors() {
     const errors = [];
     for (const name of ["INSUMOS", "APU", "APU_DETALLE", "PRESUPUESTO"]) {
         const sheetId = model.getters.getSheetIdByName(name);
-        for (const cellId of Object.keys(model.getters.getCells(sheetId))) {
-            const position = model.getters.getCellPosition(cellId);
+        for (const { id } of Object.values(model.getters.getCells(sheetId))) {
+            const position = model.getters.getCellPosition(id);
             const evaluated = model.getters.getEvaluatedCell(position);
             if (evaluated.type === "error" && position.row <= 5) {
                 errors.push(`${name}!${position.col},${position.row}: ${evaluated.value}`);
@@ -77,7 +77,7 @@ const near = (current, expected) => Math.abs(Number(current) - expected) < 0.001
 registry.category("web_tour.tours").add("al_construction_budget_formulas", {
     steps: () => [
         {
-            trigger: "body",
+            trigger: ".o_main_navbar",
             run: async () => {
                 const env = odoo.__WOWL_DEBUG__.root.env;
                 const [sheet] = await env.services.orm.searchRead(

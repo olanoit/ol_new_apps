@@ -82,7 +82,7 @@ const openMenu = [
 registry.category("web_tour.tours").add("al_construction_furniture_planning", {
     steps: () => [
         {
-            trigger: "body",
+            trigger: ".o_main_navbar",
             run: async () => {
                 const env = odoo.__WOWL_DEBUG__.root.env;
                 const [sheet] = await env.services.orm.searchRead(
@@ -112,10 +112,10 @@ registry.category("web_tour.tours").add("al_construction_furniture_planning", {
                 const [attachment] = await env.services.orm.searchRead(
                     "ir.attachment",
                     [["name", "=", "al_sheet_planning_tour.xlsx"]],
-                    ["datas"],
+                    ["raw"],
                     { limit: 1 }
                 );
-                const bytes = Uint8Array.from(atob(attachment.datas), (c) => c.charCodeAt(0));
+                const bytes = Uint8Array.from(atob(attachment.raw.content), (c) => c.charCodeAt(0));
                 const file = new File([bytes], "obra_4c.xlsx", {
                     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 });

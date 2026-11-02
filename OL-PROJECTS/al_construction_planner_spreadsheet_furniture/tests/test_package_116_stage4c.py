@@ -13,12 +13,12 @@ planificador y el mismo libro en la hoja, INICIO da las cifras, FICHA marca la
 controversia de ancho, PROGRAMA escribe Inicio y Fin en OBRA y CONTROL
 coincide.
 """
-import base64
 import json
 import re
 from io import BytesIO
 
 from odoo.tests import Form, HttpCase, tagged
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
 
@@ -36,7 +36,7 @@ def _book(sheets):
             worksheet.append(row)
     output = BytesIO()
     workbook.save(output)
-    return base64.b64encode(output.getvalue())
+    return BinaryBytes(output.getvalue())
 
 
 def _rows(name, records):
@@ -264,7 +264,7 @@ class TestPackage116Stage4cTour(HttpCase):
         site.action_construction_open_spreadsheet()
         document = self.env['documents.document'].search(
             [('construction_project_id', '=', site.id)])
-        self.env['ir.attachment'].create({'name': 'al_sheet_planning_tour.xlsx', 'datas': book})
+        self.env['ir.attachment'].create({'name': 'al_sheet_planning_tour.xlsx', 'raw': book})
         self.start_tour('/odoo', 'al_construction_furniture_planning', login='admin')
         self.assertEqual(document.construction_control_state, 'match')
         self.assertEqual(document.construction_sheet_state, 'validated')

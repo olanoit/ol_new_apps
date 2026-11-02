@@ -15,7 +15,7 @@
  * El clic derecho en una celda ofrece «Ver ficha de la tipología», «Copiar
  * este piso a…» e «Ir a la fila de origen (FUENTES)».
  */
-import { Component, useState, xml } from "@odoo/owl";
+import { Component, proxy, t, useProps, xml } from "@odoo/owl";
 import { components, registries } from "@odoo/o-spreadsheet";
 import { _t } from "@web/core/l10n/translation";
 import {
@@ -587,78 +587,78 @@ export function goToSource(env) {
 export class PlanningPanel extends Component {
     static template = xml`
 <div class="o-al-planning p-2">
-  <Section title="sheetTitle">
-    <div t-if="sheetSummary.rows !== null">Filas con datos: <b t-esc="sheetSummary.rows"/></div>
+  <Section title="this.sheetTitle">
+    <div t-if="this.sheetSummary.rows !== null">Filas con datos: <b t-out="this.sheetSummary.rows"/></div>
     <div>
-      Última validación: <b t-esc="sheetSummary.errors"/> errores · <b t-esc="sheetSummary.warnings"/> avisos
+      Última validación: <b t-out="this.sheetSummary.errors"/> errores · <b t-out="this.sheetSummary.warnings"/> avisos
     </div>
-    <button class="o-button-link p-0" t-on-click="refresh">Actualizar</button>
+    <button class="o-button-link p-0" t-on-click="this.refresh">Actualizar</button>
   </Section>
-  <Section t-if="columnHelp" title="columnHelp.title">
-    <div t-esc="columnHelp.help"/>
-    <div t-if="columnHelp.values" class="text-muted mt-1">Valores: <t t-esc="columnHelp.values"/></div>
+  <Section t-if="this.columnHelp" title="this.columnHelp.title">
+    <div t-out="this.columnHelp.help"/>
+    <div t-if="this.columnHelp.values" class="text-muted mt-1">Valores: <t t-out="this.columnHelp.values"/></div>
   </Section>
-  <Section t-if="floorStats" title="floorStats.title">
+  <Section t-if="this.floorStats" title="this.floorStats.title">
     <table class="table table-sm mb-0">
-      <thead><tr><th/><th>Hoja</th><th t-if="floorStats.origin">Origen</th></tr></thead>
+      <thead><tr><th/><th>Hoja</th><th t-if="this.floorStats.origin">Origen</th></tr></thead>
       <tbody>
-        <tr t-foreach="floorStats.lines" t-as="line" t-key="line[0]"
-            t-att-class="floorStats.origin and line[2] !== '' and line[1] != line[2] ? 'text-danger' : ''">
-          <td t-esc="line[0]"/><td t-esc="line[1]"/><td t-if="floorStats.origin" t-esc="line[2]"/>
+        <tr t-foreach="this.floorStats.lines" t-as="line" t-key="line[0]"
+            t-att-class="this.floorStats.origin and line[2] !== '' and line[1] != line[2] ? 'text-danger' : ''">
+          <td t-out="line[0]"/><td t-out="line[1]"/><td t-if="this.floorStats.origin" t-out="line[2]"/>
         </tr>
       </tbody>
     </table>
   </Section>
-  <Section title="actionsTitle">
-    <t t-if="sheetName === 'ARBOL'">
+  <Section title="this.actionsTitle">
+    <t t-if="this.sheetName === 'ARBOL'">
       <div class="fw-bold mt-1">Copiar piso a otros pisos</div>
-      <input class="o-input mb-1" t-att-placeholder="floorStats ? floorStats.title : 'Piso de origen'" t-model="state.source"/>
-      <input class="o-input mb-1" placeholder="Pisos de destino: 3-9 o 3, 5, 7" t-model="state.targets"/>
-      <button class="o-button primary mb-2" t-att-disabled="state.busy" t-on-click="onCopyFloor">Copiar piso</button>
+      <input class="o-input mb-1" t-att-placeholder="this.floorStats ? this.floorStats.title : 'Piso de origen'" t-model.proxy="this.state.source"/>
+      <input class="o-input mb-1" placeholder="Pisos de destino: 3-9 o 3, 5, 7" t-model.proxy="this.state.targets"/>
+      <button class="o-button primary mb-2" t-att-disabled="this.state.busy" t-on-click="this.onCopyFloor">Copiar piso</button>
       <div class="fw-bold mt-1">Asignar tipología a la selección</div>
-      <select class="o-input mb-1" t-model="state.typology">
+      <select class="o-input mb-1" t-model.proxy="this.state.typology">
         <option value="">Tipología…</option>
-        <option t-foreach="typologies" t-as="code" t-key="code_index" t-att-value="code" t-esc="code"/>
+        <option t-foreach="this.typologies" t-as="code" t-key="code_index" t-att-value="code" t-out="code"/>
       </select>
-      <button class="o-button mb-2" t-att-disabled="state.busy" t-on-click="onAssignTypology">Asignar a las filas seleccionadas</button>
-      <button class="o-button mb-2" t-att-disabled="state.busy" t-on-click="onNumberRepeated">Numerar ambientes repetidos</button>
-      <button class="o-button mb-2" t-att-disabled="state.busy" t-on-click="onGroupFloors">Agrupar filas por piso</button>
+      <button class="o-button mb-2" t-att-disabled="this.state.busy" t-on-click="this.onAssignTypology">Asignar a las filas seleccionadas</button>
+      <button class="o-button mb-2" t-att-disabled="this.state.busy" t-on-click="this.onNumberRepeated">Numerar ambientes repetidos</button>
+      <button class="o-button mb-2" t-att-disabled="this.state.busy" t-on-click="this.onGroupFloors">Agrupar filas por piso</button>
     </t>
-    <t t-if="sheetName === 'TIPOLOGIAS' or sheetName === 'FICHA'">
-      <div class="fw-bold mt-1">Crear variante de <t t-esc="currentTypology or '…'"/></div>
-      <input class="o-input mb-1" placeholder="Sufijo (A, B…)" t-model="state.suffix"/>
-      <button class="o-button primary mb-2" t-att-disabled="state.busy or !currentTypology" t-on-click="onCreateVariant">Crear variante</button>
+    <t t-if="this.sheetName === 'TIPOLOGIAS' or this.sheetName === 'FICHA'">
+      <div class="fw-bold mt-1">Crear variante de <t t-out="this.currentTypology or '…'"/></div>
+      <input class="o-input mb-1" placeholder="Sufijo (A, B…)" t-model.proxy="this.state.suffix"/>
+      <button class="o-button primary mb-2" t-att-disabled="this.state.busy or !this.currentTypology" t-on-click="this.onCreateVariant">Crear variante</button>
     </t>
-    <t t-if="sheetName === 'BOM' or sheetName === 'PIEZAS'">
+    <t t-if="this.sheetName === 'BOM' or this.sheetName === 'PIEZAS'">
       <div class="fw-bold mt-1">Reemplazar un material</div>
-      <input class="o-input mb-1" placeholder="Material actual" t-model="state.oldMaterial"/>
+      <input class="o-input mb-1" placeholder="Material actual" t-model.proxy="this.state.oldMaterial"/>
       <input class="o-input mb-1" placeholder="Material nuevo: escriba parte del nombre" list="o_al_planning_products"
-             t-model="state.newMaterial" t-on-focus="loadProducts"/>
+             t-model.proxy="this.state.newMaterial" t-on-focus="this.loadProducts"/>
       <datalist id="o_al_planning_products">
-        <option t-foreach="state.products" t-as="pick" t-key="pick_index" t-att-value="pick"/>
+        <option t-foreach="this.state.products" t-as="pick" t-key="pick_index" t-att-value="pick"/>
       </datalist>
-      <select class="o-input mb-1" t-model="state.scope">
-        <option value="typology">Solo la tipología <t t-esc="currentTypology"/></option>
+      <select class="o-input mb-1" t-model.proxy="this.state.scope">
+        <option value="typology">Solo la tipología <t t-out="this.currentTypology"/></option>
         <option value="all">Toda la hoja</option>
       </select>
-      <button class="o-button primary mb-2" t-att-disabled="state.busy" t-on-click="onReplaceMaterial">Reemplazar</button>
+      <button class="o-button primary mb-2" t-att-disabled="this.state.busy" t-on-click="this.onReplaceMaterial">Reemplazar</button>
     </t>
-    <button t-if="currentTypology" class="o-button mb-2" t-on-click="onViewCard">Ver ficha de <t t-esc="currentTypology"/></button>
-    <div t-if="state.message" class="text-danger" t-esc="state.message"/>
+    <button t-if="this.currentTypology" class="o-button mb-2" t-on-click="this.onViewCard">Ver ficha de <t t-out="this.currentTypology"/></button>
+    <div t-if="this.state.message" class="text-danger" t-out="this.state.message"/>
   </Section>
-  <Section title="linksTitle">
+  <Section title="this.linksTitle">
     <button class="o-button-link d-block p-0 mb-1" t-on-click="() => this.openLink('project')">Abrir la obra</button>
     <button class="o-button-link d-block p-0" t-on-click="() => this.openLink('tree')">Abrir el árbol en el planificador</button>
   </Section>
 </div>`;
     static components = { Section };
-    static props = {
-        onCloseSidePanel: Function,
-        copyFrom: { type: String, optional: true },
-    };
+    props = useProps({
+        onCloseSidePanel: t.function(),
+        copyFrom: t.string().optional(),
+    });
 
     setup() {
-        this.state = useState({
+        this.state = proxy({
             source: this.props.copyFrom || "",
             targets: "",
             typology: "",
@@ -925,8 +925,9 @@ async function upgradeSheet(env) {
             master[name] = { rows, keys: keys[name] || {}, formula_cols: formulaCols };
         } else {
             const cells = {};
-            for (const cellId of Object.keys(getters.getCells(sheetId))) {
-                const position = getters.getCellPosition(cellId);
+            // Odoo 20: las claves de getCells no son ids; cada celda trae el suyo.
+            for (const { id } of Object.values(getters.getCells(sheetId))) {
+                const position = getters.getCellPosition(id);
                 const cell = getters.getCell(position);
                 if (cell?.content) {
                     cells[`${columnName(position.col)}${position.row + 1}`] = cell.content;

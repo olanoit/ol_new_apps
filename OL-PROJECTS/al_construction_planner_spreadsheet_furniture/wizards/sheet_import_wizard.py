@@ -7,7 +7,6 @@ el importador del maestro (sin escribir en la obra) y prepara las filas por
 clave de columna; la hoja las escribe en el navegador (columna de cada clave,
 desde _CLAVES o el encabezado) y amplía sus filas si no alcanzan.
 """
-import base64
 import datetime
 import logging
 from io import BytesIO
@@ -86,7 +85,7 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
         content = self._file_content()
         try:
             from openpyxl import load_workbook
-            workbook = load_workbook(BytesIO(base64.b64decode(content)), read_only=True,
+            workbook = load_workbook(BytesIO(content.content), read_only=True,
                                      data_only=True)
         except Exception as exc:  # noqa: BLE001 - cualquier archivo que no sea un libro
             _logger.info('Libro no válido para la hoja de trabajo: %s', exc)
@@ -131,7 +130,7 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
         return {'sheets': sheets, 'other': other}
 
     def _file_content(self):
-        """El archivo en base64. En el formulario (registro nuevo) se lee tal
+        """El archivo (Odoo 20: su contenido en ``.content``). En el formulario (registro nuevo) se lee tal
         cual: leerlo con otro contexto le quitaba el archivo al formulario. Ya
         guardado, sin ``bin_size`` (el cliente web relee con el tamaño)."""
         self.ensure_one()

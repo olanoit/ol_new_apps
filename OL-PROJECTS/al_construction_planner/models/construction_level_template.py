@@ -66,6 +66,10 @@ class ConstructionLevelTemplate(models.Model):
     def _check_lines(self):
         for template in self:
             lines = template.line_ids.sorted(lambda l: (l.sequence, l.id))
+            # Recién creada (los niveles se crean después, como en los datos
+            # del módulo): sin niveles aún no hay nada que validar.
+            if not lines:
+                continue
             roles = lines.mapped('role')
             if len(lines) > MAX_LEVELS:
                 raise ValidationError(self.env._(
@@ -204,7 +208,11 @@ class ConstructionLevelTemplateLine(models.Model):
     def _check_template_order(self):
         """La validación de la plantilla corre también al crear o cambiar un
         nivel suelto, por programa o por importación (M116-11): antes solo
-        corría al guardar la plantilla desde su formulario."""
+        corría al guardar la plantilla desde su formulario. Los datos del
+        módulo crean los niveles de a uno: la plantilla recién está completa
+        con el último, así que al instalarlos no se valida nivel por nivel."""
+        if self.env.context.get('install_mode'):
+            return
         self.template_id._check_lines()
 
     def _previous(self):

@@ -7,7 +7,6 @@ elige la receta por nombre («nombre · código»), calcula su código y pinta u
 banda de color por receta. El recorrido calcula las fórmulas en el navegador:
 el costo unitario de la receta y el de una partida que la usa.
 """
-import base64
 import json
 
 from odoo import Command
@@ -54,7 +53,7 @@ class TestPackage116Stage4cBudgetTour(HttpCase):
         env['documents.document'].create({
             'name': 'Presupuesto con el código al final (test)',
             'mimetype': 'application/o-spreadsheet', 'handler': 'spreadsheet',
-            'datas': base64.b64encode(json.dumps(data).encode()),
+            'raw': json.dumps(data).encode(),
             'construction_project_id': project.id, 'construction_sheet_kind': 'budget',
             'construction_sheet_layout': BUDGET_LAYOUT,
         })

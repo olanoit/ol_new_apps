@@ -7,7 +7,7 @@ import { registry } from "@web/core/registry";
 registry.category("web_tour.tours").add("al_construction_furniture_sheet_import", {
     steps: () => [
         {
-            trigger: "body",
+            trigger: ".o_main_navbar",
             run: async () => {
                 const env = odoo.__WOWL_DEBUG__.root.env;
                 const [sheet] = await env.services.orm.searchRead(
@@ -39,10 +39,10 @@ registry.category("web_tour.tours").add("al_construction_furniture_sheet_import"
                 const [attachment] = await env.services.orm.searchRead(
                     "ir.attachment",
                     [["name", "=", "al_sheet_import_tour.xlsx"]],
-                    ["datas"],
+                    ["raw"],
                     { limit: 1 }
                 );
-                const bytes = Uint8Array.from(atob(attachment.datas), (c) => c.charCodeAt(0));
+                const bytes = Uint8Array.from(atob(attachment.raw.content), (c) => c.charCodeAt(0));
                 const file = new File([bytes], "carga_tour.xlsx", {
                     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 });
@@ -67,7 +67,7 @@ registry.category("web_tour.tours").add("al_construction_furniture_sheet_import"
         },
         {
             content: "El servidor recibió lo escrito en la hoja",
-            trigger: "body",
+            trigger: ".o_main_navbar",
             run: async () => {
                 const orm = odoo.__WOWL_DEBUG__.root.env.services.orm;
                 for (let attempt = 0; attempt < 40; attempt++) {

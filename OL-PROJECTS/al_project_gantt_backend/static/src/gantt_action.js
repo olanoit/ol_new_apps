@@ -5,9 +5,10 @@
  *
  * Monta dhtmlxGantt en un contenedor propio; no hereda `web_gantt` ni ningún
  * tipo de vista de Odoo. Los datos vienen siempre del módulo base a través de
- * `project.project.get_gantt_data()`.
+ * `project.project.al_gantt_get_data()`.
  */
-import { Component, onMounted, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
+import { Component, signal, onMounted, onWillStart, onWillUnmount, proxy, t, usePlugin, useProps } from "@odoo/owl";
+import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { registry } from "@web/core/registry";
 import { Layout } from "@web/search/layout";
 import { useService } from "@web/core/utils/hooks";
@@ -43,13 +44,14 @@ import {
     selectedValues,
 } from "@al_project_gantt_base/js/gantt_filters";
 import { GanttSelection } from "./gantt_selection";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 /**
  * Puntos de extensión para pantallas que reutilizan este componente
  * heredándolo (`class MiPantalla extends GanttAction`). Todos son opcionales
  * y, sin sobrescribir, el Gantt se comporta exactamente igual:
  *
- * - `getOptions()`: opciones extra para `get_gantt_data` (el servidor las
+ * - `getOptions()`: opciones extra para `al_gantt_get_data` (el servidor las
  *   recibe en `options` y una herencia de `al.gantt.data` puede usarlas).
  * - `transformGanttData(ganttData, payload)`: filas y enlaces ya adaptados a
  *   dhtmlxGantt, para añadir o retocar filas antes de pintarlas.
@@ -96,13 +98,13 @@ export function groupToolbarButtons(buttons) {
 export class GanttAction extends Component {
     static template = "al_project_gantt_backend.GanttAction";
     static components = { Layout, MultiRecordSelector };
-    static props = ["*"];
+    props = useProps();
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
-        this.notification = useService("notification");
-        this.containerRef = useRef("ganttContainer");
+        this.action = usePlugin(ActionPlugin);
+        this.notification = usePlugin(NotificationPlugin);
+        this.containerRef = signal.ref();
         this.gantt = null;
         this.selection = this.selectionEnabled
             ? new GanttSelection({
@@ -117,7 +119,7 @@ export class GanttAction extends Component {
         // el proyecto ya acotado (`action_open_gantt`).
         const contextProjectIds = this.props.action?.context?.gantt_project_ids || [];
 
-        this.state = useState({
+        this.state = proxy({
             loading: true,
             error: null,
             projects: [],
@@ -207,7 +209,7 @@ export class GanttAction extends Component {
         try {
             // Los errores (p. ej. AccessError) suben al gestor de errores de
             // Odoo, que ya muestra el diálogo estándar: no se silencian aquí.
-            const payload = await this.orm.call("project.project", "get_gantt_data", [
+            const payload = await this.orm.call("project.project", "al_gantt_get_data", [
                 this.state.selectedIds.length ? this.state.selectedIds : null,
                 this.getOptions(),
             ]);
@@ -335,7 +337,7 @@ export class GanttAction extends Component {
     // Librería
     // ------------------------------------------------------------------
     mountGantt() {
-        if (!this.containerRef.el || !window.Gantt) {
+        if (!this.containerRef() || !window.Gantt) {
             return;
         }
         // Instancia propia: no se comparte estado con otras vistas ni con la
@@ -343,11 +345,11 @@ export class GanttAction extends Component {
         this.gantt = window.Gantt.getGanttInstance();
         this.mountedSignature = this.configSignature();
         this.setupGantt();
-        this.gantt.init(this.containerRef.el);
+        this.gantt.init(this.containerRef());
         this.parseData();
         addTodayMarker(this.gantt);
         this.detachContextMenu = attachContextMenu(
-            this.gantt, this.containerRef.el, (taskId, task) => this.buildContextActions(taskId, task)
+            this.gantt, this.containerRef(), (taskId, task) => this.buildContextActions(taskId, task)
         );
         if (this.state.search) {
             this.state.searchMatches = applySearch(this.gantt, this.state.search);
@@ -357,7 +359,7 @@ export class GanttAction extends Component {
         // El contenedor cambia de alto al plegar avisos o al redimensionar la
         // ventana; sin esto la librería conserva el tamaño del primer render.
         this.resizeObserver = new ResizeObserver(() => this.gantt?.setSizes());
-        this.resizeObserver.observe(this.containerRef.el);
+        this.resizeObserver.observe(this.containerRef());
     }
 
     setupGantt() {
@@ -740,40 +742,40 @@ export class GanttAction extends Component {
         if (isRealTask) {
             actions.push({
                 label: _t("Abrir en Odoo"),
-                icon: "fa-external-link",
+                icon: "open_in_new",
                 run: () => this.openTaskForm(taskId),
             });
         }
         if (isRealTask) {
             actions.push({
                 label: _t("Planificar actividad"),
-                icon: "fa-clock-o",
+                icon: "schedule",
                 run: () => this.scheduleActivity(taskId),
             });
         }
         if (isRealTask && editable && this.state.meta.can_create) {
             actions.push({
                 label: _t("Añadir subtarea"),
-                icon: "fa-level-down",
+                icon: "subdirectory_arrow_right",
                 run: () => this.addSubtask(taskId, task),
             });
         }
         if (isRealTask && editable) {
             actions.push({
                 label: _t("Indentar"),
-                icon: "fa-indent",
+                icon: "format_indent_increase",
                 disabled: !indentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(indentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Desindentar"),
-                icon: "fa-outdent",
+                icon: "format_indent_decrease",
                 disabled: !outdentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(outdentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Eliminar"),
-                icon: "fa-trash",
+                icon: "delete",
                 run: () => this.gantt.deleteTask(taskId),
             });
         }

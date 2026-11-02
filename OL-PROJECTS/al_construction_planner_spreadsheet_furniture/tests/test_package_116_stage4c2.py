@@ -182,7 +182,7 @@ class TestPackage116Stage4c2Tour(HttpCase):
         document = self.env['documents.document'].search(
             [('construction_project_id', '=', site.id)])
         self.env['ir.attachment'].create({'name': 'al_sheet_panel_tour.xlsx',
-                                          'datas': _book(sheets)})
+                                          'raw': _book(sheets)})
         version = document.construction_version
         self.start_tour('/odoo', 'al_construction_furniture_panel', login='admin')
         # Una versión por acción: copiar, numerar, asignar, variante, material.

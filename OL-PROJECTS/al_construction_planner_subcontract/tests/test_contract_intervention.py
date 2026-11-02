@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Intervenir una contrata en ejecución (paquete 3 de CREVAL, CR-20) sin
 comprometer dos veces (paquete 1.16, I-13). Datos ficticios."""
+import base64
 from datetime import date
 
 from odoo.exceptions import UserError
@@ -158,7 +159,7 @@ class TestContractIntervention(ContractTermsCommon):
         pending = self.env['construction.task.progress'].create({
             'task_id': self.partida.id, 'activity_id': self.act_wall.id,
             'date': date(2026, 11, 25), 'qty': 10.0,
-            'attachment_ids': [(0, 0, {'name': 'foto.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [(0, 0, {'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
         with self.assertRaises(UserError):
             wizard.action_confirm()
         pending.unlink()

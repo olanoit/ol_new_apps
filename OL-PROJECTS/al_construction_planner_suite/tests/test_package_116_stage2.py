@@ -149,7 +149,8 @@ class TestPackage116Stage2a(PlannerCommon):
             wizard.action_create_version()['res_id'])
         new_plan.action_request_approval()
         self.assertEqual(new_plan.state, 'approved')
-        allocations = fits.line_ids.construction_allocation_ids
+        # Odoo 20: el one2many se filtra por los permisos de quien lo lee.
+        allocations = fits.line_ids.sudo().construction_allocation_ids
         self.assertEqual(len(allocations), 1)
         self.assertEqual(allocations.plan_line_id.plan_id, new_plan)
 

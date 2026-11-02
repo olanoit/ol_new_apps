@@ -244,14 +244,14 @@ class TestPackage116Stage2bTransfer(PlannerCommon):
         distribution = {'%s' % self.project.account_id.id: 100.0}
         Move = self.env['stock.move']
         move = Move.create({
-            'product_id': self.p_screw.id, 'product_uom_qty': 2, 'product_uom': self.unit.id,
+            'product_id': self.p_screw.id, 'product_uom_qty': 2, 'uom_id': self.unit.id,
             'location_id': self.company.construction_src_location_id.id,
             'location_dest_id': site.id, 'construction_request_line_id': line.id,
             'construction_analytic_distribution': distribution})
         self.assertEqual(move._get_analytic_distribution(), distribution)
         # Otro destino (una devolución al almacén): lo de siempre.
         back = Move.create({
-            'product_id': self.p_screw.id, 'product_uom_qty': 1, 'product_uom': self.unit.id,
+            'product_id': self.p_screw.id, 'product_uom_qty': 1, 'uom_id': self.unit.id,
             'location_id': site.id,
             'location_dest_id': self.company.construction_src_location_id.id,
             'construction_request_line_id': line.id,

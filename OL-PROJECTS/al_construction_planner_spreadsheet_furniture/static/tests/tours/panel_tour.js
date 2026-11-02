@@ -84,7 +84,7 @@ const openMenu = [
 registry.category("web_tour.tours").add("al_construction_furniture_panel", {
     steps: () => [
         {
-            trigger: "body",
+            trigger: ".o_main_navbar",
             run: async () => {
                 const env = odoo.__WOWL_DEBUG__.root.env;
                 const [sheet] = await env.services.orm.searchRead(
@@ -111,10 +111,10 @@ registry.category("web_tour.tours").add("al_construction_furniture_panel", {
                 const [attachment] = await env.services.orm.searchRead(
                     "ir.attachment",
                     [["name", "=", "al_sheet_panel_tour.xlsx"]],
-                    ["datas"],
+                    ["raw"],
                     { limit: 1 }
                 );
-                const bytes = Uint8Array.from(atob(attachment.datas), (c) => c.charCodeAt(0));
+                const bytes = Uint8Array.from(atob(attachment.raw.content), (c) => c.charCodeAt(0));
                 const file = new File([bytes], "panel.xlsx", {
                     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 });
@@ -246,6 +246,26 @@ registry.category("web_tour.tours").add("al_construction_furniture_panel", {
                         ? ""
                         : `Códigos de BOM: ${codes.join(",")}`;
                 });
+            },
+        },
+        {
+            // La hoja manda sus revisiones al servidor por lotes: el test las
+            // lee al terminar el tour.
+            content: "El servidor recibió el reemplazo",
+            trigger: ".o_main_navbar",
+            run: async () => {
+                const orm = odoo.__WOWL_DEBUG__.root.env.services.orm;
+                for (let attempt = 0; attempt < 40; attempt++) {
+                    const count = await orm.searchCount("spreadsheet.revision", [
+                        ["res_model", "=", "documents.document"],
+                        ["commands", "ilike", "T4C2-ROB"],
+                    ]);
+                    if (count) {
+                        return;
+                    }
+                    await new Promise((resolve) => setTimeout(resolve, 250));
+                }
+                throw new Error("La hoja no guardó el reemplazo del material");
             },
         },
     ],

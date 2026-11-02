@@ -193,7 +193,7 @@
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_construction_interventions" type="object"
-                        class="oe_stat_button" icon="fa-exchange"
+                        class="oe_stat_button" icon="swap_horiz"
                         invisible="not construction_intervened">
                     <field name="construction_intervened" invisible="1"/>
                     <span class="o_stat_text">Intervenciones</span>

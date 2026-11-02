@@ -8,7 +8,6 @@
 - M116-08 / CR-25: ancho máximo de los nombres por compañía, en la sesión.
 - CR-26: con Fabricación, las ayudas nombran la orden de fabricación; el
   núcleo habla de producción en taller."""
-import base64
 from datetime import date, timedelta
 
 from odoo import Command, fields
@@ -75,7 +74,7 @@ class TestPackage116Stage3a(PlannerCommon):
             lambda l: l.resource_type == 'contract' and l.activity_id == self.act_screw)[:1]
         self.assertTrue(line)
         photo = self.env['ir.attachment'].create({'name': 'foto.png',
-                                                  'datas': base64.b64encode(b'x')})
+                                                  'raw': b'x'})
         progress = self.env['construction.task.progress'].create({
             'task_id': line.task_id.id, 'activity_id': line.activity_id.id,
             'plan_line_id': line.id, 'qty': line.qty_planned / 2,
@@ -157,10 +156,9 @@ class TestPackage116Stage3b(TransactionCase):
         super().setUpClass()
         cls.env.company.resource_calendar_id = cls.env['resource.calendar'].create({
             'name': 'Lunes a viernes (test 3b)', 'company_id': cls.env.company.id,
-            'tz': 'America/Lima',
             'attendance_ids': [(5, 0, 0)] + [(0, 0, {
-                'name': 'Día %s' % day, 'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
-                'day_period': 'full_day'}) for day in range(5)]})
+                'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17})
+                for day in range(5)]})
         demo = _approved_demo(cls.env, 'TEST 116 3B')
         cls.plan = demo['plan']
         cls.project = demo['project']
@@ -174,7 +172,7 @@ class TestPackage116Stage3b(TransactionCase):
             groups='al_construction_planner.group_planner_exec_validator,'
                    'al_construction_planner.group_planner_amounts')
         cls.photo = cls.env['ir.attachment'].create({'name': 'foto.png',
-                                                     'datas': base64.b64encode(b'x')})
+                                                     'raw': b'x'})
 
     def _lines(self, space, stage):
         return self.plan.line_ids.filtered(

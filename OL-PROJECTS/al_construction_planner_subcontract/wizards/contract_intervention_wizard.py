@@ -130,7 +130,7 @@ class ConstructionContractInterventionWizard(models.TransientModel):
         for po_line in po_lines:
             line_allocations = po_line.construction_allocation_ids.filtered(
                 lambda a: a.state != 'cancel')
-            uom = po_line.product_uom_id
+            uom = po_line.uom_id
             activity = po_line.construction_activity_id
             executed = 0.0
             for plan_line in line_allocations.plan_line_id:
@@ -274,7 +274,7 @@ class ConstructionContractInterventionWizard(models.TransientModel):
                 if plan_line.product_uom_id.compare(executed, allocation.qty_allocated) < 0:
                     allocation.qty_allocated = executed
                 plan_lines |= plan_line
-            if po_line.product_uom_id.compare(line.qty_new, po_line.product_qty) < 0:
+            if po_line.uom_id.compare(line.qty_new, po_line.product_qty) < 0:
                 po_line.product_qty = line.qty_new
         # La contrata sale de la línea del plan (proceso interno sobre el plan
         # aprobado, como la asignación): su saldo vuelve a «Asignar contrata».

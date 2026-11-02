@@ -1,9 +1,10 @@
 import { registries, UIPlugin } from "@odoo/o-spreadsheet";
-import { useSubEnv } from "@odoo/owl";
 import { SpreadsheetAction } from "@documents_spreadsheet/bundle/actions/spreadsheet_action";
+import { usePlugin } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { useService } from "@web/core/utils/hooks";
+import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { patch } from "@web/core/utils/patch";
+import { useSubEnv } from "@web/owl2/utils";
 
 const { featurePluginRegistry, topbarMenuRegistry } = registries;
 
@@ -45,8 +46,9 @@ const isEmpty = (value) => value === null || value === undefined || value === ""
  */
 export function lastDataRow(getters, sheetId) {
     let last = -1;
-    for (const cellId of Object.keys(getters.getCells(sheetId))) {
-        const position = getters.getCellPosition(cellId);
+    // Odoo 20: las claves de getCells no son ids; cada celda trae el suyo.
+    for (const { id } of Object.values(getters.getCells(sheetId))) {
+        const position = getters.getCellPosition(id);
         if (position.row <= last) {
             continue;
         }
@@ -159,7 +161,7 @@ export function activateSheet(model, sheetId) {
 patch(SpreadsheetAction.prototype, {
     setup() {
         super.setup(...arguments);
-        const notification = useService("notification");
+        const notification = usePlugin(NotificationPlugin);
         useSubEnv({
             constructionSheetKind: () =>
                 this.data?.construction_project_id || this.data?.construction_sheet_kind

@@ -10,7 +10,7 @@ Módulo *sin interfaz de usuario*: contiene todo lo que comparten las dos UIs de
 la suite (``al_project_gantt_backend`` y ``al_project_gantt_website``).
 
 * **Capa de datos única** (``al.gantt.data``, expuesta como
-  ``project.project.get_gantt_data()``): devuelve proyectos, tareas,
+  ``project.project.al_gantt_get_data()``): devuelve proyectos, tareas,
   dependencias e hitos ya normalizados, en un formato **neutral** respecto de la
   librería de renderizado. Es el único punto de acceso a datos: ninguna UI
   consulta el ORM por su cuenta.
@@ -48,12 +48,11 @@ y PDF.
     ],
     'data': [
         'security/gantt_groups.xml',
-        'security/ir.model.access.csv',
-        'security/gantt_rules.xml',
         'data/gantt_state_color_data.xml',
         'report/gantt_report.xml',
         'report/gantt_report_templates.xml',
         'views/gantt_state_color_views.xml',
+        'security/ir.access.csv',
     ],
     'external_dependencies': {
         # Exportación a Excel (viene con los requisitos de Odoo).

@@ -10,7 +10,6 @@
 * CR-22 b y f: la migración deja las hojas anteriores como las nuevas.
 * El tipo de hoja sale del perfil de la obra.
 """
-import base64
 import json
 import re
 
@@ -127,7 +126,7 @@ class TestPackage116Stage4Budget(TestBudgetBook):
 
     def test_renamed_header_and_missing_column(self):
         document = self._document()
-        sheets = _sheets_from_book(base64.b64decode(self._book()))
+        sheets = _sheets_from_book(self._book().content)
         # El presupuestador renombra «Código del insumo» y «Metrado real».
         detail = [list(row) for row in sheets['APU_DETALLE']]
         detail[0][1] = 'Insumo del APU (mi nombre)'
@@ -156,7 +155,7 @@ class TestPackage116Stage4Budget(TestBudgetBook):
 
     def test_bring_from_odoo_by_key_with_productivity(self):
         document = self._document()
-        sheets = _sheets_from_book(base64.b64decode(self._book()))
+        sheets = _sheets_from_book(self._book().content)
         action = document.action_construction_send_to_planner(sheets, 'plan')
         self.env[action['res_model']].browse(action['res_id']).action_import()
         rows = document.construction_odoo_rows()

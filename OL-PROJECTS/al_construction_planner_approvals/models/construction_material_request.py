@@ -68,7 +68,7 @@ class ConstructionMaterialRequest(models.Model):
                 doc=request.display_name, project=request.project_id.display_name,
                 user=manager.name)
             request._construction_open_approval(category, [{
-                'user_id': manager.id, 'sequence': 1000, 'construction_step': 1,
+                'user_id': manager.id, 'construction_step': 1,
                 'construction_slots': '1:any:site_manager', 'status': 'new',
             }], request._construction_approval_info(), summary)
             submitted |= request

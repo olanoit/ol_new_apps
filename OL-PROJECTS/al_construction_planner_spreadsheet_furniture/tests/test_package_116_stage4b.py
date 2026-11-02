@@ -11,11 +11,11 @@
   versión antes de escribir y mensaje en la obra; en el navegador, la hoja
   escribe el archivo y amplía sus filas.
 """
-import base64
 import json
 from io import BytesIO
 
 from odoo.tests import HttpCase, tagged
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
 
@@ -34,7 +34,7 @@ def _book(sheets):
             worksheet.append(row)
     output = BytesIO()
     workbook.save(output)
-    return base64.b64encode(output.getvalue())
+    return BinaryBytes(output.getvalue())
 
 
 def _headers(name):
@@ -181,7 +181,7 @@ class TestPackage116Stage4bTour(HttpCase):
                      space='Cocina') for n in range(15)]
         self.env['ir.attachment'].create({
             'name': 'al_sheet_import_tour.xlsx',
-            'datas': _book({'ARBOL': [_headers('ARBOL')] + rows}),
+            'raw': _book({'ARBOL': [_headers('ARBOL')] + rows}),
         })
         self.start_tour('/odoo', 'al_construction_furniture_sheet_import', login='admin')
         self.assertEqual(document.construction_sheet_rows, 17)
