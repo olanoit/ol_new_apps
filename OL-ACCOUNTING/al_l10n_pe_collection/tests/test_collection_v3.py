@@ -117,8 +117,14 @@ class TestCollectionV3(CollectionCommon):
         if Leaves is None:
             self.skipTest('resource no está instalado')
         holiday = datetime(2026, 10, 8)  # jueves
-        Leaves.create({'name': 'Combate de Angamos', 'date_from': holiday, 'date_to': holiday + timedelta(days=1),
-                       'calendar_id': False, 'resource_id': False, 'company_id': self.company.id})
+        # Con al_hr_pe_public_holidays el feriado ya existe: dos feriados no
+        # pueden superponerse.
+        if not Leaves.search_count([('resource_id', '=', False), ('company_id', 'in', (self.company.id, False)),
+                                    ('date_from', '<', holiday + timedelta(days=1)),
+                                    ('date_to', '>', holiday)]):
+            Leaves.create({'name': 'Combate de Angamos', 'date_from': holiday,
+                           'date_to': holiday + timedelta(days=1),
+                           'calendar_id': False, 'resource_id': False, 'company_id': self.company.id})
         with self.assertRaises(ValidationError):
             self._call(self.consumer, holiday.replace(hour=11))
 
