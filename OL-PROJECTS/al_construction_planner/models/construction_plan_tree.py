@@ -640,7 +640,13 @@ class ConstructionResourcePlan(models.Model):
         la obra); si no, el último que usó el usuario; si no, el último
         aprobado o en ejecución que él tocó; si no, el primero."""
         plans = self.search([('state', 'not in', ('cancel', 'replaced'))], order='id desc')
-        current = self.browse(plan_id).exists() & plans if plan_id else self.browse()
+        # El plan pedido se abre aunque esté reemplazado o cancelado (su
+        # historia); sin él, se abría el último plan del usuario, de otra obra.
+        requested = self.browse(plan_id).exists() if plan_id else self.browse()
+        if requested:
+            requested.check_access('read')
+            plans = requested | plans
+        current = requested
         if not current:
             current = self.env.user.construction_schedule_plan_id & plans
         if not current:

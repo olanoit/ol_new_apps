@@ -240,6 +240,12 @@ class TestPackage116Stage2a(PlannerCommon):
         self.assertEqual(Plan.get_schedule_plans()['plan_id'], self.plan.id)
         self.assertEqual(Plan.get_schedule_plans()['groups'][0]['project'],
                          self.project.display_name, 'primero la obra del plan abierto')
+        # Un plan reemplazado se abre igual desde su botón (su historia), no
+        # el último plan del usuario de otra obra.
+        plan.state = 'replaced'
+        result = Plan.get_schedule_plans(plan.id)
+        self.assertEqual(result['plan_id'], plan.id)
+        self.assertEqual(result['groups'][0]['project'], self.site.display_name)
 
 
 @tagged('post_install', '-at_install')
