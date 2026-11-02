@@ -46,10 +46,14 @@ faq:
       El cierre usa un costo en destino sobre las órdenes: Odoo reparte el
       cargo entre el inventario que queda y el costo de ventas de lo vendido.
 novedades:
-- version: '1.20261029'
-  fecha: 29/10/2026
-  cambios:
-  - "Primera versión: costo hora desde la planilla, importar tareo, cierre de costos del mes (ajuste de mano de obra y bolsas de CIF) y costo por elemento."
+  - version: '2.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía»."
+  - version: '1.20261029'
+    fecha: 29/10/2026
+    cambios:
+      - "Primera versión: costo hora desde la planilla, importar tareo, cierre de costos del mes (ajuste de mano de obra y bolsas de CIF) y costo por elemento."
 relacionados:
 - al_mrp_piece_costing
 - al_hr_pe

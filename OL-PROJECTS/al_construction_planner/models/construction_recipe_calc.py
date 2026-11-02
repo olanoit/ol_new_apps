@@ -40,6 +40,7 @@ class ConstructionUomAlias(models.Model):
     «GLB», «glb»; «M» y «ML» (6.4)."""
     _name = 'construction.uom.alias'
     _description = 'Equivalencia de unidad en las importaciones'
+    _check_company_auto = True
     _order = 'name'
 
     name = fields.Char(string='Escrito como', required=True)

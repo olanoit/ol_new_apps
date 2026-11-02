@@ -27,7 +27,7 @@ propio) y devuelve un archivo con lo cobrado:
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_bank_collection/static/description/icon.png',
-    'version': '8.20261027',
+    'version': '9.20261102',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_l10n_pe_collection'],

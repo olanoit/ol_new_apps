@@ -29,7 +29,7 @@ Entrega E5 de las mejoras (docs/farmacia/MEJORAS_PROCESOS.md).
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_care/static/description/icon.png',
-    'version': '3.20261101',
+    'version': '4.20261102',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'al_pharmacy_pos', 'sale'],
     'data': [

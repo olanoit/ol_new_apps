@@ -152,7 +152,7 @@
                             <field name="weekly_days"/>
                             <field name="workweek"/>
                             <field name="threshold"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group string="Días del año">
                             <field name="worked_days"/>
@@ -204,7 +204,7 @@
                 <field name="manual_state" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'meets'"
                        decoration-danger="state == 'fails'" decoration-warning="state == 'no_data'"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

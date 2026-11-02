@@ -37,7 +37,7 @@ Sugerido de compra por local:
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_replenishment/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '3.20261102',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_pos', 'purchase_stock'],
     'data': [

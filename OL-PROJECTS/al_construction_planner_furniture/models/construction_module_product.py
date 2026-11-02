@@ -61,7 +61,8 @@ class ConstructionTypologyModule(models.Model):
 
     product_id = fields.Many2one(
         'product.product', string='Producto del módulo', readonly=True, copy=False,
-        help='Producto fabricado del módulo en la obra (se crea al aprobar el plan).')
+        help='Producto fabricado del módulo en la obra (se crea al aprobar el plan).',
+        check_company=True)
 
     def _module_product_code(self):
         self.ensure_one()

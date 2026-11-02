@@ -20,7 +20,7 @@ adapta al_l10n_pe_check.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_check_printing/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '3.20261102',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_l10n_pe_check'],

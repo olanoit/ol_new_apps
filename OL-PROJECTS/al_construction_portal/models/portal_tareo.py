@@ -22,7 +22,7 @@ class ConstructionPortalTareo(models.Model):
     company_id = fields.Many2one('res.company', string='Compañía', compute='_compute_company_id',
                                  store=True, index=True)
     date = fields.Date(string='Fecha', required=True, index=True)
-    employee_id = fields.Many2one('hr.employee', string='Persona', required=True, index=True)
+    employee_id = fields.Many2one('hr.employee', string='Persona', required=True, index=True, check_company=True)
     plan_line_id = fields.Many2one('construction.resource.plan.line', string='Partida',
                                    required=True, ondelete='cascade', check_company=True)
     hours = fields.Float(string='Horas', digits=(16, 2), required=True)

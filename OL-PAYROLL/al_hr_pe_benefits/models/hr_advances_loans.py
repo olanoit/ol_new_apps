@@ -115,7 +115,8 @@ class HrAdvance(models.Model):
     l10n_pe_payslip_id = fields.Many2one(
         'hr.payslip', string='Descontado en', readonly=True, copy=False,
         index='btree_not_null', ondelete='set null',
-        help='Boleta en la que se descontó el adelanto.')
+        help='Boleta en la que se descontó el adelanto.',
+        check_company=True)
 
     def turn_paid_out(self):
         """Marca el adelanto como aplicado en la planilla."""
@@ -288,7 +289,8 @@ class HrLoanLine(models.Model):
     l10n_pe_payslip_id = fields.Many2one(
         'hr.payslip', string='Descontada en', readonly=True, copy=False,
         index='btree_not_null', ondelete='set null',
-        help='Boleta en la que se descontó la cuota.')
+        help='Boleta en la que se descontó la cuota.',
+        check_company=True)
 
     def turn_paid_out(self):
         self.write({'validation': 'paid out'})

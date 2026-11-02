@@ -15,10 +15,11 @@ class ConstructionProductionVersus(models.Model):
 
     production_id = fields.Many2one(
         'mrp.production', string='Orden de fabricación', required=True, ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(related='production_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
-    product_id = fields.Many2one('product.product', string='Material', required=True)
+    product_id = fields.Many2one('product.product', string='Material', required=True, check_company=True)
     uom_id = fields.Many2one('uom.uom', string='Unidad')
     change_type = fields.Selection(
         [item for item in CHANGE_TYPES if item[0] != 'all'], string='Cambio',

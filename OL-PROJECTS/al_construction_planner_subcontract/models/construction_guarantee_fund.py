@@ -42,7 +42,7 @@ class ConstructionGuaranteeFund(models.Model):
                                     check_company=True, index='btree_not_null')
     move_id = fields.Many2one('account.move', string='Factura', check_company=True,
                               index='btree_not_null', ondelete='cascade')
-    move_line_id = fields.Many2one('account.move.line', string='Cuota', index='btree_not_null')
+    move_line_id = fields.Many2one('account.move.line', string='Cuota', index='btree_not_null', check_company=True)
     amount = fields.Monetary(string='Monto', required=True, currency_field='currency_id')
     amount_residual = fields.Monetary(
         string='Por devolver', compute='_compute_amount_residual', store=True,
@@ -123,10 +123,12 @@ class ConstructionGuaranteeFund(models.Model):
 class ConstructionContractOrderRequirement(models.Model):
     _name = 'construction.contract.order.requirement'
     _description = 'Requisito de devolución del fondo en la orden de contrata'
+    _check_company_auto = True
     _order = 'order_id, sequence, id'
 
     order_id = fields.Many2one('purchase.order', string='Orden de contrata', required=True,
-                               ondelete='cascade', index=True)
+                               ondelete='cascade', index=True,
+                               check_company=True)
     company_id = fields.Many2one(related='order_id.company_id', store=True, index=True)
     requirement_id = fields.Many2one('construction.contract.requirement', string='Requisito',
                                      required=True)
@@ -143,10 +145,12 @@ class ConstructionContractOrderRequirement(models.Model):
 class ConstructionContractOrderDocument(models.Model):
     _name = 'construction.contract.order.document'
     _description = 'Documento requerido de la orden de contrata'
+    _check_company_auto = True
     _order = 'order_id, sequence, id'
 
     order_id = fields.Many2one('purchase.order', string='Orden de contrata', required=True,
-                               ondelete='cascade', index=True)
+                               ondelete='cascade', index=True,
+                               check_company=True)
     company_id = fields.Many2one(related='order_id.company_id', store=True, index=True)
     document_type_id = fields.Many2one('construction.contract.document.type', string='Documento',
                                        required=True)

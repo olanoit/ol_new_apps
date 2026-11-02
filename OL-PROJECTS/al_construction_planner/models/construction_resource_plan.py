@@ -901,17 +901,23 @@ class ConstructionResourcePlanLine(models.Model):
     # partida…), para agrupar el análisis sin recorrer el árbol.
     level_1_id = fields.Many2one(
         'project.task', string='Nivel 1', compute='_compute_level_ids', store=True, index=True,
-        help='Primer nivel de la plantilla de la obra (torre, disciplina, área).')
+        help='Primer nivel de la plantilla de la obra (torre, disciplina, área).',
+        check_company=True)
     level_2_id = fields.Many2one(
-        'project.task', string='Nivel 2', compute='_compute_level_ids', store=True, index=True)
+        'project.task', string='Nivel 2', compute='_compute_level_ids', store=True, index=True,
+        check_company=True)
     level_3_id = fields.Many2one(
-        'project.task', string='Nivel 3', compute='_compute_level_ids', store=True, index=True)
+        'project.task', string='Nivel 3', compute='_compute_level_ids', store=True, index=True,
+        check_company=True)
     level_4_id = fields.Many2one(
-        'project.task', string='Nivel 4', compute='_compute_level_ids', store=True, index=True)
+        'project.task', string='Nivel 4', compute='_compute_level_ids', store=True, index=True,
+        check_company=True)
     level_5_id = fields.Many2one(
-        'project.task', string='Nivel 5', compute='_compute_level_ids', store=True, index=True)
+        'project.task', string='Nivel 5', compute='_compute_level_ids', store=True, index=True,
+        check_company=True)
     level_6_id = fields.Many2one(
-        'project.task', string='Nivel 6', compute='_compute_level_ids', store=True, index=True)
+        'project.task', string='Nivel 6', compute='_compute_level_ids', store=True, index=True,
+        check_company=True)
     # Ancestros por nivel: base de la acumulación del árbol y del filtro por
     # selección (read_group por nivel, sin recursión en Python).
     floor_task_id = fields.Many2one(

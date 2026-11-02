@@ -155,17 +155,17 @@ class ConstructionCrewDay(models.Model):
     plan_line_id = fields.Many2one(
         'construction.resource.plan.line', string='Línea del plan', index=True,
         ondelete='set null', check_company=True)
-    task_id = fields.Many2one('project.task', string='Nivel', index=True)
+    task_id = fields.Many2one('project.task', string='Nivel', index=True, check_company=True)
     stage = fields.Selection(related='plan_line_id.stage', string='Etapa', store=True)
     stage_parent = fields.Selection(related='plan_line_id.stage_parent', string='Etapa padre',
                                     store=True)
     role_id = fields.Many2one('planning.role', string='Rol', index=True)
-    employee_id = fields.Many2one('hr.employee', string='Persona', index=True)
+    employee_id = fields.Many2one('hr.employee', string='Persona', index=True, check_company=True)
     date = fields.Date(string='Fecha', required=True, index=True)
     days = fields.Float(string='Jornales', digits=(16, 2), aggregator='sum')
     hours = fields.Float(string='Horas', digits=(16, 2), aggregator='sum')
     amount = fields.Monetary(string='Costo', currency_field='currency_id', aggregator='sum')
-    slot_id = fields.Many2one('planning.slot', string='Turno', ondelete='cascade', index=True)
+    slot_id = fields.Many2one('planning.slot', string='Turno', ondelete='cascade', index=True, check_company=True)
     source = fields.Selection(
         [('crew', 'Asignar cuadrilla'), ('attendance', 'Marcación')], string='Origen',
         required=True, default='crew')

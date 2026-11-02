@@ -63,7 +63,7 @@
                 <field name="amount_total" sum="Total"/>
                 <field name="amount_billed" sum="Cobrado"/>
                 <field name="state" widget="badge" decoration-success="state == 'active'"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
@@ -108,7 +108,7 @@
                             <field name="sale_order_id" options="{'no_create': True}"/>
                             <field name="currency_id" options="{'no_create': True}"/>
                             <field name="scope"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group>
                             <field name="milestone_template_id" options="{'no_create': True}"/>

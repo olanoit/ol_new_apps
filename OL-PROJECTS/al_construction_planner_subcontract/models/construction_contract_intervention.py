@@ -73,17 +73,20 @@ class ConstructionContractIntervention(models.Model):
 class ConstructionContractInterventionLine(models.Model):
     _name = 'construction.contract.intervention.line'
     _description = 'Partida de la preliquidación de la intervención'
+    _check_company_auto = True
     _order = 'intervention_id, sequence, id'
 
     intervention_id = fields.Many2one('construction.contract.intervention', string='Intervención',
-                                      required=True, ondelete='cascade', index=True)
+                                      required=True, ondelete='cascade', index=True,
+                                      check_company=True)
     company_id = fields.Many2one(related='intervention_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='intervention_id.currency_id', string='Moneda')
     sequence = fields.Integer(default=10)
     purchase_line_id = fields.Many2one('purchase.order.line', string='Línea de la orden',
-                                       required=True, index=True, ondelete='restrict')
+                                       required=True, index=True, ondelete='restrict',
+                                       check_company=True)
     task_label = fields.Char(string='Partida')
-    activity_id = fields.Many2one('construction.labor.activity', string='Actividad')
+    activity_id = fields.Many2one('construction.labor.activity', string='Actividad', check_company=True)
     uom_id = fields.Many2one('uom.uom', string='Unidad')
     price_unit = fields.Float(string='Precio', digits='Product Price')
     qty_contracted = fields.Float(string='Contratado', digits='Product Unit')

@@ -227,14 +227,15 @@ class L10nPeCollectionProvision(models.Model):
 class L10nPeCollectionProvisionLine(models.Model):
     _name = 'l10n_pe.collection.provision.line'
     _description = 'Documento provisionado'
+    _check_company_auto = True
     _order = 'partner_id, date_maturity'
 
-    provision_id = fields.Many2one('l10n_pe.collection.provision', required=True, ondelete='cascade', index=True)
+    provision_id = fields.Many2one('l10n_pe.collection.provision', required=True, ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='provision_id.company_id', store=True)
     currency_id = fields.Many2one(related='provision_id.currency_id')
     state = fields.Selection(related='provision_id.state')
     selected = fields.Boolean(string='Provisionar', default=True)
-    move_line_id = fields.Many2one('account.move.line', string='Cuota', required=True, readonly=True)
+    move_line_id = fields.Many2one('account.move.line', string='Cuota', required=True, readonly=True, check_company=True)
     move_id = fields.Many2one(related='move_line_id.move_id', string='Documento')
     date_maturity = fields.Date(related='move_line_id.date_maturity', string='Vencimiento', store=True)
     partner_id = fields.Many2one('res.partner', string='Deudor', required=True, readonly=True)
@@ -255,7 +256,7 @@ class L10nPeCollectionProvisionLine(models.Model):
     debtor_total = fields.Monetary(string='Deuda provisionada del deudor', compute='_compute_debtor_total')
     write_off_allowed = fields.Boolean(string='Castigo deducible', compute='_compute_debtor_total',
                                        help='Deuda del deudor de hasta 3 UIT o acciones judiciales agotadas.')
-    write_off_move_id = fields.Many2one('account.move', string='Castigo', readonly=True, copy=False)
+    write_off_move_id = fields.Many2one('account.move', string='Castigo', readonly=True, copy=False, check_company=True)
     write_off_amount = fields.Monetary(string='Castigado', readonly=True, copy=False)
 
     @api.depends('action_count', 'judicial', 'provision_id.min_actions')

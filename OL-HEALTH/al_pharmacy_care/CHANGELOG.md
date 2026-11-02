@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_care.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261102 — 02/11/2026
+
+- Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía».
+
 ## 3.20261101 — 01/11/2026
 
 - La actividad «Recompra de tratamiento» vuelve a mostrar su ícono: Odoo 20 usa los íconos de Material Symbols y ya no los de Font Awesome.

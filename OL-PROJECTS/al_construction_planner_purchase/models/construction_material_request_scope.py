@@ -139,7 +139,8 @@ class ConstructionMaterialRequest(models.Model):
     construction_default_stage = fields.Char(
         string='Etapa por defecto', compute='_compute_construction_line_defaults')
     construction_default_task_id = fields.Many2one(
-        'project.task', string='Tarea por defecto', compute='_compute_construction_line_defaults')
+        'project.task', string='Tarea por defecto', compute='_compute_construction_line_defaults',
+        check_company=True)
 
     # ------------------------------------------------------------------
     # Selectores de nivel en cascada (RQ-01)

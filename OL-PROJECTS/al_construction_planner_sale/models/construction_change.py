@@ -219,7 +219,8 @@ class ConstructionChangeOrderLine(models.Model):
     _check_company_auto = True
 
     change_id = fields.Many2one('construction.change.order', string='Cambio', required=True,
-                                ondelete='cascade', index=True)
+                                ondelete='cascade', index=True,
+                                check_company=True)
     sequence = fields.Integer(default=10)
     project_id = fields.Many2one(related='change_id.project_id', store=True)
     company_id = fields.Many2one(related='change_id.company_id', store=True, index=True)

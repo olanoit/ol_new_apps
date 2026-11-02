@@ -50,7 +50,7 @@
                             <field name="has_changes" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="amount_diff" invisible="not has_changes"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <field name="line_ids" readonly="state != 'draft'">

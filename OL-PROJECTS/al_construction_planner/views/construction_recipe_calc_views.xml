@@ -108,7 +108,7 @@
             <list string="Equivalencias de unidades" editable="bottom">
                 <field name="name"/>
                 <field name="uom_id" options="{'no_create': True}"/>
-                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" options="{'no_create': True}"/>
             </list>
         </field>
     </record>

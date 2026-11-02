@@ -48,7 +48,7 @@ class L10nPeMrpCostClose(models.Model):
         [('draft', 'Borrador'), ('done', 'Validado')],
         string='Estado', default='draft', required=True, readonly=True, tracking=True)
     line_ids = fields.One2many('l10n_pe.mrp.cost.close.line', 'close_id', string='Cargos')
-    landed_cost_id = fields.Many2one('stock.landed.cost', string='Costo en destino', readonly=True, copy=False)
+    landed_cost_id = fields.Many2one('stock.landed.cost', string='Costo en destino', readonly=True, copy=False, check_company=True)
     currency_id = fields.Many2one(related='company_id.currency_id')
     amount_total = fields.Monetary(string='Total', compute='_compute_amount_total')
     warning = fields.Text(string='Avisos', readonly=True)
@@ -246,16 +246,17 @@ class L10nPeMrpCostClose(models.Model):
 class L10nPeMrpCostCloseLine(models.Model):
     _name = 'l10n_pe.mrp.cost.close.line'
     _description = 'Cargo del cierre de costos'
+    _check_company_auto = True
     _order = 'element, pool_id, production_id'
 
-    close_id = fields.Many2one('l10n_pe.mrp.cost.close', required=True, ondelete='cascade', index=True)
+    close_id = fields.Many2one('l10n_pe.mrp.cost.close', required=True, ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='close_id.company_id', store=True)
     currency_id = fields.Many2one(related='close_id.currency_id')
-    production_id = fields.Many2one('mrp.production', string='Orden', required=True, index=True)
+    production_id = fields.Many2one('mrp.production', string='Orden', required=True, index=True, check_company=True)
     product_id = fields.Many2one(related='production_id.product_id', store=True, string='Producto')
     element = fields.Selection(
         [('labor', 'Ajuste de mano de obra'), ('overhead', 'CIF')],
         string='Concepto', required=True)
-    pool_id = fields.Many2one('l10n_pe.mrp.cost.pool', string='Bolsa')
+    pool_id = fields.Many2one('l10n_pe.mrp.cost.pool', string='Bolsa', check_company=True)
     basis = fields.Float(string='Base', digits=(16, 4))
     amount = fields.Monetary(string='Importe')

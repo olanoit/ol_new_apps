@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>
@@ -20,7 +20,7 @@
                     <div class="oe_title"><h1><field name="name" placeholder="Nombre del plan"/></h1></div>
                     <group>
                         <group>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
@@ -103,7 +103,7 @@
                             <field name="amount_recovered"/>
                             <field name="amount_commission"/>
                             <field name="invoice_id" invisible="not invoice_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <div class="alert alert-info" role="alert" invisible="state != 'draft'">
@@ -151,7 +151,7 @@
                 <field name="amount_commission" sum="Total"/>
                 <field name="state" widget="badge" decoration-success="state in ('confirmed', 'billed')"
                        decoration-info="state == 'draft'"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

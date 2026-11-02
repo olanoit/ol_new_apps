@@ -47,7 +47,7 @@
                             <field name="memo" readonly="state != 'draft'"/>
                             <field name="partner_ids" widget="many2many_tags" invisible="state != 'draft'"
                                    options="{'no_create': True}"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="payment_id" invisible="not payment_id"/>
                             <field name="move_id" invisible="not move_id"/>
                         </group>
@@ -104,7 +104,7 @@
                 <field name="partner_count" optional="show"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="amount_total" sum="Total"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'posted'"/>
             </list>
         </field>

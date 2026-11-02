@@ -324,10 +324,12 @@ class L10nPeCollectionPrediction(models.Model):
     diario y la usa la cartera."""
     _name = 'l10n_pe.collection.prediction'
     _description = 'Fecha prevista de pago'
+    _check_company_auto = True
     _order = 'predicted_date'
 
     move_line_id = fields.Many2one('account.move.line', string='Cuota', required=True, index=True,
-                                   ondelete='cascade')
+                                   ondelete='cascade',
+                                   check_company=True)
     company_id = fields.Many2one('res.company', string='Compañía', required=True, index=True)
     partner_id = fields.Many2one('res.partner', string='Cliente', index=True)
     date_due = fields.Date(string='Vencimiento')

@@ -11,7 +11,7 @@
                 <field name="amount_total" sum="Total"/>
                 <field name="state" widget="badge" decoration-success="state == 'posted'"/>
                 <field name="currency_id" column_invisible="True"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
@@ -40,7 +40,7 @@
                             <field name="date_from" readonly="state != 'draft'"/>
                             <field name="date_to"/>
                             <field name="company_id" groups="base.group_multi_company"
-                                   readonly="state != 'draft'"/>
+                                   readonly="1"/>
                         </group>
                         <group>
                             <field name="amount_total"/>

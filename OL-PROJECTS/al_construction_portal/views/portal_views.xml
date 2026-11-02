@@ -184,7 +184,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="catalog"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -198,7 +198,7 @@
                     <group>
                         <field name="name"/>
                         <field name="catalog"/>
-                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                     </group>
                     <field name="line_ids">
                         <list editable="bottom">

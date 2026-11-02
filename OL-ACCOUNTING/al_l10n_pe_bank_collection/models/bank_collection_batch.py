@@ -181,16 +181,18 @@ class L10nPeBankCollectionBatch(models.Model):
 class L10nPeBankCollectionBatchLine(models.Model):
     _name = 'l10n_pe.bank.collection.batch.line'
     _description = 'Cuota del archivo de deudores'
+    _check_company_auto = True
     _order = 'partner_id, date_maturity, id'
 
-    batch_id = fields.Many2one('l10n_pe.bank.collection.batch', required=True, ondelete='cascade', index=True)
+    batch_id = fields.Many2one('l10n_pe.bank.collection.batch', required=True, ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='batch_id.company_id', store=True)
     currency_id = fields.Many2one(related='batch_id.currency_id')
     move_line_id = fields.Many2one('account.move.line', string='Cuota', readonly=True,
-                                   help='En la validación parcial, la cuota más antigua del cliente.')
+                                   help='En la validación parcial, la cuota más antigua del cliente.',
+                                   check_company=True)
     per_partner = fields.Boolean(string='Total del cliente', readonly=True,
                                  help='Validación parcial: una línea con toda la deuda del cliente.')
-    payment_type_id = fields.Many2one('l10n_pe.bank.collection.payment.type', string='Tipo de pago', readonly=True)
+    payment_type_id = fields.Many2one('l10n_pe.bank.collection.payment.type', string='Tipo de pago', readonly=True, check_company=True)
     move_id = fields.Many2one(related='move_line_id.move_id', string='Documento')
     date_maturity = fields.Date(related='move_line_id.date_maturity', string='Vencimiento')
     partner_id = fields.Many2one('res.partner', string='Cliente', readonly=True)

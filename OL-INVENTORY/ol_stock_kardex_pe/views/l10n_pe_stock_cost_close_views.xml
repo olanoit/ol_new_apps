@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <list string="Cierres de almacén" decoration-muted="state == 'reopened'" decoration-info="state == 'draft'">
                 <field name="date"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                 <field name="account_move_id"/>
                 <field name="user_id" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'closed'"/>
@@ -38,7 +38,7 @@
                         <group>
                             <field name="date" readonly="state == 'closed'"/>
                             <field name="company_id" groups="base.group_multi_company"
-                                   readonly="state != 'draft'" options="{'no_create': True}"/>
+                                   readonly="1" options="{'no_create': True}"/>
                         </group>
                         <group>
                             <field name="account_move_id"/>
@@ -74,7 +74,7 @@
                     contabilidad las ajusta el siguiente cierre de almacén.
                 </div>
                 <group>
-                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                    <field name="company_id" readonly="1" groups="base.group_multi_company" options="{'no_create': True}"/>
                     <field name="date_from"/>
                     <field name="lock_date" invisible="not lock_date"/>
                 </group>

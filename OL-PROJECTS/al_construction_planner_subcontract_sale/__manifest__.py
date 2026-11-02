@@ -18,7 +18,7 @@ desde el cambio de obra aprobado y el margen de compra por partida.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_subcontract_sale/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '3.20261102',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_subcontract', 'al_construction_planner_sale'],

@@ -15,7 +15,7 @@
                 <field name="guarantee_base" optional="show"/>
                 <field name="guarantee_days" optional="show"/>
                 <field name="frequency"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
@@ -56,7 +56,7 @@
                         </group>
                         <group string="Liquidación">
                             <field name="document_type_ids" widget="many2many_tags" options="{'no_create': True}"/>
-                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="order_id" invisible="not order_id"/>
                             <field name="template_id" invisible="not template_id"/>
                         </group>

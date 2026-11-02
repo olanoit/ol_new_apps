@@ -36,7 +36,7 @@
                             <field name="overdue_amount"/>
                             <field name="expected_amount" class="fw-bold"/>
                             <field name="refreshed_on"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>

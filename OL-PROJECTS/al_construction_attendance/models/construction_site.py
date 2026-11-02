@@ -25,7 +25,8 @@ class L10nPeHrConstructionSite(models.Model):
     project_id = fields.Many2one(
         'project.project', string='Obra del planificador', index=True,
         domain=[('is_construction_site', '=', True)],
-        help='Proyecto de la obra. Las sedes de área (planta, oficina) van sin obra.')
+        help='Proyecto de la obra. Las sedes de área (planta, oficina) van sin obra.',
+        check_company=True)
     latitude = fields.Float(string='Latitud', digits=(10, 7))
     longitude = fields.Float(string='Longitud', digits=(10, 7))
     radius_m = fields.Integer(

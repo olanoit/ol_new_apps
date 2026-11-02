@@ -13,7 +13,7 @@
                 <field name="collected_amount" sum="Total"/>
                 <field name="progress" widget="progressbar"/>
                 <field name="portfolio_amount" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

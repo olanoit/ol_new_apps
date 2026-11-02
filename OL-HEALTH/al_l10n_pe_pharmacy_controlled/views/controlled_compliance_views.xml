@@ -40,7 +40,7 @@
                 <field name="visa_number" optional="show"/>
                 <field name="electronic_resolution" optional="show"/>
                 <field name="date_start"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
@@ -58,7 +58,7 @@
                             <field name="mode" widget="radio"/>
                             <field name="date_start"/>
                             <field name="active" invisible="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group invisible="mode != 'physical'">
                             <field name="folio_from"/>
@@ -102,7 +102,7 @@
                 <field name="deadline"/>
                 <field name="submitted_date" optional="show"/>
                 <field name="difference_count" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="state" widget="badge" decoration-success="state == 'submitted'"
                        decoration-info="state == 'computed'"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
@@ -138,7 +138,7 @@
                             <field name="book" readonly="state != 'draft'"/>
                             <field name="year" readonly="state != 'draft'"/>
                             <field name="quarter" readonly="state != 'draft'"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group>
                             <field name="date_from"/>

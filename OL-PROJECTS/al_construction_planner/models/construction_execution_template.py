@@ -85,7 +85,8 @@ class ConstructionExecutionTemplateLine(models.Model):
 
     template_id = fields.Many2one(
         'construction.execution.template', string='Receta', required=True, ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(related='template_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='template_id.currency_id', string='Moneda')
     sequence = fields.Integer(default=10)

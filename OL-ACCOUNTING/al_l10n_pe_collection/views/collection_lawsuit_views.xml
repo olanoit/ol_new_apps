@@ -48,7 +48,7 @@
                             <field name="next_deadline" invisible="not next_deadline"/>
                             <field name="result" invisible="not result"/>
                             <field name="date_closed" invisible="not date_closed"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <div class="alert alert-info" role="alert" invisible="state not in ('draft', 'conciliation')">
@@ -122,7 +122,7 @@
                 <field name="state" widget="badge" decoration-info="state in ('draft', 'conciliation')"
                        decoration-warning="state in ('filed', 'admitted', 'judgment', 'enforcement')"/>
                 <field name="result" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

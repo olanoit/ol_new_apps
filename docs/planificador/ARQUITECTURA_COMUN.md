@@ -195,6 +195,12 @@ esa misma regla.
    todos los requerimientos de compra de la base, no solo a los de obra. Con una
    sola solicitud por línea de OC da el mismo resultado que OCA. También se
    reemplazan los mensajes de OCA en `purchase_request_messages.py`.
+   La cantidad que se suma al agregar una solicitud a una OC existente se
+   corrige en el propio módulo de OCA (`purchase_request_line._calc_new_qty`,
+   marcado «OL»), no en el puente: rige para todas las solicitudes. El
+   asistente «Crear OC» de OCA solo cambia cantidad, destino, partida y
+   analítica en las líneas de obra (`_al_is_construction`); las demás siguen a
+   OCA sin cambios.
 3. **El código que corre en cada movimiento de stock, cada transferencia o cada
    apunte analítico filtra primero lo que es de obra y sale enseguida si no lo
    es.** La suite atiende también ventas, farmacia y punto de venta.
@@ -230,6 +236,7 @@ esa misma regla.
 | 01-nov-2026 | Grupo ML «Mueble completo» (`full`) en el núcleo y `ML_COUNTED` (bajo, alto y completo) para todo lo que suma ML de la obra: closets, baños, lavanderías y ductos cuentan para la instalación y limpieza por ML y para el control de alcance (M116-10). En la hoja de trabajo, toda escritura masiva va agrupada en un comando que un complemento de la hoja despacha en una sola revisión (cada dispatch suelto es una revisión al servidor), y la plantilla del maestro se arma por partes (fija y por filas) para ampliar una hoja abierta con las mismas fórmulas y listas. |
 | 01-nov-2026 | Estado de la hoja de trabajo en `documents.document` (borrador, importada, validada, enviada vN, con fecha, versión, mensaje del envío y semáforo de CONTROL), común a las dos hojas; lo escriben «Importar Excel a la hoja», «Validar» y el envío, y lo muestra la ficha de la obra. Las fórmulas de las hojas no usan `REPT` (no existe en la hoja de Odoo 19): los tramos de un texto salen con `TEXTBEFORE` y `TEXTAFTER` (`sheet_migration.first_part`, `second_part`, `last_part`) | Mobiliario (paquete 1.13, M113-11/12) | Común |
 | 01-nov-2026 | Las acciones que escriben en una hoja de trabajo guardan antes una copia numerada (`construction_version_before`, común). En la hoja de presupuesto, desde `construction_sheet_layout` 2 el nombre va primero y el código al final (INSUMOS, APU), la receta se elige por nombre en APU_DETALLE y las fórmulas buscan con `XLOOKUP` por la letra de cada columna; las hojas anteriores (0) conservan su orden y «Traer de Odoo» les escribe las fórmulas de ese orden | Construcción (CR-22 g) y mobiliario (M113-08) | Común |
+| 02-nov-2026 | Multicompañía: los modelos propios con compañía llevan regla por compañía y `_check_company_auto`, sus Many2one y Many2many hacia modelos con compañía llevan `check_company=True` y la Compañía es de solo lectura en sus vistas; lo comprueba `al_base_module_info/tests/test_multicompany.py`. Excepciones, con su motivo en ese test: lo que es de la raíz y reúne documentos de sus sucursales (SIRE, flujo y cierre de caja, cierre del ejercicio) y el miembro del portal sin obra | Las dos | Común |
 
 ## 9. Conflictos abiertos
 

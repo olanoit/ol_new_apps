@@ -10,6 +10,7 @@ class L10nPeCollectionDashboard(models.TransientModel):
     cálculo «Cobranza» de la app Tableros."""
     _name = 'l10n_pe.collection.dashboard'
     _description = 'Indicadores del gestor'
+    _check_company_auto = True
 
     company_id = fields.Many2one('res.company', string='Compañía', required=True,
                                  default=lambda self: self.env.company)

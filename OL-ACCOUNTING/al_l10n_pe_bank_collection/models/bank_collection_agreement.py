@@ -142,10 +142,12 @@ class L10nPeBankCollectionPaymentType(models.Model):
     (derecho de trámite, matrícula…) que cualquiera paga en el banco."""
     _name = 'l10n_pe.bank.collection.payment.type'
     _description = 'Tipo de pago de recaudación'
+    _check_company_auto = True
     _order = 'agreement_id, sequence, code'
 
     agreement_id = fields.Many2one('l10n_pe.bank.collection.agreement', required=True, ondelete='cascade',
-                                   index=True)
+                                   index=True,
+                                   check_company=True)
     company_id = fields.Many2one(related='agreement_id.company_id', store=True)
     currency_id = fields.Many2one(related='agreement_id.currency_id')
     sequence = fields.Integer(default=10)

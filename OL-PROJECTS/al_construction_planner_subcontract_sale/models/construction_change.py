@@ -21,7 +21,8 @@ class ConstructionChangeOrder(models.Model):
         readonly=True)
     construction_purchase_order_id = fields.Many2one(
         'purchase.order', string='Orden de contrata',
-        compute='_compute_construction_purchase_order_id')
+        compute='_compute_construction_purchase_order_id',
+        check_company=True)
     construction_can_add_to_order = fields.Boolean(
         compute='_compute_construction_purchase_order_id')
 

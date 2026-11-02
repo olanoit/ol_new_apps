@@ -352,10 +352,12 @@ class ConstructionContractPrice(models.Model):
 class ConstructionContractDocument(models.Model):
     _name = 'construction.contract.document'
     _description = 'Documento del contrato'
+    _check_company_auto = True
     _order = 'contract_id, sequence, id'
 
     contract_id = fields.Many2one(
-        'construction.contract', string='Contrato', required=True, ondelete='cascade', index=True)
+        'construction.contract', string='Contrato', required=True, ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(related='contract_id.company_id', store=True, index=True)
     sequence = fields.Integer(default=10)
     name = fields.Char(string='Documento', required=True, help='Dossier de calidad, anexo PLAFT…')
@@ -384,7 +386,8 @@ class ConstructionUnitMilestone(models.Model):
         'project.task', string='Unidad', required=True, index=True, check_company=True)
     price_line_id = fields.Many2one(
         'construction.contract.price', string='Precio', required=True, ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     typology_id = fields.Many2one(related='price_line_id.typology_id', store=True, index=True)
     sale_line_id = fields.Many2one(related='price_line_id.sale_line_id', store=True, index=True)
     template_line_id = fields.Many2one(

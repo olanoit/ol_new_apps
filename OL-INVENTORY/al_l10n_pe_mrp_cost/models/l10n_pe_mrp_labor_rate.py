@@ -147,9 +147,10 @@ class L10nPeMrpLaborRate(models.Model):
 class L10nPeMrpLaborRateLine(models.Model):
     _name = 'l10n_pe.mrp.labor.rate.line'
     _description = 'Costo hora de un empleado'
+    _check_company_auto = True
     _order = 'employee_id'
 
-    rate_id = fields.Many2one('l10n_pe.mrp.labor.rate', required=True, ondelete='cascade', index=True)
+    rate_id = fields.Many2one('l10n_pe.mrp.labor.rate', required=True, ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='rate_id.company_id', store=True)
     currency_id = fields.Many2one(related='rate_id.currency_id')
     employee_id = fields.Many2one('hr.employee', string='Empleado', required=True, check_company=True)

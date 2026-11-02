@@ -18,7 +18,7 @@
                        decoration-warning="sync_state in ('work_item', 'template', 'both')"
                        decoration-danger="sync_state == 'missing'"
                        invisible="sync_state == 'none'"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
@@ -64,7 +64,7 @@
                             <field name="work_item_name" invisible="not work_item_id"/>
                             <field name="work_item_id" invisible="1"/>
                             <field name="sync_checked_on" invisible="not work_item_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>

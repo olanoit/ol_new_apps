@@ -17,6 +17,7 @@ class L10nPeCollectionCommissionPlan(models.Model):
     comisiona salvo que un tramo lo cubra."""
     _name = 'l10n_pe.collection.commission.plan'
     _description = 'Plan de comisión de cobranza'
+    _check_company_auto = True
     _order = 'name'
 
     name = fields.Char(string='Plan', required=True)
@@ -97,7 +98,7 @@ class L10nPeCollectionCommission(models.Model):
     line_ids = fields.One2many('l10n_pe.collection.commission.line', 'commission_id', string='Cobros', copy=False)
     amount_recovered = fields.Monetary(string='Recuperado', compute='_compute_amounts', store=True)
     amount_commission = fields.Monetary(string='Comisión', compute='_compute_amounts', store=True, tracking=True)
-    invoice_id = fields.Many2one('account.move', string='Factura de la agencia', readonly=True, copy=False)
+    invoice_id = fields.Many2one('account.move', string='Factura de la agencia', readonly=True, copy=False, check_company=True)
     note = fields.Text(string='Notas')
 
     @api.constrains('date_from', 'date_to', 'beneficiary', 'user_id', 'agency_id')
@@ -309,21 +310,24 @@ class L10nPeCollectionCommission(models.Model):
 class L10nPeCollectionCommissionLine(models.Model):
     _name = 'l10n_pe.collection.commission.line'
     _description = 'Cobro de la liquidación de comisiones'
+    _check_company_auto = True
     _order = 'date, id'
 
     commission_id = fields.Many2one('l10n_pe.collection.commission', string='Liquidación', required=True,
-                                    ondelete='cascade', index=True)
+                                    ondelete='cascade', index=True,
+                                    check_company=True)
     company_id = fields.Many2one(related='commission_id.company_id', store=True, string='Compañía')
     currency_id = fields.Many2one(related='commission_id.currency_id', string='Moneda')
     line_type = fields.Selection([('recovery', 'Cobro'), ('clawback', 'Descuento')], string='Tipo',
                                  required=True, default='recovery')
     # Si el cobro se desconcilia, la conciliación desaparece: la línea queda
     # sin ella y la siguiente liquidación la descuenta.
-    partial_id = fields.Many2one('account.partial.reconcile', string='Conciliación', ondelete='set null', index=True)
+    partial_id = fields.Many2one('account.partial.reconcile', string='Conciliación', ondelete='set null', index=True, check_company=True)
     origin_line_id = fields.Many2one('l10n_pe.collection.commission.line', string='Cobro descontado',
-                                     ondelete='restrict', index=True)
-    move_id = fields.Many2one('account.move', string='Documento')
-    payment_move_id = fields.Many2one('account.move', string='Cobro')
+                                     ondelete='restrict', index=True,
+                                     check_company=True)
+    move_id = fields.Many2one('account.move', string='Documento', check_company=True)
+    payment_move_id = fields.Many2one('account.move', string='Cobro', check_company=True)
     partner_id = fields.Many2one('res.partner', string='Cliente')
     date = fields.Date(string='Fecha de cobro')
     date_maturity = fields.Date(string='Vencimiento')

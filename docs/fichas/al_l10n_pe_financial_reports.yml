@@ -234,6 +234,10 @@ faq:
       de Patrimonio 3.19.
 
 novedades:
+  - version: '7.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía»."
   - version: '6.20261031'
     fecha: 31/10/2026
     cambios:

@@ -17,7 +17,7 @@
                 <field name="user_id" optional="hide"/>
                 <field name="purchase_order_id" optional="hide"/>
                 <field name="picking_id" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="state" widget="badge" decoration-warning="state == 'pending'"
                        decoration-info="state == 'ordered'" decoration-success="state == 'done'"/>
             </list>
@@ -56,7 +56,7 @@
                             <field name="pos_session_id" invisible="not pos_session_id"/>
                             <field name="employee_id"/>
                             <field name="user_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <group string="Reposición" invisible="not purchase_order_id and not picking_id">

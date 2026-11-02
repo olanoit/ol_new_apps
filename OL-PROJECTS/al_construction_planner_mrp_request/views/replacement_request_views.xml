@@ -48,7 +48,7 @@
                             <field name="production_date" invisible="not production_id"/>
                             <field name="production_id" invisible="1"/>
                             <field name="picking_id" invisible="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <field name="reason_note" placeholder="Qué pasó con la pieza…" readonly="state != 'draft'"/>

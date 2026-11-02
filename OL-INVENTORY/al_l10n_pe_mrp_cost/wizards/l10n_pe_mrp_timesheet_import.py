@@ -27,6 +27,7 @@ class L10nPeMrpTimesheetImport(models.TransientModel):
     """
     _name = 'l10n_pe.mrp.timesheet.import'
     _description = 'Importar tareo de fabricación'
+    _check_company_auto = True
 
     file = fields.Binary(string='Archivo Excel', required=True)
     filename = fields.Char()

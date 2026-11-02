@@ -56,7 +56,8 @@ class ConstructionProductCreateWizard(models.TransientModel):
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     categ_id = fields.Many2one(
         'product.category', string='Familia', required=True,
-        domain="[('construction_family_code', '!=', False)]")
+        domain="[('construction_family_code', '!=', False)]",
+        check_company=True)
     name = fields.Char(string='Nombre', required=True)
     code_proposed = fields.Char(
         string='Código propuesto', compute='_compute_code_proposed',

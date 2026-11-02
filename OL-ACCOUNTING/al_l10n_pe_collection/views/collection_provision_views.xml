@@ -33,7 +33,7 @@
                             <field name="recovered_amount" invisible="not recovered_amount"/>
                             <field name="written_off_amount" invisible="not written_off_amount"/>
                             <field name="move_id" invisible="not move_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <div class="alert alert-info" role="alert" invisible="state != 'draft'">
@@ -85,7 +85,7 @@
                 <field name="written_off_amount" optional="show"/>
                 <field name="move_id" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'posted'"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

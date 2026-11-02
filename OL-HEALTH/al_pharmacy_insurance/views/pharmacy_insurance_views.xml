@@ -15,7 +15,7 @@
                 <field name="date_start" optional="hide"/>
                 <field name="date_end" optional="show"/>
                 <field name="payment_method_id" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
@@ -64,7 +64,7 @@
                         <group string="Cobro">
                             <field name="payment_method_id"/>
                             <field name="journal_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
@@ -204,7 +204,7 @@
                             <field name="date_to" readonly="state != 'draft'"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="amount_total"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <field name="order_ids" readonly="1">

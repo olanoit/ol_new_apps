@@ -146,9 +146,10 @@ class L10nPeBankCollectionResponse(models.Model):
 class L10nPeBankCollectionResponseLine(models.Model):
     _name = 'l10n_pe.bank.collection.response.line'
     _description = 'Cobro informado por el banco'
+    _check_company_auto = True
     _order = 'response_id, line_number'
 
-    response_id = fields.Many2one('l10n_pe.bank.collection.response', required=True, ondelete='cascade', index=True)
+    response_id = fields.Many2one('l10n_pe.bank.collection.response', required=True, ondelete='cascade', index=True, check_company=True)
     agreement_id = fields.Many2one(related='response_id.agreement_id', store=True)
     company_id = fields.Many2one(related='response_id.company_id', store=True)
     currency_id = fields.Many2one(related='response_id.currency_id')
@@ -171,7 +172,7 @@ class L10nPeBankCollectionResponseLine(models.Model):
                                             " ('account_id.account_type', '=', 'asset_receivable'),"
                                             " ('parent_state', '=', 'posted')]")
     state = fields.Selection(LINE_STATES, string='Estado', default='unmatched', required=True)
-    payment_id = fields.Many2one('account.payment', string='Pago', readonly=True, copy=False)
+    payment_id = fields.Many2one('account.payment', string='Pago', readonly=True, copy=False, check_company=True)
     operation_key = fields.Char(string='Clave de la operación', compute='_compute_operation_key', store=True,
                                 index=True)
 

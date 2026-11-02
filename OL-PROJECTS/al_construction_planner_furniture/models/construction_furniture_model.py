@@ -152,7 +152,8 @@ class ConstructionTypologyModule(models.Model):
     effective_assembly_activity_id = fields.Many2one(
         'construction.labor.activity', string='Actividad de armado del catálogo',
         compute='_compute_effective_assembly_activity_id',
-        help='La escrita o, sin ella, la del catálogo según el método o el tipo especial.')
+        help='La escrita o, sin ella, la del catálogo según el método o el tipo especial.',
+        check_company=True)
 
     @api.depends('name', 'code')
     def _compute_module_class(self):
@@ -257,10 +258,12 @@ class ConstructionTypologyPiece(models.Model):
     """Pieza del despiece de un módulo (hoja PIEZAS)."""
     _name = 'construction.typology.piece'
     _description = 'Pieza del módulo'
+    _check_company_auto = True
     _order = 'module_id, sequence, id'
 
     module_id = fields.Many2one('construction.typology.module', string='Módulo', required=True,
-                                ondelete='cascade', index=True)
+                                ondelete='cascade', index=True,
+                                check_company=True)
     company_id = fields.Many2one(related='module_id.company_id', store=True, index=True)
     sequence = fields.Integer(default=10)
     qty = fields.Float(string='Cantidad', digits=(16, 2), default=1.0)
@@ -268,7 +271,7 @@ class ConstructionTypologyPiece(models.Model):
     width_mm = fields.Float(string='Ancho (mm)', digits=(16, 1))
     piece_type = fields.Char(string='Tipo de pieza', help='COSTADO, BASE, PUERTA, FRENTE, TAPA…')
     color = fields.Char(string='Color o descripción')
-    product_id = fields.Many2one('product.product', string='Tablero')
+    product_id = fields.Many2one('product.product', string='Tablero', check_company=True)
     edges = fields.Char(string='Cantos')
     area_m2 = fields.Float(string='m²', compute='_compute_area_m2', digits=(16, 4))
 
@@ -282,13 +285,15 @@ class ConstructionTypologyModuleMaterial(models.Model):
     """Material de la receta del módulo con su sub etapa de consumo."""
     _name = 'construction.typology.module.material'
     _description = 'Material del módulo'
+    _check_company_auto = True
     _order = 'module_id, sequence, id'
 
     module_id = fields.Many2one('construction.typology.module', string='Módulo', required=True,
-                                ondelete='cascade', index=True)
+                                ondelete='cascade', index=True,
+                                check_company=True)
     company_id = fields.Many2one(related='module_id.company_id', store=True, index=True)
     sequence = fields.Integer(default=10)
-    product_id = fields.Many2one('product.product', string='Producto', required=True)
+    product_id = fields.Many2one('product.product', string='Producto', required=True, check_company=True)
     qty = fields.Float(string='Cantidad', digits=(16, 6), required=True)
     uom_id = fields.Many2one('uom.uom', string='Unidad', compute='_compute_uom_id', store=True,
                              readonly=False)
@@ -447,11 +452,13 @@ class ConstructionRateListLine(models.Model):
     _order = 'list_id, activity_id'
 
     list_id = fields.Many2one('construction.rate.list', string='Lista', required=True,
-                              ondelete='cascade', index=True)
+                              ondelete='cascade', index=True,
+                              check_company=True)
     company_id = fields.Many2one(related='list_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='list_id.currency_id', string='Moneda')
     activity_id = fields.Many2one('construction.labor.activity', string='Actividad',
-                                  required=True, index=True)
+                                  required=True, index=True,
+                                  check_company=True)
     uom_id = fields.Many2one(related='activity_id.uom_id', string='Unidad')
     price = fields.Monetary(string='Tarifa', currency_field='currency_id')
     retention_pct = fields.Float(string='Retención (%)', digits=(5, 2))

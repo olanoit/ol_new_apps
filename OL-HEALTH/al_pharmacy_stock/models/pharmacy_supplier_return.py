@@ -203,7 +203,8 @@ class PharmacySupplierReturnLine(models.Model):
     _check_company_auto = True
 
     return_id = fields.Many2one('pharmacy.supplier.return', required=True, ondelete='cascade',
-                                index=True)
+                                index=True,
+                                check_company=True)
     company_id = fields.Many2one(related='return_id.company_id', store=True)
     currency_id = fields.Many2one(related='return_id.currency_id')
     product_id = fields.Many2one('product.product', string='Producto', required=True,

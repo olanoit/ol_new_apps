@@ -19,7 +19,8 @@ class PharmacyExpiryDiscount(models.Model):
     categ_id = fields.Many2one(
         'product.category', string='Categoría',
         help='Opcional: solo para los productos de esta categoría y sus subcategorías. Una '
-             'escala con categoría tiene prioridad sobre las generales.')
+             'escala con categoría tiene prioridad sobre las generales.',
+        check_company=True)
     active = fields.Boolean(default=True)
     company_id = fields.Many2one('res.company', string='Compañía', required=True,
                                  default=lambda self: self.env.company)

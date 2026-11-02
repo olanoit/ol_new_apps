@@ -134,11 +134,13 @@ class ConstructionApprovalRoute(models.Model):
 class ConstructionApprovalRouteApprover(models.Model):
     _name = 'construction.approval.route.approver'
     _description = 'Aprobador del tramo'
+    _check_company_auto = True
     _order = 'route_id, sequence, id'
 
     route_id = fields.Many2one(
         'construction.approval.route', string='Tramo', required=True, ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(related='route_id.company_id', store=True)
     sequence = fields.Integer(string='Secuencia', default=10)
     user_id = fields.Many2one(

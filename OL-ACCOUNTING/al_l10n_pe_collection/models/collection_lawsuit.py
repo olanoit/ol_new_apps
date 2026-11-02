@@ -263,10 +263,12 @@ class L10nPeCollectionLawsuitEvent(models.Model):
     plazo, que se agenda como actividad al responsable."""
     _name = 'l10n_pe.collection.lawsuit.event'
     _description = 'Actuación judicial'
+    _check_company_auto = True
     _order = 'date desc, id desc'
 
     lawsuit_id = fields.Many2one('l10n_pe.collection.lawsuit', string='Proceso', required=True,
-                                 ondelete='cascade', index=True)
+                                 ondelete='cascade', index=True,
+                                 check_company=True)
     company_id = fields.Many2one(related='lawsuit_id.company_id', store=True, string='Compañía')
     date = fields.Date(string='Fecha', required=True, default=fields.Date.context_today)
     event_type = fields.Selection(EVENT_TYPES, string='Tipo', required=True, default='filing')
@@ -306,10 +308,12 @@ class L10nPeCollectionLawsuitEvent(models.Model):
 class L10nPeCollectionLawsuitCost(models.Model):
     _name = 'l10n_pe.collection.lawsuit.cost'
     _description = 'Gasto judicial'
+    _check_company_auto = True
     _order = 'date desc, id desc'
 
     lawsuit_id = fields.Many2one('l10n_pe.collection.lawsuit', string='Proceso', required=True,
-                                 ondelete='cascade', index=True)
+                                 ondelete='cascade', index=True,
+                                 check_company=True)
     company_id = fields.Many2one(related='lawsuit_id.company_id', store=True, string='Compañía')
     currency_id = fields.Many2one(related='lawsuit_id.currency_id', string='Moneda')
     date = fields.Date(string='Fecha', required=True, default=fields.Date.context_today)
@@ -317,7 +321,8 @@ class L10nPeCollectionLawsuitCost(models.Model):
                        help='Tasas judiciales, cédulas de notificación, honorarios, peritos, martillero…')
     amount = fields.Monetary(string='Importe', required=True)
     move_id = fields.Many2one('account.move', string='Comprobante',
-                              domain="[('move_type', 'in', ('in_invoice', 'in_receipt', 'entry'))]")
+                              domain="[('move_type', 'in', ('in_invoice', 'in_receipt', 'entry'))]",
+                              check_company=True)
 
 
 class L10nPeCollectionLawsuitClose(models.TransientModel):

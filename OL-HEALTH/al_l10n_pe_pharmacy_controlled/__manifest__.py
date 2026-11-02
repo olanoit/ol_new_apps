@@ -38,7 +38,7 @@ y sus modificatorias (actualizado por el DS 020-2024-SA):
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_l10n_pe_pharmacy_controlled/static/description/icon.png',
-    'version': '4.20261027',
+    'version': '5.20261102',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'al_pharmacy_stock', 'sale', 'l10n_pe', 'al_report_base'],
     'data': [

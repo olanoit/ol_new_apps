@@ -18,6 +18,7 @@ CHANNELS = [
 class L10nPeCollectionZone(models.Model):
     _name = 'l10n_pe.collection.zone'
     _description = 'Zona de cobranza'
+    _check_company_auto = True
     _order = 'name'
 
     name = fields.Char(string='Zona', required=True)
@@ -32,6 +33,7 @@ class L10nPeCollectionBucket(models.Model):
     usa la proyección."""
     _name = 'l10n_pe.collection.bucket'
     _description = 'Tramo de antigüedad'
+    _check_company_auto = True
     _order = 'days_from'
 
     name = fields.Char(string='Tramo', required=True)

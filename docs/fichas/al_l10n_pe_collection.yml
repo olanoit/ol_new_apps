@@ -165,6 +165,11 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: '14.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía»."
+      - "Zonas, tramos y periodos de proyección quedan con regla por compañía."
   - version: '13.20261027'
     fecha: 27/10/2026
     cambios:

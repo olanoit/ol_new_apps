@@ -515,7 +515,8 @@ class HrAccrualVacation(models.Model):
         ondelete='cascade', index='btree_not_null', readonly=True,
         help='Goce o venta exportado desde la liquidación vacacional que '
              'creó este movimiento; al volver la liquidación a borrador se '
-             'borra.')
+             'borra.',
+        check_company=True)
 
     @api.depends('employee_id', 'periodo_id', 'days')
     def _compute_display_name(self):

@@ -64,7 +64,8 @@ class ConstructionPlanContractWizard(models.TransientModel):
         domain="[('order_id', '=', False), '|', ('company_id', '=', False), "
                "('company_id', '=', company_id)]",
         help='Vacío: la orden se comporta como hasta ahora (retención de la tarifa y '
-             'liquidación semanal).')
+             'liquidación semanal).',
+        check_company=True)
     advance_pct = fields.Float(string='Adelanto (%)', digits=(16, 6),
                                compute='_compute_condition_values', store=True, readonly=False)
     guarantee_pct = fields.Float(string='Fondo de garantía (%)', digits=(16, 6),
@@ -96,7 +97,8 @@ class ConstructionPlanContractWizard(models.TransientModel):
     # con «Personal propio» escrito en su campo.
     mode_task_ids = fields.Many2many(
         'project.task', 'construction_plan_contract_wiz_mode_task_rel', 'wizard_id', 'task_id',
-        string='Partidas con personal propio', compute='_compute_mode', store=True)
+        string='Partidas con personal propio', compute='_compute_mode', store=True,
+        check_company=True)
     mode_note = fields.Text(string='Aviso de modalidad', compute='_compute_mode', store=True)
     execution_mode = fields.Selection(
         [mode for mode in EXECUTION_MODES if mode[0] != 'own'], string='Nueva modalidad',

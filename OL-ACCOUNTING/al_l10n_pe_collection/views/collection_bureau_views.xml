@@ -36,7 +36,7 @@
                             <field name="date_eligible" invisible="not date_eligible"/>
                             <field name="date_reported" invisible="not date_reported"/>
                             <field name="date_withdrawn" invisible="not date_withdrawn"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <div class="alert alert-info" role="alert" invisible="state != 'draft'">

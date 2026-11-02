@@ -17,7 +17,7 @@
                             <field name="account_number"/>
                             <field name="service_code"/>
                             <field name="company_name"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group string="Archivos y cobro">
@@ -63,7 +63,7 @@
                 <field name="currency_id"/>
                 <field name="code_source"/>
                 <field name="validation"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

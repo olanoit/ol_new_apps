@@ -17,7 +17,7 @@
                         <group>
                             <field name="date"/>
                             <field name="user_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="promise_id" invisible="not promise_id"/>
                         </group>
                     </group>
@@ -75,7 +75,7 @@
                 <field name="promise_id" optional="show"/>
                 <field name="next_action_date" optional="show"/>
                 <field name="note" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

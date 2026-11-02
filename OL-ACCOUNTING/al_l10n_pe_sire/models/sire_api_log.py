@@ -21,6 +21,7 @@ class L10nPeSireApiLog(models.Model):
     """
     _name = 'l10n_pe.sire.api.log'
     _description = 'Llamada a la API SIRE'
+    _check_company_auto = True
     _order = 'id desc'
     _rec_name = 'endpoint'
 

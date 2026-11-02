@@ -22,7 +22,7 @@ el requerimiento de obra (paquete 1.11). Se instala solo cuando están los dos.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_mrp_request/static/description/icon.png',
-    'version': '6.20261031',
+    'version': '7.20261102',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_mrp', 'al_construction_planner_purchase'],

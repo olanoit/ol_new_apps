@@ -38,10 +38,10 @@ class L10nPeCollectionAction(models.Model):
                " ('parent_state', '=', 'posted'), ('account_id.account_type', '=', 'asset_receivable')]")
     promise_date = fields.Date(string='Fecha comprometida')
     promise_amount = fields.Monetary(string='Importe comprometido')
-    promise_id = fields.Many2one('l10n_pe.collection.promise', string='Compromiso', readonly=True, copy=False)
+    promise_id = fields.Many2one('l10n_pe.collection.promise', string='Compromiso', readonly=True, copy=False, check_company=True)
     is_dispute = fields.Boolean(related='result_id.is_dispute')
     dispute_reason_id = fields.Many2one('l10n_pe.collection.dispute.reason', string='Motivo del reclamo')
-    dispute_id = fields.Many2one('l10n_pe.collection.dispute', string='Reclamo', readonly=True, copy=False)
+    dispute_id = fields.Many2one('l10n_pe.collection.dispute', string='Reclamo', readonly=True, copy=False, check_company=True)
     is_consumer = fields.Boolean(string='Consumidor', compute='_compute_is_consumer',
                                  help='Protegido por el art. 62 del Código de Protección al Consumidor.')
     next_action_date = fields.Date(string='Próxima acción', compute='_compute_next_action_date',

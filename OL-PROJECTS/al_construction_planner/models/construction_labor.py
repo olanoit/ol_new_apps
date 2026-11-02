@@ -233,11 +233,13 @@ class ConstructionActivityTranche(models.Model):
     """Tramo del pago de una actividad (v1.5, M15-08)."""
     _name = 'construction.activity.tranche'
     _description = 'Tramo de pago de la actividad'
+    _check_company_auto = True
     _order = 'activity_id, sequence, id'
 
     activity_id = fields.Many2one(
         'construction.labor.activity', string='Actividad', required=True, ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(related='activity_id.company_id', store=True, index=True)
     sequence = fields.Integer(string='Orden', default=10)
     name = fields.Char(string='Tramo', required=True, help='Limpieza, acabado, R1, R2…')

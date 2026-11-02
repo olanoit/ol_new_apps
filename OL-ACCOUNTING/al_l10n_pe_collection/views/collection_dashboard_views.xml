@@ -13,7 +13,7 @@
                     <group>
                         <group>
                             <field name="user_id" options="{'no_create': True}" placeholder="Toda la cartera"/>
-                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>

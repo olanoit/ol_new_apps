@@ -19,7 +19,7 @@
                 <field name="pdc" optional="show"/>
                 <field name="user_id" widget="many2one_avatar_user" optional="show"/>
                 <field name="state" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
             </list>
         </field>
@@ -79,7 +79,7 @@
                         <group>
                             <field name="user_id" widget="many2one_avatar_user"/>
                             <field name="warehouse_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="whatsapp_url" invisible="1"/>
                         </group>
                     </group>

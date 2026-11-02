@@ -24,14 +24,15 @@ class L10nPeKardexWhCost(models.Model):
     """
     _name = 'l10n_pe.kardex.wh.cost'
     _description = 'Costo por almacén (kardex)'
+    _check_company_auto = True
     _order = 'company_id, product_id, date, line_key'
     _log_access = False
 
     line_key = fields.Integer(required=True, index=True)
-    move_id = fields.Many2one('stock.move', required=True, ondelete='cascade', index=True)
-    product_id = fields.Many2one('product.product', required=True, ondelete='cascade')
+    move_id = fields.Many2one('stock.move', required=True, ondelete='cascade', index=True, check_company=True)
+    product_id = fields.Many2one('product.product', required=True, ondelete='cascade', check_company=True)
     company_id = fields.Many2one('res.company', required=True, ondelete='cascade')
-    warehouse_id = fields.Many2one('stock.warehouse', ondelete='cascade')
+    warehouse_id = fields.Many2one('stock.warehouse', ondelete='cascade', check_company=True)
     date = fields.Datetime(required=True)
     qty = fields.Float(digits='Product Unit', help='Positiva si entra al almacén.')
     value = fields.Float(digits=(16, 6), help='Positivo si entra al almacén.')

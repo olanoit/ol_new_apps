@@ -7,7 +7,7 @@
             <list editable="bottom">
                 <field name="name"/>
                 <field name="user_id"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
         </field>
@@ -27,7 +27,7 @@
                 <field name="days_from"/>
                 <field name="days_to"/>
                 <field name="probability"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>

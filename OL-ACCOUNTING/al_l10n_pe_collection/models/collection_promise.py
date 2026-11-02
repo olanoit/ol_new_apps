@@ -45,7 +45,7 @@ class L10nPeCollectionPromise(models.Model):
                " ('parent_state', '=', 'posted'), ('account_id.account_type', '=', 'asset_receivable')]",
         help='Cuotas que cubre el compromiso. Sin documentos, cuenta todo lo que el cliente pague '
              'desde la fecha en que se pactó.')
-    action_id = fields.Many2one('l10n_pe.collection.action', string='Gestión', readonly=True, copy=False)
+    action_id = fields.Many2one('l10n_pe.collection.action', string='Gestión', readonly=True, copy=False, check_company=True)
     note = fields.Text(string='Notas')
     state = fields.Selection(PROMISE_STATES, string='Estado', default='pending', required=True,
                              readonly=True, tracking=True, copy=False)

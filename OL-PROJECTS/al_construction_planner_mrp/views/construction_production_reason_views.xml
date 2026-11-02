@@ -11,7 +11,7 @@
                 <field name="code" optional="show"/>
                 <field name="analytic_account_id" optional="show" options="{'no_create': True}"/>
                 <field name="generates_additional"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"
                        options="{'no_create': True}"/>
                 <field name="note" optional="hide"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>

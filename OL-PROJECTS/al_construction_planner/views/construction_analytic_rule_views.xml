@@ -12,7 +12,7 @@
                 <field name="stage_account_id" options="{'no_create': True}"/>
                 <field name="cost_account_id" options="{'no_create': True}"/>
                 <field name="area_account_id" options="{'no_create': True}"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

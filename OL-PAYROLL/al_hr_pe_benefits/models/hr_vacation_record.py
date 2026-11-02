@@ -86,7 +86,8 @@ class HrVacationRecord(models.Model):
     version_id = fields.Many2one(
         'hr.version', string='Versión', readonly=True,
         help='Versión vigente al cierre del año de récord: de su calendario '
-             'sale la jornada semanal.')
+             'sale la jornada semanal.',
+        check_company=True)
     date_from = fields.Date(
         string='Inicio del año de récord', required=True, readonly=True,
         help='Aniversario de la fecha de ingreso.')

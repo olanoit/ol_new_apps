@@ -91,3 +91,6 @@ access_lawsuit_close_user,l10n_pe.collection.lawsuit.close user,l10n_pe.collecti
 access_lawsuit_close_agency,l10n_pe.collection.lawsuit.close agency,l10n_pe.collection.lawsuit.close,al_l10n_pe_collection.group_collection_agency,crud,
 access_prediction_user,l10n_pe.collection.prediction user,l10n_pe.collection.prediction,al_l10n_pe_collection.group_collection_user,r,
 collection_prediction_company_rule,Fecha prevista de pago: multicompañía,l10n_pe.collection.prediction,,crud,"[('company_id', 'in', company_ids)]"
+rule_l10n_pe_collection_zone_company,Zona de cobranza: compañías del usuario,l10n_pe.collection.zone,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_l10n_pe_collection_bucket_company,Tramo de antigüedad: compañías del usuario,l10n_pe.collection.bucket,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_l10n_pe_collection_forecast_period_company,Periodo de la proyección de cobranza: compañías del usuario,l10n_pe.collection.forecast.period,,crud,"[('company_id', 'in', company_ids + [False])]"

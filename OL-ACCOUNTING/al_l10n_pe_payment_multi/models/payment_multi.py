@@ -44,7 +44,8 @@ class L10nPePaymentMulti(models.Model):
     payment_method_line_id = fields.Many2one(
         'account.payment.method.line', string='Método de pago',
         compute='_compute_payment_method_line_id', store=True, readonly=False,
-        domain="[('journal_id', '=', journal_id), ('payment_type', '=', payment_type)]")
+        domain="[('journal_id', '=', journal_id), ('payment_type', '=', payment_type)]",
+        check_company=True)
     currency_id = fields.Many2one(
         'res.currency', string='Moneda', compute='_compute_currency_id', store=True,
         help='Moneda del diario: la del movimiento de banco.')
@@ -377,7 +378,7 @@ class L10nPePaymentMultiLine(models.Model):
     _order = 'sequence, id'
     _check_company_auto = True
 
-    multi_id = fields.Many2one('l10n_pe.payment.multi', required=True, ondelete='cascade', index=True)
+    multi_id = fields.Many2one('l10n_pe.payment.multi', required=True, ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='multi_id.company_id', store=True)
     sequence = fields.Integer(default=10)
     line_type = fields.Selection(LINE_TYPES, string='Tipo', required=True, default='document')

@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="stock_account.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <block name="valuation_setting_container" position="inside">
-                <setting id="l10n_pe_wh_cost_setting"
+                <setting company_dependent="1" id="l10n_pe_wh_cost_setting"
                          help="Cada almacén lleva su propio costo promedio en el kardex; el cierre de almacén ajusta la contabilidad.">
                     <field name="l10n_pe_wh_cost"/>
                     <div class="content-group" invisible="not l10n_pe_stock_lock_date">

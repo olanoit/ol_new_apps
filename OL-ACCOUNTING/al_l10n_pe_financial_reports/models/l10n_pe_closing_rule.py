@@ -17,6 +17,7 @@ class L10nPeClosingRule(models.Model):
     """
     _name = 'l10n_pe.closing.rule'
     _description = 'Regla del cierre del ejercicio (Perú)'
+    _check_company_auto = True
     _order = 'sequence, id'
 
     sequence = fields.Integer(default=10)

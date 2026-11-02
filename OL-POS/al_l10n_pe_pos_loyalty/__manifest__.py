@@ -30,7 +30,7 @@ fidelización del TPV.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_pos_loyalty/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '3.20261102',
     'license': 'OPL-1',
     'depends': ['al_l10n_pe_edi_pos', 'pos_loyalty'],
     'data': [

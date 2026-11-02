@@ -19,7 +19,7 @@
                             <field name="offset_x"/>
                             <field name="offset_y"/>
                             <field name="font_size"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group string="Fecha">
@@ -69,7 +69,7 @@
                 <field name="bank_id"/>
                 <field name="paper_width"/>
                 <field name="paper_height"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
             </list>
         </field>
     </record>

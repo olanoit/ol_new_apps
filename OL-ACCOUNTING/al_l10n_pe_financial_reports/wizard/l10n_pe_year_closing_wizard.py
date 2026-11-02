@@ -52,6 +52,8 @@ class L10nPeYearClosingWizard(models.TransientModel):
              'el Libro mayor y los saldos por empresa al 31/12 los incluyen '
              'y muestran las cuentas de balance en cero ese día.')
     move_ids = fields.Many2many(
+        # Sin check_company: los asientos son de las sucursales del RUC, no
+        # solo de la compañía raíz del asistente.
         'account.move', string='Asientos del cierre', compute='_compute_move_ids')
 
     def _default_date_to(self):

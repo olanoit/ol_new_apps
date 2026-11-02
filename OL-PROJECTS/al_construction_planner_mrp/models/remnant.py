@@ -600,14 +600,17 @@ class ConstructionCutClosingLine(models.Model):
     """Lo que declaró el corte por tablero: base de la merma por obra."""
     _name = 'construction.cut.closing.line'
     _description = 'Sobrantes declarados del corte'
+    _check_company_auto = True
     _order = 'production_id, id'
 
     production_id = fields.Many2one(
-        'mrp.production', string='Orden', required=True, ondelete='cascade', index=True)
+        'mrp.production', string='Orden', required=True, ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(related='production_id.company_id', store=True, index=True)
     project_id = fields.Many2one(
-        'project.project', string='Obra', compute='_compute_project_id', store=True)
-    product_id = fields.Many2one('product.product', string='Tablero', required=True)
+        'project.project', string='Obra', compute='_compute_project_id', store=True,
+        check_company=True)
+    product_id = fields.Many2one('product.product', string='Tablero', required=True, check_company=True)
     delivered_area_m2 = fields.Float(string='Entregado (m²)', digits=(16, 4))
     pieces_area_m2 = fields.Float(string='Piezas (m²)', digits=(16, 4))
     remnant_area_m2 = fields.Float(string='Retazos (m²)', digits=(16, 4))

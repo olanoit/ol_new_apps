@@ -114,3 +114,6 @@ access_construction_uom_alias_planner,construction.uom.alias planner,constructio
 access_construction_task_execute_wizard_progress,construction.task.execute.wizard progress,construction.task.execute.wizard,al_construction_planner.group_planner_progress,crud,
 access_construction_equipment_usage_user,construction.equipment.usage user,construction.equipment.usage,al_construction_planner.group_planner_user,cru,
 access_construction_equipment_usage_manager,construction.equipment.usage manager,construction.equipment.usage,al_construction_planner.group_planner_manager,crud,
+rule_construction_activity_tranche_company,Tramo de pago de la actividad: compañías del usuario,construction.activity.tranche,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_construction_uom_alias_company,Equivalencia de unidad: compañías del usuario,construction.uom.alias,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_construction_equipment_usage_company,Uso de equipo propio: compañías del usuario,construction.equipment.usage,,crud,"[('company_id', 'in', company_ids + [False])]"

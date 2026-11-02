@@ -41,7 +41,8 @@ class ConstructionAccessoryRequest(models.Model):
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     project_id = fields.Many2one(
         'project.project', string='Obra', compute='_compute_project_id', store=True,
-        index=True)
+        index=True,
+        check_company=True)
     user_id = fields.Many2one(
         'res.users', string='Pedido por', required=True, default=lambda self: self.env.user)
     state = fields.Selection(
@@ -196,17 +197,20 @@ class ConstructionAccessoryRequestLine(models.Model):
     _name = 'construction.accessory.request.line'
     _inherit = ['construction.amounts.mixin']
     _description = 'Accesorio pedido'
+    _check_company_auto = True
     _order = 'request_id, task_id, id'
 
     request_id = fields.Many2one(
-        'construction.accessory.request', required=True, ondelete='cascade', index=True)
+        'construction.accessory.request', required=True, ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(related='request_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
-    task_id = fields.Many2one('project.task', string='Nivel')
+    task_id = fields.Many2one('project.task', string='Nivel', check_company=True)
     planned_product_id = fields.Many2one(
         'product.product', string='Proyectado', readonly=True,
-        help='El accesorio del plan; vacío si no está en el plan.')
-    product_id = fields.Many2one('product.product', string='Accesorio', required=True)
+        help='El accesorio del plan; vacío si no está en el plan.',
+        check_company=True)
+    product_id = fields.Many2one('product.product', string='Accesorio', required=True, check_company=True)
     uom_id = fields.Many2one(
         'uom.uom', string='Unidad', compute='_compute_uom_id', store=True, readonly=False)
     qty_balance = fields.Float(

@@ -12,7 +12,7 @@
                 <field name="status_code"/>
                 <field name="duration" optional="show"/>
                 <field name="user_id" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
                 <field name="is_error" column_invisible="1"/>
             </list>
         </field>
@@ -36,7 +36,7 @@
                             <field name="duration"/>
                             <field name="is_error"/>
                             <field name="user_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="res_model" invisible="1"/>
                             <field name="res_id" widget="many2one_reference" invisible="not res_model"/>
                         </group>

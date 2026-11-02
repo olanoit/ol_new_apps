@@ -15,6 +15,7 @@ class ConstructionTypology(models.Model):
 
 class ConstructionRateListLine(models.Model):
     _name = 'construction.rate.list.line'
+    _check_company_auto = True
     _inherit = ['construction.rate.list.line', 'construction.amounts.mixin']
 
     @api.model
@@ -33,6 +34,7 @@ class ConstructionRealRecipe(models.Model):
 
 class ConstructionRecipeVersus(models.Model):
     _name = 'construction.recipe.versus'
+    _check_company_auto = True
     _inherit = ['construction.recipe.versus', 'construction.amounts.mixin']
 
     @api.model

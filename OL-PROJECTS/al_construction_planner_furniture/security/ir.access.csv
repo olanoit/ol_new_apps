@@ -45,3 +45,9 @@ access_construction_space_measured_wizard_user,construction.space.measured.wizar
 access_construction_rubro_account_progress,construction.rubro.account progress,construction.rubro.account,al_construction_planner.group_planner_progress,r,
 access_construction_rubro_account_manager,construction.rubro.account manager,construction.rubro.account,al_construction_planner.group_planner_manager,crud,
 rule_construction_rubro_account_company,Cuenta Rubro: compañías del usuario,construction.rubro.account,,crud,"[('company_id', 'in', company_ids)]"
+rule_construction_typology_piece_company,Pieza del módulo: compañías del usuario,construction.typology.piece,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_construction_typology_module_material_company,Material del módulo: compañías del usuario,construction.typology.module.material,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_construction_rate_list_line_company,Tarifa de la lista: compañías del usuario,construction.rate.list.line,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_construction_real_recipe_company,Metrado (receta real): compañías del usuario,construction.real.recipe,,crud,"[('company_id', 'in', company_ids)]"
+rule_construction_real_recipe_line_company,Material de la receta real: compañías del usuario,construction.real.recipe.line,,crud,"[('company_id', 'in', company_ids + [False])]"
+rule_construction_recipe_versus_company,Versus del metrado: compañías del usuario,construction.recipe.versus,,crud,"[('company_id', 'in', company_ids + [False])]"

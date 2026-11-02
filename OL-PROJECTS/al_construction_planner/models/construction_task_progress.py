@@ -74,7 +74,8 @@ class ConstructionTaskProgress(models.Model):
         'construction.activity.tranche', string='Tramo', index=True,
         domain="[('activity_id', '=', activity_id)]",
         help='Pase o tramo de la actividad que se reporta (p. ej. limpieza 45 %, acabado 50 %): '
-             'cada unidad del tramo vale su % del pago.')
+             'cada unidad del tramo vale su % del pago.',
+        check_company=True)
     possible_duplicate = fields.Boolean(
         string='Posible duplicado', compute='_compute_possible_duplicate',
         search='_search_possible_duplicate',

@@ -17,6 +17,7 @@ class L10nPeWhCostRecomputeWizard(models.TransientModel):
     """
     _name = 'l10n_pe.wh.cost.recompute.wizard'
     _description = 'Revalorizar costo por almacén'
+    _check_company_auto = True
 
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, default=lambda self: self.env.company)

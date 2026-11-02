@@ -17,7 +17,7 @@
                 <field name="amount_sale" sum="Precio al cliente"/>
                 <field name="state" widget="badge" decoration-success="state == 'approved'"/>
                 <field name="currency_id" column_invisible="True"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
@@ -45,7 +45,7 @@
                             <field name="project_id" options="{'no_create': True}" readonly="state != 'draft'"/>
                             <field name="plan_id" options="{'no_create': True}" readonly="state != 'draft'"/>
                             <field name="contract_id" options="{'no_create': True}" readonly="state != 'draft'"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group>
                             <field name="kind" readonly="state != 'draft'"/>

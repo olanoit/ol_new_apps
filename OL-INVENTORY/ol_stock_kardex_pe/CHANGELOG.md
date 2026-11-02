@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261102 — 02/11/2026
+
+- Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía».
+
 ## 17.20261029 — 29/10/2026
 
 - El TXT del PLE 13.1 usa el costo por almacén: saldo inicial, salidas y devoluciones de cliente al promedio de su almacén.

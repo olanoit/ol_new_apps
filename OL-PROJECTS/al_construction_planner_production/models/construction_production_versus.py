@@ -8,6 +8,7 @@ class ConstructionProductionVersus(models.Model):
     """Presupuestado, requerido y consumido de la orden (M19-05): lo
     consumido sale de los componentes hechos al cerrar la orden."""
     _name = 'construction.production.versus'
+    _check_company_auto = True
     _inherit = ['construction.production.versus', 'construction.amounts.mixin']
 
     qty_consumed = fields.Float(string='Consumido', digits='Product Unit')

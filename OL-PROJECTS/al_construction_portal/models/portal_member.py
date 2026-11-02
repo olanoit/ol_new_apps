@@ -130,6 +130,8 @@ class ConstructionPortalMember(models.Model):
         help='La empresa de la contrata: ve solo sus partidas y sus valorizaciones.')
     employee_id = fields.Many2one(
         'hr.employee', string='Empleado', index='btree_not_null',
+        # Sin check_company: el miembro sin obra no tiene compañía y el
+        # empleado siempre la tiene; el portal lo valida al darle acceso.
         help='Capataz o maestro de obra de la planilla: su cuadrilla y su tareo.')
     pin_hash = fields.Char(string='Huella del PIN', copy=False, readonly=True,
                            groups='base.group_system')

@@ -86,13 +86,15 @@ class ConstructionReplacementRequest(models.Model):
     # Quien pide no lee Fabricación: los datos de la orden y del despacho los
     # da la reposición.
     production_id = fields.Many2one('mrp.production', string='Orden de fabricación',
-                                    readonly=True, copy=False, index='btree_not_null')
+                                    readonly=True, copy=False, index='btree_not_null',
+                                    check_company=True)
     production_name = fields.Char(related='production_id.name', string='Orden',
                                   compute_sudo=True)
     production_date = fields.Datetime(
         string='Fecha prevista', compute='_compute_production_info', compute_sudo=True)
     picking_id = fields.Many2one('stock.picking', string='Despacho a obra', readonly=True,
-                                 copy=False, index='btree_not_null')
+                                 copy=False, index='btree_not_null',
+                                 check_company=True)
     picking_name = fields.Char(related='picking_id.name', string='Despacho',
                                compute_sudo=True)
     cancelled = fields.Boolean(readonly=True, copy=False)

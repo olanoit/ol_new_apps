@@ -63,7 +63,8 @@ class ConstructionContractDeduction(models.Model):
         string='Corrige otro deductivo', readonly=True, copy=False,
         help='Signo contrario: devuelve al contratista lo descontado de más.')
     reversed_id = fields.Many2one('construction.contract.deduction', string='Corrige a',
-                                  readonly=True, copy=False)
+                                  readonly=True, copy=False,
+                                  check_company=True)
     signed_amount = fields.Monetary(string='Monto con signo', compute='_compute_signed_amount',
                                     store=True, currency_field='currency_id')
     task_id = fields.Many2one(

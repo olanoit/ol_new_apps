@@ -7,7 +7,7 @@
             <list string="Cierres de costos">
                 <field name="date_from"/>
                 <field name="date_to"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                 <field name="amount_total"/>
                 <field name="landed_cost_id"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'"/>
@@ -41,7 +41,7 @@
                         <group>
                             <field name="amount_total"/>
                             <field name="landed_cost_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <field name="line_ids" readonly="1">

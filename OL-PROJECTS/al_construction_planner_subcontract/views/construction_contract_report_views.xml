@@ -26,7 +26,7 @@
                 <field name="deductions_pct" widget="percentage" optional="hide"/>
                 <field name="approval_days" optional="hide"/>
                 <field name="currency_id" column_invisible="True"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

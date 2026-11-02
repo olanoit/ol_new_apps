@@ -56,6 +56,7 @@ def _similar(name_a, name_b):
 class ConstructionProjectionImportWizard(models.TransientModel):
     _name = 'construction.projection.import.wizard'
     _description = 'Importar la proyección de materiales'
+    _check_company_auto = True
 
     project_id = fields.Many2one('project.project', string='Obra', required=True,
                                  domain=[('is_construction_site', '=', True)])

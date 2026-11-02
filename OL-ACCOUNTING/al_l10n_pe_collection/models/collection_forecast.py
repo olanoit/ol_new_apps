@@ -342,10 +342,12 @@ class L10nPeCollectionForecast(models.Model):
 class L10nPeCollectionForecastPeriod(models.Model):
     _name = 'l10n_pe.collection.forecast.period'
     _description = 'Periodo de la proyección de cobranza'
+    _check_company_auto = True
     _order = 'sequence'
 
     forecast_id = fields.Many2one('l10n_pe.collection.forecast', string='Proyección', required=True,
-                                  ondelete='cascade', index=True)
+                                  ondelete='cascade', index=True,
+                                  check_company=True)
     company_id = fields.Many2one(related='forecast_id.company_id', store=True)
     currency_id = fields.Many2one(related='forecast_id.currency_id')
     sequence = fields.Integer()
@@ -393,21 +395,23 @@ class L10nPeCollectionForecastPeriod(models.Model):
 class L10nPeCollectionForecastLine(models.Model):
     _name = 'l10n_pe.collection.forecast.line'
     _description = 'Partida de la proyección de cobranza'
+    _check_company_auto = True
     _order = 'expected_date, id'
 
     forecast_id = fields.Many2one('l10n_pe.collection.forecast', string='Proyección', required=True,
-                                  ondelete='cascade', index=True)
+                                  ondelete='cascade', index=True,
+                                  check_company=True)
     company_id = fields.Many2one(related='forecast_id.company_id', store=True)
     currency_id = fields.Many2one(related='forecast_id.currency_id')
-    period_id = fields.Many2one('l10n_pe.collection.forecast.period', string='Periodo', index=True)
-    move_line_id = fields.Many2one('account.move.line', string='Apunte', readonly=True, index=True)
+    period_id = fields.Many2one('l10n_pe.collection.forecast.period', string='Periodo', index=True, check_company=True)
+    move_line_id = fields.Many2one('account.move.line', string='Apunte', readonly=True, index=True, check_company=True)
     move_id = fields.Many2one(related='move_line_id.move_id', string='Documento')
     partner_id = fields.Many2one('res.partner', string='Cliente', readonly=True)
     user_id = fields.Many2one('res.users', string='Gestor', readonly=True)
-    zone_id = fields.Many2one('l10n_pe.collection.zone', string='Zona', readonly=True)
+    zone_id = fields.Many2one('l10n_pe.collection.zone', string='Zona', readonly=True, check_company=True)
     date_due = fields.Date(string='Vencimiento', readonly=True)
     days_overdue = fields.Integer(string='Días de atraso', readonly=True, aggregator='max')
-    bucket_id = fields.Many2one('l10n_pe.collection.bucket', string='Tramo', readonly=True)
+    bucket_id = fields.Many2one('l10n_pe.collection.bucket', string='Tramo', readonly=True, check_company=True)
     residual = fields.Monetary(string='Saldo', readonly=True)
     probability = fields.Float(string='Probabilidad (%)', readonly=True, digits=(5, 1), aggregator='avg')
     expected_amount = fields.Monetary(string='Esperado')

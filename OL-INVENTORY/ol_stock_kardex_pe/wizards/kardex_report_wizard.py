@@ -111,7 +111,8 @@ class L10nPeKardexReportWizard(models.TransientModel):
         check_company=True)
     categ_ids = fields.Many2many(
         'product.category', string='Categorías',
-        help='Filtro alternativo cuando no se seleccionan productos.')
+        help='Filtro alternativo cuando no se seleccionan productos.',
+        check_company=True)
     group_by_warehouse = fields.Boolean(
         string='Kardex por almacén',
         help='Genera una sección/hoja por almacén con su propio saldo corrido. '

@@ -33,7 +33,7 @@ class ConstructionApprovalMixin(models.AbstractModel):
         string='Aprobaciones', compute='_compute_construction_approval', compute_sudo=True)
     construction_approval_id = fields.Many2one(
         'approval.request', string='Solicitud de aprobación',
-        compute='_compute_construction_approval', compute_sudo=True)
+        compute='_compute_construction_approval', compute_sudo=True, check_company=True)
     construction_approval_todo = fields.Char(
         string='Pendiente de aprobación', compute='_compute_construction_approval',
         compute_sudo=True)

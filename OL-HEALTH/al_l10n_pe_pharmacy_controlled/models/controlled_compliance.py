@@ -248,12 +248,14 @@ class PharmacyControlledBalance(models.Model):
 class PharmacyControlledBalanceLine(models.Model):
     _name = 'pharmacy.controlled.balance.line'
     _description = 'Producto del balance trimestral'
+    _check_company_auto = True
     _order = 'balance_id, product_id'
 
     balance_id = fields.Many2one('pharmacy.controlled.balance', required=True, ondelete='cascade',
-                                 index=True)
+                                 index=True,
+                                 check_company=True)
     company_id = fields.Many2one(related='balance_id.company_id', store=True)
-    product_id = fields.Many2one('product.product', string='Producto', required=True)
+    product_id = fields.Many2one('product.product', string='Producto', required=True, check_company=True)
     control_list = fields.Selection(related='product_id.pharmacy_control_list', string='Lista')
     composition = fields.Char(related='product_id.pharmacy_composition', string='Principio activo')
     uom_id = fields.Many2one(related='product_id.uom_id', string='Unidad')

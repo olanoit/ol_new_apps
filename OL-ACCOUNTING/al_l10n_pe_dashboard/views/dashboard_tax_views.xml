@@ -14,7 +14,7 @@
                 <field name="igv" sum="Total"/>
                 <field name="total" sum="Total"/>
                 <field name="currency_id" column_invisible="True"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>

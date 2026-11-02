@@ -38,7 +38,8 @@ class ConstructionPlanProgressWizard(models.TransientModel):
     tranche_id = fields.Many2one(
         'construction.activity.tranche', string='Tramo',
         domain="[('activity_id', '=', activity_id)]",
-        help='Pase o tramo que se reporta: el saldo es el de ese tramo.')
+        help='Pase o tramo que se reporta: el saldo es el de ese tramo.',
+        check_company=True)
 
     @api.depends('activity_id')
     def _compute_has_tranches(self):

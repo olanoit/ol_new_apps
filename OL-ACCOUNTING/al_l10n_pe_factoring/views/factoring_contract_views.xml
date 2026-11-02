@@ -292,7 +292,7 @@
                             <field name="move_id"/>
                             <field name="operation"/>
                             <field name="environment"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group>
                             <field name="state"/>

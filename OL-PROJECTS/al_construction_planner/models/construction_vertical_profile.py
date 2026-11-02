@@ -519,6 +519,7 @@ class ConstructionProfileApplyWizard(models.TransientModel):
     funciones y parámetros cambian, con aviso si la compañía ya tiene obras."""
     _name = 'construction.profile.apply.wizard'
     _description = 'Aplicar perfil de vertical'
+    _check_company_auto = True
 
     profile_id = fields.Many2one(
         'construction.vertical.profile', string='Perfil', required=True, ondelete='cascade')

@@ -12,7 +12,7 @@
                 <field name="split_basis"/>
                 <field name="workcenter_ids" widget="many2many_tags" optional="show"/>
                 <field name="counterpart_account_id"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company"/>
             </list>
         </field>
     </record>
@@ -35,7 +35,7 @@
                             <field name="split_basis"/>
                             <field name="workcenter_ids" widget="many2many_tags"/>
                             <field name="counterpart_account_id" options="{'no_create': True}"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                 </sheet>

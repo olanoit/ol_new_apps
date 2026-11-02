@@ -326,13 +326,15 @@ class PharmacyInsuranceAgreement(models.Model):
 class PharmacyInsuranceAgreementLine(models.Model):
     _name = 'pharmacy.insurance.agreement.line'
     _description = 'Cobertura del convenio por producto o categoría'
+    _check_company_auto = True
     _order = 'sequence, id'
 
     agreement_id = fields.Many2one('pharmacy.insurance.agreement', required=True, ondelete='cascade',
-                                   index=True)
+                                   index=True,
+                                   check_company=True)
     company_id = fields.Many2one(related='agreement_id.company_id', store=True)
     sequence = fields.Integer(default=10)
-    categ_id = fields.Many2one('product.category', string='Categoría')
+    categ_id = fields.Many2one('product.category', string='Categoría', check_company=True)
     product_id = fields.Many2one('product.product', string='Producto', check_company=True)
     coverage_percent = fields.Float(string='Cobertura (%)', required=True)
 

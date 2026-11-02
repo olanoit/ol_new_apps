@@ -147,11 +147,13 @@ class ConstructionTypologyAlias(models.Model):
     """Otro nombre de una tipología en un documento (v1.5, M15-04)."""
     _name = 'construction.typology.alias'
     _description = 'Otro nombre de la tipología'
+    _check_company_auto = True
     _order = 'typology_id, source, name'
 
     typology_id = fields.Many2one(
         'construction.typology', string='Tipología', required=True, ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(related='typology_id.company_id', store=True, index=True)
     name = fields.Char(string='Nombre', required=True)
     source = fields.Selection(

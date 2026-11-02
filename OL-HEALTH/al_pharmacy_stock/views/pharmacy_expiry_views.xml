@@ -40,7 +40,7 @@
                        decoration-danger="pharmacy_state in ('blocked', 'expired')"/>
                 <field name="pharmacy_expiry_discount"/>
                 <field name="pharmacy_suggested_price"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

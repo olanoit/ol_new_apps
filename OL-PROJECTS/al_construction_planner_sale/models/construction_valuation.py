@@ -886,15 +886,18 @@ class ConstructionValuationMilestone(models.Model):
     """Hito valorizado: lo que una valorización cobra de un hito de unidad."""
     _name = 'construction.valuation.milestone'
     _description = 'Hito de la valorización'
+    _check_company_auto = True
     _order = 'valuation_id, milestone_id'
 
     valuation_id = fields.Many2one(
         'construction.valuation', string='Valorización', required=True, ondelete='cascade',
-        index=True)
+        index=True,
+        check_company=True)
     company_id = fields.Many2one(related='valuation_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='milestone_id.currency_id', string='Moneda')
     milestone_id = fields.Many2one(
-        'construction.unit.milestone', string='Hito', required=True, index=True)
+        'construction.unit.milestone', string='Hito', required=True, index=True,
+        check_company=True)
     task_id = fields.Many2one(related='milestone_id.task_id', string='Unidad', store=True)
     template_line_id = fields.Many2one(
         related='milestone_id.template_line_id', string='Hito de cobro', store=True)

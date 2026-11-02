@@ -8,6 +8,7 @@ class L10nPeCollectionInterestWizard(models.TransientModel):
     inafecta al IGV) para que el usuario la revise y la publique."""
     _name = 'l10n_pe.collection.interest.wizard'
     _description = 'Liquidar intereses moratorios'
+    _check_company_auto = True
 
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
     partner_ids = fields.Many2many('res.partner', string='Clientes', required=True,

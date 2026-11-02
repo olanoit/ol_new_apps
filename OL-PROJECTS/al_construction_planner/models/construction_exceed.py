@@ -212,12 +212,12 @@ class ConstructionExceedLog(models.Model):
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     plan_line_id = fields.Many2one('construction.resource.plan.line', string='Línea del plan',
                                    index=True, ondelete='set null', check_company=True)
-    task_id = fields.Many2one('project.task', string='Nivel', index=True)
+    task_id = fields.Many2one('project.task', string='Nivel', index=True, check_company=True)
     stage = fields.Selection(related='plan_line_id.stage', string='Etapa', store=True)
     resource_type = fields.Selection(related='plan_line_id.resource_type',
                                      string='Comportamiento', store=True)
-    product_id = fields.Many2one('product.product', string='Producto')
-    activity_id = fields.Many2one('construction.labor.activity', string='Actividad')
+    product_id = fields.Many2one('product.product', string='Producto', check_company=True)
+    activity_id = fields.Many2one('construction.labor.activity', string='Actividad', check_company=True)
     partner_id = fields.Many2one('res.partner', string='Contrata o proveedor')
     qty = fields.Float(string='Cantidad', digits='Product Unit')
     uom_id = fields.Many2one('uom.uom', string='Unidad')

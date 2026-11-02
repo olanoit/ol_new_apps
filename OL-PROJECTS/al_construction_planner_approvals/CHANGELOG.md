@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261102 — 02/11/2026
+
+- Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía».
+
 ## 9.20261031 — 01/11/2026
 
 - M116-03 (M114-02): con «Material fuera del plan» y la obra sin plan, la solicitud cuenta cada línea como material fuera del plan al costo del producto, con la marca «Obra sin plan» y ese resumen.

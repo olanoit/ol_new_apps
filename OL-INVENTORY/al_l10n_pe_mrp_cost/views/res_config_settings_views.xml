@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <block name="process_operations_setting_container" position="after">
                 <block title="Costeo (Perú)" name="l10n_pe_mrp_cost_setting_container">
-                    <setting id="l10n_pe_mrp_labor_account"
+                    <setting company_dependent="1" id="l10n_pe_mrp_labor_account"
                              help="Cuenta que se abona al cargar a las órdenes el ajuste de la mano de obra al costo hora real (71 en el PCGE).">
                         <field name="l10n_pe_mrp_labor_account_id" options="{'no_create': True}"/>
                     </setting>

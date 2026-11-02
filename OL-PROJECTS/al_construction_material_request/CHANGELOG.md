@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 33.20261102 — 02/11/2026
+
+- Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía».
+- Las solicitudes de compra que no vienen de obra vuelven a la lógica de OCA al pasar a cotización: cantidad sugerida, distribución analítica y agrupación de líneas.
+
 ## 32.20261101 — 01/11/2026
 
 - I-01: el traslado de una línea del requerimiento a la ubicación de la obra crea su apunte analítico con la distribución del requerimiento (obra, etapa, tipo de costo y niveles), no solo con la obra. Ahora depende de `project_stock_account`.

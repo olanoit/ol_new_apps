@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261102 — 02/11/2026
+
+- Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía».
+
 ## 7.20261101 — 01/11/2026
 
 - D2: el cierre de costo de mano de obra reparte el costo de cada persona entre las líneas del plan donde trabajó, por sus jornales ejecutados de cuadrilla y con la analítica de cada línea; lo que no tiene turno queda como antes.

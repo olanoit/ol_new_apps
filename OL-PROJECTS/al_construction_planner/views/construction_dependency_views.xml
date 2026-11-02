@@ -15,7 +15,7 @@
                 <field name="date_expected"/>
                 <field name="date_done" optional="hide"/>
                 <field name="state" widget="badge" decoration-warning="state == 'open'" decoration-success="state == 'done'"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>
@@ -47,7 +47,7 @@
                             <field name="project_id" options="{'no_create': True}"/>
                             <field name="kind"/>
                             <field name="partner_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group>
                             <field name="stage"/>

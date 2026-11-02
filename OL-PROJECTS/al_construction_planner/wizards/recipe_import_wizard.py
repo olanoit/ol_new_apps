@@ -116,7 +116,8 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         help='Modalidad por defecto de las recetas importadas; se cambia por partida.')
     contract_activity_id = fields.Many2one(
         'construction.labor.activity', string='Actividad de la contrata',
-        help='La que paga a la contrata en las modalidades de contrata.')
+        help='La que paga a la contrata en las modalidades de contrata.',
+        check_company=True)
     default_stage_id = fields.Many2one(
         'construction.stage', string='Etapa por defecto',
         help='La de los recursos sin etapa en el origen.')

@@ -54,6 +54,7 @@ def _number(value):
 class ConstructionBudgetImportWizard(models.TransientModel):
     _name = 'construction.budget.import.wizard'
     _description = 'Importar el presupuesto de la obra a la cotización'
+    _check_company_auto = True
 
     sale_order_id = fields.Many2one('sale.order', string='Cotización', required=True,
                                     readonly=True)

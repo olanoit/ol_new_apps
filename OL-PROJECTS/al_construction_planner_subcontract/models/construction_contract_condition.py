@@ -125,7 +125,8 @@ class ConstructionContractCondition(models.Model):
         ondelete='cascade', check_company=True, copy=False)
     template_id = fields.Many2one(
         'construction.contract.condition', string='Plantilla', readonly=True, copy=False,
-        help='Las condiciones de las que se copió esta.')
+        help='Las condiciones de las que se copió esta.',
+        check_company=True)
 
     # Adelanto
     advance_pct = fields.Float(string='Adelanto (%)', digits=(16, 6), tracking=True)

@@ -28,12 +28,17 @@ SHARED_COMODELS = ('res.company', 'res.users', 'res.partner', 'res.currency')
 # Lo mismo el flujo de caja (de la raíz, con apuntes de sus sucursales) y el
 # cierre de caja (la cuenta de caja de la raíz la pueden mover asientos de
 # una sucursal).
+# El cierre del ejercicio es de la raíz y muestra los asientos de sus
+# sucursales, por la misma razón que el SIRE.
+# El miembro del portal toma la compañía de su obra y puede no tener obra: un
+# registro sin compañía no puede apuntar a un empleado, que siempre la tiene.
 # La plantilla de turno solo tiene compañía si está instalado project_forecast
 # (no es dependencia): con check_company la vista no valida sin él.
 EXEMPT_FIELDS = ('l10n_pe.sire.rce.line.move_id', 'l10n_pe.sire.rvie.line.move_id',
                  'l10n_pe.sire.rce.nd.line.move_id', 'l10n_pe.sire.action.wizard.move_ids',
                  'l10n_pe.hr.shift.cycle.assignment.template_id',
-                 'l10n_pe.cash.forecast.line.move_line_id', 'l10n_pe.cash.closing.line.move_id')
+                 'l10n_pe.cash.forecast.line.move_line_id', 'l10n_pe.cash.closing.line.move_id',
+                 'l10n_pe.year.closing.wizard.move_ids', 'construction.portal.member.employee_id')
 
 
 @tagged('post_install', '-at_install')

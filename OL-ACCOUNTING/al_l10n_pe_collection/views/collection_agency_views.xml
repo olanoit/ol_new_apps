@@ -73,7 +73,7 @@
                         <group>
                             <field name="currency_id" invisible="1"/>
                             <field name="portfolio_amount"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
@@ -100,7 +100,7 @@
                 <field name="partner_count"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="portfolio_amount"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
     </record>

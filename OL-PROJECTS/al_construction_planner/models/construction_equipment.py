@@ -104,7 +104,8 @@ class ConstructionEquipmentUsage(models.Model):
     amount = fields.Monetary(string='Cargo', compute='_compute_amount', store=True,
                              precompute=True)
     analytic_line_id = fields.Many2one('account.analytic.line', string='Línea analítica',
-                                       readonly=True, copy=False)
+                                       readonly=True, copy=False,
+                                       check_company=True)
     note = fields.Char(string='Nota')
 
     _qty_positive = models.Constraint('CHECK(qty > 0)', 'El uso del equipo debe ser mayor que cero.')

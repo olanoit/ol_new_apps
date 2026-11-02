@@ -230,7 +230,8 @@ class ConstructionLaborCostAllocationLine(models.Model):
     _check_company_auto = True
 
     allocation_id = fields.Many2one('construction.labor.cost.allocation', required=True,
-                                    ondelete='cascade', index=True)
+                                    ondelete='cascade', index=True,
+                                    check_company=True)
     company_id = fields.Many2one(related='allocation_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='allocation_id.currency_id')
     employee_id = fields.Many2one('hr.employee', string='Trabajador', required=True,

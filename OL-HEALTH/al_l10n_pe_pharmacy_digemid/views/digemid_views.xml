@@ -127,7 +127,7 @@
                 <field name="line_count"/>
                 <field name="rectification_deadline"/>
                 <field name="user_id" optional="hide"/>
-                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="state" widget="badge" decoration-success="state == 'sent'"
                        decoration-warning="state == 'draft'"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
@@ -152,7 +152,7 @@
                             <field name="warehouse_id" readonly="1"/>
                             <field name="establishment_code"/>
                             <field name="period" readonly="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                         <group>
                             <field name="mode"/>

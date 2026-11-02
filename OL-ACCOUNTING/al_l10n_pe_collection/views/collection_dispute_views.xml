@@ -31,7 +31,7 @@
                             <field name="amount"/>
                             <field name="date_closed" invisible="not date_closed"/>
                             <field name="action_id" invisible="not action_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <field name="line_ids" readonly="state != 'open'" options="{'no_create': True}">

@@ -54,7 +54,8 @@ class ConstructionRealRecipe(models.Model):
     template_id = fields.Many2one(
         'construction.typology.module', string='Receta planificada', compute='_compute_template_id',
         store=True, readonly=False,
-        help='El módulo de la tipología del ambiente con el código del módulo.')
+        help='El módulo de la tipología del ambiente con el código del módulo.',
+        check_company=True)
     user_id = fields.Many2one('res.users', string='Supervisor', default=lambda self: self.env.user)
     date = fields.Date(string='Fecha', default=fields.Date.context_today, required=True)
     state = fields.Selection([('draft', 'Borrador'), ('confirmed', 'Confirmado')],
@@ -232,13 +233,15 @@ class ConstructionRealRecipe(models.Model):
 class ConstructionRealRecipeLine(models.Model):
     _name = 'construction.real.recipe.line'
     _description = 'Material de la receta real'
+    _check_company_auto = True
     _order = 'recipe_id, sequence, id'
 
     recipe_id = fields.Many2one('construction.real.recipe', required=True, ondelete='cascade',
-                                index=True)
+                                index=True,
+                                check_company=True)
     company_id = fields.Many2one(related='recipe_id.company_id', store=True, index=True)
     sequence = fields.Integer(default=10)
-    product_id = fields.Many2one('product.product', string='Producto', required=True)
+    product_id = fields.Many2one('product.product', string='Producto', required=True, check_company=True)
     qty = fields.Float(string='Cantidad', digits=(16, 6), required=True)
     uom_id = fields.Many2one('uom.uom', string='Unidad')
     stage = fields.Selection(stage_selection, string='Sub etapa')
@@ -267,7 +270,8 @@ class ConstructionRecipeVersus(models.Model):
     _order = 'recipe_id, product_id'
 
     recipe_id = fields.Many2one('construction.real.recipe', required=True, ondelete='cascade',
-                                index=True)
+                                index=True,
+                                check_company=True)
     company_id = fields.Many2one(related='recipe_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='recipe_id.currency_id')
     project_id = fields.Many2one(related='recipe_id.project_id', store=True, string='Obra')
@@ -277,7 +281,7 @@ class ConstructionRecipeVersus(models.Model):
     space_task_id = fields.Many2one(related='recipe_id.space_task_id', store=True,
                                     string='Ambiente')
     task_id = fields.Many2one(related='recipe_id.task_id', store=True, string='Módulo o mueble')
-    product_id = fields.Many2one('product.product', string='Material')
+    product_id = fields.Many2one('product.product', string='Material', check_company=True)
     qty_planned = fields.Float(string='Presupuestado', digits=(16, 4))
     qty_real = fields.Float(string='Real', digits=(16, 4))
     qty_difference = fields.Float(string='Diferencia', digits=(16, 4),

@@ -22,7 +22,7 @@ Costeo de órdenes de fabricación (Perú)
     'website': 'https://www.altabpo.com',
     'category': 'OL-INVENTORY/Apps',
     'icon': '/al_l10n_pe_mrp_cost/static/description/icon.png',
-    'version': '1.20261029',
+    'version': '2.20261102',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['mrp_workorder', 'mrp_landed_costs', 'al_hr_pe'],

@@ -978,9 +978,11 @@ class ConstructionContractSettlementLine(models.Model):
     task_id = fields.Many2one(related='purchase_line_id.construction_task_id', string='Partida',
                               store=True, index='btree_not_null')
     level_1_id = fields.Many2one('project.task', string='Nivel 1', compute='_compute_levels',
-                                 store=True)
+                                 store=True,
+                                 check_company=True)
     level_2_id = fields.Many2one('project.task', string='Nivel 2', compute='_compute_levels',
-                                 store=True)
+                                 store=True,
+                                 check_company=True)
     progress_ids = fields.Many2many(
         'construction.task.progress', 'construction_settlement_line_progress_rel', 'line_id',
         'progress_id', string='Avances', readonly=True)
@@ -1069,10 +1071,12 @@ class ConstructionContractSettlementLine(models.Model):
 class ConstructionContractSettlementSummary(models.Model):
     _name = 'construction.contract.settlement.summary'
     _description = 'Fila del resumen del valorizado'
+    _check_company_auto = True
     _order = 'settlement_id, sequence, id'
 
     settlement_id = fields.Many2one('construction.contract.settlement', string='Valorización',
-                                    required=True, ondelete='cascade', index=True)
+                                    required=True, ondelete='cascade', index=True,
+                                    check_company=True)
     company_id = fields.Many2one(related='settlement_id.company_id', store=True, index=True)
     currency_id = fields.Many2one(related='settlement_id.currency_id')
     sequence = fields.Integer()

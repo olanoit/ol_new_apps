@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261102 — 02/11/2026
+
+- Multicompañía: lo que se enlaza en sus registros y asistentes (obras, documentos, empleados, diarios…) se valida en el servidor contra la compañía del registro, el campo Compañía queda de solo lectura en sus vistas y sus ajustes por compañía llevan el ícono de Odoo «valores por compañía».
+- Las solicitudes de compra del planificador cuentan como de obra para la cotización desde una solicitud (cantidad por ordenar, destino y partida).
+
 ## 21.20261101 — 01/11/2026
 
 - M114-01: al aprobar el plan, los requerimientos de obra pedidos sin plan se asignan a sus líneas; el exceso queda registrado con el motivo «Regularización de pedido sin plan». Filtro «Pedidos sin plan».

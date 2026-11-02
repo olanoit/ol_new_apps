@@ -56,7 +56,7 @@ a PDF y XLSX con las herramientas estándar.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_financial_reports/static/description/icon.png',
-    'version': '6.20261031',
+    'version': '7.20261102',
     'license': 'OPL-1',
     'depends': [
         'account_reports',

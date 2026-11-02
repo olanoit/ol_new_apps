@@ -60,7 +60,7 @@ class L10nPeCollectionDispute(models.Model):
     state = fields.Selection(DISPUTE_STATES, string='Estado', default='open', required=True, readonly=True,
                              tracking=True, copy=False)
     date_closed = fields.Date(string='Cerrado el', readonly=True, copy=False)
-    action_id = fields.Many2one('l10n_pe.collection.action', string='Gestión', readonly=True, copy=False)
+    action_id = fields.Many2one('l10n_pe.collection.action', string='Gestión', readonly=True, copy=False, check_company=True)
 
     @api.depends('line_ids.amount_residual')
     def _compute_amount(self):

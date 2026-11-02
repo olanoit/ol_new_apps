@@ -290,7 +290,8 @@ class L10nPePaymentApplicationLine(models.Model):
     _check_company_auto = True
 
     application_id = fields.Many2one(
-        'l10n_pe.payment.application', required=True, ondelete='cascade', index=True)
+        'l10n_pe.payment.application', required=True, ondelete='cascade', index=True,
+        check_company=True)
     company_id = fields.Many2one(related='application_id.company_id', store=True)
     move_line_id = fields.Many2one(
         'account.move.line', string='Apunte', required=True, check_company=True,

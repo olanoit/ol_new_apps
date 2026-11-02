@@ -10,6 +10,7 @@ from ..models.factoring import ACTIVE_LINE_STATES
 class L10nPeFactoringEligibility(models.TransientModel):
     _name = 'l10n_pe.factoring.eligibility'
     _description = 'Revisión de facturas para factoring'
+    _check_company_auto = True
 
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
     contract_id = fields.Many2one(

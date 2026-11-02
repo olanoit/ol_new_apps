@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <block name="construction_planner_features" position="after">
                 <block title="Hoja de trabajo de mobiliario" name="construction_sheet_furniture">
-                    <setting id="construction_sheet_material_categ"
+                    <setting id="construction_sheet_material_categ" company_dependent="1"
                              help="Las listas de grupo, categoría y producto de la hoja muestran solo lo que cuelga de esta categoría (por ejemplo, la de materia prima). Vacía: todas. Rige para las hojas que se creen desde ahora.">
                         <field name="construction_sheet_material_categ_id" options="{'no_create': True}"/>
                     </setting>

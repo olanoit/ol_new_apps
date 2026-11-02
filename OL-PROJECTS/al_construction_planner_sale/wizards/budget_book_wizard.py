@@ -165,6 +165,7 @@ def _date(value):
 class ConstructionBudgetBookWizard(models.TransientModel):
     _name = 'construction.budget.book.wizard'
     _description = 'Importar el libro de APU y presupuesto'
+    _check_company_auto = True
 
     sale_order_id = fields.Many2one('sale.order', string='Cotización', required=True,
                                     readonly=True)
@@ -173,7 +174,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
     project_id = fields.Many2one(
         'project.project', string='Obra', compute='_compute_project_id', store=True,
         readonly=False, domain=[('is_construction_site', '=', True)],
-        help='La de la cotización. Con destino Plan es obligatoria.')
+        help='La de la cotización. Con destino Plan es obligatoria.',
+        check_company=True)
     target = fields.Selection(
         [('budget', 'Presupuesto'), ('plan', 'Presupuesto y plan')], string='Destino',
         default='budget', required=True,

@@ -389,7 +389,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
     _inherit = 'construction.budget.book.wizard'
 
     spreadsheet_id = fields.Many2one('documents.document', string='Hoja de trabajo',
-                                     readonly=True)
+                                     readonly=True,
+                                     check_company=True)
 
     def action_import(self):
         res = super().action_import()

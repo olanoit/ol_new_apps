@@ -32,7 +32,8 @@ class ConstructionAnalyticRule(models.Model):
     stage = fields.Selection(stage_selection, string='Etapa del plan')
     product_categ_id = fields.Many2one(
         'product.category', string='Categoría del producto',
-        help='Incluye sus subcategorías.')
+        help='Incluye sus subcategorías.',
+        check_company=True)
     stage_account_id = fields.Many2one(
         'account.analytic.account', string='Etapa', check_company=True,
         help='Cuenta del plan Etapa: producción (PRD) o instalación (INS).')
