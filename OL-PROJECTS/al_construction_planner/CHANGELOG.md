@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 69.20261101 — 02/11/2026
+
+- El Cronograma abre el plan desde el que se llama aunque esté reemplazado o cancelado.
+- Cronograma: la columna «Tarea» y las fechas tienen su ancho de lectura; la rejilla se desplaza a lo ancho con su propia barra y su borde con el diagrama se arrastra.
+
 ## 68.20261101 — 01/11/2026
 
 - «Árbol de recursos» e «Insumo-producto» abren el plan desde el que se llaman aunque esté reemplazado o cancelado; antes el árbol mostraba el plan más reciente de otra obra.

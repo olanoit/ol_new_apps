@@ -520,6 +520,43 @@ export class ConstructionScheduleAction extends GanttAction {
             );
         }
         gantt.config.grid_width = 720;
+        // Con nueve columnas en 720 px la tarea («*») quedaba de pocos píxeles
+        // y las fechas cortadas: cada columna lleva su ancho de lectura y la
+        // rejilla se desplaza a lo ancho, con su propia barra; el borde entre
+        // la rejilla y el diagrama se arrastra.
+        const widths = { text: 260, start_date: 90, end_date: 90 };
+        for (const column of gantt.config.columns) {
+            if (widths[column.name]) {
+                column.width = widths[column.name];
+                column.min_width = Math.min(widths[column.name], 120);
+            }
+        }
+        gantt.config.layout = {
+            css: "gantt_container",
+            cols: [
+                {
+                    width: 720,
+                    min_width: 280,
+                    rows: [
+                        {
+                            view: "grid",
+                            scrollX: "o_cp_grid_scroll",
+                            scrollable: true,
+                            scrollY: "o_cp_scroll_ver",
+                        },
+                        { view: "scrollbar", id: "o_cp_grid_scroll", group: "horizontal" },
+                    ],
+                },
+                { resizer: true, width: 1 },
+                {
+                    rows: [
+                        { view: "timeline", scrollX: "o_cp_scroll_hor", scrollY: "o_cp_scroll_ver" },
+                        { view: "scrollbar", id: "o_cp_scroll_hor", group: "horizontal" },
+                    ],
+                },
+                { view: "scrollbar", id: "o_cp_scroll_ver" },
+            ],
+        };
         if (this.schedule.rows === "stages") {
             // Las etapas son de días enteros y la librería guarda el fin como
             // exclusivo: la columna «Fin» muestra el último día de trabajo.
