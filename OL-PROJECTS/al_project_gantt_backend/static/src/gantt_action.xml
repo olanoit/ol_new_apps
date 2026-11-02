@@ -13,7 +13,7 @@
                          (la última selección del usuario) y los que agregue. -->
                     <div class="algantt-projects d-flex align-items-center gap-2" t-if="showProjectBar">
                         <span class="fw-bold text-nowrap">Proyectos</span>
-                        <div class="algantt-project-selector o_field_widget o_field_many2many_tags">
+                        <div class="algantt-project-selector">
                             <MultiRecordSelector resModel="'project.project'"
                                                  resIds="state.selectedIds"
                                                  domain="projectDomain"

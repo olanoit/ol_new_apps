@@ -230,6 +230,10 @@ faq:
       oficial y elija contra cuál comparar.
 
 novedades:
+  - version: '22.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "Selector de proyectos: nombres completos y la búsqueda en la misma línea que las etiquetas."
   - version: '21.20261102'
     fecha: 02/11/2026
     cambios:
