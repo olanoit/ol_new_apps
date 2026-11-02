@@ -1,9 +1,12 @@
 import {describe, expect, test} from "@odoo/hoot";
-import {makeMockEnv, patchWithCleanup} from "@web/../tests/web_test_helpers";
+import {patchWithCleanup} from "@web/../tests/web_test_helpers";
 import {user} from "@web/core/user";
 import {_getReportUrl} from "@prt_report_attachment_preview/js/tools.esm";
 
 describe.current.tags("headless");
+
+// Odoo 20 removed makeMockEnv; _getReportUrl does not read the env.
+const env = {};
 
 function contextOf(url) {
     return JSON.parse(new URL(url).searchParams.get("context"));
@@ -12,7 +15,6 @@ function contextOf(url) {
 test("html fallback takes the user context from @web/core/user", async () => {
     // Odoo 19 has no "user" service: env.services.user used to be undefined
     // here and the HTML fallback threw a TypeError.
-    const env = await makeMockEnv();
     patchWithCleanup(user, {
         get context() {
             return {lang: "es_PE", tz: "America/Lima"};
@@ -28,7 +30,6 @@ test("html fallback takes the user context from @web/core/user", async () => {
 });
 
 test("pdf keeps the action context, like the core download", async () => {
-    const env = await makeMockEnv();
     const url = _getReportUrl(
         {report_name: "base.report_irmodulereference", context: {active_ids: [3], my_key: 1}},
         "pdf",

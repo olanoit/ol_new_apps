@@ -203,6 +203,12 @@ class TestDigemid(TransactionCase):
             {'name': 'Lima'})
         company.resource_calendar_id = calendar
         company.tz = 'America/Lima'
+        # La base puede traer feriados en el periodo (25/10, Día del
+        # Trabajador de Construcción Civil, cae domingo): se mide solo el que
+        # agrega la prueba.
+        before = company._pharmacy_holidays(date(2026, 10, 16), date(2026, 10, 31))
+        self.assertFalse({d for d in before if d.weekday() < 5},
+                         'la prueba necesita una semana sin feriados hábiles')
         # Feriado el martes 20/10/2026: de 00:00 a 00:00 del día siguiente en Lima (UTC−5).
         leave = self.env['resource.calendar.leaves'].create({
             'name': 'Feriado de prueba', 'calendar_id': calendar.id, 'company_id': company.id,
@@ -211,7 +217,7 @@ class TestDigemid(TransactionCase):
         leave.write({'date_from': datetime(2026, 10, 20, 5, 0), 'date_to': datetime(2026, 10, 21, 5, 0)})
         self.assertEqual((leave.date_from, leave.date_to),
                          (datetime(2026, 10, 20, 5, 0), datetime(2026, 10, 21, 5, 0)))
-        self.assertEqual(company._pharmacy_holidays(date(2026, 10, 16), date(2026, 10, 31)),
+        self.assertEqual(company._pharmacy_holidays(date(2026, 10, 16), date(2026, 10, 31)) - before,
                          {date(2026, 10, 20)})
         # Viernes 16/10 + 7 días hábiles sin el feriado = miércoles 28/10.
         self.assertEqual(company._pharmacy_add_business_days(date(2026, 10, 16), 7), date(2026, 10, 28))

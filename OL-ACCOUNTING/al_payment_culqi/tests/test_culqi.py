@@ -32,8 +32,10 @@ class TestCulqi(CulqiCommon, PaymentHttpCommon):
     def test_keys_must_match_mode(self):
         with self.assertRaisesRegex(ValidationError, 'pk_live_'):
             self.provider.write({'is_live': True})
+        # Odoo 20: _prepare_provider ya no publica el proveedor; el control
+        # corre al publicarlo o activarlo.
         with self.assertRaisesRegex(ValidationError, 'llaves'):
-            self.provider.write({'culqi_secret_key': False})
+            self.provider.write({'is_published': True, 'culqi_secret_key': False})
 
     def test_request_headers_use_secret_key(self):
         headers = self.provider._build_request_headers('POST', 'charges', {})
