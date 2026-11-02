@@ -9,3 +9,4 @@ from . import test_ficha_ruc
 from . import test_res_city
 from . import test_lookup_document
 from . import test_token_status
+from . import test_documentation_url

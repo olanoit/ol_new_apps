@@ -440,6 +440,10 @@ faq:
       anterior.
 
 novedades:
+  - version: '24.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "Cada conexión enlaza la documentación oficial de su proveedor (campo «Documentación», en el formulario y en la lista): apiperu.dev, json.pe, Decolecta (también para apis.net.pe, que migró a ella) y el portal de consulta RUC de SUNAT. Las conexiones ya creadas lo reciben al actualizar."
   - version: '23.20261027'
     fecha: 27/10/2026
     cambios:

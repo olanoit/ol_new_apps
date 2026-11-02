@@ -103,6 +103,11 @@ class L10nPeApiConnection(models.Model):
         string='Registro del token',
         help="Página del proveedor donde se crea la cuenta y se obtiene el token. Sin token, "
              "la conexión no se consulta.")
+    documentation_url = fields.Char(
+        string='Documentación',
+        help="Página oficial del proveedor que explica el servicio: endpoints, parámetros y "
+             "respuesta. Sirve para revisar o ajustar la conexión y su mapeo.",
+        tracking=True)
     needs_token = fields.Boolean(
         string='Necesita token', compute='_compute_token_state', compute_sudo=True,
         help="API REST con autenticación: no responde sin token.")

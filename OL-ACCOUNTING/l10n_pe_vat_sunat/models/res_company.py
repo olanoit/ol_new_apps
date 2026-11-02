@@ -159,6 +159,7 @@ class ResCompany(models.Model):
 DEFAULT_CONNECTIONS = [
     {
         'name': 'apiperu.dev',
+        'documentation_url': 'https://docs.apiperu.dev',
         'signup_url': 'https://app.apiperu.dev/auth/register',
         'engine': 'rest_json',
         'document_type': 'both',
@@ -187,6 +188,7 @@ DEFAULT_CONNECTIONS = [
     },
     {
         'name': 'json.pe',
+        'documentation_url': 'https://docs.json.pe',
         'signup_url': 'https://app.json.pe/signup',
         'engine': 'rest_json',
         'document_type': 'both',
@@ -217,6 +219,8 @@ DEFAULT_CONNECTIONS = [
     },
     {
         'name': 'apis.net.pe',
+        # Sus guías publican la documentación de Decolecta, que la reemplaza.
+        'documentation_url': 'https://decolecta.gitbook.io/docs',
         'signup_url': 'https://decolecta.com/profile/',  # apis.net.pe migró a Decolecta
         'engine': 'rest_json',
         'document_type': 'both',
@@ -247,6 +251,7 @@ DEFAULT_CONNECTIONS = [
         # reutiliza ``al_l10n_pe_currency`` para traer compra y venta.
         # Respuesta plana: sin envoltorio de datos ni indicador de éxito.
         'name': 'Decolecta',
+        'documentation_url': 'https://decolecta.gitbook.io/docs',
         'signup_url': 'https://decolecta.com/profile/',
         'engine': 'rest_json',
         'document_type': 'both',
@@ -289,6 +294,8 @@ DEFAULT_CONNECTIONS = [
     },
     {
         'name': 'SUNAT (oficial)',
+        # Sin API pública: el portal de consulta RUC que lee el scraper.
+        'documentation_url': 'https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp',
         'engine': 'sunat_oficial',
         'document_type': 'ruc',
         'sequence': 30,

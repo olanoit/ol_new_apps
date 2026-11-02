@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261102 — 02/11/2026
+
+- Cada conexión enlaza la documentación oficial de su proveedor (campo «Documentación», en el formulario y en la lista): apiperu.dev, json.pe, Decolecta (también para apis.net.pe, que migró a ella) y el portal de consulta RUC de SUNAT. Las conexiones ya creadas lo reciben al actualizar.
+
 ## 23.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
