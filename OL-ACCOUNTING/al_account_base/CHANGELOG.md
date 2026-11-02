@@ -9,7 +9,7 @@ Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 
 ## 23.20261102 — 02/11/2026
 
-- Contactos peruanos: el DNI aparece siempre bajo el RUC, listo para llenarse. Odoo 20 quitó el selector de tipo de documento y el DNI solo se agregaba con el «+» junto al RUC; el carné de extranjería, el pasaporte y los demás siguen en ese «+».
+- Contactos peruanos: los documentos de identidad del «+» junto al RUC y de la lista del contacto se muestran con su nombre peruano del catálogo 06 de SUNAT (DNI, Carné de Permiso Temporal de Permanencia, Salvoconducto, Tarjeta Andina de Migración…), en lugar del inglés con que los trae Odoo 20.
 
 ## 20.20261027 — 27/10/2026
 

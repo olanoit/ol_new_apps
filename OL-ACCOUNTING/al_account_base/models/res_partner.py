@@ -27,6 +27,29 @@ PE_IDENTIFIER_KEYS = {
     **{code: key for key, code in PE_SUNAT_CODES.items()},
     '4': PE_CE_KEY,
 }
+# Nombres en español peruano (catálogo 06 de SUNAT) de los identificadores
+# de l10n_pe. Odoo 20 los trae en inglés y sin traducción, y son los que
+# muestran el «+» junto al RUC y la lista de identificadores del contacto.
+PE_IDENTIFIER_LABELS = {
+    'PE_DNI': (_lt('DNI'), _lt('Documento Nacional de Identidad emitido por RENIEC.')),
+    'PE_CPP': (_lt('Carné de Permiso Temporal de Permanencia'),
+               _lt('CPP emitido por Migraciones.')),
+    'PE_DIC': (_lt('Cédula diplomática de identidad'),
+               _lt('Emitida por el Ministerio de Relaciones Exteriores.')),
+    'PE_IDCR': (_lt('Documento de identidad del país de residencia'),
+                _lt('Documento de identidad de un no domiciliado, emitido en su país de residencia.')),
+    'PE_IN': (_lt('Doc. tributario de persona jurídica no domiciliada'),
+              _lt('Identification Number (IN) de una empresa del extranjero.')),
+    'PE_NDTD': (_lt('Doc. tributario no domiciliado sin RUC'),
+                _lt('Documento tributario de otro país, para quien no tiene RUC.')),
+    'PE_PTP': (_lt('Permiso Temporal de Permanencia (PTP)'),
+               _lt('Permiso Temporal de Permanencia emitido por Migraciones.')),
+    'PE_SP': (_lt('Salvoconducto'), _lt('Salvoconducto emitido por Migraciones.')),
+    'PE_TAM': (_lt('Tarjeta Andina de Migración (TAM)'),
+               _lt('Tarjeta Andina de Migración, para turistas de la Comunidad Andina.')),
+    'PE_TIN': (_lt('Doc. tributario de persona natural no domiciliada'),
+               _lt('Tax Identification Number (TIN) de una persona del extranjero.')),
+}
 
 
 class ResPartner(models.Model):
@@ -56,12 +79,9 @@ class ResPartner(models.Model):
     @api.model
     def _get_all_additional_identifiers_metadata(self):
         metadata = super()._get_all_additional_identifiers_metadata()
-        # Odoo 20 retiró el selector de tipo de documento: el RUC es el
-        # ``vat`` y los demás documentos se agregan con el «+» junto a él, que
-        # pasa desapercibido. El DNI, el otro documento habitual en Perú, se
-        # muestra siempre bajo el RUC, listo para llenarse.
-        if 'PE_DNI' in metadata:
-            metadata['PE_DNI'] = {**metadata['PE_DNI'], 'display_optional': 'show'}
+        for key, (label, help_text) in PE_IDENTIFIER_LABELS.items():
+            if key in metadata:
+                metadata[key] = {**metadata[key], 'label': label, 'help': help_text}
         return {
             **metadata,
             PE_CE_KEY: {

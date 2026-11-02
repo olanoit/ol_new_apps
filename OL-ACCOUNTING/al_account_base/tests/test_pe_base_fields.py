@@ -103,21 +103,35 @@ class TestPeBaseFields(TransactionCase):
         self.assertTrue(journal.l10n_pe_exclude_from_books)
 
     # ------------------------------------------------------------------
-    # Documento de identidad en el formulario
+    # Identificadores en español peruano
     # ------------------------------------------------------------------
-    def test_dni_is_always_shown_for_peruvian_contacts(self):
-        """Sin el selector de Odoo 19, el DNI se ofrece siempre bajo el RUC;
-        los demás documentos siguen en el «+»."""
+    def test_peruvian_identifiers_are_labelled_in_spanish(self):
+        """El «+» junto al RUC y la lista del contacto muestran los documentos
+        con su nombre peruano (catálogo 06), no el inglés de l10n_pe."""
         metadata = self.partner.available_additional_identifiers_metadata
-        self.assertEqual(metadata['PE_DNI'].get('display_optional'), 'show')
-        self.assertFalse(metadata['PE_CE'].get('display_optional'))
-        foreign = self.env['res.partner'].create({
-            'name': 'CONTACTO EXTRANJERO', 'country_id': self.env.ref('base.cl').id})
-        self.assertNotIn('PE_DNI', foreign.available_additional_identifiers_metadata)
+        self.assertEqual(metadata['PE_DNI']['label'], 'DNI')
+        self.assertEqual(metadata['PE_SP']['label'], 'Salvoconducto')
+        self.assertEqual(metadata['PE_TAM']['label'], 'Tarjeta Andina de Migración (TAM)')
+        self.assertEqual(metadata['PE_CE']['label'], 'Carnet de Extranjería')
+        english = {'Identification Number', 'Diplomatic Identity Card', 'Safe Passage',
+                   'Tax Identification Number', 'Non-Domiciled Tax Document',
+                   'License Permit Temp. Perman.',
+                   'Identity document of the country of residence'}
+        labels = {meta['label'] for key, meta in metadata.items() if key.startswith('PE_')}
+        self.assertFalse(labels & english)
+        # Sin cambiar el comportamiento nativo: el DNI se agrega con el «+».
+        self.assertFalse(metadata['PE_DNI'].get('display_optional'))
 
-    def test_dni_typed_in_the_form_identifies_the_contact(self):
+    def test_dni_keeps_its_label_in_the_list(self):
         partner = self.env['res.partner'].create({
             'name': 'PERSONA CON DNI', 'country_id': self.env.ref('base.pe').id,
             'additional_identifiers': {'PE_DNI': '40000004'}})
+        self.assertEqual(partner.available_additional_identifiers_metadata['PE_DNI']['label'], 'DNI')
         self.assertEqual(partner.l10n_pe_sunat_id_code, '1')
         self.assertEqual(partner.l10n_pe_document_label, 'DNI')
+
+    def test_other_countries_do_not_get_peruvian_identifiers(self):
+        foreign = self.env['res.partner'].create({
+            'name': 'CONTACTO EXTRANJERO', 'country_id': self.env.ref('base.cl').id})
+        self.assertFalse([k for k in foreign.available_additional_identifiers_metadata
+                          if k.startswith('PE_')])
