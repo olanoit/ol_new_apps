@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '70.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "El Cronograma usa la rejilla desplazable común del Gantt."
   - version: '69.20261101'
     fecha: 02/11/2026
     cambios:

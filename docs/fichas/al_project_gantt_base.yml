@@ -182,6 +182,11 @@ faq:
       bloqueada en el diagrama y el servidor rechaza cualquier cambio sobre ella.
 
 novedades:
+  - version: '20.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "Colores con las variables de Odoo: el diagrama, el menú contextual y el formulario de tarea se ven bien en el modo oscuro."
+      - "La columna «Tarea» tiene ancho de lectura y la rejilla se desplaza a lo ancho con su propia barra."
   - version: '20.20261101'
     fecha: 01/11/2026
     cambios:

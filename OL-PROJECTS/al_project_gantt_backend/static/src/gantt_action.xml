@@ -9,28 +9,18 @@
             <div class="algantt-wrapper d-flex flex-column h-100">
 
                 <div class="algantt-toolbar d-flex flex-wrap align-items-center gap-3 p-2 border-bottom">
-                    <div class="algantt-projects d-flex flex-wrap align-items-center gap-1" t-if="showProjectBar">
-                        <span class="fw-bold me-1">Proyectos:</span>
-                        <t t-if="!projectButtons.length">
-                            <span class="text-muted">Ninguno visible</span>
-                        </t>
-                        <t t-foreach="projectButtons" t-as="project" t-key="project.id">
-                            <button type="button"
-                                    class="btn btn-sm"
-                                    t-att-class="isSelected(project.id) ? 'btn-primary' : 'btn-outline-secondary'"
-                                    t-on-click="() => this.onProjectToggle(project.id)">
-                                <t t-esc="project.name"/>
-                                <span class="badge text-bg-light ms-1" t-esc="project.task_count"/>
-                            </button>
-                        </t>
-                        <button type="button" class="btn btn-sm btn-link"
-                                t-if="!state.pinnedToProject and state.availableProjects.length > 1"
-                                t-on-click="() => this.onSelectAll()">Todos</button>
-                        <!-- Al llegar desde el botón inteligente del proyecto,
-                             la vista viene acotada: se ofrece salir de ahí. -->
-                        <button type="button" class="btn btn-sm btn-link"
-                                t-if="state.pinnedToProject"
-                                t-on-click="() => this.onShowAllProjects()">Ver todos los proyectos</button>
+                    <!-- Proyectos como un campo many2many_tags: uno por defecto
+                         (la última selección del usuario) y los que agregue. -->
+                    <div class="algantt-projects d-flex align-items-center gap-2" t-if="showProjectBar">
+                        <span class="fw-bold text-nowrap">Proyectos</span>
+                        <div class="algantt-project-selector o_field_widget o_field_many2many_tags">
+                            <MultiRecordSelector resModel="'project.project'"
+                                                 resIds="state.selectedIds"
+                                                 domain="projectDomain"
+                                                 placeholder="'Agregar un proyecto…'"
+                                                 fieldString="'Proyectos'"
+                                                 update.bind="onProjectsChange"/>
+                        </div>
                     </div>
 
                     <!-- Punto de extensión: contenido propio de una pantalla heredada. -->

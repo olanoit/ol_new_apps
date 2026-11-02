@@ -230,6 +230,12 @@ faq:
       oficial y elija contra cuál comparar.
 
 novedades:
+  - version: '21.20261102'
+    fecha: 02/11/2026
+    cambios:
+      - "Los proyectos se eligen como etiquetas (como un campo many2many_tags) en vez de un botón por proyecto."
+      - "El Gantt ya no abre con todos los proyectos: abre con la última selección del usuario o, la primera vez, con el proyecto de la tarea modificada más reciente. Desde la ficha de un proyecto abre ese proyecto."
+      - "Modo oscuro: los estilos propios usan las variables de Odoo y se ajustan solos."
   - version: '20.20261101'
     fecha: 01/11/2026
     cambios:

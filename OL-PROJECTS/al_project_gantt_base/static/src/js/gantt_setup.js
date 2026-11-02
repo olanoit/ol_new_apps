@@ -143,7 +143,10 @@ export function buildColumns(gantt, options = {}) {
             name: "text",
             label: _t("Tarea"),
             tree: true,
-            width: "*",
+            // Ancho de lectura: con «*» la tarea se quedaba con lo que sobraba
+            // de la rejilla y los nombres se cortaban. La rejilla se desplaza.
+            width: 240,
+            min_width: 120,
             resize: true,
             // Texto de usuario: se escapa. El saneado básico de la librería
             // deja pasar <img src>, que haría peticiones a terceros.
@@ -192,6 +195,34 @@ export function buildColumns(gantt, options = {}) {
 }
 
 /**
+ * Rejilla con desplazamiento horizontal propio: las columnas conservan su
+ * ancho y la rejilla se desplaza; el borde con el diagrama se arrastra.
+ */
+export function scrollableGridLayout(gridWidth) {
+    return {
+        css: "gantt_container",
+        cols: [
+            {
+                width: gridWidth,
+                min_width: 280,
+                rows: [
+                    { view: "grid", scrollX: "algantt_grid_scroll", scrollable: true, scrollY: "algantt_scroll_ver" },
+                    { view: "scrollbar", id: "algantt_grid_scroll", group: "horizontal" },
+                ],
+            },
+            { resizer: true, width: 1 },
+            {
+                rows: [
+                    { view: "timeline", scrollX: "algantt_scroll_hor", scrollY: "algantt_scroll_ver" },
+                    { view: "scrollbar", id: "algantt_scroll_hor", group: "horizontal" },
+                ],
+            },
+            { view: "scrollbar", id: "algantt_scroll_ver" },
+        ],
+    };
+}
+
+/**
  * Configuración por defecto de una instancia recién creada.
  *
  * @param {Object} gantt instancia de `window.Gantt.getGanttInstance()`
@@ -221,6 +252,7 @@ export function configureGantt(gantt, options = {}) {
     gantt.config.row_height = 32;
     gantt.config.bar_height = 20;
     gantt.config.grid_width = gridWidth;
+    gantt.config.layout = scrollableGridLayout(gridWidth);
     gantt.config.open_tree_initially = true;
     gantt.config.show_progress = true;
     gantt.config.fit_tasks = true;

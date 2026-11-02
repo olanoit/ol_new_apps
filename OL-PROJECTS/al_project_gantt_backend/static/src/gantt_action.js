@@ -5,16 +5,16 @@
  *
  * Monta dhtmlxGantt en un contenedor propio; no hereda `web_gantt` ni ningún
  * tipo de vista de Odoo. Los datos vienen siempre del módulo base a través de
- * `project.project.al_gantt_get_data()`.
+ * `project.project.get_gantt_data()`.
  */
-import { Component, signal, onMounted, onWillStart, onWillUnmount, proxy, t, usePlugin, useProps } from "@odoo/owl";
-import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
+import { Component, onMounted, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { Layout } from "@web/search/layout";
 import { useService } from "@web/core/utils/hooks";
 import { loadCSS, loadJS } from "@web/core/assets";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
+import { MultiRecordSelector } from "@web/core/record_selectors/multi_record_selector";
 import { GANTT_LIB, toDhtmlxData } from "@al_project_gantt_base/js/gantt_adapter";
 import {
     enableBaselineBars,
@@ -43,14 +43,13 @@ import {
     selectedValues,
 } from "@al_project_gantt_base/js/gantt_filters";
 import { GanttSelection } from "./gantt_selection";
-import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 /**
  * Puntos de extensión para pantallas que reutilizan este componente
  * heredándolo (`class MiPantalla extends GanttAction`). Todos son opcionales
  * y, sin sobrescribir, el Gantt se comporta exactamente igual:
  *
- * - `getOptions()`: opciones extra para `al_gantt_get_data` (el servidor las
+ * - `getOptions()`: opciones extra para `get_gantt_data` (el servidor las
  *   recibe en `options` y una herencia de `al.gantt.data` puede usarlas).
  * - `transformGanttData(ganttData, payload)`: filas y enlaces ya adaptados a
  *   dhtmlxGantt, para añadir o retocar filas antes de pintarlas.
@@ -96,14 +95,14 @@ export function groupToolbarButtons(buttons) {
 
 export class GanttAction extends Component {
     static template = "al_project_gantt_backend.GanttAction";
-    static components = { Layout };
-    props = useProps();
+    static components = { Layout, MultiRecordSelector };
+    static props = ["*"];
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionPlugin);
-        this.notification = usePlugin(NotificationPlugin);
-        this.containerRef = signal.ref();
+        this.action = useService("action");
+        this.notification = useService("notification");
+        this.containerRef = useRef("ganttContainer");
         this.gantt = null;
         this.selection = this.selectionEnabled
             ? new GanttSelection({
@@ -118,7 +117,7 @@ export class GanttAction extends Component {
         // el proyecto ya acotado (`action_open_gantt`).
         const contextProjectIds = this.props.action?.context?.gantt_project_ids || [];
 
-        this.state = proxy({
+        this.state = useState({
             loading: true,
             error: null,
             projects: [],
@@ -158,6 +157,7 @@ export class GanttAction extends Component {
 
         onWillStart(async () => {
             await this.loadLibrary();
+            await this.loadDefaultProjects();
             await this.fetchData();
         });
         onMounted(() => this.mountGantt());
@@ -172,9 +172,25 @@ export class GanttAction extends Component {
         return Object.entries(ZOOM_LEVELS).map(([key, level]) => ({ key, label: level.label }));
     }
 
-    /** Botones de proyecto: acotado al llegar desde el proyecto; si no, todos. */
-    get projectButtons() {
-        return this.state.pinnedToProject ? this.state.projects : this.state.availableProjects;
+    /**
+     * Sin proyectos en el contexto, el Gantt abre con la última selección del
+     * usuario o, la primera vez, con el proyecto de actividad más reciente:
+     * nunca con todos (con decenas de proyectos no se leía).
+     */
+    async loadDefaultProjects() {
+        if (this.state.selectedIds.length || !this.showProjectBar) {
+            return;
+        }
+        this.state.selectedIds = await this.orm.call(
+            "project.project",
+            "get_gantt_default_project_ids",
+            []
+        );
+    }
+
+    /** Dominio del selector de proyectos (una pantalla heredada lo acota). */
+    get projectDomain() {
+        return [];
     }
 
     get hasTasks() {
@@ -191,7 +207,7 @@ export class GanttAction extends Component {
         try {
             // Los errores (p. ej. AccessError) suben al gestor de errores de
             // Odoo, que ya muestra el diálogo estándar: no se silencian aquí.
-            const payload = await this.orm.call("project.project", "al_gantt_get_data", [
+            const payload = await this.orm.call("project.project", "get_gantt_data", [
                 this.state.selectedIds.length ? this.state.selectedIds : null,
                 this.getOptions(),
             ]);
@@ -319,7 +335,7 @@ export class GanttAction extends Component {
     // Librería
     // ------------------------------------------------------------------
     mountGantt() {
-        if (!this.containerRef() || !window.Gantt) {
+        if (!this.containerRef.el || !window.Gantt) {
             return;
         }
         // Instancia propia: no se comparte estado con otras vistas ni con la
@@ -327,11 +343,11 @@ export class GanttAction extends Component {
         this.gantt = window.Gantt.getGanttInstance();
         this.mountedSignature = this.configSignature();
         this.setupGantt();
-        this.gantt.init(this.containerRef());
+        this.gantt.init(this.containerRef.el);
         this.parseData();
         addTodayMarker(this.gantt);
         this.detachContextMenu = attachContextMenu(
-            this.gantt, this.containerRef(), (taskId, task) => this.buildContextActions(taskId, task)
+            this.gantt, this.containerRef.el, (taskId, task) => this.buildContextActions(taskId, task)
         );
         if (this.state.search) {
             this.state.searchMatches = applySearch(this.gantt, this.state.search);
@@ -341,7 +357,7 @@ export class GanttAction extends Component {
         // El contenedor cambia de alto al plegar avisos o al redimensionar la
         // ventana; sin esto la librería conserva el tamaño del primer render.
         this.resizeObserver = new ResizeObserver(() => this.gantt?.setSizes());
-        this.resizeObserver.observe(this.containerRef());
+        this.resizeObserver.observe(this.containerRef.el);
     }
 
     setupGantt() {
@@ -522,23 +538,18 @@ export class GanttAction extends Component {
         }
     }
 
-    async onProjectToggle(projectId) {
-        const selected = new Set(this.state.selectedIds);
-        if (selected.has(projectId)) {
-            selected.delete(projectId);
-        } else {
-            selected.add(projectId);
-        }
-        if (!selected.size) {
+    /** Proyectos elegidos en el selector (como un campo many2many_tags). */
+    async onProjectsChange(projectIds) {
+        if (!projectIds.length) {
             this.notification.add(_t("Seleccione al menos un proyecto."), { type: "warning" });
             return;
         }
-        this.state.selectedIds = [...selected];
-        await this.reload();
-    }
-
-    async onSelectAll() {
-        this.state.selectedIds = this.state.availableProjects.map((project) => project.id);
+        this.state.selectedIds = [...projectIds];
+        // Llegando desde un proyecto, la vista es de ese proyecto: no cambia
+        // la preferencia del usuario.
+        if (!this.state.pinnedToProject) {
+            await this.orm.call("project.project", "set_gantt_project_ids", [projectIds]);
+        }
         await this.reload();
     }
 
@@ -729,40 +740,40 @@ export class GanttAction extends Component {
         if (isRealTask) {
             actions.push({
                 label: _t("Abrir en Odoo"),
-                icon: "open_in_new",
+                icon: "fa-external-link",
                 run: () => this.openTaskForm(taskId),
             });
         }
         if (isRealTask) {
             actions.push({
                 label: _t("Planificar actividad"),
-                icon: "schedule",
+                icon: "fa-clock-o",
                 run: () => this.scheduleActivity(taskId),
             });
         }
         if (isRealTask && editable && this.state.meta.can_create) {
             actions.push({
                 label: _t("Añadir subtarea"),
-                icon: "subdirectory_arrow_right",
+                icon: "fa-level-down",
                 run: () => this.addSubtask(taskId, task),
             });
         }
         if (isRealTask && editable) {
             actions.push({
                 label: _t("Indentar"),
-                icon: "format_indent_increase",
+                icon: "fa-indent",
                 disabled: !indentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(indentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Desindentar"),
-                icon: "format_indent_decrease",
+                icon: "fa-outdent",
                 disabled: !outdentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(outdentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Eliminar"),
-                icon: "delete",
+                icon: "fa-trash",
                 run: () => this.gantt.deleteTask(taskId),
             });
         }
@@ -819,13 +830,6 @@ export class GanttAction extends Component {
             return;
         }
         await this.saveChanges({ tasks: { update: [change] } });
-        await this.reload();
-    }
-
-    /** Sale del acotado que impone el botón inteligente del proyecto. */
-    async onShowAllProjects() {
-        this.state.pinnedToProject = false;
-        this.state.selectedIds = [];
         await this.reload();
     }
 

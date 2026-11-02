@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 70.20261102 — 02/11/2026
+
+- El Cronograma usa la rejilla desplazable común del Gantt.
+
 ## 69.20261101 — 02/11/2026
 
 - El Cronograma abre el plan desde el que se llama aunque esté reemplazado o cancelado.

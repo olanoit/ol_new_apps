@@ -27,7 +27,7 @@ ruta crítica, líneas base y exportación a Excel y PDF.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_project_gantt_backend/static/description/icon.png',
-    'version': '20.20261101',
+    'version': '21.20261102',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',
