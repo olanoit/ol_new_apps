@@ -321,7 +321,10 @@ class TestPurchaseRequestToRfq(common.TransactionCase):
         wiz_id.make_purchase_order()
         po_line = purchase_request_line1.purchase_lines[0]
         # PO uses product's base UoM (Units)
-        self.assertEqual(po_line.product_qty, 12, "Quantity should be 12 units")
+        # OL: the 1 unit of line 3 joins the line of line 1 (12 + 1).
+        # Upstream expects 12 because _calc_new_qty summed the request lines
+        # before linking the one being added (fixed in this copy).
+        self.assertEqual(po_line.product_qty, 13, "Quantity should be 13 units")
         self.assertEqual(
             po_line.uom_id,
             self.env.ref("uom.product_uom_unit"),
@@ -395,7 +398,9 @@ class TestPurchaseRequestToRfq(common.TransactionCase):
         po_line = purchase_request_line2.purchase_lines[0]
         # Add unit price in PO Line
         po_line.write({"price_unit": 10})
-        self.assertEqual(po_line.product_qty, 5.0, "Quantity should be 5")
+        # OL: 3 + 3 requested, above the minimum of 5. Upstream expects 5
+        # because the request being added was left out of the sum.
+        self.assertEqual(po_line.product_qty, 6.0, "Quantity should be 6")
         # auto change state to done
         po_line.order_id.button_confirm()
         picking = po_line.order_id.picking_ids[0]

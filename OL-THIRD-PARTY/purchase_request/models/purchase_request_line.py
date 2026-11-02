@@ -1,7 +1,7 @@
 # Copyright 2018-2019 ForgeFlow, S.L.
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl-3.0)
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
 _STATES = [
@@ -355,7 +355,10 @@ class PurchaseRequestLine(models.Model):
             supplierinfo_min_qty = self._get_supplier_min_qty(
                 po_line.product_id, po_line.order_id.partner_id
             )
-        # At this point, the current request_line is already linked to the po_line
+        # OL: when the request line joins an existing PO line it is not linked
+        # yet, and the sum left it out (100 instead of 140). Link it first.
+        if request_line and request_line not in po_line.purchase_request_lines:
+            po_line.purchase_request_lines = [Command.link(request_line.id)]
         unique_rls = po_line.purchase_request_lines.exists()
         rl_qty = sum(
             rl.product_uom_id._compute_quantity(rl.product_qty, purchase_uom)

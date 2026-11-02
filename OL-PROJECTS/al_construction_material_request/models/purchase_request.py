@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import Command, api, fields, models
+from odoo import api, fields, models
 
 
 class PurchaseRequest(models.Model):
@@ -32,6 +32,12 @@ class PurchaseRequestLine(models.Model):
         compute='_compute_al_qty_to_order', store=True,
         help='Lo solicitado menos lo que ya está en órdenes de compra no canceladas, según la '
              'tabla de asignación de la solicitud.')
+
+    def _al_is_construction(self):
+        """La línea es de obra. Las solicitudes de compra de otras áreas
+        siguen la lógica de OCA sin cambios."""
+        self.ensure_one()
+        return bool(self.construction_request_line_id)
 
     @api.depends('product_qty', 'cancelled', 'request_state',
                  'purchase_request_allocation_ids.requested_product_uom_qty',
@@ -89,12 +95,3 @@ class PurchaseRequestLine(models.Model):
         y la compra masiva consolidada mostraba 140 comprados en cada una)."""
         for line in self:
             line.purchased_qty = line._al_ordered_qty()
-
-    def _calc_new_qty(self, request_line, po_line=None, new_pr_line=False):
-        """Cantidad de la línea de OC: OCA suma las solicitudes enlazadas a la
-        línea, pero al agregar una a una línea existente la enlaza después de
-        sumar y deja fuera siempre la última (100 en vez de 140; 140 en vez de
-        165). Se enlaza antes de sumar."""
-        if po_line and request_line and request_line not in po_line.purchase_request_lines:
-            po_line.purchase_request_lines = [Command.link(request_line.id)]
-        return super()._calc_new_qty(request_line, po_line=po_line, new_pr_line=new_pr_line)

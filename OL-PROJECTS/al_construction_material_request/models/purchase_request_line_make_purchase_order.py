@@ -10,8 +10,12 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         """Cantidad sugerida: lo que falta poner en una orden, no lo que falta
         recibir (OCA proponía otra vez lo que ya estaba en una cotización)."""
         vals = super()._prepare_item(line)
-        vals['product_qty'] = line.al_qty_to_order
+        if line._al_is_construction():
+            vals['product_qty'] = line.al_qty_to_order
         return vals
+
+    def _al_is_construction_item(self, item):
+        return item.line_id._al_is_construction()
 
     def _al_is_general_stock(self, item):
         """La compra masiva entra como stock general (v1.6, M16-02): sin
@@ -33,6 +37,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     @api.model
     def _prepare_purchase_order_line(self, po, item):
         vals = super()._prepare_purchase_order_line(po, item)
+        if not self._al_is_construction_item(item):
+            return vals
         site = self._al_final_location(item)
         if site:
             vals['construction_location_final_id'] = site.id
@@ -50,6 +56,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         general se suman aunque vengan de obras distintas: la línea no lleva
         analítica."""
         domain = super()._get_order_line_search_domain(order, item)
+        if not self._al_is_construction_item(item):
+            return domain
         if self._al_is_general_stock(item):
             domain = [leaf for leaf in domain
                       if not (isinstance(leaf, (list, tuple)) and leaf[0] == 'analytic_distribution')]

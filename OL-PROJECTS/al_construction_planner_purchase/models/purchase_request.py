@@ -34,6 +34,10 @@ class PurchaseRequestLine(models.Model):
         PURCHASE_DESTINATIONS,
         string='Modo de compra masiva', readonly=True, copy=False)
 
+    def _al_is_construction(self):
+        """La compra masiva del plan también es de obra."""
+        return bool(self.construction_plan_mode) or super()._al_is_construction()
+
     def write(self, vals):
         res = super().write(vals)
         if {'cancelled', 'product_qty', 'product_uom_id'} & set(vals):
