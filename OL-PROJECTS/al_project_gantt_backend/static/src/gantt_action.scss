@@ -21,12 +21,12 @@
     .algantt-wrapper {
         flex: 1 1 auto;
         min-height: 0; // sin esto el hijo con flex-grow no recibe alto real
-        background-color: var(--o-view-background-color, #fff);
+        background-color: $o-view-background-color;
     }
 
     .algantt-toolbar {
         flex: 0 0 auto;
-        background-color: var(--o-gray-100, #f9f9f9);
+        background-color: $o-gray-100;
     }
 
     // Los bloques de altura fija no deben encogerse: sin `flex: 0 0 auto` el
@@ -84,14 +84,25 @@
 .algantt-check {
     cursor: pointer;
     font-size: 1.05em;
-    color: var(--o-gray-500, #adb5bd);
+    color: $o-gray-500;
 
     &.algantt-check-on,
     &.algantt-check-part {
-        color: var(--o-action, #017e84);
+        color: $o-action;
     }
 }
 
 .gantt_row.algantt-row-selected {
-    background-color: rgba(1, 126, 132, 0.08);
+    background-color: rgba($o-action, 0.12);
+}
+
+// Selector de proyectos (como un campo many2many_tags).
+.o_algantt_action .algantt-projects {
+    flex: 1 1 28rem;
+    min-width: 18rem;
+
+    .algantt-project-selector {
+        flex: 1 1 auto;
+        min-width: 14rem;
+    }
 }

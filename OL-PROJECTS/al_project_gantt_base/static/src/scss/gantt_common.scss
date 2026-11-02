@@ -1,12 +1,16 @@
 // Estilos comunes a las dos interfaces (backend y website).
 // Prefijo propio `algantt-`: nunca se estilizan clases de la librería a secas,
 // para que las dos interfaces puedan convivir en la misma instalación.
+//
+// Colores con las variables de Odoo y de Bootstrap, nunca fijos: el modo
+// oscuro de Odoo vuelve a compilar estas hojas con sus variables oscuras
+// (`web.assets_web_dark`), así que los tonos se ajustan solos.
 
 // Fila de proyecto: el verde por defecto de la librería se confunde con el
 // color del estado «Aprobada».
 .gantt_task_line.algantt-project-row {
-    background-color: #4c4c4c;
-    border-color: #3a3a3a;
+    background-color: $o-gray-700;
+    border-color: $o-gray-800;
     font-weight: 600;
 
     .gantt_task_progress {
@@ -22,13 +26,13 @@
 
 // Tareas cuyo padre quedó fuera del conjunto cargado.
 .gantt_task_line.algantt-orphan {
-    border-left: 3px solid #e58e2c;
+    border-left: 3px solid $warning;
 }
 
 // Ruta crítica: holgura cero. El borde, y no el relleno, para no pisar el
 // color del estado.
 .gantt_task_line.algantt-critical {
-    box-shadow: 0 0 0 2px #c0392b;
+    box-shadow: 0 0 0 2px $danger;
 }
 
 // Tareas que el usuario no puede modificar (permiso real del ORM).
@@ -55,18 +59,18 @@
     top: 22px;
     height: 6px;
     border-radius: 3px;
-    background-color: rgba(0, 0, 0, 0.45);
+    background-color: rgba($o-main-text-color, 0.45);
     pointer-events: none;
 }
 
 // Desvío contra la línea base en la rejilla.
 .algantt-late {
-    color: #c0392b;
+    color: $danger;
     font-weight: 600;
 }
 
 .algantt-early {
-    color: #1a7d3d;
+    color: $success;
 }
 
 // --- Herramientas añadidas sobre la edición MIT -------------------------
@@ -74,21 +78,21 @@
 // Días no laborables según el calendario del proyecto (solo sombreado: no
 // altera la programación).
 .gantt_task_cell.algantt-nonworking {
-    background-color: rgba(0, 0, 0, 0.045);
+    background-color: $o-gray-100;
 }
 
 .gantt_scale_cell.algantt-nonworking-scale {
-    color: #9aa0a6;
+    color: $o-gray-500;
 }
 
 // Marca vertical del día de hoy (plugin `marker`).
 .gantt_marker.algantt-today-marker {
-    background-color: #c0392b;
+    background-color: $danger;
     opacity: 0.75;
 
     .gantt_marker_content {
-        background-color: #c0392b;
-        color: #fff;
+        background-color: $danger;
+        color: $white;
         font-size: 11px;
     }
 }
@@ -99,9 +103,9 @@
     z-index: 1080;
     min-width: 210px;
     padding: 4px 0;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid $o-gray-300;
     border-radius: 6px;
-    background-color: #fff;
+    background-color: $o-view-background-color;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
 
@@ -113,14 +117,14 @@
     background: none;
     text-align: left;
     font-size: 13px;
-    color: #1c2024;
+    color: $o-main-text-color;
 
     &:hover:not(:disabled) {
-        background-color: #f1f3f5;
+        background-color: $o-gray-200;
     }
 
     &:disabled {
-        color: #9aa0a6;
+        color: $o-gray-500;
     }
 }
 
@@ -157,9 +161,10 @@
         margin: 0 4px 0 0;
         padding: 2px 6px;
         vertical-align: middle;
-        border: 1px solid #cfd4da;
+        border: 1px solid $o-gray-300;
         border-radius: 4px;
-        background-color: #fff;
+        background-color: $o-view-background-color;
+        color: $o-main-text-color;
         font-size: 13px;
         line-height: 1.3;
         box-shadow: none;
@@ -203,7 +208,7 @@
 
     .gantt_cal_lsection {
         font-weight: 600;
-        color: #1c2024;
+        color: $o-main-text-color;
         padding: 10px 10px 4px;
     }
 }
@@ -213,9 +218,9 @@
     font-size: 13px;
     line-height: 1;
 
-    &.algantt-activity-overdue { color: #c0392b; }
-    &.algantt-activity-today { color: #e58e2c; }
-    &.algantt-activity-planned { color: #1a7d3d; }
+    &.algantt-activity-overdue { color: $danger; }
+    &.algantt-activity-today { color: $warning; }
+    &.algantt-activity-planned { color: $success; }
 }
 
 // --- Bloques propios del formulario -------------------------------------
@@ -233,7 +238,7 @@
     flex-direction: column;
     gap: 3px;
     font-size: 12px;
-    color: #5b6570;
+    color: $o-gray-700;
 
     input {
         width: 210px;
@@ -262,8 +267,8 @@
     max-width: 100%;
     padding: 2px 4px 2px 10px;
     border-radius: 999px;
-    background-color: #f1eaf0;
-    color: #5b3a52;
+    background-color: mix($o-brand-primary, $o-view-background-color, 15%);
+    color: $o-main-text-color;
     font-size: 12.5px;
     line-height: 1.5;
     white-space: nowrap;
@@ -273,16 +278,16 @@
     border: 0;
     background: none;
     padding: 0 4px;
-    color: #8a6a80;
+    color: $o-gray-600;
     font-size: 15px;
     line-height: 1;
     cursor: pointer;
 
-    &:hover { color: #5b3a52; }
+    &:hover { color: $o-main-text-color; }
 }
 
 .gantt_cal_light .algantt-token-empty {
-    color: #9aa0a6;
+    color: $o-gray-500;
     font-size: 12.5px;
     font-style: italic;
 }

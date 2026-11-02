@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261102 — 02/11/2026
+
+- Colores con las variables de Odoo: el diagrama, el menú contextual y el formulario de tarea se ven bien en el modo oscuro.
+- La columna «Tarea» tiene ancho de lectura y la rejilla se desplaza a lo ancho con su propia barra.
+
 ## 19.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

@@ -30,7 +30,7 @@ import { _t } from "@web/core/l10n/translation";
 import { formatFloat } from "@web/core/utils/numbers";
 import { GanttAction } from "@al_project_gantt_backend/gantt_action";
 import { toPlainDate } from "@al_project_gantt_base/js/gantt_adapter";
-import { escapeText } from "@al_project_gantt_base/js/gantt_setup";
+import { escapeText, scrollableGridLayout } from "@al_project_gantt_base/js/gantt_setup";
 import {
     stageFilterLabel,
     stageNodeState,
@@ -531,32 +531,7 @@ export class ConstructionScheduleAction extends GanttAction {
                 column.min_width = Math.min(widths[column.name], 120);
             }
         }
-        gantt.config.layout = {
-            css: "gantt_container",
-            cols: [
-                {
-                    width: 720,
-                    min_width: 280,
-                    rows: [
-                        {
-                            view: "grid",
-                            scrollX: "o_cp_grid_scroll",
-                            scrollable: true,
-                            scrollY: "o_cp_scroll_ver",
-                        },
-                        { view: "scrollbar", id: "o_cp_grid_scroll", group: "horizontal" },
-                    ],
-                },
-                { resizer: true, width: 1 },
-                {
-                    rows: [
-                        { view: "timeline", scrollX: "o_cp_scroll_hor", scrollY: "o_cp_scroll_ver" },
-                        { view: "scrollbar", id: "o_cp_scroll_hor", group: "horizontal" },
-                    ],
-                },
-                { view: "scrollbar", id: "o_cp_scroll_ver" },
-            ],
-        };
+        gantt.config.layout = scrollableGridLayout(720);
         if (this.schedule.rows === "stages") {
             // Las etapas son de días enteros y la librería guarda el fin como
             // exclusivo: la columna «Fin» muestra el último día de trabajo.

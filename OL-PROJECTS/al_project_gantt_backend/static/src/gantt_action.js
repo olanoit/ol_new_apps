@@ -14,6 +14,7 @@ import { useService } from "@web/core/utils/hooks";
 import { loadCSS, loadJS } from "@web/core/assets";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
+import { MultiRecordSelector } from "@web/core/record_selectors/multi_record_selector";
 import { GANTT_LIB, toDhtmlxData } from "@al_project_gantt_base/js/gantt_adapter";
 import {
     enableBaselineBars,
@@ -94,7 +95,7 @@ export function groupToolbarButtons(buttons) {
 
 export class GanttAction extends Component {
     static template = "al_project_gantt_backend.GanttAction";
-    static components = { Layout };
+    static components = { Layout, MultiRecordSelector };
     static props = ["*"];
 
     setup() {
@@ -156,6 +157,7 @@ export class GanttAction extends Component {
 
         onWillStart(async () => {
             await this.loadLibrary();
+            await this.loadDefaultProjects();
             await this.fetchData();
         });
         onMounted(() => this.mountGantt());
@@ -170,9 +172,25 @@ export class GanttAction extends Component {
         return Object.entries(ZOOM_LEVELS).map(([key, level]) => ({ key, label: level.label }));
     }
 
-    /** Botones de proyecto: acotado al llegar desde el proyecto; si no, todos. */
-    get projectButtons() {
-        return this.state.pinnedToProject ? this.state.projects : this.state.availableProjects;
+    /**
+     * Sin proyectos en el contexto, el Gantt abre con la última selección del
+     * usuario o, la primera vez, con el proyecto de actividad más reciente:
+     * nunca con todos (con decenas de proyectos no se leía).
+     */
+    async loadDefaultProjects() {
+        if (this.state.selectedIds.length || !this.showProjectBar) {
+            return;
+        }
+        this.state.selectedIds = await this.orm.call(
+            "project.project",
+            "get_gantt_default_project_ids",
+            []
+        );
+    }
+
+    /** Dominio del selector de proyectos (una pantalla heredada lo acota). */
+    get projectDomain() {
+        return [];
     }
 
     get hasTasks() {
@@ -520,23 +538,18 @@ export class GanttAction extends Component {
         }
     }
 
-    async onProjectToggle(projectId) {
-        const selected = new Set(this.state.selectedIds);
-        if (selected.has(projectId)) {
-            selected.delete(projectId);
-        } else {
-            selected.add(projectId);
-        }
-        if (!selected.size) {
+    /** Proyectos elegidos en el selector (como un campo many2many_tags). */
+    async onProjectsChange(projectIds) {
+        if (!projectIds.length) {
             this.notification.add(_t("Seleccione al menos un proyecto."), { type: "warning" });
             return;
         }
-        this.state.selectedIds = [...selected];
-        await this.reload();
-    }
-
-    async onSelectAll() {
-        this.state.selectedIds = this.state.availableProjects.map((project) => project.id);
+        this.state.selectedIds = [...projectIds];
+        // Llegando desde un proyecto, la vista es de ese proyecto: no cambia
+        // la preferencia del usuario.
+        if (!this.state.pinnedToProject) {
+            await this.orm.call("project.project", "set_gantt_project_ids", [projectIds]);
+        }
         await this.reload();
     }
 
@@ -817,13 +830,6 @@ export class GanttAction extends Component {
             return;
         }
         await this.saveChanges({ tasks: { update: [change] } });
-        await this.reload();
-    }
-
-    /** Sale del acotado que impone el botón inteligente del proyecto. */
-    async onShowAllProjects() {
-        this.state.pinnedToProject = false;
-        this.state.selectedIds = [];
         await this.reload();
     }
 

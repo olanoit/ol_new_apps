@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261102 — 02/11/2026
+
+- Los proyectos se eligen como etiquetas (como un campo many2many_tags) en vez de un botón por proyecto.
+- El Gantt ya no abre con todos los proyectos: abre con la última selección del usuario o, la primera vez, con el proyecto de la tarea modificada más reciente. Desde la ficha de un proyecto abre ese proyecto.
+- Modo oscuro: los estilos propios usan las variables de Odoo y se ajustan solos.
+
 ## 20.20261101 — 01/11/2026
 
 - M115-02: los botones de la barra admiten grupo y etiqueta; con grupos, la barra se arma en una fila por grupo y el contador de la selección queda en la primera. Sin grupos, como antes.
