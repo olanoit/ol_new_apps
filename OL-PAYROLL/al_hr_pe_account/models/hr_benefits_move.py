@@ -699,6 +699,22 @@ class HrProvisiones(models.Model):
              self.env._('Provisión de vacaciones'),
              self.env._('Provisión de vacaciones por pagar')),
         )
+        distributions = {}
+
+        def provision_distribution(line):
+            """Tareaje del periodo > ficha: la provisión sigue al trabajo del
+            mes, como el sueldo en el asiento del lote."""
+            employee = line.employee_id
+            if employee not in distributions:
+                slip = self.payslip_run_id.slip_ids.filtered(
+                    lambda s: s.employee_id == employee
+                    and s.state in ('validated', 'paid'))[:1]
+                tareaje = (slip._l10n_pe_tareaje_distribution()
+                           if slip and param.detail_analytic else False)
+                distributions[employee] = tareaje or \
+                    param._benefits_analytic_distribution(line.version_id)
+            return distributions[employee]
+
         for lines, field_name, debit_account, credit_account, \
                 debit_name, credit_name in concepts:
             expense = {}
@@ -707,11 +723,7 @@ class HrProvisiones(models.Model):
                 amount = line[field_name]
                 if not amount:
                     continue
-                self._accumulate(
-                    expense,
-                    param._benefits_analytic_distribution(
-                        line.version_id),
-                    amount)
+                self._accumulate(expense, provision_distribution(line), amount)
                 # Haber: detallado por trabajador o agrupado.
                 if param.detallar_provision:
                     move_lines.append(self._make_line(

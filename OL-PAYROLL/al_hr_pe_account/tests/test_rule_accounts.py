@@ -3,7 +3,7 @@
 asiento de planilla por lote."""
 from unittest.mock import patch
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 
 from odoo.addons.al_hr_pe_account.tests.test_fase5_account import AccountCaseBase
@@ -114,3 +114,56 @@ class TestRuleAccounts(AccountCaseBase):
         self.version.analytic_distribution = {str(self.obra_b.id): 100.0}
         self.assertEqual(self._bas_debits(with_analytic=True),
                          [(self.acc_gasto.id, self.wage, {str(self.obra_b.id): 100.0})])
+
+    # ------------------------------------------------------------------
+    # Asiento por centro de costo
+    # ------------------------------------------------------------------
+    def _analytic_amount(self, analytic):
+        column = analytic.plan_id._column_name()
+        return sum(self.env['account.analytic.line'].search(
+            [(column, '=', analytic.id)]).mapped('amount'))
+
+    def test_payable_lines_do_not_cancel_the_center_cost(self):
+        """El pasivo no lleva analítica: el centro queda con todo el gasto."""
+        self.rule_neto.employee_move_line = False
+        self.version.analytic_distribution = {str(self.obra_a.id): 100.0}
+        move = self.batch._pe_generate_batch_move(
+            adjust_account=self.acc_ajuste, with_analytic=True)
+        payable = move.line_ids.filtered(lambda line: line.account_id == self.acc_neto)
+        self.assertTrue(payable)
+        self.assertFalse(payable.analytic_distribution)
+        self.assertEqual(self._analytic_amount(self.obra_a), -self.wage)
+
+    def test_one_expense_line_per_center(self):
+        self.param.move_split_by_cost_center = True
+        self.version.analytic_distribution = {str(self.obra_a.id): 60.0, str(self.obra_b.id): 40.0}
+        debits = sorted(self._bas_debits(with_analytic=True), key=lambda line: line[1])
+        self.assertEqual(debits, [
+            (self.acc_gasto.id, round(self.wage * 0.4, 2), {str(self.obra_b.id): 100.0}),
+            (self.acc_gasto.id, round(self.wage * 0.6, 2), {str(self.obra_a.id): 100.0}),
+        ])
+        self._balanced(with_analytic=True)
+
+    def test_split_ignored_when_plans_are_in_separate_keys(self):
+        """Dos planes en claves separadas suman 200 %: no se parte el importe."""
+        self.param.move_split_by_cost_center = True
+        other_plan = self.env['account.analytic.plan'].create({'name': 'Áreas (cuentas)'})
+        area = self.env['account.analytic.account'].create(
+            {'name': 'Área', 'plan_id': other_plan.id, 'company_id': self.company.id})
+        distribution = {str(self.obra_a.id): 100.0, str(area.id): 100.0}
+        self.version.analytic_distribution = distribution
+        self.assertEqual(self._bas_debits(with_analytic=True),
+                         [(self.acc_gasto.id, self.wage, distribution)])
+
+    def test_require_cost_center_blocks_and_warns(self):
+        self.param.move_require_cost_center = True
+        self.version.analytic_distribution = False
+        wizard = self.env['hr.payslip.run.move.wizard'].create(
+            {'payslip_run_id': self.batch.id, 'with_analytic': True})
+        self.assertIn(self.employee.name, wizard.cost_center_warning)
+        with self.assertRaises(UserError):
+            self.batch._pe_generate_batch_move(
+                adjust_account=self.acc_ajuste, with_analytic=True)
+        self.version.analytic_distribution = {str(self.obra_a.id): 100.0}
+        self.assertTrue(self.batch._pe_generate_batch_move(
+            adjust_account=self.acc_ajuste, with_analytic=True))

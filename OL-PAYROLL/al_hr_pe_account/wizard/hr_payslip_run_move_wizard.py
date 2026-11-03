@@ -46,6 +46,17 @@ class HrPayslipRunMoveWizard(models.TransientModel):
         help='Cuenta de la línea «Ajuste por Redondeo» cuando debe y '
              'haber no cuadran.')
 
+    cost_center_warning = fields.Char(
+        string='Sin centro de costo', compute='_compute_cost_center_warning')
+
+    @api.depends('payslip_run_id', 'with_analytic')
+    def _compute_cost_center_warning(self):
+        for wizard in self:
+            slips = (wizard.payslip_run_id._pe_slips_without_cost_center()
+                     if wizard.with_analytic and wizard.payslip_run_id else False)
+            wizard.cost_center_warning = (
+                ', '.join(slips[:10].mapped('employee_id.name')) if slips else False)
+
     @api.depends('line_ids.debit', 'line_ids.credit')
     def _compute_totals(self):
         for wizard in self:

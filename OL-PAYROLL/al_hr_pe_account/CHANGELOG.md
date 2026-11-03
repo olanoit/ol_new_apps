@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261103 — 03/11/2026
+
+- Asiento por centro de costo: las cuentas por pagar ya no llevan analítica, porque su abono anulaba el gasto del centro.
+- Opciones nuevas: una línea de gasto por centro de costo y exigir centro de costo; el asistente avisa qué trabajadores no lo tienen.
+- La provisión mensual reparte el gasto según el tareaje del periodo, como el sueldo.
+
 ## 13.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

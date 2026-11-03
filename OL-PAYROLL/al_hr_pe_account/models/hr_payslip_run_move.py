@@ -114,6 +114,7 @@ class HrPayslipRun(models.Model):
         if with_analytic is None:
             with_analytic = param.detail_analytic
         afp_rules = param.afp_rule_ids
+        split = with_analytic and param.move_split_by_cost_center
 
         groups = {}
         missing_afp_account = []
@@ -152,14 +153,12 @@ class HrPayslipRun(models.Model):
                                     or version.analytic_distribution
                                     or False)
                 for part_total, part_distribution, analytic_ids in \
-                        self._pe_split_by_cost_center(rule, line.total, distribution):
+                        self._pe_split_by_cost_center(rule, line.total, distribution, split=split):
                     account_debit, account_credit = rule._l10n_pe_get_accounts(
                         company, version, analytic_ids)
-                    dist_key = (json.dumps(part_distribution, sort_keys=True)
-                                if part_distribution else False)
                     self._pe_accumulate_rule_line(
                         accumulate, missing_afp_account, slip, version, rule,
-                        part_total, part_distribution, dist_key,
+                        part_total, part_distribution,
                         account_debit, account_credit, afp_rules)
 
         if missing_afp_account:
@@ -192,14 +191,18 @@ class HrPayslipRun(models.Model):
         lines.sort(key=lambda vals: (vals['sequence'], vals['name'] or ''))
         return lines
 
-    def _pe_split_by_cost_center(self, rule, total, distribution):
+    def _pe_split_by_cost_center(self, rule, total, distribution, split=False):
         """Partes ``(importe, distribución, ids analíticos)`` de una línea.
 
-        Si la regla tiene cuentas por centro de costo, el importe se reparte
-        por cada clave de la distribución analítica (la última absorbe el
-        redondeo) para elegir la cuenta de cada parte; si no, va entero.
+        Si la regla tiene cuentas por centro de costo o la compañía pide una
+        línea por centro, el importe se reparte por cada clave de la
+        distribución analítica (la última absorbe el redondeo); si no, va
+        entero. Tampoco se reparte si las claves no suman 100 % (varios planes
+        en claves separadas): lo prorratea el motor analítico.
         """
-        if not distribution or not rule._l10n_pe_uses_analytic_accounts(self.company_id):
+        by_center = split or rule._l10n_pe_uses_analytic_accounts(self.company_id)
+        if not distribution or not by_center \
+                or round(sum(distribution.values()), 2) != 100.0:
             analytic_ids = {int(account_id) for key in (distribution or {})
                             for account_id in str(key).split(',')}
             return [(total, distribution, analytic_ids)]
@@ -213,14 +216,27 @@ class HrPayslipRun(models.Model):
                           {int(account_id) for account_id in str(key).split(',')}))
         return parts
 
+    @staticmethod
+    def _pe_cost_distribution(account, distribution):
+        """Distribución y clave de agrupación para una cuenta.
+
+        Solo las cuentas de resultados llevan centro de costo. Cada línea con
+        analítica crea su apunte: en una cuenta por pagar, el abono anularía el
+        gasto del mismo centro y este quedaría en cero.
+        """
+        if not distribution or account.internal_group not in ('expense', 'income'):
+            return False, False
+        return distribution, json.dumps(distribution, sort_keys=True)
+
     def _pe_accumulate_rule_line(self, accumulate, missing_afp_account, slip,
-                                 version, rule, total, distribution, dist_key,
+                                 version, rule, total, distribution,
                                  account_debit, account_credit, afp_rules):
         """Acumula una parte de ``hr.payslip.line`` en los tres bloques."""
         company = self.company_id
         # Bloque 1: cargo por cuenta de débito de la regla
         # (v18: sin exclusión de códigos AFP).
         if account_debit:
+            line_distribution, dist_key = self._pe_cost_distribution(account_debit, distribution)
             accumulate(
                 ('debit', rule.id, account_debit.id, dist_key),
                 total,
@@ -229,7 +245,7 @@ class HrPayslipRun(models.Model):
                 name=rule.name,
                 account_id=account_debit.id,
                 partner_id=False,
-                analytic_distribution=distribution,
+                analytic_distribution=line_distribution,
                 side='debit',
             )
 
@@ -284,6 +300,7 @@ class HrPayslipRun(models.Model):
             )
         # Bloque 2: abono agregado por cuenta de crédito.
         elif account_credit:
+            line_distribution, dist_key = self._pe_cost_distribution(account_credit, distribution)
             accumulate(
                 ('credit', rule.id, account_credit.id, dist_key),
                 total,
@@ -292,9 +309,28 @@ class HrPayslipRun(models.Model):
                 name=rule.name,
                 account_id=account_credit.id,
                 partner_id=False,
-                analytic_distribution=distribution,
+                analytic_distribution=line_distribution,
                 side='credit',
             )
+
+    def _pe_slips_without_cost_center(self):
+        """Boletas con gasto que no llega a ningún centro de costo."""
+        self.ensure_one()
+        company = self.company_id
+        slips = self.env['hr.payslip']
+        for slip in self._pe_get_batch_slips():
+            version = slip.version_id
+            if slip._l10n_pe_tareaje_distribution() or version.analytic_distribution:
+                continue
+            for line in slip.line_ids:
+                rule = line.salary_rule_id.with_company(company)
+                if not line.category_id or not line.total or rule.analytic_distribution:
+                    continue
+                account_debit = rule._l10n_pe_get_accounts(company, version, set())[0]
+                if account_debit.internal_group == 'expense':
+                    slips |= slip
+                    break
+        return slips
 
     # ------------------------------------------------------------------
     # Generación del asiento
@@ -356,6 +392,16 @@ class HrPayslipRun(models.Model):
                 'El lote tiene boletas en borrador (%(slips)s): valídelas '
                 'o anúlelas antes de generar el asiento.',
                 slips=', '.join(drafts[:10].mapped('employee_id.name'))))
+
+        if with_analytic is None:
+            with_analytic = param.detail_analytic
+        if with_analytic and param.move_require_cost_center:
+            slips = self._pe_slips_without_cost_center()
+            if slips:
+                raise UserError(self.env._(
+                    'Estos trabajadores tienen gasto sin centro de costo: %(employees)s. '
+                    'Indíquelo en la regla, el tareaje o la ficha.',
+                    employees=', '.join(slips[:10].mapped('employee_id.name'))))
 
         lines = self._pe_prepare_batch_move_lines(
             with_analytic=with_analytic)

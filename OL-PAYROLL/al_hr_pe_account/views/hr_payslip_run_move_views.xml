@@ -60,6 +60,8 @@
                             <field name="move_journal_id"/>
                             <field name="move_partner_id"/>
                             <field name="detail_analytic"/>
+                            <field name="move_split_by_cost_center" invisible="not detail_analytic"/>
+                            <field name="move_require_cost_center" invisible="not detail_analytic"/>
                         </group>
                         <group string="Aportes AFP (cuenta por afiliación)">
                             <field name="afp_rule_ids"

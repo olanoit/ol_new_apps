@@ -154,6 +154,17 @@ A**.
 | 4111000 Remuneraciones por pagar | | | 3 000,00 |
 | | **Totales** | **3 000,00** | **3 000,00** |
 
+Solo las cuentas de resultados llevan centro de costo. Las cuentas por pagar no
+lo llevan, porque su abono anularía el gasto del centro en los informes
+analíticos.
+
+En **Ajustes ‣ Perú: contabilidad de planillas** hay dos opciones más:
+
+- **Una línea de gasto por centro de costo:** desdobla el gasto de cada regla en
+  lugar de dejar una línea con varios porcentajes.
+- **Exigir centro de costo:** no genera el asiento si algún trabajador tiene
+  gasto sin centro. Sin esta opción, el asistente solo avisa quiénes son.
+
 ## Provisión mensual
 
 En **Beneficios sociales ‣ Provisiones**, use **Generar asiento**: la provisión
