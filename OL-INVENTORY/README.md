@@ -30,6 +30,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_mrp_cost](al_l10n_pe_mrp_cost/) | 2.20261102 | OPL-1 | Costo hora desde la planilla, tareo por orden, cierre de costos del mes (ajuste de mano de obra y prorrateo de CIF) y costo por elemento.
+[al_l10n_pe_stock_consumption](al_l10n_pe_stock_consumption/) | 1.20261103 | OPL-1 | Las salidas de almacén a consumo se contabilizan al costo, en la cuenta de la familia del producto (61) y con su centro de costo; de ahí sale el destino 9/79.
 [al_l10n_pe_stock_transfer](al_l10n_pe_stock_transfer/) | 5.20261027 | OPL-1 | Guía de remisión para todos los traslados de la empresa: entre establecimientos (04), compras que recoge (02, 07, 08), devoluciones (06) y exportación (09), y control de los bienes de terceros.
 [al_mrp_piece_costing](al_mrp_piece_costing/) | 3.20261027 | OPL-1 | La orden de corte reparte su costo entre las piezas por área, material de origen y metros de tapacanto, e importa el despiece como productos-pieza.
 [al_stock_base](al_stock_base/) | 7.20261027 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).

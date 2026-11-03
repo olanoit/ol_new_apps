@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_location_form_consumption" model="ir.ui.view">
+        <field name="name">stock.location.form.l10n.pe.consumption</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock_account.view_location_form_inherit"/>
+        <field name="arch" type="xml">
+            <field name="valuation_account_id" position="after">
+                <field name="l10n_pe_is_consumption" invisible="usage != 'inventory'"/>
+                <field name="analytic_distribution" widget="analytic_distribution" string="Centro de costo"
+                       invisible="not l10n_pe_is_consumption"
+                       groups="analytic.group_analytic_accounting"/>
+            </field>
+        </field>
+    </record>
+</odoo>

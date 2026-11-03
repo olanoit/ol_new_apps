@@ -3,6 +3,7 @@
     * [Datos peruanos en transferencias](inventory/stock_base.md)
     * [Kárdex valorizado (SUNAT)](inventory/kardex.md)
     * [Traslados y bienes de terceros](inventory/stock_transfers.md)
+    * [Asiento de consumo a costo](inventory/stock_consumption.md)
 * Fabricación
     * [Costeo de piezas por medida](mrp/piece_costing.md)
     * [Costeo de órdenes de fabricación](mrp/production_costing.md)

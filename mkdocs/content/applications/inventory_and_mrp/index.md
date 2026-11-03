@@ -12,6 +12,7 @@ controlados sin valorizarlos.
 | [Datos peruanos en transferencias](inventory/stock_base.md) | Página **Logística PE** en la transferencia: guía de remisión, transporte, PLE, obra y bienes de terceros en un solo lugar |
 | [Kárdex valorizado (SUNAT)](inventory/kardex.md) | Formatos 13.1 y 12.1 en pantalla, Excel y PDF, consolidado o por almacén, con el comprobante de cada movimiento |
 | [Traslados y bienes de terceros](inventory/stock_transfers.md) | Guía de remisión remitente para traslados entre establecimientos, compras que recoge la empresa, devoluciones e importaciones; bienes de terceros sin valorizar |
+| [Asiento de consumo a costo](inventory/stock_consumption.md) | Salidas a consumo interno contabilizadas al costo, por cuenta de la familia y centro de costo, en valorización permanente o periódica |
 
 La guía de remisión impresa y los libros electrónicos de inventario se
 explican en la [localización peruana](../finance/fiscal_localizations/peru.md).

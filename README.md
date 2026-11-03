@@ -153,7 +153,7 @@ python3 scripts/gen_addons_table.py
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_account_base](OL-ACCOUNTING/al_account_base/) | 23.20261102 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
-[al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 13.20261027 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
+[al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 14.20261103 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](OL-ACCOUNTING/al_account_move_name_sequence/) | 14.20261027 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](OL-ACCOUNTING/al_account_payments/) | 12.20261030 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
 [al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 24.20261029 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
@@ -220,7 +220,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_hr_pe](OL-PAYROLL/al_hr_pe/) | 45.20261101 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
-[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 13.20261027 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
+[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 14.20261103 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
 [al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 24.20261031 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 29.20261102 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
 [al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 30.20261101 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
@@ -248,6 +248,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_mrp_cost](OL-INVENTORY/al_l10n_pe_mrp_cost/) | 2.20261102 | OPL-1 | Costo hora desde la planilla, tareo por orden, cierre de costos del mes (ajuste de mano de obra y prorrateo de CIF) y costo por elemento.
+[al_l10n_pe_stock_consumption](OL-INVENTORY/al_l10n_pe_stock_consumption/) | 1.20261103 | OPL-1 | Las salidas de almacén a consumo se contabilizan al costo, en la cuenta de la familia del producto (61) y con su centro de costo; de ahí sale el destino 9/79.
 [al_l10n_pe_stock_transfer](OL-INVENTORY/al_l10n_pe_stock_transfer/) | 5.20261027 | OPL-1 | Guía de remisión para todos los traslados de la empresa: entre establecimientos (04), compras que recoge (02, 07, 08), devoluciones (06) y exportación (09), y control de los bienes de terceros.
 [al_mrp_piece_costing](OL-INVENTORY/al_mrp_piece_costing/) | 3.20261027 | OPL-1 | La orden de corte reparte su costo entre las piezas por área, material de origen y metros de tapacanto, e importa el despiece como productos-pieza.
 [al_stock_base](OL-INVENTORY/al_stock_base/) | 7.20261027 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).
@@ -258,7 +259,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_attendance](OL-PROJECTS/al_construction_attendance/) | 8.20261102 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
-[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 33.20261102 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
+[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 34.20261103 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
 [al_construction_planner](OL-PROJECTS/al_construction_planner/) | 71.20261102 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
 [al_construction_planner_approvals](OL-PROJECTS/al_construction_planner_approvals/) | 10.20261102 | LGPL-3 | Plan de recursos y requerimiento de obra aprobados en la aplicación Aprobaciones, con tabla de rutas por tramos y aprobadores por grupo.
 [al_construction_planner_approvals_mrp](OL-PROJECTS/al_construction_planner_approvals_mrp/) | 9.20261102 | LGPL-3 | Exceso de la orden de fabricación frente a lo presupuestado: el jefe de producción lo aprueba dentro de su margen y, por encima, va a Aprobaciones.
