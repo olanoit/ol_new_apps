@@ -81,8 +81,11 @@ class StockMove(models.Model):
         expense_account = self.location_dest_id.valuation_account_id
         if line.request_id.request_type == 'internal' and line.analytic_distribution \
                 and expense_account and self.location_dest_id.usage == 'inventory':
+            # El gasto es la línea que no va a existencias: otro módulo puede
+            # haber cambiado su cuenta (al_l10n_pe_stock_consumption).
+            stock_account = self.product_id._get_product_accounts()['stock_valuation']
             for vals in vals_list:
-                if vals['account_id'] == expense_account.id:
+                if vals['account_id'] != stock_account.id:
                     vals['analytic_distribution'] = line.analytic_distribution
         return vals_list
 

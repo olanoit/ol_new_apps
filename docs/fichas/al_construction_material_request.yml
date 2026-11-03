@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '33.20261103'
+    fecha: 03/11/2026
+    cambios:
+      - "El consumo interno conserva su analítica aunque otro módulo cambie la cuenta de gasto."
   - version: '32.20261101'
     fecha: 01/11/2026
     cambios:

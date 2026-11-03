@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 33.20261103 — 03/11/2026
+
+- El consumo interno conserva su analítica aunque otro módulo cambie la cuenta de gasto.
+
 ## 32.20261101 — 01/11/2026
 
 - I-01: el traslado de una línea del requerimiento a la ubicación de la obra crea su apunte analítico con la distribución del requerimiento (obra, etapa, tipo de costo y niveles), no solo con la obra. Ahora depende de `project_stock_account`.
