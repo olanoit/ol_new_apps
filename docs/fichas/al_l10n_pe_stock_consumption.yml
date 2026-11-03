@@ -1,0 +1,35 @@
+titulo: Asiento de consumo a costo
+subtitulo: Las salidas de almacén a consumo interno se contabilizan al costo, en la cuenta de la familia del producto y con su centro de costo.
+categoria: Localización Perú · Inventario · Contabilidad
+etiquetas:
+- Inventario
+- Consumo
+- Centro de costo
+- Destinos
+destacados:
+- icono: ⇄
+  titulo: Cuenta por familia
+  texto: Cada categoría de producto elige su cuenta de consumo, por ejemplo 6131 o 6133; sin ella se usa la de la ubicación.
+- icono: ◎
+  titulo: Centro de costo
+  texto: Se indica en la línea de la transferencia o queda por defecto en la ubicación de consumo.
+- icono: ∑
+  titulo: Permanente o periódica
+  texto: Un asiento por movimiento en valorización permanente; líneas por cuenta y centro en el cierre si es periódica.
+- icono: ↺
+  titulo: Devoluciones y destinos
+  texto: La devolución revierte el cargo. Con el módulo de destinos, el asiento genera el 9/79 según el centro.
+configuracion:
+- "Cree una ubicación virtual de tipo **Ajuste de inventario**, indique su cuenta y marque **Ubicación de consumo**. Puede dejarle un centro de costo por defecto."
+- "En cada **categoría de producto** indique la **Cuenta de consumo** si difiere de la de la ubicación."
+- "Para el destino 9/79, instale `al_account_destinations` y asigne la cuenta de destino a cada centro de costo."
+faq:
+- pregunta: ¿A qué costo se contabiliza?
+  respuesta: Al valor del movimiento en Odoo, según el método de costo del producto (promedio, PEPS o estándar).
+- pregunta: ¿Y si la transferencia ya tiene proyecto u obra?
+  respuesta: Odoo crea el apunte analítico desde el movimiento. El asiento no repite el centro para no cargarlo dos veces, y su destino sigue el reparto de la cuenta.
+novedades:
+- version: '1.20261103'
+  fecha: 03/11/2026
+  cambios:
+  - "Primera versión: asiento de consumo a costo por cuenta de categoría y centro de costo, en valorización permanente y periódica."

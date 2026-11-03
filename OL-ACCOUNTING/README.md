@@ -32,7 +32,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_account_base](al_account_base/) | 20.20261027 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
-[al_account_destinations](al_account_destinations/) | 13.20261027 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
+[al_account_destinations](al_account_destinations/) | 14.20261103 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](al_account_move_name_sequence/) | 14.20261027 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](al_account_payments/) | 11.20261027 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
 [al_l10n_pe_account_letter](al_l10n_pe_account_letter/) | 23.20261027 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
@@ -55,7 +55,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_detraction](al_l10n_pe_detraction/) | 26.20261027 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
 [al_l10n_pe_exchange_closure](al_l10n_pe_exchange_closure/) | 13.20261027 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
 [al_l10n_pe_factoring](al_l10n_pe_factoring/) | 11.20261027 | OPL-1 | Cesión de facturas a un factor con y sin recurso: asientos de cesión, desembolso, devengo de intereses, cobro del factor y recompra, con cuentas del PCGE configurables.
-[al_l10n_pe_financial_reports](al_l10n_pe_financial_reports/) | 5.20261028 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19, hoja de trabajo (formatos 1 y 2), cierre del ejercicio con la cascada de la clase 8 y EEFF por centro de costo.
+[al_l10n_pe_financial_reports](al_l10n_pe_financial_reports/) | 6.20261031 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19, hoja de trabajo (formatos 1 y 2), cierre del ejercicio con la cascada de la clase 8 y EEFF por centro de costo.
 [al_l10n_pe_fourth_category](al_l10n_pe_fourth_category/) | 5.20261027 | OPL-1 | Recibos por honorarios: retención del 8 % sobre el tope, suspensión (Formulario 1609), reporte y archivo .4ta para la PLAME y certificado anual.
 [al_l10n_pe_import_dua](al_l10n_pe_import_dua/) | 6.20261028 | OPL-1 | La DUA (tipo 50) como documento de compra: IGV e IPM con crédito fiscal, derechos aduaneros, percepción aduanera y costos en destino del producto.
 [al_l10n_pe_itf](al_l10n_pe_itf/) | 3.20261027 | OPL-1 | Impuesto a las Transacciones Financieras (0,005 %) registrado al confirmar los pagos y cobros de los diarios bancarios afectos.

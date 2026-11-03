@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_consumption" model="ir.ui.view">
+        <field name="name">stock.picking.form.l10n.pe.consumption</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids']/list/field[@name='product_uom']" position="after">
+                <field name="l10n_pe_is_consumption" column_invisible="True"/>
+                <field name="analytic_distribution" widget="analytic_distribution" string="Centro de costo"
+                       optional="show" invisible="not l10n_pe_is_consumption" readonly="state == 'done'"
+                       options="{'product_field': 'product_id'}"
+                       groups="analytic.group_analytic_accounting"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
