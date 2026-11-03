@@ -11,6 +11,10 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.l10n_pe_main_parameter_id.move_partner_id', readonly=False)
     l10n_pe_payroll_detail_analytic = fields.Boolean(
         related='company_id.l10n_pe_main_parameter_id.detail_analytic', readonly=False)
+    l10n_pe_payroll_move_split_by_cost_center = fields.Boolean(
+        related='company_id.l10n_pe_main_parameter_id.move_split_by_cost_center', readonly=False)
+    l10n_pe_payroll_move_require_cost_center = fields.Boolean(
+        related='company_id.l10n_pe_main_parameter_id.move_require_cost_center', readonly=False)
     l10n_pe_payroll_detail_provision = fields.Boolean(
         related='company_id.l10n_pe_main_parameter_id.detallar_provision', readonly=False)
     # Cuentas de beneficios sociales (company_dependent en la configuración

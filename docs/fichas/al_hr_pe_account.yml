@@ -589,6 +589,12 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: '14.20261103'
+    fecha: 03/11/2026
+    cambios:
+      - "Asiento por centro de costo: las cuentas por pagar ya no llevan analítica, porque su abono anulaba el gasto del centro."
+      - "Opciones nuevas: una línea de gasto por centro de costo y exigir centro de costo; el asistente avisa qué trabajadores no lo tienen."
+      - "La provisión mensual reparte el gasto según el tareaje del periodo, como el sueldo."
   - version: '13.20261027'
     fecha: 27/10/2026
     cambios:

@@ -43,6 +43,15 @@ class HrMainParameter(models.Model):
              'salarial o, en su defecto, de la ficha del trabajador '
              '(hr.version). Apagado: comportamiento contable puro sin '
              'analítica (v18: módulo sin sufijo _analytic).')
+    move_split_by_cost_center = fields.Boolean(
+        string='Una línea de gasto por centro de costo', default=False,
+        help='El gasto de cada regla se desdobla en una línea por centro de '
+             'costo en lugar de una línea con varios porcentajes. Requiere el '
+             'asiento con analítica.')
+    move_require_cost_center = fields.Boolean(
+        string='Exigir centro de costo', default=False,
+        help='No se genera el asiento con analítica si algún trabajador tiene '
+             'gasto sin centro de costo (regla, tareaje o ficha).')
     afp_rule_ids = fields.Many2many(
         'hr.salary.rule', 'afp_rule_main_parameter_rel',
         'main_parameter_id', 'rule_id',

@@ -24,6 +24,14 @@
                                 <field name="l10n_pe_payroll_detail_analytic"/>
                                 <label for="l10n_pe_payroll_detail_analytic" string="Con distribución analítica" class="o_light_label"/>
                             </div>
+                            <div invisible="not l10n_pe_payroll_detail_analytic">
+                                <field name="l10n_pe_payroll_move_split_by_cost_center"/>
+                                <label for="l10n_pe_payroll_move_split_by_cost_center" string="Una línea de gasto por centro de costo" class="o_light_label"/>
+                            </div>
+                            <div invisible="not l10n_pe_payroll_detail_analytic">
+                                <field name="l10n_pe_payroll_move_require_cost_center"/>
+                                <label for="l10n_pe_payroll_move_require_cost_center" string="Exigir centro de costo" class="o_light_label"/>
+                            </div>
                         </div>
                     </setting>
                     <setting id="l10n_pe_payroll_provision_accounts" company_dependent="1" string="Provisión mensual"
