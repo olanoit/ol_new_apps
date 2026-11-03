@@ -8,6 +8,13 @@ from odoo.addons.stock_account.tests.common import TestStockValuationCommon
 
 @tagged('post_install', '-at_install')
 class TestStockConsumption(TestStockValuationCommon):
+    # Las pruebas preparan también la configuración contable y de inventario.
+    _test_user_groups = (
+        'stock.group_stock_manager',
+        'account.group_account_manager',
+        'analytic.group_analytic_accounting',
+        'base.group_system',
+    )
 
     @classmethod
     def setUpClass(cls):
@@ -34,7 +41,7 @@ class TestStockConsumption(TestStockValuationCommon):
 
     def _expense(self, account_move, account=None):
         stock_account = self.account_stock_valuation
-        return account_move.line_ids.filtered(
+        return account_move.sudo().line_ids.filtered(
             lambda line: line.account_id == account if account else line.account_id != stock_account)
 
     def _analytic_total(self, center):
@@ -64,7 +71,7 @@ class TestStockConsumption(TestStockValuationCommon):
         product = self._product(self.category_avco_auto)
         self._make_in_move(product, 10, 5)
         out = self._make_out_move(product, 4, location_dest_id=self.location.id)
-        self.assertEqual(out.value, 20.0)
+        self.assertEqual(out.value, -20.0)  # En Odoo 20 la salida es negativa.
         expense = self._expense(out.account_move_id, self.account_material)
         self.assertEqual(expense.debit, 20.0)
         self.assertEqual(expense.analytic_distribution, {str(self.center_a.id): 100.0})

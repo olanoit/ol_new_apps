@@ -353,7 +353,7 @@ class HrPayslipRun(models.Model):
                 continue
             for line in slip.line_ids:
                 rule = line.salary_rule_id.with_company(company)
-                if not line.category_id or not line.total or rule.analytic_distribution:
+                if not line.category_ids or not line.total or rule.analytic_distribution:
                     continue
                 account_debit = rule._l10n_pe_get_accounts(company, version, set())[0]
                 if account_debit.internal_group == 'expense':
