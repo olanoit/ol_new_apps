@@ -470,6 +470,11 @@ faq:
       facturas y notas.
 
 novedades:
+  - version: '14.20261103'
+    fecha: 03/11/2026
+    cambios:
+      - "El asiento de destino ya no crea un segundo apunte analítico: el centro de costo se carga una sola vez, desde el comprobante de origen."
+      - "Al actualizar, una migración borra los apuntes duplicados de los asientos de destino anteriores: los informes analíticos de periodos pasados bajan a su valor correcto."
   - version: '13.20261027'
     fecha: 27/10/2026
     cambios:

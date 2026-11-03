@@ -271,6 +271,10 @@ class TestDestinations(TransactionCase):
         nine = dest.line_ids.filtered(lambda l: l.account_id in (self.d1 | self.d2))
         self.assertEqual(set(map(lambda l: tuple(l.analytic_distribution), nine)), {(str(cc.id),)})
         self.assertFalse(dest.line_ids.filtered(lambda l: l.account_id == self.load).analytic_distribution)
+        # El centro de costo se carga una vez: el apunte es solo del origen.
+        analytic_lines = self.env['account.analytic.line'].search([(plan._column_name(), '=', cc.id)])
+        self.assertEqual(analytic_lines.move_line_id.move_id, move)
+        self.assertEqual(sum(analytic_lines.mapped('amount')), -1000.0)
 
     def test_destiny_cancelled_when_nothing_left(self):
         self._configure()

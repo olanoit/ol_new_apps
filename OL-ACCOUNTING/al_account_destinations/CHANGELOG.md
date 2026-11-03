@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261103 — 03/11/2026
+
+- El asiento de destino ya no crea un segundo apunte analítico: el centro de costo se carga una sola vez, desde el comprobante de origen.
+- Al actualizar, una migración borra los apuntes duplicados de los asientos de destino anteriores: los informes analíticos de periodos pasados bajan a su valor correcto.
+
 ## 13.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
