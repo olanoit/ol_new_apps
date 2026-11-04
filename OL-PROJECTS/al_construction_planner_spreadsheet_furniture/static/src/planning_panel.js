@@ -905,11 +905,14 @@ sidePanelRegistry.add(PANEL, {
 // ---------------------------------------------------------------------------
 // Menús
 // ---------------------------------------------------------------------------
-async function upgradeSheet(env) {
+export async function upgradeSheet(env, method = "construction_sheet_upgrade") {
     const model = env.model;
     const getters = model.getters;
     const keys = keyColumns(model);
-    const send = (env.constructionSendSheets && env.constructionSendSheets()) || [];
+    // La hoja de venta guarda todo por celda: una suma escrita sigue siendo suma.
+    const send = env.constructionSheetKind() === "sale"
+        ? []
+        : (env.constructionSendSheets && env.constructionSendSheets()) || [];
     const master = {};
     const other = {};
     for (const sheetId of getters.getSheetIds()) {
@@ -935,7 +938,7 @@ async function upgradeSheet(env) {
             other[name] = { cells };
         }
     }
-    const action = await env.constructionCall("construction_sheet_upgrade", { master, other });
+    const action = await env.constructionCall(method, { master, other });
     await env.constructionDoAction(action);
 }
 

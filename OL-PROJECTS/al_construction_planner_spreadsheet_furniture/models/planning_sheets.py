@@ -16,6 +16,7 @@ fijas: ``STATE_CELL``, ``CONTROL_PLANNER_COL`` y ``CONTROL_ORIGIN_COL``.
 """
 from odoo import models
 
+from .construction_sheet_parameter import parameter_formula
 from .project_project import (
     CALC_STYLE, DATA_STYLE, FIXED_LISTS, HEADER_STYLE, REFERENCE_SHEET, TITLE_STYLE, _col,
     column_of, full_column, sheet_ref,
@@ -39,7 +40,7 @@ CONTROL_PLANNER_COL = 'N'
 CONTROL_ORIGIN_COL = 'S'
 READY, MISSING = 'Listo', 'Falta'
 MATCH, MISMATCH = 'Coincide', 'No coincide'
-GREEN_FILL, RED_FILL = '#D9EAD3', '#F4CCCC'
+GREEN_FILL, RED_FILL = '#E3F4EC', '#F6E1E4'
 # Colores de las sub etapas en PROGRAMA (se repiten si hay más).
 STAGE_FILLS = ('#CFE2F3', '#FFF2CC', '#D9EAD3', '#FCE5CD', '#EAD1DC', '#D9D2E9')
 # Pestañas que cuenta INICIO, con la clave de una columna obligatoria.
@@ -135,65 +136,80 @@ class ProjectProject(models.Model):
             ('A6', self.env._('Contrato'), '=IFERROR(INDEX(%s,2)&"","")' % col(
                 'CONTRATOS', 'name')),
             ('A7', self.env._('Estado de la hoja'), self.env._('Borrador')),
-            ('A8', self.env._('Validar y enviar'), self.env._(
-                'Menú Planificación de obra › Validar; después › Enviar al planificador')),
+            ('A8', self.env._('Hoja de venta'), '=%s&""' % obra('Hoja de venta')),
+            ('A9', self.env._('Parámetros cambiados'),
+             '=SUMPRODUCT((PARAMETROS!$C$2:$C$40<>"")*(PARAMETROS!$C$2:$C$40<>PARAMETROS!$F$2:$F$40))'),
         ]
         for ref, label, value in header:
             cells[ref] = label
             styles[ref] = HEADER_STYLE
             cells['B%s' % ref[1:]] = value
 
-        # Ruta de planificación: 8 pasos con su semáforo.
+        # Ruta de planificación (M117-16, punto 8): paso, qué se hace, ir, estado y
+        # qué falta. El primer paso pendiente se marca «Siguiente».
         cells['A10'] = self.env._('Ruta de planificación')
         styles['A10'] = TITLE_STYLE
-        for letter, text in zip('ABCD', (self.env._('Paso'), self.env._('Estado'),
-                                         self.env._('Listo cuando'), self.env._('Ir'))):
+        for letter, text in zip('ABCDE', (self.env._('Paso'), self.env._('Qué se hace'),
+                                          self.env._('Ir'), self.env._('Estado'),
+                                          self.env._('Qué falta'))):
             cells['%s11' % letter] = text
             styles['%s11' % letter] = HEADER_STYLE
         in_site = rng('TIPOLOGIAS', '#En la obra (calc.)')
+        finish = "'ACABADOS DE OBRA'!$%s$2:$%s$61"
+        has_sale = '%s<>""' % obra('Hoja de venta')
         steps = [
-            ('OBRA', self.env._('Obra'), self.env._('Inicio, Fin y Cliente con dato'),
-             'AND(%s<>"",%s<>"",%s<>"")' % (obra('Inicio'), obra('Fin'), obra('Cliente'))),
-            ('ARBOL', self.env._('Árbol'), self.env._('ARBOL tiene filas y 0 errores'),
-             'AND(COUNTA(%s)>1,COUNTIFS(ERRORES!$A:$A,"ARBOL",ERRORES!$E:$E,"Error")=0)'
-             % col('ARBOL', 'space')),
-            ('TIPOLOGIAS', self.env._('Tipologías'),
-             self.env._('Cada tipología del ARBOL tiene MODULOS'),
-             'AND(COUNTA(%s)>1,COUNTIF(%s,"Falta")=0,COUNTIFS(%s,">0",%s,0)=0)' % (
+            (self.env._('Traer la venta'), self.env._('Lo vendido llega a la hoja'), 'OBRA',
+             'IF(%s,%s<>"",AND(%s<>"",%s<>"",%s<>""))' % (
+                 has_sale, obra('Venta traída el'), obra('Inicio'), obra('Fin'), obra('Cliente')),
+             False, self.env._('Traiga la venta, o llene Inicio, Fin y Cliente')),
+            (self.env._('Tablero de cada acabado'), self.env._('El producto de cada acabado vendido'),
+             'ACABADOS DE OBRA',
+             'SUMPRODUCT((%s<>"")*(%s=""))=0' % (finish % ('A', 'A'), finish % ('G', 'G')),
+             '%s=FALSE' % has_sale, self.env._('Hay acabados sin tablero')),
+            (self.env._('Muebles y módulos del ETO'), self.env._('Árbol, tipologías y módulos'),
+             'MODULOS',
+             'AND(COUNTA(%s)>1,COUNTIF(%s,"Falta")=0,COUNTIFS(%s,">0",%s,0)=0,'
+             'COUNTIFS(ERRORES!$A:$A,"ARBOL",ERRORES!$E:$E,"Error")=0)' % (
                  col('TIPOLOGIAS', 'code'), col('ARBOL', '#Módulos (calc.)'), in_site,
-                 rng('TIPOLOGIAS', '#Módulos (calc.)'))),
-            ('BOM', self.env._('Materiales'), self.env._('Cada módulo tiene BOM con etapa'),
+                 rng('TIPOLOGIAS', '#Módulos (calc.)')),
+             False, self.env._('Cada tipología del ARBOL tiene MODULOS')),
+            (self.env._('Materiales y piezas'), self.env._('BOM y PIEZAS de cada módulo'), 'BOM',
              'AND(COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0,SUMPRODUCT((%s<>"")*(%s=""))=0)' % (
                  col('BOM', 'product_name'), in_site,
                  rng('TIPOLOGIAS', '#Costo de materiales (calc.)'),
-                 rng('BOM', 'product_name'), rng('BOM', 'stage'))),
-            ('TARIFAS', self.env._('Contratas'),
-             self.env._('TARIFAS tiene la tarifa de cada actividad usada'),
-             'AND(COUNTA(%s)>1,COUNTIF(%s,0)=0)' % (
-                 col('TARIFAS', 'activity'), col('ACTIVIDADES', '#Tarifa (calc.)'))),
-            ('VENTA', self.env._('Venta'),
-             self.env._('VENTA tiene precio para cada tipología del ARBOL'),
-             'AND(COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0)' % (
-                 col('VENTA', 'price'), in_site, rng('TIPOLOGIAS', '#Precio (calc.)'))),
-            (PROGRAM_SHEET, self.env._('Programa'),
-             self.env._('PROGRAMA tiene fecha de inicio y ritmo'),
-             'AND(PROGRAMA!$B$3<>"",IFERROR(PROGRAMA!$B$4>0,FALSE))'),
-            (ERRORS_SHEET, self.env._('Enviar'), self.env._('Última validación sin errores'),
-             'AND(LEFT(ERRORES!$A$1,7)="Validad",ISNUMBER(SEARCH("· 0 errores",ERRORES!$A$1)))'),
+                 rng('BOM', 'product_name'), rng('BOM', '#Etapa usada (calc.)')),
+             False, self.env._('Cada módulo tiene BOM con etapa')),
+            (self.env._('Actividades a hitos'), self.env._('Contratas, contrato y precios'), 'TARIFAS',
+             'AND(COUNTA(%s)>1,COUNTIF(%s,0)=0,COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0)' % (
+                 col('TARIFAS', 'activity'), col('ACTIVIDADES', '#Tarifa (calc.)'),
+                 col('VENTA', 'price'), in_site, rng('TIPOLOGIAS', '#Precio (calc.)')),
+             False, self.env._('TARIFAS tiene cada actividad y VENTA cada tipología')),
+            (self.env._('Programa por piso'), self.env._('Fecha de inicio y ritmo'), PROGRAM_SHEET,
+             'AND(PROGRAMA!$B$3<>"",IFERROR(PROGRAMA!$B$4>0,FALSE))',
+             False, self.env._('PROGRAMA tiene fecha de inicio y ritmo')),
+            (self.env._('Validar y enviar'), self.env._('Última validación sin errores'), ERRORS_SHEET,
+             'AND(LEFT(ERRORES!$A$1,7)="Validad",ISNUMBER(SEARCH("· 0 errores",ERRORES!$A$1)))',
+             False, self.env._('Menú Planificación de obra › Validar')),
         ]
         first_step = 12
-        for index, (sheet, name, rule, condition) in enumerate(steps):
+        for index, (name, what, sheet, condition, not_applicable, missing) in enumerate(steps):
             row = first_step + index
-            cells['A%s' % row] = '%s. %s' % (index + 1, name)
-            cells['B%s' % row] = '=IFERROR(IF(%s,"%s","%s"),"%s")' % (condition, READY, MISSING,
-                                                                     MISSING)
-            cells['C%s' % row] = rule
-            cells['D%s' % row] = link(sheet)
+            cells['A%s' % row] = '%s · %s' % (index + 1, name)
+            cells['B%s' % row] = what
+            cells['C%s' % row] = link(sheet)
+            state = '=IFERROR(IF(%s,"%s","%s"),"%s")' % (condition, READY, MISSING, MISSING)
+            if not_applicable:
+                state = '=IF(%s,"—",%s)' % (not_applicable, state[1:])
+            cells['D%s' % row] = state
+            previous = 'COUNTIF($D$%s:D%s,"%s")=0' % (first_step, row - 1, MISSING) \
+                if index else 'TRUE'
+            cells['E%s' % row] = '=IF(D{r}<>"{m}","",IF({p},"◀ Siguiente · ","")&"{t}")'.format(
+                r=row, m=MISSING, p=previous, t=missing)
         last_step = first_step + len(steps) - 1
-        status = 'B%s:B%s' % (first_step, last_step)
+        status = 'D%s:D%s' % (first_step, last_step)
         conditional = [
-            _rule('start_ready', [status], '=B%s="%s"' % (first_step, READY), GREEN_FILL),
-            _rule('start_missing', [status], '=B%s="%s"' % (first_step, MISSING), RED_FILL),
+            _rule('start_ready', [status], '=D%s="%s"' % (first_step, READY), GREEN_FILL),
+            _rule('start_missing', [status], '=D%s="%s"' % (first_step, MISSING), RED_FILL),
         ]
 
         # Indicadores.
@@ -236,7 +252,7 @@ class ProjectProject(models.Model):
         # Lo que falta: una fila por paso no listo.
         cells['F27'] = self.env._('Lo que falta')
         styles['F27'] = TITLE_STYLE
-        cells['F28'] = '=IFERROR(FILTER(A{f}:A{l}&": "&C{f}:C{l},B{f}:B{l}="{m}"),"{ok}")'.format(
+        cells['F28'] = '=IFERROR(FILTER(A{f}:A{l}&": "&E{f}:E{l},D{f}:D{l}="{m}"),"{ok}")'.format(
             f=first_step, l=last_step, m=MISSING,
             ok=self.env._('Nada: la hoja está lista para enviar'))
 
@@ -359,6 +375,11 @@ class ProjectProject(models.Model):
         cells['A22'] = self.env._('Precio nuevo por ambiente')
         styles['A22'] = HEADER_STYLE
         styles[CARD_PRICE_CELL] = DATA_STYLE
+        # M117-22, punto 9: los ML vendidos junto a los de los módulos.
+        cells['A23'] = self.env._('ML vendidos')
+        cells['B23'] = '=SUMIF(VENDIDO!$A$2:$A$300,$B$3,VENDIDO!$D$2:$D$300)'
+        styles['A23'] = HEADER_STYLE
+        formats['B23'] = '#,##0.00'
         cells['C22'] = self.env._('Menú Planificación de obra › Escribir el precio en VENTA')
 
         # Costo por sub etapa.
@@ -461,13 +482,15 @@ class ProjectProject(models.Model):
         # y fin (lunes a viernes).
         floors = full_column(layout, 'ARBOL', '#Piso (calc.)')
         calculated = [
-            (self.env._('Semanas por sub etapa'), '=MAX(1,ROUNDUP(IFERROR(VALUE(B5),5)/5,0))'),
+            (self.env._('Semanas por sub etapa'), '=MAX(1,ROUNDUP(IFERROR(VALUE(B5),%s)/%s,0))' % (
+                parameter_formula('dias_sub_etapa'), parameter_formula('dias_semana'))),
             (self.env._('Sub etapas'), '=MAX(1,COUNTA(%s))' % stages),
             (self.env._('Pisos'), '=IFERROR(ROWS(UNIQUE(FILTER(%s,%s<>"",ROW(%s)>1))),0)' % (
                 floors, floors, floors)),
             (self.env._('Semanas'), '=IF(B10<=0,0,INT((B10-1)/MAX(1,B4))+B9*B8)'),
             (self.env._('Inicio'), '=IF(B3="","",B3)'),
-            (self.env._('Fin estimado'), '=IF(OR(B3="",B11=0),"",B3+B11*7-3)'),
+            (self.env._('Fin estimado'), '=IF(OR(B3="",B11=0),"",B3+B11*7-(8-%s))' % (
+                parameter_formula('dias_semana'))),
         ]
         for row, (label, formula) in enumerate(calculated, start=8):
             cells['A%s' % row] = label
@@ -605,9 +628,49 @@ class ProjectProject(models.Model):
                     row, lookup(CONTROL_ORIGIN_COL, offset, row))
             cells['K%s' % row] = (
                 '=IF(OR($A{r}="",E{r}=""),"",IF(AND(B{r}=E{r},C{r}=F{r},ABS(D{r}-G{r})<='
-                '0.005*MAX(D{r},G{r})),"{m}","{mm}"))').format(r=row, m=MATCH, mm=MISMATCH)
+                '{t}*MAX(D{r},G{r})),"{m}","{mm}"))').format(
+                r=row, m=MATCH, mm=MISMATCH, t=parameter_formula('tolerancia_ml'))
+        # M117-22, punto 9: lo planificado frente a lo vendido (X:AB).
+        tree = full_column(layout, 'ARBOL', 'apartment')
+        factor_cell = 'CONTRATOS!$%s$2' % column_of(layout, 'CONTRATOS', 'discount_factor')
+        rng = lambda sheet, key: '%s!$%s$2:$%s$%s' % (
+            sheet_ref(sheet), column_of(layout, sheet, key), column_of(layout, sheet, key), 501)
+        sale_value = lambda name: 'IFERROR(XLOOKUP("%s",%s,%s),"")' % (
+            name, full_column(layout, 'OBRA', 'key'), full_column(layout, 'OBRA', 'value'))
+        cells.update({
+            'X4': self.env._('Venta frente a planificación'),
+            'X3': self.env._('Total valorizable / subtotal de la cotización'),
+            'Y3': '=IFERROR(SUMPRODUCT(%s,%s)*IF(%s="",1,%s),0)' % (
+                rng('TIPOLOGIAS', '#En la obra (calc.)'), rng('TIPOLOGIAS', '#Precio (calc.)'),
+                factor_cell, factor_cell),
+            'Z3': '=%s' % sale_value('Subtotal de la cotización'),
+            'AB3': '=IF(Z3="","",IF(ABS(Y3-Z3)<=0.05,"%s","%s"))' % (MATCH, MISMATCH),
+            'X5': self.env._('Departamentos: árbol / vendidos'),
+            'Y5': '=IFERROR(COUNTA(UNIQUE(FILTER(%s,%s<>"",ROW(%s)>1))),0)' % (tree, tree, tree),
+            'Z5': '=%s' % sale_value('Departamentos vendidos'),
+            'AB5': '=IF(Z5="","",IF(Y5=Z5,"%s","%s"))' % (MATCH, MISMATCH),
+            'X6': self.env._('Tipología'), 'Y6': self.env._('ML vendidos'),
+            'Z6': self.env._('ML de módulos'), 'AA6': self.env._('Diferencia'),
+            'AB6': self.env._('Resultado'),
+            'X%s' % first: '=IFERROR(UNIQUE(FILTER(VENDIDO!$A$2:$A$300,VENDIDO!$A$2:$A$300<>"")),"")',
+        })
+        styles['X4'] = TITLE_STYLE
+        for ref in ('X3', 'X5', 'X6', 'Y6', 'Z6', 'AA6', 'AB6'):
+            styles[ref] = HEADER_STYLE
+        typology_ml = full_column(layout, 'TIPOLOGIAS', '#ML (calc.)')
+        typology_code = full_column(layout, 'TIPOLOGIAS', 'code')
+        tolerance = parameter_formula('tolerancia_ml_venta')
+        for row in range(first, last + 1):
+            cells['Y%s' % row] = '=IF($X{r}="","",SUMIF(VENDIDO!$A$2:$A$300,$X{r},VENDIDO!$D$2:$D$300))'.format(r=row)
+            cells['Z%s' % row] = '=IF($X{r}="","",IFERROR(XLOOKUP($X{r},{c},{m}),0))'.format(
+                r=row, c=typology_code, m=typology_ml)
+            cells['AA%s' % row] = '=IF($X{r}="","",Z{r}-Y{r})'.format(r=row)
+            cells['AB%s' % row] = ('=IF($X{r}="","",IF(Y{r}=0,"—",IF(ABS(AA{r})<={t}*Y{r},"{m}",'
+                                   '"{mm}")))').format(r=row, t=tolerance, m=MATCH, mm=MISMATCH)
         result = 'K%s:K%s' % (first, last)
         conditional = [
+            _rule('control_sold', ['AB3:AB%s' % last],
+                  '=AB3="%s"' % MISMATCH, '#FCE5CD'),
             _rule('control_match', [result, CONTROL_RESULT_CELL],
                   '=K%s="%s"' % (first, MATCH), GREEN_FILL),
             _rule('control_mismatch', [result], '=K%s="%s"' % (first, MISMATCH), RED_FILL),

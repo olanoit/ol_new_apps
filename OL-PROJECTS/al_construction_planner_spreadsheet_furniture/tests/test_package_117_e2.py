@@ -80,7 +80,8 @@ class TestPackage117Delivery2(TestWorksheetV18):
     def test_tab_order_and_color(self):
         data = self._data()
         names = [sheet['name'] for sheet in data['sheets']]
-        self.assertEqual(names[:4], ['INICIO', 'LEEME', 'OBRA', 'TIPOLOGIAS'])
+        self.assertEqual(names[:6], ['INICIO', 'LEEME', 'OBRA', 'PARAMETROS', 'ACABADOS DE OBRA',
+                                     'TIPOLOGIAS'])
         self.assertLess(names.index('MATERIALES OBRA'), names.index('FICHA'))
         self.assertEqual(self._sheet(data, 'BOM')['color'], design.TAB_PLANNING_DATA)
         self.assertEqual(self._sheet(data, 'FICHA')['color'], design.TAB_ANALYSIS)

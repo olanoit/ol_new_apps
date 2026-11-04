@@ -80,6 +80,94 @@ function writeState(model, label) {
     model.dispatch("UPDATE_CELL", { sheetId, ...STATE_CELL, content: label });
 }
 
+/**
+ * M117-15, punto 7: el valor inicial vigente en la configuración, en la columna
+ * oculta J de PARAMETROS; si difiere del copiado, la fila lo avisa. Solo escribe
+ * lo que cambió: abrir la hoja no debe generar revisiones.
+ */
+export function writeCurrentParameters(model, current) {
+    const getters = model.getters;
+    const sheetId = sheetIdOf(model, "PARAMETROS");
+    if (!sheetId || !current) {
+        return;
+    }
+    const commands = [];
+    for (let row = 1; row < getters.getNumberRows(sheetId); row++) {
+        const key = getters.getCell({ sheetId, col: 6, row })?.content;
+        const value = key && current[key];
+        if (key && value !== undefined && (getters.getCell({ sheetId, col: 9, row })?.content || "") !== value) {
+            commands.push(["UPDATE_CELL", { sheetId, col: 9, row, content: value }]);
+        }
+    }
+    dispatchBatch(model, commands);
+}
+
+/**
+ * M117-16, punto 3: si la cotización cambió, OBRA se actualiza al abrir la hoja y lo
+ * dice; con otro cliente o moneda, el tarifario hay que traerlo de nuevo.
+ */
+function refreshSaleObra(model, data, env) {
+    const values = data?.construction_sale_obra;
+    const sheetId = sheetIdOf(model, "OBRA");
+    if (!values || !sheetId || data.isReadonly) {
+        return;
+    }
+    const getters = model.getters;
+    const commands = [];
+    const changed = [];
+    for (let row = 1; row < 30; row++) {
+        const name = getters.getCell({ sheetId, col: 0, row })?.content;
+        if (name && values[name] !== undefined) {
+            const current = String(getters.getEvaluatedCell({ sheetId, col: 1, row }).value ?? "");
+            if (current !== String(values[name]) && name !== "Fecha de cotización") {
+                commands.push(["UPDATE_CELL", { sheetId, col: 1, row, content: String(values[name]) }]);
+                changed.push(name);
+            }
+        }
+    }
+    if (commands.length) {
+        dispatchBatch(model, commands);
+        const rates = changed.includes("Cliente")
+            ? _t(" El tarifario se trajo para otro cliente o moneda: ejecute Traer tarifario.")
+            : "";
+        env.constructionNotify(
+            _t("OBRA actualizada desde la cotización: %(fields)s.", { fields: changed.join(", ") }) + rates,
+            rates ? "warning" : "info",
+            { sticky: Boolean(rates) }
+        );
+    }
+}
+
+/**
+ * M117-16, punto 5: la hoja ya en edición escribe la versión nueva y la fila de
+ * «Cambios de la cotización» con su fecha.
+ */
+function writePendingVersion(model, data, env) {
+    if (!data?.construction_sale_pending) {
+        return;
+    }
+    const { version, date } = JSON.parse(data.construction_sale_pending);
+    const getters = model.getters;
+    const sheetId = sheetIdOf(model, "OBRA");
+    const commands = [];
+    for (let row = 1; row < 30; row++) {
+        if (getters.getCell({ sheetId, col: 0, row })?.content === "Versión de la cotización") {
+            commands.push(["UPDATE_CELL", { sheetId, col: 1, row, content: version }]);
+        }
+    }
+    let free = 1;
+    while (getters.getCell({ sheetId, col: 3, row: free })?.content) {
+        free++;
+    }
+    commands.push(
+        ["UPDATE_CELL", { sheetId, col: 3, row: free, content: date }],
+        ["UPDATE_CELL", { sheetId, col: 4, row: free, content: version }]
+    );
+    dispatchBatch(model, commands);
+    data.construction_sale_pending = "";
+    env.constructionCall("construction_sale_pending_done");
+}
+
 afterValidateHooks.push((env, result) => {
     if (isFurniture(env)) {
         writeState(env.model, result.state);
@@ -90,10 +178,16 @@ patch(SpreadsheetAction.prototype, {
     setup() {
         super.setup(...arguments);
         onMounted(() => {
+            if (this.model && this.data?.construction_sheet_kind === "sale") {
+                writeCurrentParameters(this.model, this.data?.construction_parameter_current);
+                writePendingVersion(this.model, this.data, this.env);
+                refreshSaleObra(this.model, this.data, this.env);
+            }
             if (!this.model || !isFurniture(this.env)) {
                 return;
             }
             writeState(this.model, this.data?.construction_sheet_state);
+            writeCurrentParameters(this.model, this.data?.construction_parameter_current);
             // Después de un envío, CONTROL compara la hoja con el planificador.
             if (this.data?.construction_control_pending && sheetIdOf(this.model, CONTROL_SHEET)) {
                 // El entorno de la acción no trae el modelo de la hoja (M117-06).

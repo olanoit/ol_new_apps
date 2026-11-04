@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.17, M117-15. -->
+    <record id="construction_sheet_parameter_view_list" model="ir.ui.view">
+        <field name="name">construction.sheet.parameter.list</field>
+        <field name="model">construction.sheet.parameter</field>
+        <field name="arch" type="xml">
+            <list string="Parámetros de las hojas de trabajo" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="sheet"/>
+                <field name="group"/>
+                <field name="name"/>
+                <field name="key"/>
+                <field name="value_initial"/>
+                <field name="value_type"/>
+                <field name="allowed_values" optional="show"/>
+                <field name="use_range" optional="hide"/>
+                <field name="min_value" optional="show" invisible="not use_range"/>
+                <field name="max_value" optional="show" invisible="not use_range"/>
+                <field name="unit" optional="show"/>
+                <field name="help_text" optional="hide"/>
+                <field name="locked" optional="hide"/>
+                <field name="company_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_sheet_parameter_view_search" model="ir.ui.view">
+        <field name="name">construction.sheet.parameter.search</field>
+        <field name="model">construction.sheet.parameter</field>
+        <field name="arch" type="xml">
+            <search string="Parámetros">
+                <field name="name"/>
+                <field name="key"/>
+                <filter name="sale" string="Hoja de venta" domain="[('sheet', '=', 'sale')]"/>
+                <filter name="planning" string="Hoja de planificación"
+                        domain="[('sheet', '=', 'planning')]"/>
+                <filter name="group_group" string="Grupo" context="{'group_by': 'group'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_sheet_parameter" model="ir.actions.act_window">
+        <field name="name">Parámetros de las hojas de trabajo</field>
+        <field name="res_model">construction.sheet.parameter</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Los parámetros iniciales se crean con la primera hoja de trabajo de la compañía</p>
+            <p>Cada hoja nueva copia estos valores; el analista los cambia solo para su hoja.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_sheet_parameter"
+              action="action_construction_sheet_parameter"
+              parent="al_construction_planner.menu_planner_config_plan"
+              name="Parámetros de las hojas de trabajo" sequence="40"
+              groups="al_construction_planner.group_planner_manager"/>
+
+    <!-- Paquete 1.17, M117-16, punto 3. -->
+    <record id="construction_sale_sheet_copy_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.sale.sheet.copy.wizard.form</field>
+        <field name="model">construction.sale.sheet.copy.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Hoja de venta">
+                <p>Esta cotización se duplicó de <field name="origin_id" readonly="1" nolabel="1"/> y todavía no tiene hoja de venta.</p>
+                <field name="order_id" invisible="1"/>
+                <footer>
+                    <button name="action_copy" type="object" class="btn-primary"
+                            string="Copiar la hoja de la cotización de origen"/>
+                    <button name="action_new" type="object" string="Hoja nueva"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Paquete 1.17, M117-19. -->
+    <record id="construction_sale_rate_view_list" model="ir.ui.view">
+        <field name="name">construction.sale.rate.list</field>
+        <field name="model">construction.sale.rate</field>
+        <field name="arch" type="xml">
+            <list string="Tarifario de venta de mobiliario" editable="bottom">
+                <field name="partida"/>
+                <field name="item"/>
+                <field name="uom"/>
+                <field name="base_size"/>
+                <field name="adjust"/>
+                <field name="structure"/>
+                <field name="fronts"/>
+                <field name="rule"/>
+                <field name="group"/>
+                <field name="price"/>
+                <field name="currency_id" options="{'no_create': True}"/>
+                <field name="partner_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="company_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_sale_rate_view_search" model="ir.ui.view">
+        <field name="name">construction.sale.rate.search</field>
+        <field name="model">construction.sale.rate</field>
+        <field name="arch" type="xml">
+            <search string="Tarifario">
+                <field name="item"/>
+                <field name="partner_id"/>
+                <filter name="general" string="Lista general" domain="[('partner_id', '=', False)]"/>
+                <filter name="agreement" string="Con convenio" domain="[('partner_id', '!=', False)]"/>
+                <filter name="group_partida" string="Partida" context="{'group_by': 'partida'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_sale_rate" model="ir.actions.act_window">
+        <field name="name">Tarifario de venta de mobiliario</field>
+        <field name="res_model">construction.sale.rate</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cargue el tarifario desde Excel</p>
+            <p>Use Importar registros. Un precio con «Desde» cierra el anterior el día previo.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_sale_rate" action="action_construction_sale_rate"
+              parent="al_construction_planner.menu_planner_config_plan"
+              name="Tarifario de venta de mobiliario" sequence="41"
+              groups="al_construction_planner.group_planner_manager"/>
+</odoo>

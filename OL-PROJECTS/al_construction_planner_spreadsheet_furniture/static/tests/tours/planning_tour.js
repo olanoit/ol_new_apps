@@ -140,11 +140,10 @@ registry.category("web_tour.tours").add("al_construction_furniture_planning", {
                     ["INICIO", "B24", 3.3], // ML: 1.2 × 2 + 0.9
                     ["INICIO", "B25", 10], // piezas: 5 × 2
                     ["INICIO", "B26", 400], // materiales: 2 × 100 × 2
-                    ["INICIO", "B12", "Listo"], // obra
-                    ["INICIO", "B13", "Listo"], // árbol
-                    ["INICIO", "B14", "Listo"], // tipologías
-                    ["INICIO", "B16", "Falta"], // contratas
-                    ["INICIO", "B17", "Falta"], // venta
+                    ["INICIO", "D12", "Listo"], // sin venta: obra
+                    ["INICIO", "D13", "—"], // sin venta: no hay acabados
+                    ["INICIO", "D14", "Listo"], // tipologías y módulos
+                    ["INICIO", "D16", "Falta"], // contratas y venta
                     ["INICIO", "G12", 3], // filas de ARBOL
                     ["INICIO", "B44", "Piso 2"],
                     ["INICIO", "D44", "Piso 2"],

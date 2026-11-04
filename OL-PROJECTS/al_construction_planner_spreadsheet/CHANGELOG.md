@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261104 — 04/11/2026
+
+- M117-16: el menú de la hoja se llama «Hoja de venta» en una hoja de venta; la validación avisa a los ganchos si fue silenciosa.
+
 ## 15.20261104 — 04/11/2026
 
 - M117-09: botón «Hoja de trabajo» en la sección Controlar de la ficha del planificador, con versión y estado, y estado de la hoja en «Por planificar» de Inicio.

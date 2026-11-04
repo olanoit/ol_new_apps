@@ -42,6 +42,13 @@ class ConstructionValuationCutoff(models.Model):
         'UNIQUE(project_id, date)', 'La obra ya tiene ese corte de valorización.')
 
 
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    # Paquete 1.17, M117-21: una línea por partida, con cantidad 1 (D23).
+    construction_partida = fields.Char(string='Partida', copy=False)
+
+
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="mail_template_sale_sheet_quotation" model="mail.template">
+        <field name="name">Cotización de mobiliario</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">{{ object.company_id.name }} · Cotización {{ object.name }} {{ object._construction_sale_version_label() }}</field>
+        <field name="email_from">{{ (object.user_id.email_formatted or user.email_formatted) }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="report_template_ids" eval="[(4, ref('al_construction_planner_spreadsheet_furniture.action_report_sale_sheet_quotation'))]"/>
+        <field name="body_html" type="html"><div>
+            <p>Estimado cliente:</p>
+            <p>Adjuntamos la cotización <t t-out="object.name"/>, versión <t t-out="object._construction_sale_version_label()"/>.</p>
+        </div></field>
+    </record>
+</odoo>

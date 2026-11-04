@@ -482,6 +482,19 @@ class ConstructionMasterImportWizard(models.TransientModel):
             if key in values and field in project._fields:
                 project.sudo()[field] = _number(values[key]) or 0.0
 
+    def _construction_price_sale_line(self, contract, typology):
+        """M117-22, punto 4: la línea de la orden de la partida de la tipología.
+        Una tipología nueva de un adicional va a la línea de ese adicional. Una
+        tipología que ya existía conserva su línea (ver DISENO_v1.17, D2)."""
+        order = contract.sale_order_id
+        line_model = self.env['sale.order.line']
+        if not order or 'construction_partida' not in line_model._fields:
+            return {}
+        label = dict(typology._fields['family']._description_selection(self.env)).get(
+            typology.family, typology.family)
+        lines = order.order_line.filtered(lambda line: line.construction_partida == label)
+        return {'sale_line_id': lines.sorted('id')[-1:].id} if lines else {}
+
     def _apply_roles(self, rows):
         if not rows or 'planning.role' not in self.env:
             return
@@ -554,9 +567,17 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 continue
             contract = Contract.search([('project_id', '=', self.project_id.id),
                                         ('name', '=', name)], limit=1)
-            vals = {'name': name, 'project_id': self.project_id.id,
-                    'advance_pct': _number(row.get('advance')) or 0.0,
-                    'guarantee_pct': _number(row.get('guarantee')) or 0.0}
+            vals = {'name': name, 'project_id': self.project_id.id}
+            # M117-22, punto 5: vacío, un contrato existente conserva su valor.
+            for key, field in (('advance', 'advance_pct'), ('guarantee', 'guarantee_pct')):
+                number = _number(row.get(key))
+                if number is not None:
+                    vals[field] = number
+                elif not contract:
+                    vals[field] = 0.0
+            factor = _number(row.get('discount_factor'))
+            if factor:
+                vals['discount_factor'] = factor
             partner = self._contract_partner(row)
             if partner:
                 vals['partner_id'] = partner.id
@@ -584,4 +605,6 @@ class ConstructionMasterImportWizard(models.TransientModel):
             if line:
                 line.write(vals)
             else:
-                contract.price_line_ids = [Command.create(dict(vals, typology_id=typology.id))]
+                contract.price_line_ids = [Command.create(dict(
+                    vals, typology_id=typology.id,
+                    **self._construction_price_sale_line(contract, typology)))]

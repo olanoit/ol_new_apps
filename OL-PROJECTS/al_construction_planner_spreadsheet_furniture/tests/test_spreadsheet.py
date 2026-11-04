@@ -31,7 +31,7 @@ class TestConstructionSpreadsheet(PlannerCommon):
         self.assertEqual(arbol['cells']['A1'], SHEETS['ARBOL'][1][0][1])
         self.assertEqual({lst['model'] for lst in data['lists'].values()},
                          {'construction.labor.activity', 'construction.typology',
-                          'product.product'})
+                          'product.product', 'uom.uom', 'res.partner'})
         reference = next(sheet for sheet in data['sheets'] if sheet['name'] == 'REFERENCIAS')
         self.assertEqual(reference['cells']['A3'], '=ODOO.LIST(1,1,"code")')
         # Se abre la misma hoja, no otra.

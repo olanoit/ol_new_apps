@@ -60,10 +60,13 @@ function readDataRows(model, name, keys) {
 
 /** Las pestañas de datos, leídas de ``model``. */
 export function readSheets(env, model) {
-    const names = (env.constructionSendSheets() || []).filter((name) => !name.startsWith("_"));
+    const names = (env.constructionSendSheets() || []).filter(
+        (name) => !name.startsWith("_") && name !== "RESUMEN VENTA"
+    );
     const keys = keyColumns(model);
     const sheets = {};
-    for (const name of [...names, WORK_MATERIALS_SHEET]) {
+    const planning = env.constructionSheetKind() === "furniture";
+    for (const name of [...new Set(planning ? [...names, WORK_MATERIALS_SHEET] : names)]) {
         const spec = readDataRows(model, name, keys);
         if (spec) {
             sheets[name] = spec;
@@ -213,7 +216,7 @@ class RestoreVersionDialog extends Component {
     }
 }
 
-async function restoreVersion(env) {
+export async function restoreVersion(env) {
     const model = env.model;
     const versions = await env.constructionCall("construction_versions");
     env.constructionDialog(RestoreVersionDialog, {

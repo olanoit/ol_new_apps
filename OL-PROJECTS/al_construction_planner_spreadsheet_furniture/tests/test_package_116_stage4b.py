@@ -84,7 +84,7 @@ class TestPackage116Stage4bSheet(TestWorksheetV18):
         filters = [cell for cell in lists.values() if 'FILTER(' in cell]
         layout = self.site._construction_sheet_layout()
         # Grupos, categorías y el bloque de módulos por tipología (M117-02).
-        self.assertEqual(len(filters), layout['list_base'])
+        self.assertEqual(len(filters), layout['finish_base'])
         self.assertLess(len(filters), 600, 'no crecen con las filas')
         # Con la raíz, REFERENCIAS marca solo lo que cuelga de ella.
         self.assertIn('MP TEST4B / ', sheets['REFERENCIAS']['cells']['S3'])

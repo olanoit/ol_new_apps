@@ -150,7 +150,7 @@ class ConstructionContract(models.Model):
         help='Plantilla del contrato; cada precio por tipología puede llevar la suya (una por '
              'familia).')
     discount_factor = fields.Float(
-        string='Factor de descuento', default=1.0, digits=(16, 4), tracking=True,
+        string='Factor de descuento', default=1.0, digits=(16, 6), tracking=True,
         help='Multiplica el precio de cada unidad (p. ej. 0.95 por un descuento del 5 %).')
     milestone_ids = fields.One2many(
         'construction.unit.milestone', 'contract_id', string='Hitos por unidad')

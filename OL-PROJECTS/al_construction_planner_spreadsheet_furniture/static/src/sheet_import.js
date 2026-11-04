@@ -145,6 +145,42 @@ function applyExtension(model, extension) {
     }
 }
 
+/** M117-15: el valor y el motivo de cada parámetro, por su clave (columna G). */
+function writeParameters(model, parameters) {
+    const getters = model.getters;
+    const sheetId = getters.getSheetIdByName("PARAMETROS");
+    if (!sheetId || !parameters) {
+        return;
+    }
+    const commands = [];
+    for (let row = 1; row < getters.getNumberRows(sheetId); row++) {
+        const key = getters.getCell({ sheetId, col: 6, row })?.content;
+        if (key && parameters[key]) {
+            const [value, reason] = parameters[key];
+            commands.push(["UPDATE_CELL", { sheetId, col: 2, row, content: value ?? "" }]);
+            commands.push(["UPDATE_CELL", { sheetId, col: 7, row, content: reason ?? "" }]);
+        }
+    }
+    dispatchBatch(model, commands);
+}
+
+/** M117-16: los datos de OBRA de la hoja de venta, por su nombre. */
+function writeObra(model, obra) {
+    const getters = model.getters;
+    const sheetId = getters.getSheetIdByName("OBRA");
+    if (!sheetId || !obra || !Object.keys(obra).length) {
+        return;
+    }
+    const commands = [];
+    for (let row = 1; row < 40; row++) {
+        const name = getters.getCell({ sheetId, col: 0, row })?.content;
+        if (name && obra[name] !== undefined) {
+            commands.push(["UPDATE_CELL", { sheetId, col: 1, row, content: obra[name] }]);
+        }
+    }
+    dispatchBatch(model, commands);
+}
+
 /** Columna de cada clave: _CLAVES o el encabezado; sin las de fórmula. */
 export function columnsOf(model, sheetId, name, spec, keys) {
     const header = (collectSheets(model, [name])[name] || [[]])[0] || [];
@@ -348,6 +384,8 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         ensureRows(model, sheetId, rows.length + 1);
         writeRows(model, sheetId, rows, 0);
     }
+    writeParameters(model, payload.parameters);
+    writeObra(model, payload.obra);
     if (tree) {
         groupTreeByFloor(model);
     }
@@ -367,7 +405,7 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
     return result;
 }
 
-async function importExcel(env) {
+export async function importExcel(env) {
     await env.constructionDoAction(
         {
             type: "ir.actions.act_window",

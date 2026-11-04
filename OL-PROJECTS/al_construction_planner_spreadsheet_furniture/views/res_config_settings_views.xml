@@ -12,6 +12,18 @@
                              help="Las listas de grupo, categoría y producto de la hoja muestran solo lo que cuelga de esta categoría (por ejemplo, la de materia prima). Vacía: todas. Rige para las hojas que se creen desde ahora.">
                         <field name="construction_sheet_material_categ_id" options="{'no_create': True}"/>
                     </setting>
+                    <setting id="construction_sale_partida_product"
+                             help="Producto de servicio de las líneas que escribe «Pasar el resumen a la cotización».">
+                        <field name="construction_sale_partida_product_id" options="{'no_create': True}"/>
+                    </setting>
+                    <setting id="construction_planning_user"
+                             help="Recibe las actividades de obra adjudicada y de altas al tarifario.">
+                        <field name="construction_planning_user_id" options="{'no_create': True}"/>
+                    </setting>
+                    <setting id="construction_sale_milestone_template"
+                             help="La que «Traer la venta» escribe en CONTRATOS.">
+                        <field name="construction_sale_milestone_template"/>
+                    </setting>
                 </block>
             </block>
         </field>

@@ -272,7 +272,7 @@ export async function validate(env, { quiet = false } = {}) {
     );
     const sheetId = writeErrors(env.model, result);
     for (const hook of afterValidateHooks) {
-        hook(env, result);
+        hook(env, result, { quiet });
     }
     if (result.errors) {
         activateSheet(env.model, sheetId);
@@ -425,7 +425,10 @@ async function downloadTemplate(env) {
 // un solo menú «Planificación de obra» y cada opción visible según la hoja
 // (paquete 1.13, M113-03: el maestro no ve las opciones del presupuesto).
 topbarMenuRegistry.add("construction_planner", {
-    name: _t("Planificación de obra"),
+    name: (env) =>
+        env.constructionSheetKind && env.constructionSheetKind() === "sale"
+            ? _t("Hoja de venta")
+            : _t("Planificación de obra"),
     sequence: 95,
 });
 const budgetItems = [

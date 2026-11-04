@@ -168,6 +168,14 @@ NO_COST_STYLE = {'fillColor': design.WARNING_FILL, 'textColor': design.WARNING_T
 GRAY_STYLE = {'fillColor': design.CELL_CALC_COLOR, 'textColor': design.CELL_CALC_TEXT}
 # M117-02, punto 5: los módulos de cada tipología, en un bloque de _LISTAS.
 TYPOLOGY_BLOCK = 500
+# M117-22: pestañas que llena «Traer la venta».
+FINISH_SHEET = 'ACABADOS DE OBRA'
+SOLD_SHEET = 'VENDIDO'
+TRACE_SHEET = '_HUELLA'
+FINISH_ROWS = 60
+OBRA_SEED = ('Obra', 'Cliente', 'Inicio', 'Fin', 'Adelanto %', 'Fondo de garantía %',
+             'Hoja de venta', 'Venta traída el', 'Inicio de la venta', 'Fin de la venta',
+             'Subtotal de la cotización', 'Departamentos vendidos')
 
 
 # Filas con fórmulas y listas de las pestañas cortas del maestro. Con una hoja
@@ -227,6 +235,11 @@ RANGE_LISTS = {
     ('MODULOS', 'furniture'): 'MUEBLES!$B$2:$B$5000',
     ('VENTA', 'contract'): 'CONTRATOS!$A$2:$A$500',
     ('CONTRATOS', 'milestone_template'): 'HITOS!$A$2:$A$500',
+    # Paquete 1.17, Anexo A: listas de Odoo en REFERENCIAS (Y a AA).
+    ('PRODUCTOS NUEVOS', 'uom'): 'REFERENCIAS!$Y$3:$Y$102',
+    ('PRODUCTOS NUEVOS', 'categ'): 'REFERENCIAS!$W$3:$W$500',
+    ('CONTRATOS', 'partner'): 'REFERENCIAS!$Z$3:$Z$802',
+    ('TARIFAS', 'partner'): 'REFERENCIAS!$AA$3:$AA$802',
 }
 LEEME = [
     'Hoja de trabajo de la oficina técnica (mobiliario)',
@@ -403,7 +416,9 @@ class ProjectProject(models.Model):
         return {
             'sheets': sheets, 'last_product': n_products + 2, 'n_products': n_products,
             'n_groups': n_groups, 'n_shorts': n_shorts, 'width': width,
-            'last_col': _col(width), 'list_base': n_groups + n_shorts + TYPOLOGY_BLOCK,
+            'last_col': _col(width),
+            'finish_base': n_groups + n_shorts + TYPOLOGY_BLOCK,
+            'list_base': n_groups + n_shorts + TYPOLOGY_BLOCK + FINISH_ROWS * 2,
             'stage_count': len(self.env['construction.stage']._offered_stages(self)),
         }
 
@@ -592,6 +607,23 @@ class ProjectProject(models.Model):
             marks.append(mark('code', [column(code)], (
                 '=AND({c}{f}<>"",OR(COUNTIF(${c}:${c},{c}{f})>1,COUNTIF(MODULOS!$A:$A,{c}{f})=0))'
             ).format(c=code, f=first), UNKNOWN_STYLE))
+        elif name == 'CONTRATOS':
+            marks.append(mark('empty', [column(letters['advance']), column(letters['guarantee'])],
+                              '=AND(${n}{f}<>"",{c}{f}="")'.format(
+                                  n=letters['name'], c=letters['advance'], f=first), UNKNOWN_STYLE))
+        elif name == 'VENTA':
+            price, typology = letters['price'], letters['typology']
+            marks.append(mark('sold', [column(price)], (
+                '=AND(${p}{f}<>"",COUNTIF(VENDIDO!$A$2:$A$300,${t}{f})>0,ABS(${p}{f}-XLOOKUP(${t}{f},'
+                'VENDIDO!$A$2:$A$300,VENDIDO!$G$2:$G$300))>0.005)'
+            ).format(p=price, t=typology, f=first), NO_COST_STYLE))
+        elif name == 'OBRA':
+            key, value = letters['key'], letters['value']
+            marks.append(mark('dates', [column(value)], (
+                '=OR(AND(${k}{f}="Inicio",{v}{f}<>XLOOKUP("Inicio de la venta",${k}:${k},${v}:${v},'
+                '{v}{f})),AND(${k}{f}="Fin",{v}{f}<>XLOOKUP("Fin de la venta",${k}:${k},${v}:${v},'
+                '{v}{f})))'
+            ).format(k=key, v=value, f=first), NO_COST_STYLE))
         elif name == 'ARBOL':
             typology = letters['typology']
             marks.append(mark('typology', [column(typology)], (
@@ -707,6 +739,12 @@ class ProjectProject(models.Model):
             if name in PRODUCT_PICK:
                 styles['%s1' % info['letters']['product_code']] = HEAD_CALC_STYLE
             cells.update(parts[name]['cells'])
+            if name == 'OBRA':
+                # M117-22: la plantilla siembra OBRA con sus filas fijas.
+                key_letter, value_letter = info['letters']['key'], info['letters']['value']
+                for row, label in enumerate(OBRA_SEED, start=2):
+                    cells['%s%s' % (key_letter, row)] = label
+                cells['%s2' % value_letter] = self.name or ''
             # M117-01 y M117-23: relleno y formato en todas las filas de datos.
             cell_formats = {}
             for item in parts[name]['formatting']:
@@ -738,6 +776,16 @@ class ProjectProject(models.Model):
             })
 
         sheets.append(self._construction_work_materials_sheet(last_product))
+        sheets.append(self._construction_finish_sheet(layout, last_product))
+        sheets.append(self._construction_sold_sheet())
+        sheets.append({'id': 'sheet_huella', 'name': TRACE_SHEET, 'colNumber': 4,
+                       'rowNumber': max(rows + 100, 2000), 'cells': {}, 'isVisible': False})
+        # M117-15: los valores de cálculo de la hoja, leídos por su clave.
+        sheets.append(self.env['construction.sheet.parameter']._construction_sheet_data(
+            'planning', self.company_id or self.env.company, {
+                'head_data': HEAD_DATA_STYLE, 'head_calc': HEAD_CALC_STYLE,
+                'data': CELL_DATA_STYLE, 'calc': CELL_CALC_STYLE, 'border': HEADER_BORDER_ID,
+            }, formats))
 
         # REFERENCIAS: listas vivas de Odoo.
         company = self.company_id or self.env.company
@@ -751,6 +799,11 @@ class ProjectProject(models.Model):
              ['display_name', 'default_code', 'uom_id', 'standard_price', 'categ_id'], 9,
              n_products, [['type', '=', 'consu'], ['company_id', 'in', [company.id, False]]],
              'default_code'),
+            ('4', 'Unidades', 'uom.uom', ['name'], 24, 100, [], 'name'),
+            ('5', 'Clientes', 'res.partner', ['name'], 25, 800,
+             [['customer_rank', '>', 0], ['company_id', 'in', [company.id, False]]], 'name'),
+            ('6', 'Contratas', 'res.partner', ['name'], 26, 800,
+             [['supplier_rank', '>', 0], ['company_id', 'in', [company.id, False]]], 'name'),
         ]
         cells, styles, lists = {}, {}, {}
         for list_id, title, model, columns, start, count, domain, order in reference_lists:
@@ -809,8 +862,8 @@ class ProjectProject(models.Model):
             last_product, last_product)
         styles['V2'] = styles['W2'] = HEADER_STYLE
         sheets.append({
-            'id': 'sheet_ref', 'name': REFERENCE_SHEET, 'colNumber': 26,
-            'rowNumber': max(last_product, 302) + 2, 'cells': cells, 'styles': styles,
+            'id': 'sheet_ref', 'name': REFERENCE_SHEET, 'colNumber': 30,
+            'rowNumber': max(last_product, 802) + 2, 'cells': cells, 'styles': styles,
         })
 
         # _LISTAS (oculta, M113-06): una fila por grupo y por categoría con su
@@ -849,6 +902,18 @@ class ProjectProject(models.Model):
             list_cells['B%s' % row] = (
                 '=IF(A{i}="","",IFERROR(TRANSPOSE(FILTER(MODULOS!${c}:${c},MODULOS!${t}:${t}=A{i}'
                 ')),""))').format(i=row, c=modules['code'], t=modules['typology'])
+        # M117-22: las listas de ACABADOS DE OBRA, las mismas tres de BOM.
+        for row in range(2, FINISH_ROWS + 2):
+            base = layout['finish_base'] + (row - 2) * 2
+            list_cells['A%s' % (base + 1)] = (
+                "=IF('{s}'!$E{r}=\"\",\"\",IFERROR(INDEX({zone},MATCH('{s}'!$E{r},{names},0),0),\"\"))"
+            ).format(s=FINISH_SHEET, r=row, zone='$B$1:$%s$%s' % (layout['last_col'], n_groups),
+                     names='$A$1:$A$%s' % n_groups)
+            list_cells['A%s' % (base + 2)] = (
+                "=IF('{s}'!$F{r}=\"\",\"\",IFERROR(INDEX({zone},MATCH('{s}'!$F{r},{names},0),0),\"\"))"
+            ).format(s=FINISH_SHEET, r=row,
+                     zone='$B$%s:$%s$%s' % (n_groups + 1, layout['last_col'], n_groups + n_shorts),
+                     names='$A$%s:$A$%s' % (n_groups + 1, n_groups + n_shorts))
         list_cells.update(parts[LISTS_SHEET]['cells'])
         sheets.append({'id': 'sheet_listas', 'name': LISTS_SHEET,
                        'colNumber': layout['width'] + 2,
@@ -885,6 +950,62 @@ class ProjectProject(models.Model):
             'pivots': pivots,
             'pivotNextId': len(pivots) + 1,
             'revisionId': 'START_REVISION',
+        }
+
+    def _construction_finish_sheet(self, layout, last_product):
+        """ACABADOS DE OBRA (M117-22): el tablero que se compra para cada acabado
+        vendido. Lo que vende «Traer la venta» va en gris; el tablero lo elige el
+        analista con las tres listas de BOM."""
+        last = FINISH_ROWS + 1
+        headers = ('Código del cliente (calc.)', 'Descripción (calc.)', 'Tipo de acabado (calc.)',
+                   'Material de referencia (calc.)', 'Grupo de categoría', 'Categoría', 'Tablero',
+                   'Código del producto')
+        widths = (105, 260, 120, 260, 120, 185, 395, 105)
+        cells = {'%s1' % _col(index): text for index, text in enumerate(headers)}
+        for row in range(2, last + 1):
+            cells['H%s' % row] = CODE_FROM_PICK.replace('{p}', 'G').replace('{r}', str(row))
+        rules = [{'id': 'finish_group', 'isBlocking': False, 'ranges': ['E2:E%s' % last],
+                  'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                'values': ['%s!$A$1:$A$%s' % (LISTS_SHEET, layout['n_groups'])]}}]
+        for row in range(2, last + 1):
+            base = layout['finish_base'] + (row - 2) * 2
+            for letter, offset in (('F', 1), ('G', 2)):
+                rules.append({
+                    'id': 'finish_%s_%s' % (letter, row), 'isBlocking': False,
+                    'ranges': ['%s%s' % (letter, row)],
+                    'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow', 'values': [
+                        '%s!$A$%s:$%s$%s' % (LISTS_SHEET, base + offset, layout['last_col'],
+                                             base + offset)]}})
+        return {
+            'id': 'sheet_acabados_obra', 'name': FINISH_SHEET, 'colNumber': 12,
+            'rowNumber': last + 20, 'cells': cells,
+            'styles': {'A1:D1': HEAD_CALC_STYLE, 'E1:G1': HEAD_DATA_STYLE, 'H1': HEAD_CALC_STYLE,
+                       'A2:D%s' % last: CELL_CALC_STYLE, 'E2:G%s' % last: CELL_DATA_STYLE,
+                       'H2:H%s' % last: CELL_CALC_STYLE},
+            'borders': {'A1:H1': HEADER_BORDER_ID},
+            'cols': {str(index): {'size': width} for index, width in enumerate(widths)},
+            'rows': {'0': {'size': design.HEADER_HEIGHT}}, 'panes': {'xSplit': 1, 'ySplit': 1},
+            'tables': [{'range': 'A1:H%s' % last, 'type': 'static',
+                        'config': design.table_config(FINISH_SHEET)}],
+            'dataValidationRules': rules,
+            'conditionalFormats': [{
+                'id': 'finish_no_board', 'ranges': ['G2:G%s' % last], 'stopIfTrue': False,
+                'rule': {'type': 'CellIsRule', 'operator': 'customFormula', 'values': [
+                    '=AND($A2<>"",$G2="",OR(COUNTIF({s}!$E:$E,$A2)>0,COUNTIF({s}!$F:$F,$A2)>0))'
+                    .format(s=SOLD_SHEET)], 'style': UNKNOWN_STYLE}}],
+        }
+
+    def _construction_sold_sheet(self):
+        """VENDIDO (M117-22): lo vendido tal como llegó; nadie la edita."""
+        headers = ('Tipología', 'Partida', 'Grupo', 'ML vendidos', 'Acabado estructura',
+                   'Acabado frentes', 'Precio por ambiente', 'Ambientes', 'Departamentos')
+        return {
+            'id': 'sheet_vendido', 'name': SOLD_SHEET, 'colNumber': 12, 'rowNumber': 400,
+            'cells': {'%s1' % _col(index): text for index, text in enumerate(headers)},
+            'styles': {'A1:I1': HEAD_CALC_STYLE, 'A2:I300': CELL_CALC_STYLE},
+            'borders': {'A1:I1': HEADER_BORDER_ID},
+            'cols': {'8': {'size': 200}}, 'rows': {'0': {'size': design.HEADER_HEIGHT}},
+            'panes': {'xSplit': 1, 'ySplit': 1},
         }
 
     def _construction_work_materials_sheet(self, last_product):

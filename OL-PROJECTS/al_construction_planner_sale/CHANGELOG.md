@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261104 — 04/11/2026
+
+- M117-21: la partida en cada línea de la orden.
+- M117-21: el factor de descuento del contrato guarda 6 decimales.
+
 ## 19.20261104 — 04/11/2026
 
 - M117-09: la venta de la obra en «Por planificar» de Inicio.

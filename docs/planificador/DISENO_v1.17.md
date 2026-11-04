@@ -136,6 +136,58 @@ llegaría al plan.
 `project.project._construction_home_extra` es el gancho del núcleo: el puente de
 la hoja aporta su estado y su acción, y el de ventas, la venta.
 
+## 3c. Entrega 3
+
+### Parámetros (M117-15)
+
+`construction.sheet.parameter` guarda la lista por compañía y la exporta con el
+perfil. Cada hoja copia los de su tipo a PARAMETROS; las fórmulas leen la columna
+oculta I («Valor usado», vacío: el inicial) por `XLOOKUP` de la clave. Vaciar la
+celda no vuelve a escribir el inicial, pero la hoja calcula con él. La columna
+oculta J recibe al abrir el inicial vigente, para el aviso en ámbar. En un
+porcentaje, la configuración guarda 18 y la celda 0.18.
+
+### Hoja de venta (M117-16 a M117-20)
+
+`sale_sheet.py` arma la plantilla y su registro propio de pestañas (`SALE_COLUMNS`);
+`SHEETS` no cambia salvo una columna opcional. Las fases siguen a la cotización en
+`sale.order.write` y `message_post`. Columnas ocultas agregadas respecto del Anexo A,
+porque `XLOOKUP` no acepta rangos concatenados: Clave en TARIFARIO, Fila del
+tarifario en PRECIOS, Fila de PRECIOS en METRADO y Partida en el resumen de METRADO.
+
+### Cotización (M117-21)
+
+El servidor no evalúa fórmulas de una hoja. «Pasar el resumen» lleva lo que muestra
+la hoja a `sale.order.construction_sale_summary`; de ahí leen el PDF y «Traer la
+venta». El orden del PDF sale de ese resumen, no de una lectura en vivo: una hoja
+cambiada sin pasar el resumen no cambia el PDF.
+
+### Traer la venta (M117-22)
+
+La pestaña oculta `_HUELLA` guarda lo que se trajo por clave de fila. Lo que difiere
+de la huella se muestra desmarcado; lo demás, marcado. Una fila que sobra se vacía en
+su lugar y queda sin dato hasta que el envío la ignora.
+
+### Propuestas devueltas: decisión pendiente de Vicente
+
+- **D1, descuento.** El factor pasó a 6 decimales. El ajuste del último céntimo en la
+  última valorización **no está programado**: con 6 decimales la diferencia del
+  ejemplo baja de 4.81 a centavos, pero no llega a cero.
+- **D2, partida con dos líneas.** Una tipología nueva de un adicional va a la línea
+  más reciente de su partida. Una tipología que ya existía conserva su línea: si le
+  cambian ambientes o precio, la valorización de esa partida no cuadra con las dos
+  líneas de la orden hasta decidir cómo se reparte. CONTROL muestra la diferencia.
+
+### Lo que queda distinto del Anexo A
+
+| Ficha | Qué se hizo | Por qué |
+|---|---|---|
+| Línea superior al cambiar de módulo, tipología o bloque | No se hizo | El formato condicional de la hoja no admite bordes |
+| «Siguiente» con borde negro en INICIO | Texto «◀ Siguiente» en «Qué falta» | Igual que el anterior |
+| Fases como chip negro en INICIO | Celda con la fase | Un chip no existe en la hoja |
+| Vaciar un parámetro vuelve a escribir el inicial | La celda queda vacía y la hoja calcula con el inicial | Reescribirla exigiría una regla en cada edición |
+| «Departamentos vendidos» y «Subtotal de la cotización» en CONTROL | Filas nuevas en OBRA, que escribe «Traer la venta» | VENDIDO no tiene un total por obra |
+
 ## 4. Pruebas
 
 Bases autorizadas para el paquete: `test_pe_construction_core` (núcleo y

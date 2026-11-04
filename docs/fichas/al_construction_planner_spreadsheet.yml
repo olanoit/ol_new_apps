@@ -38,6 +38,10 @@ funcionalidades:
   - "Las obras de mobiliario llenan su maestro con el puente de mobiliario."
 
 novedades:
+  - version: '16.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-16: el menú de la hoja se llama «Hoja de venta» en una hoja de venta; la validación avisa a los ganchos si fue silenciosa."
   - version: '15.20261104'
     fecha: 04/11/2026
     cambios:

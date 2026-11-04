@@ -124,6 +124,8 @@ SHEETS = {
         ('advance', 'Adelanto %', False, 'Adelanto del contrato.'),
         ('guarantee', 'Fondo de garantía %', False, 'Fondo de garantía.'),
         ('milestone_template', 'Plantilla de hitos', False, 'Nombre de la plantilla (hoja HITOS).'),
+        ('discount_factor', 'Factor de descuento', False,
+         'Multiplica el precio de cada unidad; vacío: el del contrato.'),
     ]),
     'HITOS': ('Hitos de cobro por unidad (v1.8, con Ventas).', [
         ('template', 'Plantilla', True, 'Nombre de la plantilla de hitos.'),

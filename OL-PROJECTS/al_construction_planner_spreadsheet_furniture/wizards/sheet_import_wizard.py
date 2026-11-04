@@ -21,7 +21,11 @@ from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout 
     SHEETS, norm, sheet_key,
 )
 
+from ..models.construction_sheet_parameter import (
+    COL_KEY, COL_REASON, COL_VALUE, PARAMETERS_SHEET,
+)
 from ..models.documents_document import TEMPLATE_ONLY_SHEETS
+from ..models.sale_sheet import OBRA_PRELOADED, OBRA_ROW, OBRA_SHEET, SALE_COLUMNS, SALE_ROWS
 from ..models.project_project import (
     CATEGORY_SEPARATOR, PICK_SEPARATOR, WORK_MATERIALS_SHEET, category_parts,
 )
@@ -35,6 +39,9 @@ SKIPPED_SHEETS = ('LEEME', 'README', 'INSTRUCCIONES')
 PLAN_TEMPLATE_SHEETS = TEMPLATE_ONLY_SHEETS + ('VENDIDO',)
 # Pestañas de la hoja de venta: un libro suyo no se mezcla con la planificación.
 SALE_SHEETS = ('EDIFICIO', 'ACABADOS', 'TARIFARIO', 'PRECIOS', 'METRADO', 'RESUMEN VENTA')
+# En la hoja de venta se ignora lo que es de la planificación.
+PLAN_DATA_SHEETS = tuple(name.upper() for name in SHEETS if name != 'OBRA') + (
+    'MATERIALES OBRA', 'ACABADOS DE OBRA', 'VENDIDO', 'FICHA', 'PROGRAMA', 'CONTROL')
 
 
 def _other_sheet_action(title):
@@ -99,13 +106,66 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
             columns.append(('categ_group', ['Grupo de categoría']))
         return columns
 
+    def _read_sale_file(self, workbook):
+        """M117-16, punto 2: la hoja de venta lee sus propias pestañas por clave y
+        no escribe en las calculadas."""
+        sheets, other, ignored, parameters, obra = {}, {}, {}, {}, {}
+        for worksheet in workbook.worksheets:
+            rows = [list(row) for row in worksheet.iter_rows(values_only=True)]
+            title = norm(worksheet.title).upper()
+            if title in SKIPPED_SHEETS:
+                continue
+            if title == 'RESUMEN VENTA' or title.startswith('_') or title in {
+                    'INICIO', 'REFERENCIAS', 'ERRORES'}:
+                ignored[worksheet.title[:31]] = 'template'
+            elif title in PLAN_DATA_SHEETS:
+                ignored[worksheet.title[:31]] = 'plan'
+            elif title == PARAMETERS_SHEET:
+                header = [norm(value) for value in (rows[0] if rows else [])]
+                key_col = header.index(norm('Clave')) if norm('Clave') in header else (
+                    header.index(norm('Clave (calc.)')) if norm('Clave (calc.)') in header
+                    else COL_KEY)
+                value_col = header.index(norm('Valor')) if norm('Valor') in header else COL_VALUE
+                reason_col = header.index(norm('Motivo del cambio')) \
+                    if norm('Motivo del cambio') in header else COL_REASON
+                parameters = {row[key_col]: [_cell(row[value_col]), _cell(
+                    row[reason_col]) if len(row) > reason_col else '']
+                    for row in rows[1:] if len(row) > key_col and row[key_col]}
+            elif title == OBRA_SHEET:
+                for row in rows[1:]:
+                    if row and row[0] in OBRA_ROW and row[0] not in OBRA_PRELOADED \
+                            and len(row) > 1 and row[1] not in (None, ''):
+                        obra[row[0]] = _cell(row[1])
+            elif title in SALE_COLUMNS:
+                columns = {norm(column[1]): column[0] for column in SALE_COLUMNS[title]
+                           if not column[4]}
+                header = rows[0] if rows else []
+                positions = {columns[norm(text)]: index for index, text in enumerate(header)
+                             if norm(text) in columns}
+                data = [[_cell(row[index]) if index < len(row) else ''
+                         for index in positions.values()] for row in rows[1:]
+                        if any(value not in (None, '') for value in row)]
+                limit = self.document_id.construction_sheet_rows or SALE_ROWS
+                if len(data) > limit:
+                    raise UserError(self.env._(
+                        '%(sheet)s trae %(rows)s filas y esta hoja admite %(max)s: use Hoja de '
+                        'venta › Ampliar filas.', sheet=title, rows=len(data), max=limit))
+                sheets[title] = {
+                    'keys': list(positions), 'rows': data, 'extra_headers': [], 'extra_rows': [],
+                    'headers': {column[0]: [column[1]] for column in SALE_COLUMNS[title]}}
+            elif rows:
+                other[worksheet.title[:31]] = [[_cell(value) for value in row] for row in rows]
+        workbook.close()
+        return {'sheets': sheets, 'other': other, 'ignored': ignored, 'parameters': parameters,
+                'obra': obra}
+
     def _read_file(self):
         """``{'sheets': {pestaña: {'keys', 'rows', 'extra_headers',
         'extra_rows'}}, 'other': {pestaña: filas}, 'ignored': {pestaña:
         'template' o 'sale'}}``."""
         self.ensure_one()
         if not self.file:
-            return {'sheets': {}, 'other': {}, 'ignored': {}}
+            return {'sheets': {}, 'other': {}, 'ignored': {}, 'parameters': {}}
         content = self._file_content()
         try:
             from openpyxl import load_workbook
@@ -115,7 +175,9 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
             _logger.info('Libro no válido para la hoja de trabajo: %s', exc)
             raise UserError(self.env._('El archivo no es un libro Excel (.xlsx) válido.')) \
                 from exc
-        sheets, other, ignored = {}, {}, {}
+        if self.document_id.construction_sheet_kind == 'sale':
+            return self._read_sale_file(workbook)
+        sheets, other, ignored, parameters = {}, {}, {}, {}
         for worksheet in workbook.worksheets:
             rows = [list(row) for row in worksheet.iter_rows(values_only=True)]
             while rows and not any(value not in (None, '') for value in rows[-1]):
@@ -123,6 +185,13 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
             name = sheet_key(worksheet.title)
             if not name and norm(worksheet.title) == norm(WORK_MATERIALS_SHEET):
                 name = WORK_MATERIALS_SHEET
+            # M117-15: los parámetros se importan por su clave, sin mover filas.
+            if not name and norm(worksheet.title) == norm(PARAMETERS_SHEET):
+                parameters = {
+                    row[COL_KEY]: [_cell(row[COL_VALUE]),
+                                   _cell(row[COL_REASON]) if len(row) > COL_REASON else '']
+                    for row in rows[1:] if len(row) > COL_KEY and row[COL_KEY]}
+                continue
             if not name:
                 action = _other_sheet_action(worksheet.title)
                 if action in ('template', 'sale'):
@@ -158,7 +227,7 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
                             'extra_headers': [_cell(header[i]) for i in extra],
                             'extra_rows': extra_rows}
         workbook.close()
-        return {'sheets': sheets, 'other': other, 'ignored': ignored}
+        return {'sheets': sheets, 'other': other, 'ignored': ignored, 'parameters': parameters}
 
     def _file_content(self):
         """El archivo en base64. En el formulario (registro nuevo) se lee tal
@@ -289,13 +358,24 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
                     name, max(len(rows) - 1, 0),
                     self.env._('Se copia') if wizard.keep_extra
                     else self.env._('No se copia')))
+            if data['parameters']:
+                lines.append(Markup(
+                    '<tr><td>%s</td><td class="text-end">%s</td><td>2</td><td>—</td>'
+                    '<td>%s</td></tr>') % (PARAMETERS_SHEET, len(data['parameters']),
+                                           self.env._('Importa por clave')))
+            if data.get('obra'):
+                lines.append(Markup(
+                    '<tr><td>OBRA</td><td class="text-end">%s</td><td>2</td><td>—</td>'
+                    '<td>%s</td></tr>') % (len(data['obra']), self.env._('Importa por clave')))
             reasons = {'template': self.env._('Ignorada: es de la plantilla'),
+                       'plan': self.env._('Ignorada: es de la hoja de planificación'),
                        'sale': self.env._('Ignorada: es de la hoja de venta')}
             for name, action in data['ignored'].items():
                 lines.append(Markup(
                     '<tr class="text-muted"><td>%s</td><td class="text-end">—</td><td>—</td>'
                     '<td>—</td><td>%s</td></tr>') % (name, reasons[action]))
-            issues = wizard._analysis() if data['sheets'] else []
+            is_sale = wizard.document_id.construction_sheet_kind == 'sale'
+            issues = wizard._analysis() if data['sheets'] and not is_sale else []
             errors = sum(1 for issue in issues if issue[4] == 'error')
             warnings = len(issues) - errors
             wizard.review_html = Markup(
@@ -328,8 +408,14 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
         self.ensure_one()
         if not self.file:
             raise UserError(self.env._('Suba el archivo .xlsx.'))
-        data = self._prepare(self._read_file())
-        if not data['sheets'] and not data['other']:
+        data = self._read_file()
+        is_sale = self.document_id.construction_sheet_kind == 'sale'
+        if is_sale:
+            data['added_products'] = 0
+        else:
+            data = self._prepare(data)
+        if not data['sheets'] and not data['other'] and not data.get('obra') \
+                and not data['parameters']:
             raise UserError(self.env._(
                 'El archivo no tiene ninguna pestaña del maestro (%s).', ', '.join(SHEETS)))
         if self.save_version:
@@ -338,10 +424,12 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
         payload = {
             'filename': self.filename or '',
             'mode': self.mode,
-            'expand_rows': self.expand_rows,
+            'expand_rows': self.expand_rows and not is_sale,
+            'obra': data.get('obra') or {},
             'sheets': data['sheets'],
             'other': data['other'] if self.keep_extra else {},
             'ignored': list(data['ignored']),
+            'parameters': data['parameters'],
             'keep_extra': self.keep_extra,
             'added_products': data['added_products'],
         }

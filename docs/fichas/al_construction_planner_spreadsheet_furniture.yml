@@ -61,6 +61,14 @@ pasos:
     imagen: screenshots/04-importar.png
 
 novedades:
+  - version: '12.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-15: «Parámetros de las hojas de trabajo» por compañía y pestaña PARAMETROS en las dos hojas; PROGRAMA y CONTROL leen sus valores por clave."
+      - "M117-16 a M117-20: hoja de venta, que nace con la cotización y no necesita obra, con sus fases, EDIFICIO, ACABADOS, TARIFARIO, PRECIOS y METRADO, «Traer tarifario» y «Copiar tipología»."
+      - "M117-19: catálogo «Tarifario de venta de mobiliario» con vigencias y clientes con convenio."
+      - "M117-21: RESUMEN VENTA, «Pasar el resumen a la cotización», «Nueva versión» y PDF de la cotización como adjunto del correo."
+      - "M117-22: «Traer la venta» con vista previa, pestañas ACABADOS DE OBRA y VENDIDO, comparación en CONTROL, aviso de precio distinto, propuestas de tablero y actividad al adjudicar."
   - version: '10.20261104'
     fecha: 04/11/2026
     cambios:

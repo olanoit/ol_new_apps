@@ -119,7 +119,7 @@ PRESUPUESTO_UOM_FORMULA = '=IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code}
 BUDGET_LAYOUT = 2
 # Hoja de planificación: desde el 2, BOM y PIEZAS en el orden del paquete 1.17
 # (M117-02) y _LISTAS con los módulos por tipología.
-FURNITURE_LAYOUT = 2
+FURNITURE_LAYOUT = 3
 # Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
 FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
                 ('profit', 'Utilidad %'), ('discount', 'Descuento %')]

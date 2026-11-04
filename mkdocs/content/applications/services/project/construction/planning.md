@@ -217,6 +217,7 @@ flowchart TD
 | — | Reglas analíticas | **Configuración ‣ Plan de obra ‣ Reglas analíticas** | [Tramos, analítica y presupuesto](planning/analytic_budget.md) |
 | — | Perfiles de vertical, funciones, etapas, tipos de recurso y recetas | **Configuración ‣ Plan de obra**; **Ajustes ‣ Funciones** | [Configuración por rubro](planning/vertical_configuration.md) |
 | — | Pestaña Planificación y hoja de trabajo | Obra ‣ pestaña **Planificación** | [Pestaña Planificación y hoja de trabajo](planning/planning_worksheet.md) |
+| — | Hoja de venta de mobiliario | Ventas ‣ cotización ‣ **Hoja de trabajo** | [Hoja de venta de mobiliario](planning/sale_worksheet.md) |
 | — | Matriz insumo-producto | Plan ‣ **Insumo-producto**; árbol o cronograma | [Árbol de recursos](planning/resource_tree.md#matriz-insumo-producto) |
 | — | Aplicar el perfil | **Ajustes ‣ Perfil de vertical ‣ Aplicar el perfil** | [Configuración por rubro](planning/vertical_configuration.md#perfil-de-vertical) |
 | — | Sincronizar con el Work Item | Receta ‣ **Sincronizar con el Work Item** | [Configuración por rubro](planning/vertical_configuration.md#recetas-y-work-items) |

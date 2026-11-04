@@ -66,7 +66,8 @@ class TestPackage116Stage4cSheet(TestWorksheetV18):
         links = [text for text in start['cells'].values() if 'HYPERLINK(' in text]
         for name in ('ARBOL', 'PROGRAMA', 'ERRORES'):
             self.assertIn('o-spreadsheet://%s' % ids[name], ''.join(links))
-        self.assertEqual(len([ref for ref in start['cells'] if re.fullmatch(r'B1[2-9]', ref)]), 8)
+        # Paquete 1.17, M117-16: la ruta de 7 pasos, con su estado en la columna D.
+        self.assertEqual(len([ref for ref in start['cells'] if re.fullmatch(r'D1[2-8]', ref)]), 7)
         self.assertEqual([figure['data']['chartId'] for figure in start['figures']],
                          [figure['id'] for figure in start['figures']])
         self.assertTrue(start['tables'][0]['config']['hasFilters'])

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261104 — 04/11/2026
+
+- M117-22: el envío no pone en 0 el adelanto ni el fondo de un contrato existente cuando CONTRATOS los trae vacíos; columna opcional «Factor de descuento»; cada precio nuevo queda asociado a la línea de la orden de su partida.
+
 ## 22.20261104 — 04/11/2026
 
 - M117-02: «Etapa de consumo por defecto» en la categoría de producto: la usa una línea de BOM sin etapa al enviar al planificador.

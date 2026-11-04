@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261104 — 04/11/2026
+
+- M117-15: «Parámetros de las hojas de trabajo» por compañía y pestaña PARAMETROS en las dos hojas; PROGRAMA y CONTROL leen sus valores por clave.
+- M117-16 a M117-20: hoja de venta, que nace con la cotización y no necesita obra, con sus fases, EDIFICIO, ACABADOS, TARIFARIO, PRECIOS y METRADO, «Traer tarifario» y «Copiar tipología».
+- M117-19: catálogo «Tarifario de venta de mobiliario» con vigencias y clientes con convenio.
+- M117-21: RESUMEN VENTA, «Pasar el resumen a la cotización», «Nueva versión» y PDF de la cotización como adjunto del correo.
+- M117-22: «Traer la venta» con vista previa, pestañas ACABADOS DE OBRA y VENDIDO, comparación en CONTROL, aviso de precio distinto, propuestas de tablero y actividad al adjudicar.
+
 ## 10.20261104 — 04/11/2026
 
 - M117-01 y M117-23: tabla nativa con filtros, relleno por tipo de columna en todas las filas, anchos, formatos, columnas fijas, encabezado de tres líneas, color y orden de pestañas, también en las filas ampliadas y con «Actualizar a la plantilla vigente».

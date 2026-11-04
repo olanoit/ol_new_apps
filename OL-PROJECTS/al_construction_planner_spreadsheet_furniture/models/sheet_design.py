@@ -48,27 +48,30 @@ DATE = 'dd/mm/yyyy'
 # Colores de pestaña.
 TAB_GENERAL = '#221F20'
 TAB_PLANNING_DATA = '#1D9E75'
+TAB_PARAMETERS = '#7A6200'
 TAB_ANALYSIS = '#4A4441'
 TAB_SYSTEM = '#DDD8D1'
 
 # Orden de pestañas de la hoja de planificación (M117-16, punto 8). Lo demás
 # (las pestañas propias del usuario) va al final.
 SHEET_ORDER = (
-    'INICIO', 'LEEME', 'OBRA', 'TIPOLOGIAS', 'MUEBLES', 'MODULOS', 'ACTIVIDADES', 'BOM', 'PIEZAS',
+    'INICIO', 'LEEME', 'OBRA', 'PARAMETROS', 'ACABADOS DE OBRA', 'TIPOLOGIAS', 'MUEBLES', 'MODULOS', 'ACTIVIDADES', 'BOM', 'PIEZAS',
     'PRODUCTOS NUEVOS', 'TARIFAS', 'ARBOL', 'VARIANTES', 'ETO', 'CONTRATOS', 'HITOS', 'VENTA',
-    'MO PROPIA', 'CATALOGO', 'MATERIALES OBRA', 'FICHA', 'PROGRAMA', 'CONTROL', 'RESUMEN',
-    'ERRORES', 'REFERENCIAS', '_LISTAS', '_CLAVES',
+    'MO PROPIA', 'CATALOGO', 'MATERIALES OBRA', 'VENDIDO', 'FICHA', 'PROGRAMA', 'CONTROL', 'RESUMEN',
+    'ERRORES', 'REFERENCIAS', '_LISTAS', '_CLAVES', '_HUELLA',
 )
 TAB_COLORS = {
     'INICIO': TAB_GENERAL, 'LEEME': TAB_GENERAL, 'OBRA': TAB_GENERAL,
+    'PARAMETROS': TAB_PARAMETERS,
     'FICHA': TAB_ANALYSIS, 'PROGRAMA': TAB_ANALYSIS, 'CONTROL': TAB_ANALYSIS,
     'RESUMEN': TAB_ANALYSIS,
     'ERRORES': TAB_SYSTEM, 'REFERENCIAS': TAB_SYSTEM, '_LISTAS': TAB_SYSTEM,
     '_CLAVES': TAB_SYSTEM,
 }
-PLANNING_DATA_SHEETS = SHEET_ORDER[SHEET_ORDER.index('TIPOLOGIAS'):
+PLANNING_DATA_SHEETS = SHEET_ORDER[SHEET_ORDER.index('ACABADOS DE OBRA'):
                                    SHEET_ORDER.index('MATERIALES OBRA') + 1]
 TAB_COLORS.update({name: TAB_PLANNING_DATA for name in PLANNING_DATA_SHEETS})
+TAB_COLORS.update({'VENDIDO': TAB_SYSTEM, '_HUELLA': TAB_SYSTEM})
 
 # Orden en pantalla de las columnas de BOM y PIEZAS (M117-02): de izquierda a
 # derecha como se llena la fila. El código es calculado: va con las calculadas.
@@ -142,7 +145,8 @@ SHEET_DESIGN = {
         'Ancho (mm)': (105, INTEGER), 'Grupo ML': (130, None)}},
     'CONTRATOS': {'freeze': 1, 'columns': {
         'Contrato': (200, None), 'Cliente': (235, None), 'Adelanto %': (105, PERCENT),
-        'Fondo de garantía %': (105, PERCENT), 'Plantilla de hitos': (175, None)}},
+        'Fondo de garantía %': (105, PERCENT), 'Plantilla de hitos': (175, None),
+        'Factor de descuento': (105, '0.000000')}},
     'HITOS': {'freeze': 1, 'columns': {
         'Plantilla': (160, None), 'Hito': (200, None), '%': (105, PERCENT),
         'Etapa': (165, None)}},
@@ -152,6 +156,8 @@ SHEET_DESIGN = {
     'MO PROPIA': {'freeze': 1, 'columns': {
         'Rol': (130, None), 'Categoría': (120, None), 'Sub etapa': (165, None),
         'Jornal': (105, MONEY), 'Rendimiento': (105, MONEY), 'Actividad': (125, None)}},
+    # Hoja de venta: su fila de columnas está en sale_sheet.py.
+    'PARAMETROS': {'freeze': 2, 'columns': {}},
     'CATALOGO': {'freeze': 1, 'columns': {
         'Código': (110, None), 'Nombre': (220, None), 'Etapa': (155, None),
         'Unidad': (105, None), 'Se mide por': (120, None), 'Grupo ML': (130, None),
