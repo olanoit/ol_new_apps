@@ -31,7 +31,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_hr_pe](al_hr_pe/) | 36.20261027 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
-[al_hr_pe_account](al_hr_pe_account/) | 14.20261103 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
+[al_hr_pe_account](al_hr_pe_account/) | 15.20261104 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
 [al_hr_pe_attendance](al_hr_pe_attendance/) | 23.20261027 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](al_hr_pe_benefits/) | 24.20261027 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
 [al_hr_pe_construction](al_hr_pe_construction/) | 25.20261027 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.

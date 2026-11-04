@@ -195,25 +195,54 @@ class HrPayslipRun(models.Model):
         """Partes ``(importe, distribución, ids analíticos)`` de una línea.
 
         Si la regla tiene cuentas por centro de costo o la compañía pide una
-        línea por centro, el importe se reparte por cada clave de la
-        distribución analítica (la última absorbe el redondeo); si no, va
-        entero. Tampoco se reparte si las claves no suman 100 % (varios planes
-        en claves separadas): lo prorratea el motor analítico.
+        línea por centro, el importe se reparte según el porcentaje de cada
+        clave de la distribución; si no, va entero.
+
+        * Solo se reparte por el plan de los centros de costo de la regla
+          (o el primero): las claves de los demás planes son otra dimensión
+          que suma su propio 100 % y viajan con cada parte.
+        * Lo que el plan no distribuye (``{A: 60}``) queda en una parte sin
+          centro de costo de ese plan; el redondeo lo absorbe la última
+          parte solo cuando el plan suma el 100 %.
         """
         by_center = split or rule._l10n_pe_uses_analytic_accounts(self.company_id)
-        if not distribution or not by_center \
-                or round(sum(distribution.values()), 2) != 100.0:
+        if not distribution or not by_center:
             analytic_ids = {int(account_id) for key in (distribution or {})
                             for account_id in str(key).split(',')}
             return [(total, distribution, analytic_ids)]
+
+        def key_ids(key):
+            return [int(account_id) for account_id in str(key).split(',')]
+
+        Analytic = self.env['account.analytic.account'].sudo()
+
+        def key_plans(key):
+            return frozenset(Analytic.browse(key_ids(key)).root_plan_id.ids)
+
+        cost_center_plans = set(rule._l10n_pe_rule_account_lines(
+            self.company_id).analytic_account_id.sudo().root_plan_id.ids)
+        by_plans = {}
+        for key, percent in distribution.items():
+            by_plans.setdefault(key_plans(key), []).append((key, percent))
+        split_plans = next(
+            (plans for plans in by_plans if plans & cost_center_plans),
+            next(iter(by_plans)))
+        items = by_plans.pop(split_plans)
+        others = {key: percent for rest in by_plans.values()
+                  for key, percent in rest}
+        other_ids = {account_id for key in others for account_id in key_ids(key)}
+
         parts, assigned = [], 0.0
-        items = list(distribution.items())
+        full = sum(percent for _key, percent in items) >= 100.0 - 1e-6
         for index, (key, percent) in enumerate(items):
-            amount = (total - assigned if index == len(items) - 1
+            amount = (total - assigned if full and index == len(items) - 1
                       else custom_round(total * percent / 100.0))
             assigned += amount
-            parts.append((amount, {key: 100.0},
-                          {int(account_id) for account_id in str(key).split(',')}))
+            parts.append((amount, dict(others, **{key: 100.0}),
+                          set(key_ids(key)) | other_ids))
+        rest = total - assigned
+        if not full and custom_round(rest):
+            parts.append((rest, others or False, other_ids))
         return parts
 
     @staticmethod

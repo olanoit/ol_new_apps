@@ -589,6 +589,10 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: '15.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "Reparto por centro de costo: se reparte solo por el plan de los centros; las claves de otros planes viajan con cada parte y lo que no suma 100 % queda sin centro de costo."
   - version: '14.20261103'
     fecha: 03/11/2026
     cambios:

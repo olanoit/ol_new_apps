@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261104 — 04/11/2026
+
+- Reparto por centro de costo: se reparte solo por el plan de los centros; las claves de otros planes viajan con cada parte y lo que no suma 100 % queda sin centro de costo.
+
 ## 14.20261103 — 03/11/2026
 
 - Asiento por centro de costo: las cuentas por pagar ya no llevan analítica, porque su abono anulaba el gasto del centro.

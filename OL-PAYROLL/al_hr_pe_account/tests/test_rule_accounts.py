@@ -155,6 +155,38 @@ class TestRuleAccounts(AccountCaseBase):
         self.assertEqual(self._bas_debits(with_analytic=True),
                          [(self.acc_gasto.id, self.wage, distribution)])
 
+    def _cost_center_rule(self):
+        self.env['l10n_pe.hr.salary.rule.account'].create({
+            'salary_rule_id': self.rule_bas.id, 'company_id': self.company.id,
+            'analytic_account_id': self.obra_a.id,
+            'account_debit_id': self.acc_gasto.id})
+
+    def test_partial_distribution_keeps_the_rest_without_analytic(self):
+        self._cost_center_rule()
+        parts = self.batch._pe_split_by_cost_center(
+            self.rule_bas, 1000.0, {str(self.obra_a.id): 60.0})
+        self.assertEqual([(amount, dist) for amount, dist, _ids in parts],
+                         [(600.0, {str(self.obra_a.id): 100.0}), (400.0, False)])
+
+    def test_distribution_under_100_is_not_inflated(self):
+        self._cost_center_rule()
+        parts = self.batch._pe_split_by_cost_center(
+            self.rule_bas, 1000.0,
+            {str(self.obra_a.id): 30.0, str(self.obra_b.id): 30.0})
+        self.assertEqual([amount for amount, _d, _i in parts], [300.0, 300.0, 400.0])
+
+    def test_other_plan_travels_with_each_part(self):
+        self._cost_center_rule()
+        other_plan = self.env['account.analytic.plan'].create({'name': 'Proyectos'})
+        proyecto = self.env['account.analytic.account'].create(
+            {'name': 'Proyecto X', 'plan_id': other_plan.id, 'company_id': self.company.id})
+        a, b, x = str(self.obra_a.id), str(self.obra_b.id), str(proyecto.id)
+        parts = self.batch._pe_split_by_cost_center(
+            self.rule_bas, 1000.0, {x: 100.0, a: 70.0, b: 30.0})
+        self.assertEqual([(amount, dist) for amount, dist, _ids in parts],
+                         [(700.0, {x: 100.0, a: 100.0}), (300.0, {x: 100.0, b: 100.0})])
+        self.assertEqual(parts[0][2], {self.obra_a.id, proyecto.id})
+
     def test_require_cost_center_blocks_and_warns(self):
         self.param.move_require_cost_center = True
         self.version.analytic_distribution = False
