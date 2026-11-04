@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 71.20261104 — 04/11/2026
+
+- M117-09: Inicio muestra las obras sin plan en «Por planificar», la más antigua primero; lo que aporta cada puente sale del gancho _construction_home_extra.
+
 ## 70.20261102 — 02/11/2026
 
 - El Cronograma usa la rejilla desplazable común del Gantt.

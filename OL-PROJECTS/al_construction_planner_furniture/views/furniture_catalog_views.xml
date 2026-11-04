@@ -154,4 +154,15 @@
             </block>
         </field>
     </record>
+    <!-- Paquete 1.17, M117-02: la etapa de un material cuando su línea no la dice. -->
+    <record id="product_category_form_view_construction_stage" model="ir.ui.view">
+        <field name="name">product.category.form.construction.stage</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <field name="parent_id" position="after">
+                <field name="construction_default_stage_id" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
 </odoo>

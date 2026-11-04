@@ -63,6 +63,12 @@ class ProjectProject(models.Model):
             self._construction_link_sale_order()
         return res
 
+    def _construction_home_extra(self):
+        """M117-09: la venta de la obra en Inicio."""
+        result = super()._construction_home_extra()
+        result['sale'] = self.construction_sale_order_id.display_name or ''
+        return result
+
     def _construction_link_sale_order(self):
         """Una obra nacida de una venta toma esa venta como orden de venta
         del contrato si aún no tiene una."""

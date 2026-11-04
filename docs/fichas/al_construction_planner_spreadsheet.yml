@@ -38,6 +38,10 @@ funcionalidades:
   - "Las obras de mobiliario llenan su maestro con el puente de mobiliario."
 
 novedades:
+  - version: '15.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-09: botón «Hoja de trabajo» en la sección Controlar de la ficha del planificador, con versión y estado, y estado de la hoja en «Por planificar» de Inicio."
   - version: '14.20261104'
     fecha: 04/11/2026
     cambios:

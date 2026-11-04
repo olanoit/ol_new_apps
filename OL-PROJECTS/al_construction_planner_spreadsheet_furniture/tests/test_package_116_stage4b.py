@@ -83,8 +83,9 @@ class TestPackage116Stage4bSheet(TestWorksheetV18):
         lists = sheets[LISTS_SHEET]['cells']
         filters = [cell for cell in lists.values() if 'FILTER(' in cell]
         layout = self.site._construction_sheet_layout()
-        self.assertEqual(len(filters), layout['n_groups'] + layout['n_shorts'])
-        self.assertLess(len(filters), 100, 'no crecen con las filas')
+        # Grupos, categorías y el bloque de módulos por tipología (M117-02).
+        self.assertEqual(len(filters), layout['list_base'])
+        self.assertLess(len(filters), 600, 'no crecen con las filas')
         # Con la raíz, REFERENCIAS marca solo lo que cuelga de ella.
         self.assertIn('MP TEST4B / ', sheets['REFERENCIAS']['cells']['S3'])
         # Cada fila tiene su lista de categorías y de productos.
@@ -94,7 +95,7 @@ class TestPackage116Stage4bSheet(TestWorksheetV18):
         self.assertTrue(all('zone' not in rule for rule in rules))
         marks = sheets['BOM']['conditionalFormats']
         self.assertEqual({cf['rule']['style']['fillColor'] for cf in marks},
-                         {'#F4CCCC', '#FCE5CD'})
+                         {'#F6E1E4', '#FCE5CD', '#F4F2EF'})
 
     def test_rows_and_extension(self):
         self.assertEqual(self.site.construction_spreadsheet_rows, 0, 'automático')

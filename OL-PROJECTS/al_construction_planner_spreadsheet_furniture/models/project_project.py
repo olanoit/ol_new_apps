@@ -35,16 +35,23 @@ from odoo.addons.al_construction_planner_spreadsheet.models.sheet_migration impo
     first_part, last_part, second_part,
 )
 
+from . import sheet_design as design
+
 SPREADSHEET_VERSION = '18.5.10'
 REFERENCE_SHEET = 'REFERENCIAS'
 LISTS_SHEET = '_LISTAS'
 HEADER_STYLE, TITLE_STYLE, CALC_STYLE, DATA_STYLE = 1, 2, 3, 4
+HEAD_DATA_STYLE, HEAD_CALC_STYLE, CELL_DATA_STYLE, CELL_CALC_STYLE = 5, 6, 7, 8
+HEADER_BORDER_ID = 1
 # Convención común de las hojas de trabajo (paquete 1.16, M116-09): amarillo
-# para el dato del usuario y gris para la fórmula.
-STYLES = {str(HEADER_STYLE): {'bold': True, 'fillColor': '#DDE4EE'},
-          str(TITLE_STYLE): {'bold': True, 'fontSize': 12},
-          str(CALC_STYLE): {'bold': True, 'fillColor': '#D9D9D9'},
-          str(DATA_STYLE): {'bold': True, 'fillColor': '#FFF2CC'}}
+# para el dato del usuario y gris para la fórmula, con la paleta de M117-23.
+STYLES = {str(HEADER_STYLE): {'bold': True, 'fillColor': design.HEADER_CALC_COLOR},
+          str(TITLE_STYLE): {'bold': True, 'fontSize': 16},
+          str(CALC_STYLE): {'bold': True, 'fillColor': design.CELL_CALC_COLOR,
+                            'textColor': design.CELL_CALC_TEXT},
+          str(DATA_STYLE): {'bold': True, 'fillColor': design.CELL_DATA_COLOR},
+          str(HEAD_DATA_STYLE): design.HEADER_DATA, str(HEAD_CALC_STYLE): design.HEADER_CALC,
+          str(CELL_DATA_STYLE): design.CELL_DATA, str(CELL_CALC_STYLE): design.CELL_CALC}
 # El producto se elige por nombre, con la unidad y el código al final
 # (M116-09): «nombre · unidad · código». El código calculado lee el último
 # tramo; un «[código] nombre» de una hoja anterior se sigue leyendo.
@@ -133,6 +140,11 @@ CALCULATED = {
         ('Costo en la obra (calc.)', '=IF({c:product_code}{r}="","",IFERROR('
                                      '{c:#Costo de la línea (calc.)}{r}*%s,0))'
          % _IN_SITE),
+        # M117-02, punto 7: la etapa escrita o la de la categoría del producto;
+        # el envío usa la misma regla.
+        ('Etapa usada (calc.)', '=IF({c:stage}{r}<>"",{c:stage}{r},IF({c:product_code}{r}="","",'
+                                'IFERROR(VLOOKUP({c:product_code}{r},REFERENCIAS!$K$3:$X${p},14,0)'
+                                ',"")))'),
     ],
 }
 # Columna «Producto» (lista dependiente) y código calculado desde ella.
@@ -151,8 +163,11 @@ REF_GROUP = '=IF(N{r}="","",IF(%s>=2,%s,%s))' % (_COUNT, _SECOND, _FIRST)
 REF_LAST = '=IF(N{r}="","",%s)' % _LAST
 REF_SHORT = '=IF(N{r}="","",IF(%s>=3,Q{r}&" / "&R{r},R{r}))' % _COUNT
 # Marcas de la hoja (formato condicional nativo).
-UNKNOWN_FILL = '#F4CCCC'
-NO_COST_FILL = '#FCE5CD'
+UNKNOWN_STYLE = {'fillColor': design.ERROR_FILL, 'textColor': design.ERROR_TEXT}
+NO_COST_STYLE = {'fillColor': design.WARNING_FILL, 'textColor': design.WARNING_TEXT}
+GRAY_STYLE = {'fillColor': design.CELL_CALC_COLOR, 'textColor': design.CELL_CALC_TEXT}
+# M117-02, punto 5: los módulos de cada tipología, en un bloque de _LISTAS.
+TYPOLOGY_BLOCK = 500
 
 
 # Filas con fórmulas y listas de las pestañas cortas del maestro. Con una hoja
@@ -185,6 +200,33 @@ FIXED_LISTS = {
     ('MODULOS', 'ml_group'): ['Mueble bajo', 'Mueble alto', 'Mueble completo', 'Sin ML'],
     ('MUEBLES', 'ml_group'): ['Bajo', 'Alto', 'Completo', 'Otro'],
     ('TARIFAS', 'family'): ['Cocina y baño', 'Closet y cajones'],
+    # Paquete 1.17, Anexo A: los valores que aceptan la importación y el envío.
+    ('PIEZAS', 'piece_type'): ['COSTADO', 'BASE', 'TECHO', 'FONDO', 'PUERTA', 'FRENTE', 'TAPA',
+                               'REPISA', 'OTRO'],
+    ('ARBOL', 'unit_type'): ['Departamento', 'Nivel de dúplex', 'Ducto', 'Estacionamiento',
+                             'Área común', 'Depósito', 'Local', 'Piloto'],
+    ('VARIANTES', 'kind'): ['Color', 'Excluir', 'Metrado'],
+    ('ETO', 'type'): ['Bajo', 'Alto', 'Cajonera', 'Campana', 'Repisero', 'Otro'],
+    ('ETO', 'ml_group'): ['Mueble bajo', 'Mueble alto', 'Mueble completo', 'Sin ML'],
+    ('CATALOGO', 'stage'): ['Producción', 'Armado', 'Instalación', 'Acabado y entrega'],
+    ('CATALOGO', 'measure'): ['Módulo', 'ML', 'Ambiente'],
+    ('CATALOGO', 'ml_group'): ['Mueble bajo', 'Mueble alto', 'Mueble completo'],
+}
+# Paquete 1.17, Anexo A: listas que leen otra pestaña; no rechazan, porque se puede
+# escribir un valor que todavía no está en ella. {t} es la última fila de TIPOLOGIAS.
+_TYPOLOGY_LIST = "TIPOLOGIAS!$A$2:$A$501"
+_ACTIVITY_LIST = "REFERENCIAS!$A$3:$A$302"
+RANGE_LISTS = {
+    ('TIPOLOGIAS', 'variant_of'): _TYPOLOGY_LIST,
+    ('MUEBLES', 'typology'): _TYPOLOGY_LIST, ('MODULOS', 'typology'): _TYPOLOGY_LIST,
+    ('ACTIVIDADES', 'typology'): _TYPOLOGY_LIST, ('BOM', 'typology'): _TYPOLOGY_LIST,
+    ('PIEZAS', 'typology'): _TYPOLOGY_LIST, ('ARBOL', 'typology'): _TYPOLOGY_LIST,
+    ('VENTA', 'typology'): _TYPOLOGY_LIST,
+    ('MODULOS', 'activity'): _ACTIVITY_LIST, ('ACTIVIDADES', 'activity'): _ACTIVITY_LIST,
+    ('TARIFAS', 'activity'): _ACTIVITY_LIST, ('MO PROPIA', 'activity'): _ACTIVITY_LIST,
+    ('MODULOS', 'furniture'): 'MUEBLES!$B$2:$B$5000',
+    ('VENTA', 'contract'): 'CONTRATOS!$A$2:$A$500',
+    ('CONTRATOS', 'milestone_template'): 'HITOS!$A$2:$A$500',
 }
 LEEME = [
     'Hoja de trabajo de la oficina técnica (mobiliario)',
@@ -286,6 +328,12 @@ class ProjectProject(models.Model):
             # importador: la hoja lo usa para la lista de categorías).
             index = next(i for i, (key, _h) in enumerate(columns) if key == 'categ')
             columns.insert(index, ('categ_group', GROUP_HEADER))
+        order = design.COLUMN_ORDER.get(name)
+        if order:
+            # M117-02: el orden en pantalla; el libro de carga no cambia.
+            by_key = dict(columns)
+            columns = [(key, by_key[key]) for key in order if key in by_key] + [
+                column for column in columns if column[0] not in order]
         return columns
 
     def _construction_reference_counts(self):
@@ -326,9 +374,10 @@ class ProjectProject(models.Model):
         return groups, shorts
 
     # Pestañas con lista dependiente de materiales y su orden en _LISTAS:
-    # cada fila de datos usa 4 filas seguidas (categoría y producto de PIEZAS
-    # y de BOM), así una hoja ampliada sigue el mismo orden (M113-04).
-    HELPER_KINDS = (('PIEZAS', 'categ'), ('PIEZAS', 'prod'), ('BOM', 'categ'), ('BOM', 'prod'))
+    # cada fila de datos usa 6 filas seguidas (módulo, categoría y producto de
+    # PIEZAS y de BOM), así una hoja ampliada sigue el mismo orden (M113-04).
+    HELPER_KINDS = (('PIEZAS', 'categ'), ('PIEZAS', 'prod'), ('PIEZAS', 'mod'),
+                    ('BOM', 'categ'), ('BOM', 'prod'), ('BOM', 'mod'))
 
     def _construction_sheet_layout(self):
         """Lo que no depende de las filas: columnas y letras de cada pestaña,
@@ -354,7 +403,7 @@ class ProjectProject(models.Model):
         return {
             'sheets': sheets, 'last_product': n_products + 2, 'n_products': n_products,
             'n_groups': n_groups, 'n_shorts': n_shorts, 'width': width,
-            'last_col': _col(width), 'list_base': n_groups + n_shorts,
+            'last_col': _col(width), 'list_base': n_groups + n_shorts + TYPOLOGY_BLOCK,
             'stage_count': len(self.env['construction.stage']._offered_stages(self)),
         }
 
@@ -375,8 +424,9 @@ class ProjectProject(models.Model):
         """
         self.ensure_one()
         last_product = layout['last_product']
-        result = {name: {'cells': {}, 'rules': [], 'conditional': []} for name in SHEETS}
-        result[LISTS_SHEET] = {'cells': {}, 'rules': [], 'conditional': []}
+        result = {name: {'cells': {}, 'rules': [], 'conditional': [], 'formatting': []}
+                  for name in SHEETS}
+        result[LISTS_SHEET] = {'cells': {}, 'rules': [], 'conditional': [], 'formatting': []}
         if last < first:
             return result
 
@@ -394,6 +444,17 @@ class ProjectProject(models.Model):
             last = min(requested_last, sheet_capacity(name, requested_last - 1) + 1)
             if last < first:
                 continue
+            part['formatting'] = self._construction_row_formatting(name, info, first, last)
+            part['table_bottom'] = last - 1
+            part['conditional'].extend(self._construction_row_marks(name, letters, info, first, last))
+            for (sheet, key), target in RANGE_LISTS.items():
+                if sheet == name and key in letters:
+                    part['rules'].append({
+                        'id': '%s_%s_%s' % (name, key, first), 'isBlocking': False,
+                        'zone': zone(letters[key], first, last),
+                        'ranges': ['%s%s:%s%s' % (letters[key], first, letters[key], last)],
+                        'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                      'values': [target]}})
             for header, formula in info['calculated']:
                 col = info['calc_letters'][header]
                 template = sheet_formula(layout, name, formula)
@@ -408,7 +469,8 @@ class ProjectProject(models.Model):
                         'ranges': ['%s%s:%s%s' % (letters[key], first, letters[key], last)],
                         'criterion': {'type': 'isValueInList', 'values': values,
                                       'displayStyle': 'arrow'}})
-            if 'stage' in letters and layout['stage_count']:
+            if 'stage' in letters and layout['stage_count'] \
+                    and (name, 'stage') not in FIXED_LISTS:
                 part['rules'].append({
                     'id': '%s_stage_%s' % (name, first), 'isBlocking': False,
                     'zone': zone(letters['stage'], first, last),
@@ -434,7 +496,8 @@ class ProjectProject(models.Model):
                 'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
                               'values': ['%s!$A$1:$A$%s' % (LISTS_SHEET, layout['n_groups'])]}})
             for row in range(first, last + 1):
-                for kind, column in (('categ', letters['categ']), ('prod', pick)):
+                for kind, column in (('categ', letters['categ']), ('prod', pick),
+                                     ('mod', letters['module'])):
                     helper = self._construction_helper_row(layout, name, kind, row)
                     part['rules'].append({
                         'id': '%s_%s_%s' % (name, kind, row), 'isBlocking': False,
@@ -451,7 +514,7 @@ class ProjectProject(models.Model):
                     '=AND({c}{f}<>"",COUNTIF({ref}!$K$3:$K${p},{c}{f})=0,COUNTIF('
                     "'PRODUCTOS NUEVOS'!$A$2:$A${n},{c}{f})=0)".format(
                         c=code, f=first, ref=REFERENCE_SHEET, p=last_product, n=last)],
-                    'style': {'fillColor': UNKNOWN_FILL}}})
+                    'style': UNKNOWN_STYLE}})
             if 'Costo unitario (calc.)' in info['calc_letters']:
                 unit_cost = info['calc_letters']['Costo unitario (calc.)']
                 part['conditional'].append({
@@ -460,7 +523,7 @@ class ProjectProject(models.Model):
                     'rule': {'type': 'CellIsRule', 'operator': 'customFormula', 'values': [
                         '=AND({c}{f}<>"",{u}{f}<>"",{u}{f}=0)'.format(
                             c=code, f=first, u=unit_cost)],
-                        'style': {'fillColor': NO_COST_FILL}}})
+                        'style': NO_COST_STYLE}})
         last = requested_last
         # _LISTAS: las filas de lista de cada fila de datos.
         n_groups, n_shorts = layout['n_groups'], layout['n_shorts']
@@ -469,9 +532,17 @@ class ProjectProject(models.Model):
         shorts_zone = '$B$%s:$%s$%s' % (n_groups + 1, layout['last_col'], n_groups + n_shorts)
         short_names = '$A$%s:$A$%s' % (n_groups + 1, n_groups + n_shorts)
         list_cells = result[LISTS_SHEET]['cells']
+        typology_rows = (n_groups + n_shorts + 1, n_groups + n_shorts + TYPOLOGY_BLOCK)
+        modules_zone = '$B$%s:$%s$%s' % (typology_rows[0], layout['last_col'], typology_rows[1])
+        typology_names = '$A$%s:$A$%s' % typology_rows
         for name in PRODUCT_PICK:
             letters = layout['sheets'][name]['letters']
             for row in range(first, last + 1):
+                # M117-02, punto 5: solo los módulos de la tipología de la fila.
+                list_cells['A%s' % self._construction_helper_row(layout, name, 'mod', row)] = (
+                    '=IF({s}!{t}{r}="","",IFERROR(INDEX({zone},MATCH({s}!{t}{r},{names},0),0),'
+                    '""))').format(s=name, t=letters['typology'], r=row, zone=modules_zone,
+                                   names=typology_names)
                 # Sin grupo: todas las categorías; con grupo: las suyas.
                 list_cells['A%s' % self._construction_helper_row(layout, name, 'categ', row)] = (
                     '=IF({s}!{g}{r}="",IFERROR(TRANSPOSE({ref}!$W$3:$W${n}),""),IFERROR(INDEX('
@@ -483,6 +554,64 @@ class ProjectProject(models.Model):
                     '""))').format(s=name, c=letters['categ'], r=row, zone=shorts_zone,
                                    names=short_names)
         return result
+
+    @staticmethod
+    def _construction_row_formatting(name, info, first, last):
+        """Relleno y formato por columna de las filas ``first`` a ``last``
+        (M117-01): amarillo el dato, gris lo calculado. ``zone`` va desde 0."""
+        calculated = set(info['calc_letters'].values())
+        if name in PRODUCT_PICK:
+            calculated.add(info['letters']['product_code'])
+        result = []
+        for index, header in enumerate(info['headers']):
+            letter = _col(index)
+            kind = 'calc' if letter in calculated else 'data'
+            result.append({
+                'letter': letter, 'kind': kind,
+                'format': design.column_format(name, header),
+                'style': design.CELL_CALC if kind == 'calc' else design.CELL_DATA,
+                'zone': {'top': first - 1, 'bottom': last - 1, 'left': index, 'right': index},
+            })
+        return result
+
+    @staticmethod
+    def _construction_row_marks(name, letters, info, first, last):
+        """Formato condicional de la ficha de cada pestaña (Anexo A)."""
+        def mark(mark_id, ranges, formula, style):
+            return {'id': '%s_%s_%s' % (name, mark_id, first), 'ranges': ranges,
+                    'stopIfTrue': False,
+                    'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                             'values': [formula], 'style': style}}
+
+        def column(letter):
+            return '%s%s:%s%s' % (letter, first, letter, last)
+
+        marks = []
+        if name == 'TIPOLOGIAS':
+            code = letters['code']
+            marks.append(mark('code', [column(code)], (
+                '=AND({c}{f}<>"",OR(COUNTIF(${c}:${c},{c}{f})>1,COUNTIF(MODULOS!$A:$A,{c}{f})=0))'
+            ).format(c=code, f=first), UNKNOWN_STYLE))
+        elif name == 'ARBOL':
+            typology = letters['typology']
+            marks.append(mark('typology', [column(typology)], (
+                '=AND({c}{f}<>"",COUNTIF(MODULOS!$A:$A,{c}{f})=0)'
+            ).format(c=typology, f=first), UNKNOWN_STYLE))
+        elif name == 'HITOS':
+            template, pct = letters['template'], letters['pct']
+            marks.append(mark('total', [column(pct)], (
+                '=AND(${t}{f}<>"",ROUND(SUMIF(${t}:${t},${t}{f},${p}:${p}),2)<>100)'
+            ).format(t=template, p=pct, f=first), UNKNOWN_STYLE))
+        elif name == 'BOM':
+            # M117-02, punto 6: unidad y costo solo para un producto nuevo.
+            code, uom, cost = letters['product_code'], letters['uom'], letters['cost']
+            product_uom = info['calc_letters']['Unidad del producto (calc.)']
+            marks.append(mark('uom', [column(uom)], (
+                '=AND({u}{f}<>"",{p}{f}<>"",{u}{f}<>{p}{f})'
+            ).format(u=uom, p=product_uom, f=first), NO_COST_STYLE))
+            marks.append(mark('known', [column(uom), column(cost)],
+                              '=${p}{f}<>""'.format(p=product_uom, f=first), GRAY_STYLE))
+        return marks
 
     def _construction_summary(self, layout, rows, sheet_ids):
         """RESUMEN: tablas dinámicas sobre la propia hoja y sus fórmulas, para
@@ -572,20 +701,37 @@ class ProjectProject(models.Model):
         for index, (name, info) in enumerate(layout['sheets'].items(), start=1):
             headers = info['headers']
             cells = {'%s1' % _col(i): header for i, header in enumerate(headers)}
-            styles = {'%s1' % _col(i): DATA_STYLE for i in range(len(info['columns']))}
+            styles = {'%s1' % _col(i): HEAD_DATA_STYLE for i in range(len(info['columns']))}
             for letter in info['calc_letters'].values():
-                styles['%s1' % letter] = CALC_STYLE
+                styles['%s1' % letter] = HEAD_CALC_STYLE
             if name in PRODUCT_PICK:
-                styles['%s1' % info['letters']['product_code']] = CALC_STYLE
+                styles['%s1' % info['letters']['product_code']] = HEAD_CALC_STYLE
             cells.update(parts[name]['cells'])
+            # M117-01 y M117-23: relleno y formato en todas las filas de datos.
+            cell_formats = {}
+            for item in parts[name]['formatting']:
+                ref = '%s%s:%s%s' % (item['letter'], item['zone']['top'] + 1,
+                                     item['letter'], item['zone']['bottom'] + 1)
+                styles[ref] = CELL_CALC_STYLE if item['kind'] == 'calc' else CELL_DATA_STYLE
+                if item['format']:
+                    cell_formats[ref] = formats.setdefault(item['format'], len(formats) + 1)
             key_columns[name] = [(key, i) for i, (key, _h) in enumerate(info['columns'])]
             sheet_id = sheet_ids[name]
+            design_info = design.SHEET_DESIGN.get(name, {})
+            table = design.table_config(name)
+            last_col = _col(len(headers) - 1)
             sheets.append({
                 'id': sheet_id, 'name': name, 'colNumber': max(26, len(headers)),
                 'rowNumber': rows + 50, 'cells': cells, 'styles': styles,
-                'cols': {str(i): {'size': max(110, 9 * len(header))}
+                'formats': cell_formats,
+                'borders': {'A1:%s1' % last_col: HEADER_BORDER_ID},
+                'cols': {str(i): {'size': design.column_width(name, header)}
                          for i, header in enumerate(headers)},
-                'panes': {'xSplit': 0, 'ySplit': 1},
+                'rows': {'0': {'size': design.HEADER_HEIGHT}},
+                'panes': {'xSplit': design_info.get('freeze', 0), 'ySplit': 1},
+                'tables': [{'range': 'A1:%s%s' % (
+                    last_col, parts[name].get('table_bottom', rows) + 1),
+                    'type': 'static', 'config': table}] if table else [],
                 'dataValidationRules': [{k: v for k, v in rule.items() if k != 'zone'}
                                         for rule in parts[name]['rules']],
                 'conditionalFormats': parts[name]['conditional'],
@@ -622,6 +768,12 @@ class ProjectProject(models.Model):
                 'domain': domain, 'context': {}, 'orderBy': [{'name': order, 'asc': True}],
                 'fieldMatching': {},
             }
+        # Etapa por defecto de la categoría de cada producto (X, M117-02).
+        lists['3']['columns'] = lists['3']['columns'] + ['construction_default_stage_label']
+        cells['X2'] = 'Etapa de la categoría'
+        styles['X2'] = HEADER_STYLE
+        for row in range(1, n_products + 1):
+            cells['X%s' % (row + 2)] = '=ODOO.LIST(3,%s,"construction_default_stage_label")' % row
         # Categoría de cada producto (M113-06): ruta corta (O), grupo (Q),
         # último nivel (R) y si está dentro de la raíz de materiales (S).
         root = self._construction_material_root()
@@ -687,6 +839,16 @@ class ProjectProject(models.Model):
                 '{w}!$B$2:$B${m}=A{i}),%s),%s))),""))' % (catalog, catalog)).format(
                 i=row, ref=ref, p=last_product, w=sheet_ref(WORK_MATERIALS_SHEET),
                 m=WORK_MATERIALS_ROWS + 1)
+        # Módulos de cada tipología (M117-02, punto 5): una fila por tipología,
+        # con su FILTER, y cada fila de datos la busca con INDEX/MATCH.
+        modules = layout['sheets']['MODULOS']['letters']
+        for index in range(1, TYPOLOGY_BLOCK + 1):
+            row = n_groups + n_shorts + index
+            list_cells['A%s' % row] = '=IF(TIPOLOGIAS!$A{t}="","",TIPOLOGIAS!$A{t})'.format(
+                t=index + 1)
+            list_cells['B%s' % row] = (
+                '=IF(A{i}="","",IFERROR(TRANSPOSE(FILTER(MODULOS!${c}:${c},MODULOS!${t}:${t}=A{i}'
+                ')),""))').format(i=row, c=modules['code'], t=modules['typology'])
         list_cells.update(parts[LISTS_SHEET]['cells'])
         sheets.append({'id': 'sheet_listas', 'name': LISTS_SHEET,
                        'colNumber': layout['width'] + 2,
@@ -703,11 +865,19 @@ class ProjectProject(models.Model):
 
         # Clave interna de cada columna del maestro (M116-09).
         sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))
+        # M117-16, punto 8, y M117-23, punto 10: orden y color de las pestañas.
+        positions = {name: index for index, name in enumerate(design.SHEET_ORDER)}
+        sheets.sort(key=lambda sheet: positions.get(sheet['name'], len(positions)))
+        for sheet in sheets:
+            if sheet['name'] in design.TAB_COLORS:
+                sheet['color'] = design.TAB_COLORS[sheet['name']]
         settings = self.env['documents.document']._empty_spreadsheet_data().get('settings', {})
         return {
             'version': SPREADSHEET_VERSION,
             'sheets': sheets,
             'styles': STYLES,
+            'borders': {str(HEADER_BORDER_ID): design.HEADER_BORDER},
+            'customTableStyles': design.TABLE_STYLES,
             'formats': {str(format_id): text for text, format_id in formats.items()},
             'settings': settings,
             'lists': lists,
@@ -732,9 +902,15 @@ class ProjectProject(models.Model):
         return {
             'id': 'sheet_materiales_obra', 'name': WORK_MATERIALS_SHEET, 'colNumber': 8,
             'rowNumber': WORK_MATERIALS_ROWS + 10, 'cells': cells,
-            'styles': {'A1': DATA_STYLE, 'B1': CALC_STYLE, 'C1': CALC_STYLE},
-            'cols': {'0': {'size': 380}, '1': {'size': 220}, '2': {'size': 120}},
-            'panes': {'xSplit': 0, 'ySplit': 1},
+            'styles': {'A1': HEAD_DATA_STYLE, 'B1': HEAD_CALC_STYLE, 'C1': HEAD_CALC_STYLE,
+                       'A2:A%s' % (WORK_MATERIALS_ROWS + 1): CELL_DATA_STYLE,
+                       'B2:C%s' % (WORK_MATERIALS_ROWS + 1): CELL_CALC_STYLE},
+            'borders': {'A1:C1': HEADER_BORDER_ID},
+            'cols': {'0': {'size': 395}, '1': {'size': 200}, '2': {'size': 105}},
+            'rows': {'0': {'size': design.HEADER_HEIGHT}},
+            'panes': {'xSplit': 1, 'ySplit': 1},
+            'tables': [{'range': 'A1:C%s' % (WORK_MATERIALS_ROWS + 1), 'type': 'static',
+                        'config': design.table_config(WORK_MATERIALS_SHEET)}],
             'dataValidationRules': [{
                 'id': 'work_materials', 'isBlocking': False,
                 'ranges': ['A2:A%s' % (WORK_MATERIALS_ROWS + 1)],

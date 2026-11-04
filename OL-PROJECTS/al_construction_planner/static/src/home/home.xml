@@ -62,6 +62,27 @@
                                 </t>
                             </tbody>
                         </table>
+                        <t t-if="unplanned.length">
+                            <h5 class="mt-4 mb-2">Por planificar</h5>
+                            <table class="table table-sm table-hover align-middle o_cp_home_unplanned">
+                                <thead>
+                                    <tr><th>Obra</th><th>Venta</th><th>Hoja de planificación</th><th/></tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="unplanned" t-as="work" t-key="work.project_id">
+                                        <td class="fw-bold" t-esc="work.project_name"/>
+                                        <td t-esc="work.sale or '—'"/>
+                                        <td t-esc="work.sheet_state or '—'"/>
+                                        <td class="text-end">
+                                            <button t-foreach="work.actions" t-as="action" t-key="action.method"
+                                                    class="btn btn-sm btn-secondary o_cp_home_unplanned_action"
+                                                    t-on-click="() => this.runUnplanned(work, action)"
+                                                    t-esc="action.label"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
                     </div>
                     <div class="col-12 col-xl-4">
                         <div class="card o_cp_home_pending">

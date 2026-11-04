@@ -1,4 +1,4 @@
-import { registries } from "@odoo/o-spreadsheet";
+import { helpers, registries } from "@odoo/o-spreadsheet";
 import { _t } from "@web/core/l10n/translation";
 import {
     ERRORS_SHEET,
@@ -63,6 +63,18 @@ function applyExtension(model, extension) {
         for (const [ref, content] of Object.entries(part.cells)) {
             commands.push(["UPDATE_CELL", { sheetId, ...parseRef(ref), content }]);
         }
+        // M117-01 y M117-23: el mismo relleno y formato de la plantilla.
+        for (const item of part.formatting || []) {
+            commands.push([
+                "SET_FORMATTING",
+                {
+                    sheetId,
+                    target: [item.zone],
+                    style: item.style,
+                    ...(item.format ? { format: item.format } : {}),
+                },
+            ]);
+        }
         for (const rule of part.rules) {
             commands.push([
                 "ADD_DATA_VALIDATION_RULE",
@@ -73,15 +85,36 @@ function applyExtension(model, extension) {
                 },
             ]);
         }
+        // La hoja de Odoo 19 exige los rangos con su pestaña y rechaza el comando
+        // sin aviso si llegan como texto (M117-05). Van sueltos, fuera del lote,
+        // para ver su resultado.
         for (const cf of part.conditional) {
-            commands.push([
-                "ADD_CONDITIONAL_FORMAT",
-                {
-                    sheetId,
-                    cf: { id: cf.id, rule: cf.rule, stopIfTrue: cf.stopIfTrue },
-                    ranges: cf.ranges,
-                },
-            ]);
+            const result = model.dispatch("ADD_CONDITIONAL_FORMAT", {
+                sheetId,
+                cf: { id: cf.id, rule: cf.rule, stopIfTrue: cf.stopIfTrue },
+                ranges: cf.ranges.map((xc) =>
+                    getters.getRangeDataFromZone(sheetId, helpers.toZone(xc))
+                ),
+            });
+            if (!result.isSuccessful) {
+                console.warn(`La hoja rechazó la marca ${cf.id} de ${name}:`, result.reasons);
+            }
+        }
+        // La tabla nativa crece con las filas.
+        const table = part.table_bottom !== undefined && getters.getCoreTables(sheetId)[0];
+        if (table) {
+            const zone = table.range.zone;
+            const result = model.dispatch("UPDATE_TABLE", {
+                sheetId,
+                zone,
+                newTableRange: getters.getRangeDataFromZone(sheetId, {
+                    ...zone,
+                    bottom: Math.max(zone.bottom, part.table_bottom),
+                }),
+            });
+            if (!result.isSuccessful) {
+                console.warn(`La hoja rechazó ampliar la tabla de ${name}:`, result.reasons);
+            }
         }
     }
     const summaryId = getters.getSheetIdByName("RESUMEN");
@@ -228,6 +261,15 @@ export async function ensureCapacity(env, needed) {
     }
     const target = Math.ceil(needed * 1.1);
     const extension = await env.constructionCall("construction_sheet_extension", target);
+    if (extension && extension.needs_upgrade) {
+        env.constructionNotify(
+            _t(
+                "Antes de ampliar esta hoja, actualícela con Planificación de obra › Actualizar a la plantilla vigente."
+            ),
+            "warning"
+        );
+        return false;
+    }
     if (extension && extension.rows) {
         applyExtension(env.model, extension);
         env.constructionSetSheetRows(extension.rows);

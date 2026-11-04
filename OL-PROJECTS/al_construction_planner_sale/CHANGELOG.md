@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261104 — 04/11/2026
+
+- M117-09: la venta de la obra en «Por planificar» de Inicio.
+
 ## 18.20261101 — 01/11/2026
 
 - CR-23: el envío del libro de APU y presupuesto con «Reemplazar» ya no borra las copias de líneas manuales.

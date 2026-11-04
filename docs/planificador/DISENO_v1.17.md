@@ -93,6 +93,49 @@ Las hojas ya creadas toman el rechazo con «Actualizar a la plantilla vigente».
   compras, por donde pasan los dos motores de aprobación solo cuando la aprobación
   es definitiva.
 
+## 3b. Entrega 2
+
+### Diseño de la hoja de planificación (M117-01, M117-23)
+
+`sheet_design.py` tiene la ficha de cada pestaña; la plantilla, la ampliación y
+«Actualizar a la plantilla vigente» aplican lo mismo. `construction_sheet_layout`
+pasa a 2 en la hoja de planificación: una hoja anterior tiene las columnas y
+`_LISTAS` en otro orden, así que la ampliación pide actualizarla antes.
+
+Diferencias con el Anexo A, para que Vicente las acepte o las devuelva:
+
+| Ficha | Qué se hizo | Por qué |
+|---|---|---|
+| Porcentajes con formato `0%` (TARIFAS, CONTRATOS, HITOS) | Formato `0"%"` | El envío lee 30, no 0.30. Con `0%`, 30 se vería como 3000 %, y cambiar la lectura rompería los libros de carga |
+| Línea superior al cambiar de tipología o de módulo (MODULOS, BOM) | No se hizo | El formato condicional de la hoja no admite bordes |
+| Mueble de MODULOS «de la misma tipología» | Lista de todos los muebles de MUEBLES | Son pocos nombres que se repiten; una lista por fila agrega seis filas de `_LISTAS` a cada fila de datos |
+| «Resumen del piso» (ARBOL) como columna fija | La sigue creando `floor_groups.js` al agrupar | Su presencia indica que la hoja está agrupada |
+| Listas de Odoo: Cliente, Contratista, Unidad y Categoría de PRODUCTOS NUEVOS | Pendientes para la entrega 3 | Necesitan listas nuevas en REFERENCIAS, con costo al abrir la hoja |
+| Páginas INICIO, FICHA, PROGRAMA, CONTROL | Solo la paleta | Su ruta y sus bloques nuevos son de M117-16, en la entrega 3 |
+| Pestañas PARAMETROS, ACABADOS DE OBRA, VENDIDO; columnas nuevas de CONTRATOS; «Clase (calc.)» | No existen todavía | Son de las entregas 3 y 4 |
+
+El nombre visible del estilo de tabla es «Hoja de trabajo», sin el nombre del
+cliente, porque el repositorio es público.
+
+### Orden de columnas y listas (M117-02)
+
+El orden en pantalla (`COLUMN_ORDER`) no toca `SHEETS`: el libro de carga y el
+importador no cambian. Los módulos por tipología siguen el patrón de las
+categorías: una fila de `_LISTAS` por tipología, con su `FILTER`, y cada fila de
+datos la busca con `INDEX`/`MATCH`.
+
+### «Traer de Odoo» (M117-07)
+
+Con recetas por módulo no se escribe ninguna línea de la receta de la tipología:
+es la suma redondeada de los módulos. **Consecuencia:** una línea agregada a mano
+a esa receta en Fabricación tampoco se trae; ya hoy «Validar» la rechaza porque no
+llegaría al plan.
+
+### Inicio (M117-09)
+
+`project.project._construction_home_extra` es el gancho del núcleo: el puente de
+la hoja aporta su estado y su acción, y el de ventas, la venta.
+
 ## 4. Pruebas
 
 Bases autorizadas para el paquete: `test_pe_construction_core` (núcleo y

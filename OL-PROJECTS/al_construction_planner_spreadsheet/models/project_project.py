@@ -117,6 +117,9 @@ PRESUPUESTO_UOM_FORMULA = '=IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code}
 # creadas antes tienen el código en la columna A (``construction_sheet_layout``
 # 0 o 1); «Traer de Odoo» les escribe las fórmulas de su orden.
 BUDGET_LAYOUT = 2
+# Hoja de planificación: desde el 2, BOM y PIEZAS en el orden del paquete 1.17
+# (M117-02) y _LISTAS con los módulos por tipología.
+FURNITURE_LAYOUT = 2
 # Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
 FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
                 ('profit', 'Utilidad %'), ('discount', 'Descuento %')]
@@ -336,6 +339,19 @@ class ProjectProject(models.Model):
         data = self._construction_budget_spreadsheet_data(order, self)
         return data, self.env._('Presupuesto y plan · %s', self.name)
 
+    def _construction_home_extra(self):
+        """M117-09: estado de la hoja de la obra y su acción en Inicio."""
+        result = super()._construction_home_extra()
+        document = self.construction_sheet_document_id
+        selection = dict(document._fields['construction_sheet_state']._description_selection(
+            self.env))
+        result['sheet_state'] = selection.get(document.construction_sheet_state, '') \
+            if document else self.env._('Sin hoja')
+        result['actions'] = result['actions'] + [{
+            'label': self.env._('Abrir hoja') if document else self.env._('Crear hoja'),
+            'method': 'action_construction_open_spreadsheet'}]
+        return result
+
     def action_construction_open_spreadsheet(self):
         """Abre la hoja de trabajo de la obra; la crea la primera vez. Si la
         obra viene de una cotización con hoja, es la misma."""
@@ -362,7 +378,7 @@ class ProjectProject(models.Model):
                                                DEFAULT_ROWS, 10),
                 'construction_sale_order_id': self.construction_sale_order_id.id
                 if kind == 'budget' else False,
-                'construction_sheet_layout': BUDGET_LAYOUT if kind == 'budget' else 0,
+                'construction_sheet_layout': BUDGET_LAYOUT if kind == 'budget' else FURNITURE_LAYOUT,
             }
             folder = self['documents_folder_id'] if 'documents_folder_id' in self._fields \
                 else False

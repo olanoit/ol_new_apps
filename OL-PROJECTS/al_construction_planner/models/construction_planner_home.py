@@ -58,6 +58,17 @@ class ConstructionPlannerHome(models.AbstractModel):
             })
         return works
 
+    def _get_unplanned_works(self):
+        """Paquete 1.17, M117-09: las obras todavía sin plan, la más antigua
+        primero. Lo que aporta cada puente sale del gancho de la obra."""
+        Plan = self.env['construction.resource.plan']
+        planned = Plan.search([('state', 'not in', ('cancel', 'replaced'))]).project_id
+        projects = self.env['project.project'].search([
+            ('is_construction_site', '=', True), ('id', 'not in', planned.ids),
+            ('is_template', '=', False)], order='create_date, id')
+        return [dict(project._construction_home_extra(), project_id=project.id,
+                     project_name=project.display_name) for project in projects]
+
     @api.model
     def _next_milestone(self, project, plan, today):
         """El hito más cercano desde hoy entre corte, presentación,
@@ -197,6 +208,7 @@ class ConstructionPlannerHome(models.AbstractModel):
             'today': fields.Date.to_string(today),
             'today_label': format_date(self.env, today, date_format='EEEE dd/MM/yyyy'),
             'works': self._get_works(today),
+            'unplanned': self._get_unplanned_works(),
             'pending': self._get_pending(today),
             'can_plan': self.env.user.has_group(GROUP + 'planner'),
             # El cronograma valorizado es del puente de ventas.

@@ -68,6 +68,11 @@ Al abrir **Planificación de obra**, el **Inicio** muestra:
 - **Pendientes de hoy**: lo que el usuario tiene que atender según sus grupos.
   Cada fila abre la lista filtrada.
 
+Las obras todavía sin plan salen en **Por planificar**, la más antigua primero,
+con su venta y el estado de su hoja de planificación. **Crear hoja** o **Abrir
+hoja** la abre en un clic. La ficha de la obra también tiene el botón **Hoja de
+trabajo**, en la sección **Controlar**.
+
 ![Inicio de la aplicación con las obras y los pendientes de hoy](valued_schedule/planner-home.png)
 
 Cada grupo ve sus pendientes: el supervisor, los avances y liquidaciones por

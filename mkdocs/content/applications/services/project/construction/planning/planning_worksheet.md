@@ -85,21 +85,51 @@ calculadas son el código del producto, los m² de la pieza (PIEZAS) y el costo
 de la línea con el costo vivo del maestro (BOM); su encabezado va con fondo
 verde.
 
+### Cómo se ve la hoja
+
+Toda celda amarilla la llena usted; toda celda gris la calcula la hoja. Cada
+pestaña de datos es una tabla con filtro en el encabezado, salvo ARBOL, que se
+agrupa por piso. Al desplazarse a la derecha siguen a la vista las columnas que
+identifican la fila: en BOM y PIEZAS, hasta **Producto**.
+
+Si la hoja ya existía, **Planificación de obra ‣ Actualizar a la plantilla
+vigente** le aplica este diseño y este orden de columnas sin tocar sus datos. Una
+hoja anterior se actualiza antes de ampliar sus filas: la ampliación lo pide.
+
 ### Elegir los materiales
 
-En PIEZAS y BOM, el material se elige en dos pasos:
+En BOM y PIEZAS, cada fila se llena de izquierda a derecha:
 
-1. En **Categoría**, elija la categoría de último nivel del maestro (por
-   ejemplo, «1011 TABLEROS»).
-2. En **Producto**, elija el producto: la lista muestra solo los de esa
-   categoría, con su código y su nombre completo, y se puede escribir para
-   buscar. Los productos nuevos del maestro aparecen en la lista de su
-   categoría.
+1. **Tipología** y **Módulo**. La lista de módulos muestra solo los de esa
+   tipología.
+2. **Grupo de categoría**, **Categoría** y **Producto**. Cada lista depende de la
+   anterior, y en **Producto** se puede escribir para buscar. Los materiales de la
+   obra (MATERIALES OBRA) van primero.
+3. **Cantidad**.
+
+**Unidad** y **Costo unitario** son solo para un producto nuevo: si el producto
+existe en el maestro quedan en gris, y una unidad distinta de la del producto se
+marca en ámbar.
+
+Si **Etapa de consumo** queda vacía, la columna **Etapa usada** muestra la de la
+categoría del producto, y el envío usa la misma. Se configura en
+**Inventario ‣ Configuración ‣ Categorías de productos**, en **Etapa de consumo
+por defecto**; sin valor, vale la de la categoría superior.
+
+Un código que no está en el maestro se ve en rojo y un producto con costo 0, en
+ámbar, en cualquier fila de la hoja.
 
 La familia, el tipo de módulo, el método de unión, el grupo ML, la familia de
 la tarifa y la sub etapa también se eligen de una lista. Las listas fijas rechazan al
 escribir un valor que no está en la lista, para que no llegue a **Validar** ni al
-envío. En una hoja ya creada, se activa con **Actualizar a la plantilla vigente**.
+envío.
+
+### Traer los datos del planificador
+
+**Planificación de obra ‣ Traer de Odoo** escribe en la hoja lo que la obra ya
+tiene en el planificador. Antes de escribir muestra cuántas filas son nuevas,
+cambian o quedan iguales en cada pestaña, y al confirmar guarda una versión. Lo
+traído se puede enviar otra vez sin corregirlo.
 
 ### Importar un Excel
 

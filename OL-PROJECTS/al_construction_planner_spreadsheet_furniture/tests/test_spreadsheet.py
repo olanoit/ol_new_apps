@@ -5,6 +5,7 @@ import json
 from odoo.exceptions import UserError
 from odoo.tests import new_test_user, tagged
 
+from ..models.sheet_design import SHEET_ORDER
 from odoo.addons.al_construction_planner_suite.tests.common import PlannerCommon
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
 
@@ -23,9 +24,9 @@ class TestConstructionSpreadsheet(PlannerCommon):
         names = [sheet['name'] for sheet in data['sheets']]
         # Paquete 1.13, M113-07 a 11: la hoja abre en INICIO y suma FICHA,
         # PROGRAMA, CONTROL y ERRORES.
-        self.assertEqual(names, ['INICIO', 'LEEME', 'RESUMEN'] + list(SHEETS) +
-                         ['MATERIALES OBRA', 'REFERENCIAS', '_LISTAS', 'FICHA', 'PROGRAMA',
-                          'CONTROL', 'ERRORES', '_CLAVES'])
+        # Paquete 1.17, M117-16: el orden de trabajo del analista.
+        self.assertEqual(names, [name for name in SHEET_ORDER if name in names])
+        self.assertLessEqual(set(SHEETS), set(names))
         arbol = next(sheet for sheet in data['sheets'] if sheet['name'] == 'ARBOL')
         self.assertEqual(arbol['cells']['A1'], SHEETS['ARBOL'][1][0][1])
         self.assertEqual({lst['model'] for lst in data['lists'].values()},

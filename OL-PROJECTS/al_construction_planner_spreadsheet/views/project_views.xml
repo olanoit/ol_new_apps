@@ -79,4 +79,26 @@
             </xpath>
         </field>
     </record>
+    <!-- Paquete 1.17, M117-09: la hoja desde la ficha del planificador. -->
+    <record id="project_project_view_form_construction_board_spreadsheet" model="ir.ui.view">
+        <field name="name">project.project.form.construction.board.spreadsheet</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_board"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='board_control']" position="inside">
+                <button name="action_construction_open_spreadsheet" type="object"
+                        class="oe_stat_button" icon="fa-table"
+                        groups="al_construction_planner.group_planner_plan_planner">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Hoja de trabajo</span>
+                        <span class="o_stat_text" invisible="not construction_sheet_document_id">
+                            v<field name="construction_sheet_version" readonly="1"/> ·
+                            <field name="construction_sheet_state" readonly="1"/>
+                        </span>
+                    </div>
+                    <field name="construction_sheet_document_id" invisible="1"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
 </odoo>

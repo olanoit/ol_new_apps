@@ -47,9 +47,9 @@ class TestPackage116Stage4Furniture(TestWorksheetV18):
         headers = {content: ref for ref, content in bom['cells'].items()
                    if re.fullmatch(r'[A-Z]+1', ref)}
         code_ref = headers['Código del producto']
-        self.assertEqual(styles[str(bom['styles'][code_ref])]['fillColor'], '#D9D9D9')
+        self.assertEqual(styles[str(bom['styles'][code_ref])]['fillColor'], '#E6E2DD')
         self.assertEqual(styles[str(bom['styles'][headers['Cantidad']])]['fillColor'],
-                         '#FFF2CC')
+                         '#FFDC00')
         self.assertNotIn('#E8F0E0', str(styles))
         # El código se lee del final de «nombre · unidad · código».
         self.assertIn('TEXTAFTER', bom['cells'][code_ref[:-1] + '2'])

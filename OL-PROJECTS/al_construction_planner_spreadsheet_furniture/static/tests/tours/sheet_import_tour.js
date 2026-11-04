@@ -138,6 +138,24 @@ registry.category("web_tour.tours").add("al_construction_furniture_sheet_import"
                 if (!sheetModel().getters.getSheetIdByName("FUENTES")) {
                     throw new Error("La pestaña FUENTES no se copió");
                 }
+                // M117-01, M117-05 y M117-23: las filas ampliadas (de 10 a 17)
+                // tienen la tabla, el relleno y las marcas de la plantilla.
+                const getters = sheetModel().getters;
+                const tree = getters.getSheetIdByName("ARBOL");
+                const position = { sheetId: tree, col: 3, row: 14 };
+                if (getters.getCellStyle(position).fillColor !== "#FFF7CC") {
+                    throw new Error("La fila ampliada no tiene el relleno del dato");
+                }
+                if (getters.getCoreTables(tree)[0].range.zone.bottom < 14) {
+                    throw new Error("La tabla no creció con las filas");
+                }
+                const bom = getters.getSheetIdByName("BOM");
+                const marks = getters.getConditionalFormats(bom).filter((cf) =>
+                    cf.ranges.some((xc) => /^[A-Z]+1[2-9]:/.test(xc))
+                );
+                if (marks.length < 2) {
+                    throw new Error("Las marcas de BOM no llegaron a las filas ampliadas");
+                }
             },
         },
         {

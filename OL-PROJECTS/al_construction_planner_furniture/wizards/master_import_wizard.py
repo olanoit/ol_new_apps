@@ -530,6 +530,9 @@ class ConstructionMasterImportWizard(models.TransientModel):
             else:
                 product_uom = product.uom_id
                 product_cost = product.standard_price
+                # M117-02, punto 7: sin etapa, la de la categoría del producto.
+                if not stage and product.categ_id:
+                    stage = product.categ_id._construction_default_stage().code or False
                 if uom and uom != product.uom_id:
                     # Unidades de distinto tipo no se convierten.
                     if uom._has_common_reference(product.uom_id):

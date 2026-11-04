@@ -9,6 +9,9 @@ from odoo.exceptions import UserError
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import (
     SHEETS, norm, sheet_key,
 )
+from odoo.addons.al_construction_planner_spreadsheet.models.project_project import (
+    FURNITURE_LAYOUT,
+)
 from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import KEYS_SHEET
 
 from .project_project import (
@@ -108,6 +111,7 @@ class DocumentsDocument(models.Model):
         self.write({
             'datas': base64.b64encode(json.dumps(data).encode()),
             'construction_sheet_rows': rows,
+            'construction_sheet_layout': FURNITURE_LAYOUT,
         })
         self._delete_collaborative_data()
         self.construction_project_id.sudo().message_post(
@@ -257,6 +261,10 @@ class DocumentsDocument(models.Model):
         project = self.construction_project_id
         if not current or rows <= current or self.construction_sheet_kind != 'furniture':
             return {}
+        # M117-02: las columnas y _LISTAS de una hoja anterior están en otro
+        # orden; la ampliación escribiría en las celdas equivocadas.
+        if self.construction_sheet_layout < FURNITURE_LAYOUT:
+            return {'needs_upgrade': True}
         layout = project._construction_sheet_layout()
         parts = project._construction_row_parts(layout, current + 2, rows + 1)
         result = {'rows': rows, 'sheets': {}, 'pivots': {}}
@@ -329,8 +337,8 @@ class DocumentsDocument(models.Model):
 
     def construction_furniture_odoo_rows(self):
         """«Traer de Odoo» del maestro: las pestañas con lo que tiene la obra,
-        en el formato de «Importar Excel a la hoja» (filas por clave). Guarda
-        una versión de la hoja antes de que la hoja escriba."""
+        en el formato de «Importar Excel a la hoja» (filas por clave). La
+        versión se guarda al confirmar la vista previa (M117-07)."""
         self.ensure_one()
         project = self.construction_project_id
         env = self.env
@@ -381,22 +389,25 @@ class DocumentsDocument(models.Model):
         # sudo: el planificador lee la BOM de la tipología, que no administra.
         bom_rows = []
         for typology in typologies:
-            in_modules = {}
+            by_module = False
             for module in typology.module_line_ids:
                 for material in module.material_ids:
-                    key = (material.product_id, material.stage or False)
-                    in_modules[key] = in_modules.get(key, 0.0) + material.qty
+                    by_module = True
                     bom_rows.append([typology.code, material.product_id.default_code or '',
                                      material.product_id.name or '', number(material.qty),
                                      material.uom_id.name or '',
                                      stage_labels.get(material.stage, ''), module.code])
+            # M117-07: con recetas por módulo, la receta de la tipología es su
+            # suma redondeada a la precisión de la unidad. La diferencia es
+            # redondeo y una línea sin módulo no llega al plan.
+            if by_module:
+                continue
             for line in typology.sudo().bom_id.bom_line_ids:
-                stage = line.construction_consumption_stage or False
-                qty = line.product_qty - in_modules.get((line.product_id, stage), 0.0)
-                if qty <= 1e-6:
+                if line.product_uom_id.is_zero(line.product_qty):
                     continue
+                stage = line.construction_consumption_stage or False
                 bom_rows.append([typology.code, line.product_id.default_code or '',
-                                 line.product_id.name or '', number(qty),
+                                 line.product_id.name or '', number(line.product_qty),
                                  line.product_uom_id.name or '',
                                  stage_labels.get(stage, ''), ''])
         add('BOM', ['typology', 'product_code', 'product_name', 'qty', 'uom', 'stage', 'module'],
@@ -417,7 +428,6 @@ class DocumentsDocument(models.Model):
         # El producto como lo elige la hoja y su categoría (M113-06).
         wizard = env['construction.spreadsheet.import.wizard'].new({'document_id': self.id})
         data = wizard._prepare({'sheets': sheets, 'other': {}})
-        self._construction_save_version(env._('Antes de traer los datos de Odoo'))
         return {'filename': env._('datos de Odoo'), 'mode': 'replace', 'expand_rows': True,
                 'keep_extra': False, 'sheets': data['sheets'], 'other': {},
                 'added_products': data['added_products']}

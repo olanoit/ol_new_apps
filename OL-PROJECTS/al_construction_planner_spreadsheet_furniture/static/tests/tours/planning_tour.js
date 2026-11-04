@@ -149,7 +149,7 @@ registry.category("web_tour.tours").add("al_construction_furniture_planning", {
                     ["INICIO", "B44", "Piso 2"],
                     ["INICIO", "D44", "Piso 2"],
                     ["INICIO", "E44", 1],
-                    ["BOM", "B2", "T4C-MEL"], // código desde «nombre · unidad · código»
+                    ["BOM", "J2", "T4C-MEL"], // código desde «nombre · unidad · código»
                     ["REFERENCIAS", "S2", "Material"],
                 ]);
                 if (!String(value("INICIO", "B7")).startsWith("Validada")) {

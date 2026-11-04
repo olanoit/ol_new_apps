@@ -183,8 +183,9 @@ class TestPackage116Stage4cSheet(TestWorksheetV18):
         before = self.env['documents.document'].search_count(
             [('construction_source_id', '=', document.id)])
         payload = document.construction_furniture_odoo_rows()
+        # M117-07: la versión se guarda al confirmar la vista previa, no al leer.
         self.assertEqual(self.env['documents.document'].search_count(
-            [('construction_source_id', '=', document.id)]), before + 1, 'versión antes')
+            [('construction_source_id', '=', document.id)]), before)
         sheets = payload['sheets']
 
         def records(name):

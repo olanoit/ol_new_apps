@@ -208,6 +208,13 @@ class ProjectProject(models.Model):
             vals['construction_level_line_id'] = line.id
         return vals
 
+    def _construction_home_extra(self):
+        """Lo que muestra Inicio de una obra sin plan: cada puente completa la
+        venta, el estado de la hoja y las acciones (métodos de la obra sin
+        argumentos), porque el núcleo no depende de ellos (M117-09)."""
+        self.ensure_one()
+        return {'sale': '', 'sheet_state': '', 'actions': []}
+
     def _construction_current_plan(self):
         """Plan vigente de la obra o, si aún no se aprobó ninguno, el que está
         en preparación."""

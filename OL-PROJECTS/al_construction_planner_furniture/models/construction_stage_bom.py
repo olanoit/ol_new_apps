@@ -22,7 +22,7 @@ Paquete 1.11: una lista sin operaciones recibe la de la estación de su etapa
 plan, para que plan y lista coincidan (M111-04)."""
 from collections import defaultdict
 
-from odoo import Command, fields, models
+from odoo import Command, api, fields, models
 from odoo.tools import float_round
 
 # La receta queda detrás de las listas de fabricación.
@@ -297,3 +297,38 @@ class ProjectProject(models.Model):
         return {'type': 'ir.actions.client', 'tag': 'display_notification',
                 'params': {'title': self.env._('Completar operaciones'), 'message': message,
                            'type': kind, 'sticky': False}}
+
+
+class ProductCategory(models.Model):
+    _inherit = 'product.category'
+
+    # Paquete 1.17, M117-02: la etapa de un material cuando su línea no la dice.
+    construction_default_stage_id = fields.Many2one(
+        'construction.stage', string='Etapa de consumo por defecto',
+        help='Etapa de un material de esta categoría cuando la línea de la lista de materiales '
+             'no la indica. Vacía: la de su categoría superior.')
+
+    def _construction_default_stage(self):
+        """La etapa de la categoría o de la más cercana hacia arriba."""
+        self.ensure_one()
+        category = self
+        while category:
+            if category.construction_default_stage_id:
+                return category.construction_default_stage_id
+            category = category.parent_id
+        return self.env['construction.stage']
+
+
+class ProductProduct(models.Model):
+    _inherit = 'product.product'
+
+    # Lo lee REFERENCIAS de la hoja de trabajo.
+    construction_default_stage_label = fields.Char(
+        string='Etapa de consumo por defecto', compute='_compute_construction_default_stage_label')
+
+    @api.depends('categ_id.construction_default_stage_id', 'categ_id.parent_id')
+    def _compute_construction_default_stage_label(self):
+        for product in self:
+            stage = product.categ_id._construction_default_stage() if product.categ_id \
+                else self.env['construction.stage']
+            product.construction_default_stage_label = stage._label() if stage else ''

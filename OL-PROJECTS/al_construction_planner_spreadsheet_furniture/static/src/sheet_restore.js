@@ -59,7 +59,7 @@ function readDataRows(model, name, keys) {
 }
 
 /** Las pestañas de datos, leídas de ``model``. */
-function readSheets(env, model) {
+export function readSheets(env, model) {
     const names = (env.constructionSendSheets() || []).filter((name) => !name.startsWith("_"));
     const keys = keyColumns(model);
     const sheets = {};
@@ -77,21 +77,17 @@ export function comparePreview(current, version) {
     const preview = [];
     for (const [name, spec] of Object.entries(version)) {
         const today = current[name] || { keys: [], rows: [] };
-        const position = today.keys.map((key) => spec.keys.indexOf(key));
-        const aligned = today.rows.map((row) => {
-            const values = spec.keys.map(() => "");
-            position.forEach((index, from) => {
-                if (index >= 0) {
-                    values[index] = row[from];
-                }
-            });
-            return JSON.stringify(values);
-        });
+        // Solo las claves que tienen las dos: una columna calculada de la hoja
+        // no se compara con el dato que trae el otro lado.
+        const shared = spec.keys.filter((key) => today.keys.includes(key));
+        const pick = (keys, row) =>
+            JSON.stringify(shared.map((key) => String(row[keys.indexOf(key)] ?? "")));
+        const aligned = today.rows.map((row) => pick(today.keys, row));
         let same = 0;
         let changed = 0;
         spec.rows.forEach((row, index) => {
             if (index < aligned.length) {
-                aligned[index] === JSON.stringify(row) ? same++ : changed++;
+                aligned[index] === pick(spec.keys, row) ? same++ : changed++;
             }
         });
         const added = Math.max(spec.rows.length - aligned.length, 0);
@@ -100,6 +96,44 @@ export function comparePreview(current, version) {
         preview.push({ name, added, changed, same, spec });
     }
     return preview;
+}
+
+/**
+ * Vista previa de «Traer de Odoo» (M117-07): cuántas filas trae cada pestaña y
+ * cuántas de la hoja reemplaza, antes de escribir.
+ */
+export class SheetPreviewDialog extends Component {
+    static components = { Dialog };
+    static props = ["close", "title", "intro", "rows", "confirm"];
+    static template = xml`
+        <Dialog title="props.title" size="'lg'">
+            <p t-esc="props.intro"/>
+            <table class="table table-sm o_main_table o_construction_sheet_preview">
+                <thead>
+                    <tr><th>Pestaña</th><th class="text-end">Nuevo</th>
+                        <th class="text-end">Cambia</th><th class="text-end">Igual</th></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="props.rows" t-as="row" t-key="row.name">
+                        <td t-esc="row.name"/>
+                        <td class="text-end" t-esc="row.added"/>
+                        <td class="text-end" t-esc="row.changed"/>
+                        <td class="text-end" t-esc="row.same"/>
+                    </tr>
+                </tbody>
+            </table>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary o_construction_preview_confirm"
+                        t-on-click="confirm">Confirmar</button>
+                <button class="btn btn-secondary" t-on-click="props.close">Cancelar</button>
+            </t>
+        </Dialog>
+    `;
+
+    async confirm() {
+        this.props.close();
+        await this.props.confirm();
+    }
 }
 
 class RestoreVersionDialog extends Component {

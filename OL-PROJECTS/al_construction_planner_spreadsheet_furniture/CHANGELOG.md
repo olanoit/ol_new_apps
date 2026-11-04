@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261104 — 04/11/2026
+
+- M117-01 y M117-23: tabla nativa con filtros, relleno por tipo de columna en todas las filas, anchos, formatos, columnas fijas, encabezado de tres líneas, color y orden de pestañas, también en las filas ampliadas y con «Actualizar a la plantilla vigente».
+- M117-02: BOM y PIEZAS con Tipología, Módulo, Grupo, Categoría y Producto juntos a la izquierda; la lista de Módulo muestra solo los de la tipología de la fila; unidad y costo en gris si el producto existe; «Etapa usada (calc.)».
+- M117-05: las marcas de código desconocido y costo 0 llegan a todas las filas.
+- M117-07: «Traer de Odoo» no escribe líneas sin módulo por el redondeo y muestra una vista previa antes de escribir.
+- Anexo A: listas nuevas de tipología, actividad, mueble, contrato, plantilla de hitos, tipo de pieza, tipo de unidad y tipo de variante.
+
 ## 9.20261104 — 04/11/2026
 
 - M117-03: «Importar Excel a la hoja» ya no escribe en las pestañas que arma la plantilla ni en las de la hoja de venta, y la revisión previa dice qué hace con cada una; MATERIALES OBRA importa solo el material; las columnas calculadas no se pisan.

@@ -46,6 +46,15 @@ export class ConstructionPlannerHome extends Component {
         return this.state.data?.works || [];
     }
 
+    get unplanned() {
+        return this.state.data?.unplanned || [];
+    }
+
+    async runUnplanned(work, action) {
+        const result = await this.orm.call("project.project", action.method, [[work.project_id]]);
+        await this.action.doAction(result);
+    }
+
     get pending() {
         return this.state.data?.pending || [];
     }

@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '71.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-09: Inicio muestra las obras sin plan en «Por planificar», la más antigua primero; lo que aporta cada puente sale del gancho _construction_home_extra."
   - version: '70.20261102'
     fecha: 02/11/2026
     cambios:

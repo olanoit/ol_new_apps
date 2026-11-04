@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261104 — 04/11/2026
+
+- M117-09: botón «Hoja de trabajo» en la sección Controlar de la ficha del planificador, con versión y estado, y estado de la hoja en «Por planificar» de Inicio.
+
 ## 14.20261104 — 04/11/2026
 
 - M117-04: vaciar una pestaña ya no quita sus listas desplegables, y las listas fijas rechazan al escribir un valor que no está en la lista.

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261104 — 04/11/2026
+
+- M117-02: «Etapa de consumo por defecto» en la categoría de producto: la usa una línea de BOM sin etapa al enviar al planificador.
+
 ## 21.20261101 — 01/11/2026
 
 - M116-01: «Generar plan» ofrece las etapas del perfil de la obra, sin lista fija.

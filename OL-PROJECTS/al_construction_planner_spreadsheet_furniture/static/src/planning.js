@@ -18,6 +18,7 @@ import {
     normText,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
 import { applyImport } from "./sheet_import";
+import { SheetPreviewDialog, comparePreview, readSheets } from "./sheet_restore";
 
 const { topbarMenuRegistry } = registries;
 
@@ -172,8 +173,22 @@ export async function updateControl(env, { quiet = false } = {}) {
 // ---------------------------------------------------------------------------
 async function bringFromOdoo(env) {
     const payload = await env.constructionCall("construction_furniture_odoo_rows");
-    await applyImport(env, payload, { logImport: false });
-    env.constructionNotify(_t("Datos de Odoo traídos a la hoja (versión anterior guardada)."));
+    const today = readSheets(env, env.model);
+    env.constructionDialog(SheetPreviewDialog, {
+        title: _t("Traer de Odoo"),
+        intro: _t(
+            "Antes de escribir, la hoja guarda una versión: se puede volver atrás con Restaurar versión."
+        ),
+        rows: comparePreview(today, payload.sheets),
+        confirm: async () => {
+            await env.constructionCall(
+                "construction_version_before",
+                _t("Antes de traer los datos de Odoo")
+            );
+            await applyImport(env, payload, { logImport: false });
+            env.constructionNotify(_t("Datos de Odoo traídos a la hoja (versión anterior guardada)."));
+        },
+    });
 }
 
 // ---------------------------------------------------------------------------
