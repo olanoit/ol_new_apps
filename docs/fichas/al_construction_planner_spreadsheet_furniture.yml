@@ -61,6 +61,13 @@ pasos:
     imagen: screenshots/04-importar.png
 
 novedades:
+  - version: '9.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-03: «Importar Excel a la hoja» ya no escribe en las pestañas que arma la plantilla ni en las de la hoja de venta, y la revisión previa dice qué hace con cada una; MATERIALES OBRA importa solo el material; las columnas calculadas no se pisan."
+      - "M117-03: «Restaurar versión» vuelve a una versión guardada con vista previa por pestaña, sin perder el vínculo con la obra; la importación termina con un resumen y un vínculo a ERRORES."
+      - "M117-04: las listas fijas sobreviven a la importación y rechazan el valor inválido."
+      - "M117-06: abrir la hoja después de un envío ya no da error y CONTROL se compara solo."
   - version: '8.20261101'
     fecha: 01/11/2026
     cambios:

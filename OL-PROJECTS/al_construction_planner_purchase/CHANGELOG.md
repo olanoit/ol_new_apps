@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261104 — 04/11/2026
+
+- M117-10: la regularización incluye los requerimientos «En aprobación»; un requerimiento «Sin plan» que se aprueba con plan vigente entra a ese plan con la misma regla, con los dos motores de aprobación, y su conversación y la del plan dicen cuántas líneas quedaron asignadas y cuántas en exceso.
+
 ## 21.20261101 — 01/11/2026
 
 - M114-01: al aprobar el plan, los requerimientos de obra pedidos sin plan se asignan a sus líneas; el exceso queda registrado con el motivo «Regularización de pedido sin plan». Filtro «Pedidos sin plan».

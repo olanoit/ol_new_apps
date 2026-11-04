@@ -38,6 +38,11 @@ funcionalidades:
   - "Las obras de mobiliario llenan su maestro con el puente de mobiliario."
 
 novedades:
+  - version: '14.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-04: vaciar una pestaña ya no quita sus listas desplegables, y las listas fijas rechazan al escribir un valor que no está en la lista."
+      - "M117-03: cada versión guarda la acción que la originó."
   - version: '13.20261101'
     fecha: 01/11/2026
     cambios:

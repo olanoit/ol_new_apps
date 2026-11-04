@@ -72,6 +72,8 @@ class DocumentsDocument(models.Model):
     construction_source_id = fields.Many2one(
         'documents.document', string='Hoja de trabajo vigente', readonly=True, copy=False,
         ondelete='set null', help='En una copia numerada: la hoja de la que se copió.')
+    construction_version_reason = fields.Char(
+        string='Acción que originó la versión', readonly=True, copy=False)
     construction_sheet_state = fields.Selection(
         SHEET_STATES, string='Estado de la hoja', default='draft', readonly=True, copy=False)
     construction_state_date = fields.Datetime(string='Fecha del estado', readonly=True,
@@ -344,6 +346,19 @@ class DocumentsDocument(models.Model):
             'Antes de una acción de planificación'))
         return copy.construction_version
 
+    def construction_versions(self):
+        """Versiones guardadas de la hoja para «Restaurar versión» (paquete
+        1.17, M117-03): la más reciente primero."""
+        self.ensure_one()
+        versions = self.search([('construction_source_id', '=', self.id)],
+                               order='construction_version desc, id desc')
+        return [{
+            'id': version.id, 'version': version.construction_version,
+            'date': fields.Datetime.context_timestamp(self, version.create_date).strftime(
+                '%d/%m/%Y %H:%M'),
+            'reason': version.construction_version_reason or '',
+        } for version in versions]
+
     def _construction_save_version(self, reason):
         copy, _message = self._construction_copy_version(reason)
         return {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {
@@ -363,6 +378,7 @@ class DocumentsDocument(models.Model):
             'folder_id': self.folder_id.id,
             'construction_source_id': self.id,
             'construction_version': version,
+            'construction_version_reason': reason,
         })
         self.construction_version = version + 1
         body = Markup('%s: <a href="#" data-oe-model="documents.document" data-oe-id="%s">%s</a>'

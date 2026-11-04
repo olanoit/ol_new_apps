@@ -176,6 +176,11 @@ final.
 | Un tramo sin aprobadores (grupo vacío o solo quien envía) | No se envía: corrija la ruta |
 | Obra sin plan vigente | El requerimiento no tiene con qué compararse y va directo al almacén |
 
+Un requerimiento pedido sin plan entra al plan en cuanto este se aprueba, aunque
+siga en aprobación. Si llega a aprobarse después, su conversación y la del plan
+dicen a qué plan quedó asignado y cuántas líneas quedaron en exceso. Quien aprueba
+no hace ningún paso adicional.
+
 !!! info "Ver también"
     - [Requerimientos de materiales](../material_requests.md)
     - [Asignaciones y compras](supply.md)

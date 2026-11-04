@@ -523,7 +523,7 @@ class ProjectProject(models.Model):
             'cols': {str(i): {'size': max(110, 8 * len(header))}
                      for i, header in enumerate(PRESUPUESTO_HEADERS)},
             'dataValidationRules': [{
-                'id': 'PRESUPUESTO_mode', 'isBlocking': False,
+                'id': 'PRESUPUESTO_mode', 'isBlocking': True,
                 'ranges': ['%s2:%s%s' % (mode, mode, last)],
                 'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
                               'values': LISTS['Modalidad']}}],
@@ -627,7 +627,7 @@ class ProjectProject(models.Model):
             rules = []
             for key, list_name in (('kind', 'Tipo de insumo'), ('mode', 'Modalidad')):
                 if key in letters:
-                    rules.append({'id': '%s_%s' % (name, key), 'isBlocking': False,
+                    rules.append({'id': '%s_%s' % (name, key), 'isBlocking': True,
                                   'ranges': ['%s2:%s%s' % (letters[key], letters[key], last)],
                                   'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
                                                 'values': LISTS[list_name]}})
@@ -683,7 +683,7 @@ class ProjectProject(models.Model):
                        'styles': {'%s1' % _col(i): DATA_STYLE for i in range(len(PLAN_COLUMNS))},
                        'panes': {'xSplit': 0, 'ySplit': 1},
                        'dataValidationRules': [{
-                           'id': 'plan_mode', 'isBlocking': False,
+                           'id': 'plan_mode', 'isBlocking': True,
                            'ranges': ['C2:C%s' % last],
                            'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
                                          'values': LISTS['Modalidad']}}]})

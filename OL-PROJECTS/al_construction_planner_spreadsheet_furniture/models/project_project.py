@@ -403,7 +403,7 @@ class ProjectProject(models.Model):
             for (sheet, key), values in FIXED_LISTS.items():
                 if sheet == name and key in letters:
                     part['rules'].append({
-                        'id': '%s_%s_%s' % (name, key, first), 'isBlocking': False,
+                        'id': '%s_%s_%s' % (name, key, first), 'isBlocking': True,
                         'zone': zone(letters[key], first, last),
                         'ranges': ['%s%s:%s%s' % (letters[key], first, letters[key], last)],
                         'criterion': {'type': 'isValueInList', 'values': values,

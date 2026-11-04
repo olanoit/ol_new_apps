@@ -179,9 +179,17 @@ class TestPackage116Stage4bTour(HttpCase):
             [('construction_project_id', '=', site.id)])
         rows = [_row('ARBOL', floor='Piso %02d' % (n // 4 + 2), apartment='Dpto %s' % n,
                      space='Cocina') for n in range(15)]
+        typology = _row('TIPOLOGIAS', code='COCINA 04', name='Cocina 04', family='Cocina')
         self.env['ir.attachment'].create({
             'name': 'al_sheet_import_tour.xlsx',
-            'datas': _book({'ARBOL': [_headers('ARBOL')] + rows}),
+            'datas': _book({
+                'ARBOL': [_headers('ARBOL')] + rows,
+                'TIPOLOGIAS': [_headers('TIPOLOGIAS'), typology],
+                # Paquete 1.17, M117-03: el libro viene de otra hoja de trabajo.
+                'INICIO': [['OBRA DE OTRA HOJA']],
+                '_LISTAS': [['LISTA DE OTRA HOJA']],
+                'FUENTES': [['Origen'], ['Proyección OT']],
+            }),
         })
         self.start_tour('/odoo', 'al_construction_furniture_sheet_import', login='admin')
         self.assertEqual(document.construction_sheet_rows, 17)
@@ -192,4 +200,8 @@ class TestPackage116Stage4bTour(HttpCase):
         self.assertIn('ADD_DATA_VALIDATION_RULE', types)
         self.assertIn('Dpto 14', json.dumps(commands, ensure_ascii=False),
                       sorted(types))
-        self.assertIn('Excel importado a la hoja', site.message_ids[0].body)
+        self.assertIn('Excel importado a la hoja', ''.join(site.message_ids.mapped('body')))
+        # Restaurar deja la hoja vinculada a su obra y guarda antes la de hoy.
+        self.assertEqual(document.construction_project_id, site)
+        self.assertEqual(self.env['documents.document'].search_count(
+            [('construction_source_id', '=', document.id)]), 2)

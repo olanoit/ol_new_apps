@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261104 — 04/11/2026
+
+- M117-03: «Importar Excel a la hoja» ya no escribe en las pestañas que arma la plantilla ni en las de la hoja de venta, y la revisión previa dice qué hace con cada una; MATERIALES OBRA importa solo el material; las columnas calculadas no se pisan.
+- M117-03: «Restaurar versión» vuelve a una versión guardada con vista previa por pestaña, sin perder el vínculo con la obra; la importación termina con un resumen y un vínculo a ERRORES.
+- M117-04: las listas fijas sobreviven a la importación y rechazan el valor inválido.
+- M117-06: abrir la hoja después de un envío ya no da error y CONTROL se compara solo.
+
 ## 8.20261101 — 01/11/2026
 
 - M113-01 a M113-03 y M116-09: «Validar» y «Enviar al planificador» en el menú «Planificación de obra»; con errores el envío lleva a ERRORES; se leen solo las pestañas del maestro; amarillo para el dato y gris para la fórmula.

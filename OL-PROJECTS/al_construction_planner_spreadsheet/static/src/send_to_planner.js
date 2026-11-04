@@ -138,14 +138,35 @@ export function writeRows(model, sheetId, rows, startRow) {
     dispatchBatch(model, commands);
 }
 
+/**
+ * Vacía las celdas con contenido de ``target`` (zonas) sin tocar sus listas
+ * (paquete 1.17, M117-04). No usa DELETE_CONTENT: en la hoja de Odoo 19 ese
+ * comando quita de una regla de lista de valores cada celda que ya estaba
+ * vacía, como la tecla Suprimir, y la regla termina por desaparecer.
+ */
+export function clearCells(model, sheetId, target) {
+    const getters = model.getters;
+    const commands = [];
+    for (const cellId of Object.keys(getters.getCells(sheetId))) {
+        const { col, row } = getters.getCellPosition(cellId);
+        const inside = target.some(
+            (zone) =>
+                row >= zone.top && row <= zone.bottom && col >= zone.left && col <= zone.right
+        );
+        if (inside && getters.getCell({ sheetId, col, row })?.content) {
+            commands.push(["UPDATE_CELL", { sheetId, col, row, content: "" }]);
+        }
+    }
+    dispatchBatch(model, commands);
+}
+
 /** Borra los datos de la pestaña desde la fila ``fromRow`` (0 = la primera). */
 export function clearData(model, sheetId, fromRow = 1) {
     const zone = model.getters.getSheetZone(sheetId);
     if (zone.bottom >= fromRow) {
-        model.dispatch("DELETE_CONTENT", {
-            sheetId,
-            target: [{ top: fromRow, bottom: zone.bottom, left: zone.left, right: zone.right }],
-        });
+        clearCells(model, sheetId, [
+            { top: fromRow, bottom: zone.bottom, left: zone.left, right: zone.right },
+        ]);
     }
 }
 
@@ -160,6 +181,7 @@ patch(SpreadsheetAction.prototype, {
     setup() {
         super.setup(...arguments);
         const notification = useService("notification");
+        const dialog = useService("dialog");
         useSubEnv({
             constructionSheetKind: () =>
                 this.data?.construction_project_id || this.data?.construction_sheet_kind
@@ -177,7 +199,9 @@ patch(SpreadsheetAction.prototype, {
                     this.data.construction_sheet_rows = rows;
                 }
             },
-            constructionNotify: (message, type = "success") => notification.add(message, { type }),
+            constructionNotify: (message, type = "success", options = {}) =>
+                notification.add(message, { type, ...options }),
+            constructionDialog: (component, props) => dialog.add(component, props),
             constructionOfferLocked: () => Boolean(this.data?.construction_offer_locked),
             constructionMetadata: (key) => this.data?.[key],
         });

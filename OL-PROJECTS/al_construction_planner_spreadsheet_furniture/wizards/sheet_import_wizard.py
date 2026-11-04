@@ -21,12 +21,31 @@ from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout 
     SHEETS, norm, sheet_key,
 )
 
-from ..models.project_project import CATEGORY_SEPARATOR, PICK_SEPARATOR, category_parts
+from ..models.documents_document import TEMPLATE_ONLY_SHEETS
+from ..models.project_project import (
+    CATEGORY_SEPARATOR, PICK_SEPARATOR, WORK_MATERIALS_SHEET, category_parts,
+)
 
 _logger = logging.getLogger(__name__)
 
 # Pestañas del libro que no se copian aunque no sean del maestro.
 SKIPPED_SHEETS = ('LEEME', 'README', 'INSTRUCCIONES')
+# Paquete 1.17, M117-03: pestañas que arma la plantilla o el sistema. Traerlas
+# como valores fijos dejaría la hoja con las listas y los datos de otra obra.
+PLAN_TEMPLATE_SHEETS = TEMPLATE_ONLY_SHEETS + ('VENDIDO',)
+# Pestañas de la hoja de venta: un libro suyo no se mezcla con la planificación.
+SALE_SHEETS = ('EDIFICIO', 'ACABADOS', 'TARIFARIO', 'PRECIOS', 'METRADO', 'RESUMEN VENTA')
+
+
+def _other_sheet_action(title):
+    """Qué hace la importación con una pestaña que no es del maestro: ``skip``,
+    ``template``, ``sale`` o ``copy``."""
+    name = norm(title).upper()
+    if name in SKIPPED_SHEETS:
+        return 'skip'
+    if name.startswith('_') or name in {norm(sheet).upper() for sheet in PLAN_TEMPLATE_SHEETS}:
+        return 'template'
+    return 'sale' if name in SALE_SHEETS else 'copy'
 
 
 def _cell(value):
@@ -69,6 +88,9 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
     def _sheet_columns(self, name):
         """[(clave, [textos aceptados])] de una pestaña: las del maestro y las
         que agrega la hoja (Producto, Grupo de categoría)."""
+        # M117-03: de MATERIALES OBRA solo el material; lo demás lo calcula la hoja.
+        if name == WORK_MATERIALS_SHEET:
+            return [('material', ['Material'])]
         columns = [(key, [header]) for key, header, _r, _h in SHEETS[name][1]]
         keys = {key for key, _t in columns}
         if name in ('PIEZAS', 'BOM'):
@@ -79,10 +101,11 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
 
     def _read_file(self):
         """``{'sheets': {pestaña: {'keys', 'rows', 'extra_headers',
-        'extra_rows'}}, 'other': {pestaña: filas}}``."""
+        'extra_rows'}}, 'other': {pestaña: filas}, 'ignored': {pestaña:
+        'template' o 'sale'}}``."""
         self.ensure_one()
         if not self.file:
-            return {'sheets': {}, 'other': {}}
+            return {'sheets': {}, 'other': {}, 'ignored': {}}
         content = self._file_content()
         try:
             from openpyxl import load_workbook
@@ -92,14 +115,19 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
             _logger.info('Libro no válido para la hoja de trabajo: %s', exc)
             raise UserError(self.env._('El archivo no es un libro Excel (.xlsx) válido.')) \
                 from exc
-        sheets, other = {}, {}
+        sheets, other, ignored = {}, {}, {}
         for worksheet in workbook.worksheets:
             rows = [list(row) for row in worksheet.iter_rows(values_only=True)]
             while rows and not any(value not in (None, '') for value in rows[-1]):
                 rows.pop()
             name = sheet_key(worksheet.title)
+            if not name and norm(worksheet.title) == norm(WORK_MATERIALS_SHEET):
+                name = WORK_MATERIALS_SHEET
             if not name:
-                if norm(worksheet.title).upper() not in SKIPPED_SHEETS and rows:
+                action = _other_sheet_action(worksheet.title)
+                if action in ('template', 'sale'):
+                    ignored[worksheet.title[:31]] = action
+                elif action == 'copy' and rows:
                     other[worksheet.title[:31]] = [[_cell(v) for v in row] for row in rows]
                 continue
             header = rows[0] if rows else []
@@ -112,7 +140,9 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
                 key = by_text.get(norm(text))
                 if key and key not in positions:
                     positions[key] = index
-                elif text not in (None, ''):
+                # Las columnas calculadas de otra hoja no son trazabilidad: la
+                # plantilla ya las calcula.
+                elif text not in (None, '') and not str(text).strip().endswith('(calc.)'):
                     extra.append(index)
             keys = list(positions)
             data_rows, extra_rows = [], []
@@ -128,7 +158,7 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
                             'extra_headers': [_cell(header[i]) for i in extra],
                             'extra_rows': extra_rows}
         workbook.close()
-        return {'sheets': sheets, 'other': other}
+        return {'sheets': sheets, 'other': other, 'ignored': ignored}
 
     def _file_content(self):
         """El archivo en base64. En el formulario (registro nuevo) se lee tal
@@ -234,7 +264,6 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
 
     @api.depends('file', 'mode', 'keep_extra')
     def _compute_review(self):
-        modes = dict(self._fields['mode'].selection)
         for wizard in self:
             if not wizard.file or not wizard.document_id:
                 wizard.review_html = False
@@ -252,14 +281,20 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
                     '<td>%s</td></tr>') % (
                     name, len(spec['rows']), len(spec['keys']),
                     ', '.join(h for h in spec['extra_headers'] if h) or '—',
-                    modes[wizard.mode]))
+                    self.env._('Importa por clave')))
             for name, rows in data['other'].items():
                 lines.append(Markup(
                     '<tr><td>%s</td><td class="text-end">%s</td><td>—</td><td>—</td>'
                     '<td>%s</td></tr>') % (
                     name, max(len(rows) - 1, 0),
-                    self.env._('Se copia como pestaña nueva') if wizard.keep_extra
+                    self.env._('Se copia') if wizard.keep_extra
                     else self.env._('No se copia')))
+            reasons = {'template': self.env._('Ignorada: es de la plantilla'),
+                       'sale': self.env._('Ignorada: es de la hoja de venta')}
+            for name, action in data['ignored'].items():
+                lines.append(Markup(
+                    '<tr class="text-muted"><td>%s</td><td class="text-end">—</td><td>—</td>'
+                    '<td>—</td><td>%s</td></tr>') % (name, reasons[action]))
             issues = wizard._analysis() if data['sheets'] else []
             errors = sum(1 for issue in issues if issue[4] == 'error')
             warnings = len(issues) - errors
@@ -306,6 +341,7 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
             'expand_rows': self.expand_rows,
             'sheets': data['sheets'],
             'other': data['other'] if self.keep_extra else {},
+            'ignored': list(data['ignored']),
             'keep_extra': self.keep_extra,
             'added_products': data['added_products'],
         }

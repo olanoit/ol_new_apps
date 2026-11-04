@@ -97,7 +97,43 @@ En PIEZAS y BOM, el material se elige en dos pasos:
    categoría.
 
 La familia, el tipo de módulo, el método de unión, el grupo ML, la familia de
-la tarifa y la sub etapa también se eligen de una lista.
+la tarifa y la sub etapa también se eligen de una lista. Las listas fijas rechazan al
+escribir un valor que no está en la lista, para que no llegue a **Validar** ni al
+envío. En una hoja ya creada, se activa con **Actualizar a la plantilla vigente**.
+
+### Importar un Excel
+
+**Planificación de obra ‣ Importar Excel a la hoja** trae un libro de carga, por
+ejemplo el Excel descargado de otra hoja. Antes de escribir, la revisión dice qué
+hace con cada pestaña del archivo:
+
+| Acción | Pestañas |
+|---|---|
+| Importa por clave | Las del maestro y la columna Material de MATERIALES OBRA |
+| Ignorada: es de la plantilla | INICIO, LEEME, RESUMEN, REFERENCIAS, FICHA, PROGRAMA, CONTROL, ERRORES, VENDIDO y las que empiezan con `_` |
+| Ignorada: es de la hoja de venta | EDIFICIO, ACABADOS, TARIFARIO, PRECIOS, METRADO y RESUMEN VENTA |
+| Se copia | Las pestañas propias, como FUENTES, si marca **Conservar columnas y pestañas que no son del maestro** |
+
+La importación escribe solo en las columnas de dato: las fórmulas, las listas y
+las marcas quedan como estaban. Al terminar, un mensaje resume las filas escritas
+por pestaña, lo copiado, lo ignorado, los errores y los avisos, con un vínculo a
+ERRORES.
+
+### Restaurar una versión
+
+Si importó el archivo equivocado, **Planificación de obra ‣ Restaurar versión**
+vuelve atrás:
+
+1. Elija la versión. La lista muestra su fecha y la acción que la originó.
+2. Revise cuántas filas son nuevas, cambian o quedan iguales en cada pestaña, y
+   pulse **Restaurar**.
+
+La hoja sigue vinculada a su obra y guarda antes su estado actual, así que la
+restauración también se puede deshacer. Solo se reescriben las columnas de dato;
+las pestañas propias, como FUENTES, no cambian.
+
+!!! note
+    Las versiones anteriores a esta función no dicen de qué acción salieron.
 
 ### Enviar al planificador
 

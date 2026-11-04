@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261104 — 04/11/2026
+
+- M117-04: vaciar una pestaña ya no quita sus listas desplegables, y las listas fijas rechazan al escribir un valor que no está en la lista.
+- M117-03: cada versión guarda la acción que la originó.
+
 ## 13.20261101 — 01/11/2026
 
 - M116-09: el perfil de la obra define el tipo de hoja (presupuesto o maestro de mobiliario); un solo menú «Planificación de obra» con las opciones de cada hoja; las columnas se reconocen por su clave aunque se renombre el encabezado.

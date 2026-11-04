@@ -164,6 +164,66 @@ class TestPackage116Stage2a(PlannerCommon):
         self.assertEqual(log.reason, 'Regularización de pedido sin plan')
 
     # ------------------------------------------------------------------
+    # Paquete 1.17, M117-10
+    # ------------------------------------------------------------------
+    def test_plan_approved_while_request_pending_with_tiers(self):
+        """Pedir aprobación sin plan, aprobar el plan, aprobar el requerimiento."""
+        self._setting('out_of_plan')
+        request = self._request(self.p_screw, 80)
+        request.with_user(self.requester).action_request_approval()
+        self.assertEqual(request.state, 'to_approve')
+        plan, line = self._approve_plan_with(60)
+        self.assertEqual(request.construction_plan_id, plan)
+        self.assertEqual(line.qty_requested, 80)
+        self.assertIn('1 requerimiento(s) revisado(s), 1 línea(s) asignada(s) y 0 fuera de plan',
+                      ''.join(plan.message_ids.mapped('body')))
+        request.with_user(self.exec_approver).validate_tier()
+        self.assertEqual(request.state, 'approved')
+        self.assertEqual(request.construction_exceed_state, 'approved')
+        self.assertEqual(self.env['construction.exceed.log'].search(
+            [('plan_id', '=', plan.id)]).qty, 20, 'el exceso se registra una sola vez')
+        expected = 'Asignado a %s: 1 línea(s), 1 en exceso.' % plan.display_name
+        self.assertIn(expected, ''.join(request.message_ids.mapped('body')))
+        self.assertIn(expected, ''.join(plan.message_ids.mapped('body')))
+
+    def test_request_approved_after_plan_enters_it_with_approvals(self):
+        """Un requerimiento que llegó a aprobarse sin asignaciones entra al plan
+        al aprobarse, también con la aplicación Aprobaciones."""
+        self._setting('out_of_plan', engine='approvals')
+        Route = self.env['construction.approval.route']
+        Route.search([('company_id', '=', self.company.id)]).active = False
+        Route.create({
+            'name': 'Material fuera del plan: jefatura (test 1.17)',
+            'company_id': self.company.id, 'document_type': 'material_request',
+            'change_type': 'material',
+            'approver_ids': [Command.create({'user_id': self.exec_approver.id})]})
+        request = self._request(self.p_screw, 10)
+        request.with_user(self.requester).action_request_approval()
+        self.assertEqual(request.state, 'to_approve')
+        plan, line = self._approve_plan_with(60)
+        # Como un pedido que ya esperaba antes de esta versión: sin asignaciones.
+        request.line_ids.construction_allocation_ids.sudo().unlink()
+        request.construction_plan_id = False
+        approval = request.construction_approval_id
+        approval.with_user(self.exec_approver).action_approve()
+        self.assertEqual(request.state, 'approved')
+        self.assertEqual(request.construction_plan_id, plan)
+        self.assertEqual(request.construction_exceed_state, 'ok')
+        self.assertEqual(line.qty_requested, 10)
+        self.assertIn('Asignado a %s: 1 línea(s), 0 en exceso.' % plan.display_name,
+                      ''.join(request.message_ids.mapped('body')))
+
+    def test_internal_request_stays_out_of_the_plan(self):
+        self._setting('approve')
+        plan, line = self._approve_plan_with(60)
+        request = self.env['construction.material.request'].with_user(self.requester).create({
+            'request_type': 'internal', 'line_ids': [Command.create({
+                'product_id': self.p_screw.id, 'product_qty': 5})]})
+        plan._construction_regularize_requests()
+        self.assertFalse(request.construction_plan_id)
+        self.assertEqual(line.qty_requested, 0)
+
+    # ------------------------------------------------------------------
     # M114-03 / M116-04
     # ------------------------------------------------------------------
     def _template_project(self, start=None):

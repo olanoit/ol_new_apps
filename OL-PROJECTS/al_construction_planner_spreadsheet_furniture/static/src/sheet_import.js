@@ -1,6 +1,10 @@
 import { registries } from "@odoo/o-spreadsheet";
 import { _t } from "@web/core/l10n/translation";
 import {
+    ERRORS_SHEET,
+    activateSheet,
+    clearCells,
+    clearData,
     collectSheets,
     dispatchBatch,
     ensureSheet,
@@ -109,7 +113,7 @@ function applyExtension(model, extension) {
 }
 
 /** Columna de cada clave: _CLAVES o el encabezado; sin las de fórmula. */
-function columnsOf(model, sheetId, name, spec, keys) {
+export function columnsOf(model, sheetId, name, spec, keys) {
     const header = (collectSheets(model, [name])[name] || [[]])[0] || [];
     const byHeader = {};
     header.forEach((text, col) => {
@@ -146,10 +150,11 @@ function writeSheet(model, name, spec, payload, keys) {
     if (payload.mode === "replace") {
         const bottom = getters.getNumberRows(sheetId) - 1;
         if (bottom >= 1 && used.length) {
-            model.dispatch("DELETE_CONTENT", {
+            clearCells(
+                model,
                 sheetId,
-                target: used.map((col) => ({ top: 1, bottom, left: col, right: col })),
-            });
+                used.map((col) => ({ top: 1, bottom, left: col, right: col }))
+            );
         }
     } else {
         start = Math.max(1, lastDataRow(getters, sheetId) + 1);
@@ -174,7 +179,10 @@ function writeSheet(model, name, spec, payload, keys) {
         const extraCols = spec.extra_headers.map((text) => {
             const existing = header.findIndex((value) => normText(value) === normText(text));
             if (existing >= 0) {
-                return existing;
+                // M117-03: una columna calculada de la plantilla no se pisa,
+                // aunque el archivo la traiga con el mismo encabezado.
+                const cell = getters.getCell({ sheetId, col: existing, row: 1 });
+                return cell && cell.isFormula ? -1 : existing;
             }
             const col = next++;
             commands.push([
@@ -185,6 +193,9 @@ function writeSheet(model, name, spec, payload, keys) {
         });
         spec.extra_rows.forEach((values, index) => {
             values.forEach((value, position) => {
+                if (extraCols[position] < 0) {
+                    return;
+                }
                 commands.push([
                     "UPDATE_CELL",
                     { sheetId, col: extraCols[position], row: start + index, content: value ?? "" },
@@ -225,6 +236,41 @@ export async function ensureCapacity(env, needed) {
 }
 
 /**
+ * Resumen al terminar (paquete 1.17, M117-03 punto 7): filas por pestaña,
+ * pestañas copiadas e ignoradas, errores y avisos, y el vínculo a ERRORES.
+ */
+function notifySummary(env, payload, result) {
+    const list = (names) => names.join(", ") || "—";
+    const written = Object.entries(payload.sheets).map(
+        ([name, spec]) => `${name} ${spec.rows.length}`
+    );
+    const parts = [
+        _t("Importado de %(file)s · %(errors)s errores · %(warnings)s avisos", {
+            file: payload.filename,
+            errors: result.errors,
+            warnings: result.warnings,
+        }),
+        _t("Filas escritas: %(sheets)s", { sheets: list(written) }),
+    ];
+    const copied = Object.keys(payload.other || {});
+    if (copied.length) {
+        parts.push(_t("Copiadas: %(sheets)s", { sheets: list(copied) }));
+    }
+    if (payload.ignored?.length) {
+        parts.push(_t("Ignoradas: %(sheets)s", { sheets: list(payload.ignored) }));
+    }
+    const pending = result.errors || result.warnings;
+    const errorsId = env.model.getters.getSheetIdByName(ERRORS_SHEET);
+    env.constructionNotify(parts.join(" · "), result.errors ? "warning" : "success", {
+        sticky: Boolean(pending),
+        buttons:
+            pending && errorsId
+                ? [{ name: _t("Ir a ERRORES"), onClick: () => activateSheet(env.model, errorsId) }]
+                : [],
+    });
+}
+
+/**
  * Escribe en la hoja lo que entregó el servidor (un Excel o los datos de
  * Odoo): amplía las filas si no alcanzan, escribe por clave y valida.
  * Con ``logImport`` deja la importación en el historial y el estado de la hoja.
@@ -255,11 +301,7 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
     for (const [name, rows] of Object.entries(payload.other || {})) {
         const sheetId = ensureSheet(model, name);
         if (payload.mode === "replace") {
-            const bottom = getters.getNumberRows(sheetId) - 1;
-            model.dispatch("DELETE_CONTENT", {
-                sheetId,
-                target: [{ top: 0, bottom, left: 0, right: getters.getNumberCols(sheetId) - 1 }],
-            });
+            clearData(model, sheetId, 0);
         }
         ensureRows(model, sheetId, rows.length + 1);
         writeRows(model, sheetId, rows, 0);
@@ -279,15 +321,7 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
             result.warnings
         );
     }
-    env.constructionNotify(
-        _t("Importado de %(file)s · %(sheets)s pestañas · %(errors)s errores · %(warnings)s avisos", {
-            file: payload.filename,
-            sheets: sheetCount,
-            errors: result.errors,
-            warnings: result.warnings,
-        }),
-        result.errors ? "warning" : "success"
-    );
+    notifySummary(env, payload, result);
     return result;
 }
 

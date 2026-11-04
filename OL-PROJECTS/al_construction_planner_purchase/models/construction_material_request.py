@@ -161,7 +161,41 @@ class ConstructionMaterialRequest(models.Model):
             approved.with_context(al_construction_approving=True).write(
                 {'construction_exceed_state': 'approved'})
             approved._construction_log_exceed()
+        self.filtered(lambda r: r.construction_exceed_state == 'no_plan'
+                      and r.state == 'approved')._construction_settle_no_plan()
         return res
+
+    def _construction_settle_no_plan(self):
+        """Paquete 1.17, M117-10: un requerimiento pedido sin plan se aprueba
+        cuando la obra ya tiene plan. Entra al plan con la regla de la
+        regularización (si no entró al aprobarse el plan) y su conversación y la
+        del plan dicen cómo quedó."""
+        Log_sudo = self.env['construction.exceed.log'].sudo()
+        for request in self:
+            # Quien aprueba puede no tener acceso al plan.
+            plan_sudo = request.sudo()._construction_open_plan().sudo()
+            if not plan_sudo:
+                continue
+            lines_sudo = request.sudo().line_ids.filtered(
+                lambda l: not l.cancelled and l.product_id and not
+                l.construction_allocation_ids.filtered(lambda a: a.plan_line_id.plan_id == plan_sudo))
+            if lines_sudo:
+                plan_sudo._construction_assign_request_lines(lines_sudo)
+            planned = request.sudo().line_ids.filtered(
+                lambda l: l.construction_allocation_ids.filtered(
+                    lambda a: a.plan_line_id.plan_id == plan_sudo))
+            excess = Log_sudo.search_count([
+                ('plan_id', '=', plan_sudo.id), ('kind', '=', 'excess'),
+                ('res_model', '=', request._name), ('res_id', '=', request.id)])
+            request.with_context(al_construction_approving=True).write({
+                'construction_plan_id': plan_sudo.id,
+                'construction_exceed_state': 'approved' if excess else 'ok'})
+            body = self.env._(
+                'Asignado a %(plan)s: %(lines)s línea(s), %(excess)s en exceso.',
+                plan=plan_sudo.display_name, lines=len(planned), excess=excess)
+            request.sudo().message_post(body=body)
+            plan_sudo.message_post(body=self.env._('%(request)s · %(body)s',
+                                                   request=request.name, body=body))
 
     def _construction_log_exceed(self):
         """Registro de cada exceso autorizado (M18-05): quién, cuándo, motivo

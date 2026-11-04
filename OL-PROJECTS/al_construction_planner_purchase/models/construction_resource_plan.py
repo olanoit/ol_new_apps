@@ -16,23 +16,38 @@ class ConstructionResourcePlan(models.Model):
 
     def _construction_regularize_requests(self):
         """Asigna al plan las líneas de los requerimientos de obra de la obra
-        (aprobados, en proceso o hechos) que no tienen asignación en él: los
-        pedidos sin plan y los que quedaron fuera de una versión anterior.
-        Lo que no calza con ninguna línea del plan queda «fuera de plan»."""
+        (en aprobación, aprobados, en proceso o hechos) que no tienen asignación
+        en él: los pedidos sin plan y los que quedaron fuera de una versión
+        anterior. Lo que no calza con ninguna línea del plan queda «fuera de
+        plan». Paquete 1.17, M117-10: un plan suele aprobarse con requerimientos
+        todavía «En aprobación»."""
         self.ensure_one()
         # Lo corre el sistema al aprobar: quien aprueba el plan puede no tener
         # permiso sobre los requerimientos de obra ni sus asignaciones.
         RequestLine_sudo = self.env['construction.material.request.line'].sudo()
-        Allocation_sudo = self.env['construction.resource.plan.allocation'].sudo()
         lines_sudo = RequestLine_sudo.search([
             ('request_id.project_id', '=', self.project_id.id),
             ('request_id.request_type', '=', 'site'),
-            ('request_id.state', 'in', ('approved', 'in_progress', 'done')),
+            ('request_id.state', 'in', ('to_approve', 'approved', 'in_progress', 'done')),
             ('cancelled', '=', False), ('product_id', '!=', False)])
         lines_sudo = lines_sudo.filtered(lambda l: not l.construction_allocation_ids.filtered(
             lambda a: a.plan_line_id.plan_id == self))
         if not lines_sudo:
             return
+        result = self._construction_assign_request_lines(lines_sudo)
+        self.message_post(body=self.env._(
+            'Pedidos sin plan regularizados: %(requests)s requerimiento(s) revisado(s), '
+            '%(assigned)s línea(s) asignada(s) y %(unplanned)s fuera de plan.',
+            requests=len(lines_sudo.request_id), assigned=len(result['assigned']),
+            unplanned=len(result['unplanned'])))
+
+    def _construction_assign_request_lines(self, lines_sudo):
+        """Reparte ``lines_sudo`` entre las líneas de este plan y registra el
+        exceso con el motivo «Regularización de pedido sin plan».
+
+        :return: ``{'assigned': líneas, 'unplanned': líneas}``"""
+        self.ensure_one()
+        Allocation_sudo = self.env['construction.resource.plan.allocation'].sudo()
         lines_sudo.request_id.filtered(lambda r: r.construction_plan_id != self).write(
             {'construction_plan_id': self.id})
         assigned = unplanned = self.env['construction.material.request.line']
@@ -70,14 +85,10 @@ class ConstructionResourcePlan(models.Model):
                     'res_model': line_sudo.request_id._name, 'res_id': line_sudo.request_id.id,
                 })
         if exceed_values:
-            self.env['construction.exceed.log']._log(exceed_values)
+            self.env['construction.exceed.log'].sudo()._log(exceed_values)
         if assigned:
             Allocation_sudo._refresh_for_documents('material_request_line_id', assigned)
-        self.message_post(body=self.env._(
-            'Pedidos sin plan regularizados: %(requests)s requerimiento(s) revisado(s), '
-            '%(assigned)s línea(s) asignada(s) y %(unplanned)s fuera de plan.',
-            requests=len(lines_sudo.request_id), assigned=len(assigned),
-            unplanned=len(unplanned)))
+        return {'assigned': assigned, 'unplanned': unplanned}
 
     def action_open_price_wizard(self):
         self.ensure_one()

@@ -95,7 +95,8 @@ patch(SpreadsheetAction.prototype, {
             writeState(this.model, this.data?.construction_sheet_state);
             // Después de un envío, CONTROL compara la hoja con el planificador.
             if (this.data?.construction_control_pending && sheetIdOf(this.model, CONTROL_SHEET)) {
-                updateControl(this.env, { quiet: true });
+                // El entorno de la acción no trae el modelo de la hoja (M117-06).
+                updateControl({ ...this.env, model: this.model }, { quiet: true });
             }
         });
     },
