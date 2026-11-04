@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261104 — 04/11/2026
+
+- Contactos peruanos: «ID de la empresa» ya no se ofrece en el «+» junto al RUC, porque el RUC tiene su propio campo. Quien ya lo tenía registrado lo conserva.
+
 ## 23.20261102 — 02/11/2026
 
 - Contactos peruanos: los documentos de identidad del «+» junto al RUC y de la lista del contacto se muestran con su nombre peruano del catálogo 06 de SUNAT (DNI, Carné de Permiso Temporal de Permanencia, Salvoconducto, Tarjeta Andina de Migración…), en lugar del inglés con que los trae Odoo 20.

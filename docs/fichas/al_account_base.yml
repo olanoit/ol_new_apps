@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: '24.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "Contactos peruanos: «ID de la empresa» ya no se ofrece en el «+» junto al RUC, porque el RUC tiene su propio campo. Quien ya lo tenía registrado lo conserva."
   - version: '23.20261102'
     fecha: 02/11/2026
     cambios:

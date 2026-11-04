@@ -11,6 +11,7 @@ _lt = LazyTranslate(__name__)
 # define; al ser de categoría «CN» sin código propio, l10n_pe la informa a
 # SUNAT con el código 4 del catálogo 06.
 PE_CE_KEY = 'PE_CE'
+PE_CUI_KEY = 'PE_CUI'
 # Código del catálogo 06 → clave del identificador en Odoo. El RUC (6) no
 # está: va en el campo ``vat``.
 # Nombre corto del documento por código del catálogo 06.
@@ -82,6 +83,16 @@ class ResPartner(models.Model):
         for key, (label, help_text) in PE_IDENTIFIER_LABELS.items():
             if key in metadata:
                 metadata[key] = {**metadata[key], 'label': label, 'help': help_text}
+        # El RUC va en ``vat``: «Company ID» lo duplicaría. ``hide`` es la forma
+        # nativa de no ofrecerlo en el «+»; si un contacto ya lo tiene, se sigue
+        # viendo en su lista.
+        if PE_CUI_KEY in metadata:
+            metadata[PE_CUI_KEY] = {
+                **metadata[PE_CUI_KEY],
+                'label': _lt('RUC (duplicado)'),
+                'help': _lt('El RUC se registra en el campo RUC del contacto.'),
+                'display_optional': 'hide',
+            }
         return {
             **metadata,
             PE_CE_KEY: {

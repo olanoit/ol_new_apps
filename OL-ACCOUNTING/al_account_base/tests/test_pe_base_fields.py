@@ -122,6 +122,17 @@ class TestPeBaseFields(TransactionCase):
         # Sin cambiar el comportamiento nativo: el DNI se agrega con el «+».
         self.assertFalse(metadata['PE_DNI'].get('display_optional'))
 
+    def test_company_id_is_not_offered_for_peru(self):
+        """El RUC va en ``vat``: «ID de la empresa» no se ofrece en el «+»,
+        pero el contacto que ya lo tiene lo conserva y lo sigue viendo."""
+        metadata = self.partner.available_additional_identifiers_metadata
+        self.assertEqual(metadata['PE_CUI']['display_optional'], 'hide')
+        partner = self.env['res.partner'].create({
+            'name': 'CONTACTO CON CUI', 'country_id': self.env.ref('base.pe').id,
+            'additional_identifiers': {'PE_CUI': '101174102'}})
+        self.assertEqual(partner.additional_identifiers.get('PE_CUI'), '101174102')
+        self.assertIn('PE_CUI', partner.available_additional_identifiers_metadata)
+
     def test_dni_keeps_its_label_in_the_list(self):
         partner = self.env['res.partner'].create({
             'name': 'PERSONA CON DNI', 'country_id': self.env.ref('base.pe').id,
