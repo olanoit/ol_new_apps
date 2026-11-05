@@ -109,7 +109,9 @@ class L10nPeHrConstructionWageCheck(models.Model):
         check = self.create({'trigger': trigger, 'target_year': target})
         tried = []
         for page in Table._l10n_pe_watched_pages(target):
-            check._l10n_pe_check_page(page, target, tried, follow=True)
+            # Una página anterior pudo haber enlazado esta: ya se revisó.
+            if not any(same_url(page, seen) for seen in tried):
+                check._l10n_pe_check_page(page, target, tried, follow=True)
         for url in Table._l10n_pe_watched_urls():
             if not any(same_url(url, seen) for seen in tried):
                 check._l10n_pe_check_pdf(url, 'backup', tried)

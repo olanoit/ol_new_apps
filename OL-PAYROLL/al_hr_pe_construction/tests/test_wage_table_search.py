@@ -154,6 +154,15 @@ class TestWageTableSearch(TransactionCase):
         self.assertEqual(check.state, 'imported')
         self.assertEqual(check.line_ids.filtered(lambda l: l.result == 'imported').kind, 'pdf')
 
+    def test_page_reached_by_a_link_is_not_checked_twice(self):
+        """CAPECO enlaza desde su portada la misma página que se vigila."""
+        self.env['ir.config_parameter'].set_param(
+            'al_hr_pe_construction.wage_table_pages', '\n'.join((CAPECO, CAPECO_PAGE)))
+        web = _Web({CAPECO: CAPECO_HOME, CAPECO_PAGE: ''})
+        check = self._run(web)
+        self.assertEqual(web.downloaded.count(CAPECO_PAGE), 1)
+        self.assertEqual(check.line_ids.mapped('url'), [CAPECO, CAPECO_PAGE])
+
     def test_backup_is_not_downloaded_twice(self):
         self.env['ir.config_parameter'].set_param(
             'al_hr_pe_construction.wage_table_urls', NEW_PDF.replace('www.', ''))
