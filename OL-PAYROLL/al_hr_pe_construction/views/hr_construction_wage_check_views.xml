@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_wage_check_list" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.wage.check.list</field>
+        <field name="model">l10n_pe.hr.construction.wage.check</field>
+        <field name="arch" type="xml">
+            <list string="Búsquedas de la tabla" create="0" edit="0" delete="0"
+                  decoration-danger="state == 'failed'" decoration-warning="state == 'partial'"
+                  decoration-success="state == 'imported'">
+                <header>
+                    <button name="action_search_now" type="object" string="Buscar ahora"
+                            display="always" class="btn-primary"
+                            groups="hr_payroll.group_hr_payroll_manager"/>
+                </header>
+                <field name="date"/>
+                <field name="trigger"/>
+                <field name="target_year" options="{'format': false}"/>
+                <field name="state" widget="badge" decoration-danger="state == 'failed'"
+                       decoration-warning="state == 'partial'"
+                       decoration-success="state == 'imported'"/>
+                <field name="summary"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_construction_wage_check_form" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.wage.check.form</field>
+        <field name="model">l10n_pe.hr.construction.wage.check</field>
+        <field name="arch" type="xml">
+            <form string="Búsqueda de la tabla" create="0" edit="0" delete="0">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="imported,nothing,partial,failed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="trigger"/>
+                        </group>
+                        <group>
+                            <field name="target_year" options="{'format': false}"/>
+                            <field name="summary"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <list decoration-danger="result == 'error'"
+                              decoration-success="result == 'imported'">
+                            <field name="kind"/>
+                            <field name="url" widget="url"/>
+                            <field name="result"/>
+                            <field name="message"/>
+                            <field name="table_id"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_wage_check" model="ir.actions.act_window">
+        <field name="name">Búsquedas de la tabla</field>
+        <field name="res_model">l10n_pe.hr.construction.wage.check</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Todavía no hay búsquedas</p>
+            <p>La acción planificada revisa las páginas de CAPECO y de la FTCCP: cada semana
+               del 1 de diciembre al 31 de enero y cada mes el resto del año.</p>
+        </field>
+    </record>
+</odoo>

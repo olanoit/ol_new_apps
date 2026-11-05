@@ -83,11 +83,42 @@ y los resúmenes del CONAFOVICER son de cada compañía.
 1. En **Tablas salariales**, haga clic en **Importar tabla del convenio** y
    cargue el PDF publicado.
 2. La tabla nueva llega **archivada**: revísela contra el PDF y actívela.
-3. La revisión mensual busca convenios nuevos en la dirección de CAPECO.
 
 Un convenio nuevo se carga como otra tabla con su vigencia: las boletas
 antiguas conservan su jornal. Dos tablas activas con vigencias solapadas no se
 pueden guardar.
+
+### Búsqueda automática de la tabla
+
+Una acción planificada busca el convenio del año siguiente en las páginas de CAPECO
+y de la FTCCP, y usa las direcciones fijas como respaldo: **cada semana del 1 de
+diciembre al 31 de enero, y cada mes el resto del año**. Si una búsqueda falla por
+completo, se reintenta al día siguiente.
+
+Si encuentra una vigencia nueva, importa la tabla **archivada**, con su **Fuente**, y
+crea una actividad para los responsables de planillas. La tabla solo se usa cuando una
+persona la revisa y la activa. Una vigencia ya cargada no se duplica.
+
+Para ver qué pasó, abra **Configuración ‣ Construcción civil ‣ Búsquedas de la tabla**.
+Cada búsqueda muestra las direcciones revisadas y su resultado. **Buscar ahora** lanza
+una búsqueda sin esperar a la siguiente fecha.
+
+Las páginas y las direcciones de respaldo se cambian en **Importar tabla del convenio**.
+En una página, `{year}` se reemplaza por el año buscado.
+
+### Alertas por falta de tabla
+
+| Desde | Qué se comprueba | Qué pasa |
+|---|---|---|
+| 1 de diciembre | Ninguna tabla, activa o archivada, cubre el 1 de enero siguiente | Actividad para los responsables de planillas |
+| 1 de enero, y todo el año | Ninguna tabla activa cubre la fecha de hoy | Actividad urgente |
+| Al calcular | Ninguna tabla activa cubre el fin de la boleta | Aviso en la boleta y en el lote |
+
+El aviso **no bloquea el cálculo**, pero sin tabla el jornal sale en cero: revíselo antes
+de confirmar. Cuando la tabla llega, la actividad se cierra sola. Si marca la actividad
+como hecha y la tabla sigue faltando, vuelve a aparecer al día siguiente.
+
+Las alertas solo llegan a compañías con trabajadores de construcción civil vigentes.
 
 ## Obras y reparto del costo
 

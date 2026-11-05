@@ -249,6 +249,8 @@ class TestWageTableImport(TransactionCase):
             'group_ids': [(4, self.env.ref('hr_payroll.group_hr_payroll_manager').id)],
         })
         self.env['ir.config_parameter'].set_param(
+            'al_hr_pe_construction.wage_table_pages', '# ninguna')
+        self.env['ir.config_parameter'].set_param(
             'al_hr_pe_construction.wage_table_urls',
             '# comentario\n%s\nhttps://example.com/roto.pdf' % URL)
 
@@ -268,5 +270,5 @@ class TestWageTableImport(TransactionCase):
 
     def test_cron_is_registered(self):
         cron = self.env.ref('al_hr_pe_construction.ir_cron_construction_wage_tables')
-        self.assertEqual(cron.interval_type, 'months')
+        self.assertEqual(cron.interval_type, 'days')
         self.assertTrue(self.Table._l10n_pe_watched_urls())

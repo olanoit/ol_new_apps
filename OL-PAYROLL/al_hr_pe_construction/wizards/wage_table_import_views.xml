@@ -29,7 +29,11 @@
                                placeholder="https://www.capeco.org/descargas/…/Remuneraciones.pdf"/>
                         <field name="watch_url" invisible="source != 'url'"/>
                     </group>
-                    <group string="Revisión mensual">
+                    <group string="Páginas vigiladas">
+                        <field name="watched_pages" nolabel="1" colspan="2"
+                               placeholder="Una dirección por línea"/>
+                    </group>
+                    <group string="Direcciones de respaldo">
                         <field name="watched_urls" nolabel="1" colspan="2"
                                placeholder="Una dirección por línea"/>
                     </group>

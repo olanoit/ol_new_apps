@@ -7,9 +7,8 @@ crearla se recalculan, con las mismas fórmulas de la boleta, los importes
 semanales que publica el propio convenio (CONAFOVICER, pensión y neto de
 cada categoría); si uno solo no coincide al céntimo, no se importa nada.
 """
-import logging
 from decimal import Decimal
-from urllib.parse import urljoin, urlparse
+from urllib.parse import unquote, urljoin, urlparse
 
 import requests
 from markupsafe import Markup, escape
@@ -23,22 +22,32 @@ from odoo.addons.al_hr_pe.tools import custom_round
 from ..tools import wage_table_pdf
 from .hr_construction_masters import round_percent
 
-_logger = logging.getLogger(__name__)
-
 URLS_PARAM = 'al_hr_pe_construction.wage_table_urls'
+PAGES_PARAM = 'al_hr_pe_construction.wage_table_pages'
+NO_ADDRESSES = '# Sin direcciones'
 CATEGORY_XMLIDS = {
     'operario': 'al_hr_pe_construction.category_operario',
     'oficial': 'al_hr_pe_construction.category_oficial',
     'peon': 'al_hr_pe_construction.category_peon',
 }
-# Tabla 2026. Cuando se publique el convenio siguiente basta con añadir su
-# dirección desde el asistente de importación.
+# Páginas que se revisan para encontrar el convenio nuevo. {year} es el año que
+# se busca: CAPECO publica cada convenio en una página propia con ese nombre.
+DEFAULT_PAGES = (
+    'https://www.ftccperu.com/index.php/es/formacion/biblioteca',
+    'https://www.ftccperu.com/index.php/es/campanas/negociacion-colectiva',
+    'https://www.capeco.org/',
+    'https://capeco.org/documentos-de-la-convencion-colectiva-{year}-del-sector-construccion/',
+)
+# Respaldo: la tabla 2026. Llevan el año en la ruta, así que no encontrarán la
+# siguiente; la encuentran las páginas de arriba.
 DEFAULT_URLS = (
     'https://www.capeco.org/descargas/CC2026/CAPECO_FTCCP_Remuneraciones%202026_%20FV.pdf',
     'https://www.ftccperu.com/media/attachments/2025/12/30/tablas-salariales-2026-construccion-civil.pdf',
 )
 # El PDF de CAPECO pesa unos 8 MB.
 MAX_PDF_SIZE = 30 * 1024 * 1024
+# Una página de CAPECO o de la FTCCP pesa menos de 200 KB.
+MAX_PAGE_SIZE = 5 * 1024 * 1024
 MAX_REDIRECTS = 5
 # Solo se descarga de estos dominios (y sus subdominios): la dirección la
 # escribe un usuario y la acción planificada la visita como superusuario,
@@ -48,6 +57,19 @@ MAX_REDIRECTS = 5
 ALLOWED_HOSTS_PARAM = 'al_hr_pe_construction.wage_table_hosts'
 DEFAULT_ALLOWED_HOSTS = ('capeco.org', 'ftccperu.com', 'gob.pe')
 WEEK_DAYS = 6
+
+
+class WageTablePageNotFound(UserError):
+    """La página no existe (404): en una dirección con {year}, aún no se publica."""
+
+
+def same_url(first, second):
+    """¿La misma dirección? Una con espacios escapados o sin ``www`` también lo es."""
+    def key(url):
+        parts = urlparse(unquote(url))
+        return ((parts.hostname or '').lower().removeprefix('www.'), parts.path.rstrip('/'),
+                parts.query)
+    return key(first) == key(second)
 
 
 class L10nPeHrConstructionWageTable(models.Model):
@@ -61,11 +83,27 @@ class L10nPeHrConstructionWageTable(models.Model):
         """Direcciones que revisa la acción planificada, una por línea."""
         value = self.env['ir.config_parameter'].sudo().get_param(URLS_PARAM)
         if value is False:
-            # Nunca configurado: las direcciones conocidas. Un valor vacío,
-            # en cambio, es que el usuario las quitó todas.
+            # Nunca configurado: las direcciones conocidas. Si el usuario las
+            # quitó todas, el parámetro guarda NO_ADDRESSES.
             return list(DEFAULT_URLS)
         return [line.strip() for line in value.splitlines()
                 if line.strip() and not line.strip().startswith('#')]
+
+    @api.model
+    def _l10n_pe_watched_pages(self, year=None):
+        """Páginas que revisa la acción planificada, con {year} ya resuelto."""
+        value = self.env['ir.config_parameter'].sudo().get_param(PAGES_PARAM)
+        pages = DEFAULT_PAGES if value is False else value.splitlines()
+        pages = [line.strip() for line in pages
+                 if line.strip() and not line.strip().startswith('#')]
+        return [page.replace('{year}', str(year)) for page in pages] if year else pages
+
+    @api.model
+    def _l10n_pe_target_year(self):
+        """El año siguiente al último que cubre una tabla nacional, activa o no."""
+        latest = self.with_context(active_test=False).search(
+            [('company_id', '=', False)], order='date_to desc', limit=1)
+        return latest.date_to.year + 1 if latest else fields.Date.context_today(self).year
 
     @api.model
     def _l10n_pe_allowed_hosts(self):
@@ -99,6 +137,14 @@ class L10nPeHrConstructionWageTable(models.Model):
 
     @api.model
     def _l10n_pe_download_pdf(self, url):
+        return self._l10n_pe_download(url, MAX_PDF_SIZE)
+
+    @api.model
+    def _l10n_pe_download_page(self, url):
+        return self._l10n_pe_download(url, MAX_PAGE_SIZE)
+
+    @api.model
+    def _l10n_pe_download(self, url, max_size):
         current = url
         try:
             # Las redirecciones se siguen a mano para validar cada salto:
@@ -113,12 +159,15 @@ class L10nPeHrConstructionWageTable(models.Model):
                     if response.is_redirect:
                         current = urljoin(current, response.headers['Location'])
                         continue
+                    if response.status_code == 404:
+                        raise WageTablePageNotFound(_('%(url)s no existe.', url=url))
                     response.raise_for_status()
                     content = bytearray()
                     for chunk in response.iter_content(chunk_size=65536):
                         content.extend(chunk)
-                        if len(content) > MAX_PDF_SIZE:
-                            raise UserError(_('El PDF de %(url)s supera los 30 MB.', url=url))
+                        if len(content) > max_size:
+                            raise UserError(_('%(url)s supera los %(size)s MB.', url=url,
+                                              size=max_size // (1024 * 1024)))
                     return bytes(content)
         except requests.RequestException as error:
             raise UserError(_('No se pudo descargar %(url)s: %(error)s',
@@ -224,6 +273,9 @@ class L10nPeHrConstructionWageTable(models.Model):
         data = self._l10n_pe_read_pdf(content, source)
         existing = self._l10n_pe_find_existing(data)
         if existing:
+            # La tabla cargada antes de existir este campo se queda con su fuente.
+            if not existing.source_url:
+                existing.source_url = source
             return existing, False
         return self._l10n_pe_create_from_data(data, source), True
 
@@ -367,21 +419,14 @@ class L10nPeHrConstructionWageTable(models.Model):
 
     @api.model
     def _l10n_pe_check_watched_urls(self):
-        """Revisa las direcciones configuradas; devuelve las tablas nuevas."""
-        created_tables = self.browse()
-        for url in self._l10n_pe_watched_urls():
-            try:
-                with self.env.cr.savepoint():
-                    content = self._l10n_pe_download_pdf(url)
-                    table, created = self._l10n_pe_create_from_pdf(content, url)
-            except UserError as error:
-                _logger.warning('Tabla salarial de construcción civil: %s', error)
-                continue
-            if created:
-                created_tables |= table
-        created_tables._l10n_pe_schedule_review()
-        return created_tables
+        """Busca ahora, sin mirar la fecha; devuelve las tablas nuevas."""
+        check = self.env['l10n_pe.hr.construction.wage.check']._l10n_pe_run()
+        return check.line_ids.filtered(lambda line: line.result == 'imported').table_id
 
     @api.model
     def _cron_l10n_pe_check_wage_tables(self):
-        self._l10n_pe_check_watched_urls()
+        """A diario: la búsqueda, si le toca (ver ``_l10n_pe_is_due``), y la alerta."""
+        Check = self.env['l10n_pe.hr.construction.wage.check']
+        if Check._l10n_pe_is_due():
+            Check._l10n_pe_run()
+        Check._l10n_pe_check_coverage()

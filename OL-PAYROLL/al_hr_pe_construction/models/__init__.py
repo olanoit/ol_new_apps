@@ -5,4 +5,5 @@ from . import hr_payslip
 from . import res_company
 from . import hr_conafovicer
 from . import hr_construction_wage_import
+from . import hr_construction_wage_check
 from . import hr_construction_cost

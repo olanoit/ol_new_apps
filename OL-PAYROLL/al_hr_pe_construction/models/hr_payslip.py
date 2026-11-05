@@ -16,7 +16,7 @@ from datetime import datetime, time, timedelta
 
 from pytz import UTC, timezone
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 from odoo.addons.al_hr_pe.tools import custom_round
 
@@ -88,7 +88,53 @@ class HrPayslip(models.Model):
         self.filtered(lambda p: p.version_id.l10n_pe_is_construction
                       and not p.l10n_pe_wage_line_id) \
             ._compute_l10n_pe_construction_snapshot()
-        return super().compute_sheet()
+        result = super().compute_sheet()
+        missing = self._l10n_pe_wage_table_missing()
+        if missing:
+            self.env.user._bus_send('simple_notification', {
+                'type': 'warning',
+                'sticky': True,
+                'title': _('Falta la tabla salarial de construcción civil'),
+                'message': _('%s boletas se calcularon sin tabla activa para su fecha: revise '
+                             'el jornal antes de confirmarlas.', len(missing)),
+            })
+        return result
+
+    def _l10n_pe_wage_table_missing(self):
+        """Boletas de construcción civil sin tabla activa para su fecha."""
+        Table = self.env['l10n_pe.hr.construction.wage.table']
+        tables = {}
+        missing = self.browse()
+        for payslip in self.filtered(lambda p: p.version_id.l10n_pe_is_construction
+                                     and p.date_to):
+            key = (payslip.date_to, payslip.company_id)
+            if key not in tables:
+                tables[key] = Table._get_table_for_date(payslip.date_to, payslip.company_id)
+            if not tables[key]:
+                missing |= payslip
+        return missing
+
+    def _issues_dependencies(self):
+        return super()._issues_dependencies() + [
+            'version_id.l10n_pe_is_construction', 'l10n_pe_wage_line_id']
+
+    def _get_warnings_by_slip(self):
+        """El aviso va donde Odoo muestra los demás: en la boleta y en el lote."""
+        warnings_by_slip = super()._get_warnings_by_slip()
+        missing = self._l10n_pe_wage_table_missing()
+        if missing:
+            action = self.env['ir.actions.act_window']._for_xml_id(
+                'al_hr_pe_construction.action_construction_wage_table')
+            for payslip in missing:
+                warnings_by_slip[payslip].append({
+                    'message': _('No hay tabla salarial activa de construcción civil para el '
+                                 '%s: el jornal saldrá en cero.',
+                                 payslip.date_to.strftime('%d/%m/%Y')),
+                    'action_text': _('Tablas salariales'),
+                    'action': action,
+                    'level': 'warning',
+                })
+        return warnings_by_slip
 
     def _voucher_extra_hour_types(self, param, wd_types):
         """La boleta también cuenta como sobretiempo las extras al 60 %.

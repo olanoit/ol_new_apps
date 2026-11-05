@@ -6,7 +6,7 @@ from markupsafe import Markup
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.hr_construction_wage_import import URLS_PARAM
+from ..models.hr_construction_wage_import import NO_ADDRESSES, PAGES_PARAM, URLS_PARAM
 
 
 class L10nPeHrConstructionWageImport(models.TransientModel):
@@ -25,16 +25,22 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
         string='Dirección del PDF',
         help='Enlace directo al PDF de la tabla salarial de CAPECO o de la '
              'FTCCP. Al elegir «Dirección web» se propone la primera de las '
-             'que se revisan cada mes.')
+             'direcciones de respaldo.')
     watch_url = fields.Boolean(
-        string='Revisar esta dirección cada mes', default=True,
-        help='La añade a las direcciones que revisa la acción planificada.')
+        string='Revisar también esta dirección', default=True,
+        help='La añade a las direcciones de respaldo que revisa la acción planificada.')
     watched_urls = fields.Text(
-        string='Direcciones que se revisan cada mes',
+        string='Direcciones de respaldo',
         default=lambda self: '\n'.join(self._watched_url_list()),
-        help='Una por línea. Cada mes se descargan y, si publican un convenio '
-             'con una vigencia que aún no está cargada, se importa archivado '
+        help='PDF directos, uno por línea. En cada búsqueda se descargan y, si publican '
+             'un convenio con una vigencia que aún no está cargada, se importa archivado '
              'y se crea una actividad para los responsables de planillas.')
+    watched_pages = fields.Text(
+        string='Páginas vigiladas',
+        default=lambda self: '\n'.join(
+            self.env['l10n_pe.hr.construction.wage.table']._l10n_pe_watched_pages()),
+        help='Una por línea. En cada búsqueda se buscan en ellas los enlaces a la tabla '
+             'salarial. {year} se reemplaza por el año que se busca.')
 
     # Segundo paso: la vigencia ya existe y se pide confirmar la
     # actualización. El PDF se guarda para no descargarlo dos veces.
@@ -66,7 +72,13 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
                 if line.strip()]
         if extra and extra not in urls:
             urls.append(extra)
-        self.env['ir.config_parameter'].sudo().set_param(URLS_PARAM, '\n'.join(urls))
+        parameters = self.env['ir.config_parameter'].sudo()
+        # Odoo lee un parámetro vacío como si no existiera, y volverían las direcciones
+        # iniciales: la lista vacía se guarda como un comentario.
+        parameters.set_param(URLS_PARAM, '\n'.join(urls) or NO_ADDRESSES)
+        pages = [line.strip() for line in (self.watched_pages or '').splitlines()
+                 if line.strip()]
+        parameters.set_param(PAGES_PARAM, '\n'.join(pages) or NO_ADDRESSES)
 
     def _read_source(self):
         """Contenido del PDF y cómo se cita en el historial."""

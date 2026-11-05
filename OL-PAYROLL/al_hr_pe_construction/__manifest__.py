@@ -83,10 +83,14 @@ Importación de la tabla del convenio:
 * La tabla se crea **archivada** y solo si el CONAFOVICER, la pensión y el
   neto semanal que publica el convenio coinciden al céntimo con los que
   calcula el módulo; se revisa y se activa a mano.
-* Acción planificada mensual que revisa las direcciones configuradas y,
-  ante un convenio con vigencia nueva, lo importa y crea una actividad a
-  los responsables de planillas. Avisa si el convenio aplica otra tasa de
+* Acción planificada que revisa las páginas de CAPECO y de la FTCCP, semanal
+  del 1-dic al 31-ene y mensual el resto del año, y las direcciones fijas como
+  respaldo. Ante un convenio con vigencia nueva, lo importa y crea una actividad
+  a los responsables de planillas. Avisa si el convenio aplica otra tasa de
   CONAFOVICER que la de la compañía.
+* Registro de cada búsqueda: qué revisó, qué encontró y qué falló.
+* Alerta si falta la tabla: actividad desde el 1-dic y, si no hay tabla activa
+  vigente, actividad urgente y aviso en la boleta.
 
 Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     """,
@@ -97,7 +101,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_hr_pe_construction/static/description/icon.png',
-    'version': '25.20261027',
+    'version': '26.20261027',
     'license': 'OPL-1',
     # `al_hr_pe_reports` no es opcional: la boleta del régimen hereda su
     # plantilla y el módulo extiende sus datos. Sin declararla, el orden
@@ -115,6 +119,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
         'data/hr_construction_cron.xml',
         'views/hr_construction_category_views.xml',
         'views/hr_construction_wage_table_views.xml',
+        'views/hr_construction_wage_check_views.xml',
         'views/hr_construction_bonus_views.xml',
         'views/hr_construction_site_views.xml',
         'views/hr_construction_cost_views.xml',

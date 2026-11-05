@@ -3,17 +3,31 @@
     <!-- noupdate: una actualización no debe reactivar la acción si el
          usuario la desactivó. -->
     <data noupdate="1">
-        <!-- Mensual: el convenio se renegocia una vez al año, pero la fecha
-             de publicación varía (en 2026 salió en diciembre). Las
-             direcciones se configuran en el asistente de importación. -->
+        <!-- A diario: decide si toca buscar (semanal del 1-dic al 31-ene, mensual
+             el resto) y revisa la alerta por falta de tabla, que debe salir el
+             1-dic y el 1-ene. Las direcciones se configuran en el asistente de
+             importación. -->
         <record id="ir_cron_construction_wage_tables" model="ir.cron">
             <field name="name">Construcción civil: buscar tabla salarial nueva</field>
             <field name="model_id" ref="model_l10n_pe_hr_construction_wage_table"/>
             <field name="state">code</field>
             <field name="code">model._cron_l10n_pe_check_wage_tables()</field>
             <field name="interval_number">1</field>
-            <field name="interval_type">months</field>
+            <field name="interval_type">days</field>
             <field name="active" eval="True"/>
+        </record>
+
+        <record id="activity_wage_table_missing" model="mail.activity.type">
+            <field name="name">Falta la tabla salarial</field>
+            <field name="res_model">l10n_pe.hr.construction.wage.table</field>
+            <field name="icon">fa-table</field>
+            <field name="decoration_type">warning</field>
+        </record>
+        <record id="activity_wage_table_urgent" model="mail.activity.type">
+            <field name="name">Sin tabla salarial vigente</field>
+            <field name="res_model">l10n_pe.hr.construction.wage.table</field>
+            <field name="icon">fa-exclamation-triangle</field>
+            <field name="decoration_type">danger</field>
         </record>
     </data>
 </odoo>

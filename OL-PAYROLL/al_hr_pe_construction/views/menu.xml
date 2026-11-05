@@ -7,6 +7,9 @@
     <menuitem id="menu_construction_wage_table" name="Tablas salariales"
               parent="menu_construction_root"
               action="action_construction_wage_table" sequence="10"/>
+    <menuitem id="menu_construction_wage_check" name="Búsquedas de la tabla"
+              parent="menu_construction_root"
+              action="action_construction_wage_check" sequence="15"/>
     <menuitem id="menu_construction_category" name="Categorías"
               parent="menu_construction_root"
               action="action_construction_category" sequence="20"/>

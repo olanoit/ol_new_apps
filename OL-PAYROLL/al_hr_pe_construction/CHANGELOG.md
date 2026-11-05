@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 26.20261027 — 05/11/2026
+
+- Búsqueda de la tabla salarial por página: revisa las páginas de CAPECO y de la FTCCP y detecta el PDF del convenio siguiente; las direcciones fijas quedan como respaldo.
+- Frecuencia según la época: semanal del 1-dic al 31-ene y mensual el resto del año; una búsqueda que falla entera se reintenta al día siguiente.
+- Registro de cada búsqueda en «Búsquedas de la tabla», con «Buscar ahora».
+- Alerta por falta de tabla: actividad desde el 1-dic, actividad urgente si no hay tabla activa vigente y aviso en la boleta y en el lote.
+- El campo «Fuente» se llena al importar y al encontrar una tabla ya cargada sin fuente.
+- Corrección: quitar todas las direcciones vigiladas ya no hace que vuelvan las iniciales.
+
 ## 25.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
