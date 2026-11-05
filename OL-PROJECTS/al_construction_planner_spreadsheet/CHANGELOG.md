@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261104 — 04/11/2026
+
+- M117-08: un lote grande recalcula el libro una sola vez, y agregar reglas de validación sin solape deja de copiar todas las reglas de la pestaña. Una ampliación de 1,700 filas pasa de más de 6 min a unos 40 s.
+
 ## 16.20261104 — 04/11/2026
 
 - M117-16: el menú de la hoja se llama «Hoja de venta» en una hoja de venta; la validación avisa a los ganchos si fue silenciosa.

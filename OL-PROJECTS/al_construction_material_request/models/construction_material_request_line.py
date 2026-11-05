@@ -95,6 +95,11 @@ class ConstructionMaterialRequestLine(models.Model):
         string='Comprado', compute='_compute_qties', store=True, digits='Product Unit')
     qty_received_on_site = fields.Float(
         string='Recibido en obra', compute='_compute_qties', store=True, digits='Product Unit')
+    # Paquete 1.17, M117-11: lo que volvió de la obra y el cierre con lo recibido.
+    qty_returned_from_site = fields.Float(
+        string='Devuelto de la obra', compute='_compute_qties', store=True, digits='Product Unit')
+    closed_with_received = fields.Boolean(string='Cerrada con lo recibido', readonly=True,
+                                          copy=False)
     line_state = fields.Selection(
         LINE_STATES, string='Situación', compute='_compute_line_state', store=True)
     cancelled = fields.Boolean(string='Cancelada', readonly=True, copy=False)
@@ -136,6 +141,32 @@ class ConstructionMaterialRequestLine(models.Model):
             'qty_rounding': to_line_uom(whole - need),
         })
         return dispatch
+
+    def _construction_net_qty(self):
+        """M117-11: lo que cuenta como pedido, en la unidad del producto: lo pedido
+        menos lo devuelto de la obra; cerrada, lo recibido neto. Lo pendiente de
+        despacho sigue contando para que la compra no vuelva a comprarlo."""
+        self.ensure_one()
+        to_product = lambda qty: self.product_uom_id._compute_quantity(
+            qty, self.product_id.uom_id, rounding_method='HALF-UP')
+        if self.closed_with_received:
+            return max(to_product(self.qty_received_on_site), 0.0)
+        return max(self.product_uom_qty - to_product(self.qty_returned_from_site), 0.0)
+
+    def _construction_moves_done(self):
+        """Gancho: terminó un movimiento de estas líneas."""
+
+    def _construction_close_with_received(self):
+        """Da las líneas por terminadas con lo que hay en la obra."""
+        self.move_ids.filtered(lambda m: m.state not in ('done', 'cancel'))._action_cancel()
+        self.write({'closed_with_received': True})
+        self._construction_moves_done()
+        self.request_id._check_done()
+
+    def _get_report_level_label(self):
+        """Nivel de la línea en los vales: el puente de compras da su ruta."""
+        self.ensure_one()
+        return self.task_id.name or ''
 
     def _get_report_analytic_label(self):
         """Cuentas analíticas de la línea para el vale («Estructuras ·
@@ -270,7 +301,7 @@ class ConstructionMaterialRequestLine(models.Model):
         for line in self:
             site = line._get_site_location()
             source = line._get_source_location()
-            dispatched = received = 0.0
+            dispatched = received = returned = 0.0
             # Como purchase_stock (_prepare_qty_received): movimientos hechos
             # convertidos a la UdM de la línea con HALF-UP; lo que sale de la
             # obra (devolución al almacén) resta.
@@ -286,6 +317,7 @@ class ConstructionMaterialRequestLine(models.Model):
                         dispatched += qty
                 elif out_of_site:
                     received -= qty
+                    returned += qty
                     if source and move.location_dest_id._child_of(source):
                         dispatched -= qty
             if line.supply_mode == 'direct':
@@ -294,10 +326,12 @@ class ConstructionMaterialRequestLine(models.Model):
                 received += sum(line.purchase_request_line_ids.mapped('qty_done'))
             line.qty_dispatched = dispatched
             line.qty_received_on_site = received
+            line.qty_returned_from_site = returned
             line.qty_purchased = sum(line.purchase_request_line_ids.mapped('purchased_qty'))
 
     @api.depends('cancelled', 'product_qty', 'qty_to_dispatch', 'qty_to_purchase',
-                 'qty_received_on_site', 'move_ids.state', 'purchase_request_line_ids')
+                 'qty_received_on_site', 'move_ids.state', 'purchase_request_line_ids',
+                 'closed_with_received')
     def _compute_line_state(self):
         for line in self:
             uom = line.product_uom_id
@@ -307,6 +341,8 @@ class ConstructionMaterialRequestLine(models.Model):
                 # Línea a medio rellenar (onchange de una línea nueva): como en
                 # stock.move, sin material no se compara nada.
                 line.line_state = 'pending'
+            elif line.closed_with_received:
+                line.line_state = 'done'
             elif uom.compare(line.qty_received_on_site, line.product_qty) >= 0:
                 line.line_state = 'done'
             elif uom.compare(line.qty_received_on_site, 0.0) > 0:

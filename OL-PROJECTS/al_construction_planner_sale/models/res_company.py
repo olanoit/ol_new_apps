@@ -41,6 +41,16 @@ class ResCompany(models.Model):
              'confirmación, factura y cobro de las valorizaciones (p. ej. lunes a viernes, '
              'aunque la obra trabaje los sábados). Sin horario, el de la compañía. Los '
              'feriados son los de la compañía.')
+    # Paquete 1.17, M117-25.
+    construction_invoice_form = fields.Selection(
+        [('by_partida', 'Por partida'), ('single', 'Una línea por valorización')],
+        string='Forma de la factura por defecto', default='by_partida')
+    construction_invoice_product_id = fields.Many2one(
+        'product.product', string='Producto de la factura de valorización',
+        domain="[('type', '=', 'service')]")
+    construction_invoice_text = fields.Char(
+        string='Texto de la factura de valorización',
+        help='Con {numero}, {obra}, {os}, {fondo} y {amortizacion}.')
     construction_guarantee_account_id = fields.Many2one(
         'account.account', string='Cuenta del fondo de garantía', check_company=True,
         domain="[('account_type', 'in', ('asset_receivable', 'asset_current'))]",

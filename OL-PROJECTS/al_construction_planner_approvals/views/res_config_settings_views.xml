@@ -16,6 +16,10 @@
                                     invisible="construction_approval_engine != 'approvals'"/>
                         </div>
                     </setting>
+                    <setting company_dependent="1" id="construction_internal_approval_category"
+                             help="Con Aprobaciones, el requerimiento interno se aprueba en esta categoría, para poder filtrarlo. Vacía: se crea sola.">
+                        <field name="construction_internal_approval_category_id" options="{'no_create': True}"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

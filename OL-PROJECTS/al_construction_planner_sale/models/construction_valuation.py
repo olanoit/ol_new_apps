@@ -4,11 +4,15 @@ confirmadas hasta un corte, valorizadas por partida; se envía al cliente,
 recibe sus observaciones y su conformidad (fecha, nombre, cargo y documento)
 y se factura lo confirmado desde la orden de venta del contrato. Lo no
 confirmado queda por valorizar para la siguiente."""
+import base64
+from string import Formatter
+
 from markupsafe import Markup
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_round
+from odoo.tools.misc import formatLang
 
 from odoo.addons.al_construction_planner.models.common import PROJECT_HEAD_GROUPS
 
@@ -26,6 +30,10 @@ VALUATION_STATES = [
 ]
 # Valorizaciones cuyo monto confirmado ya cuenta («% anterior» de la siguiente).
 DONE_STATES = ('confirmed', 'invoiced')
+
+
+DEFAULT_INVOICE_TEXT = ('Valorización N° {numero} suministro e instalación de muebles de melamina '
+                        'del proyecto {obra} según O.S. {os} F.G S/ {fondo}')
 
 
 class ConstructionValuation(models.Model):
@@ -529,9 +537,26 @@ class ConstructionValuation(models.Model):
             moves = self.env['account.move'].search([
                 ('construction_valuation_id', '=', valuation.id), ('state', '!=', 'cancel')])
             errors = []
+            # M117-25: una factura sin vínculo con las partidas (una línea por
+            # valorización) se compara en su total: no hay línea por partida.
+            single = moves.filtered(lambda move: not move.invoice_line_ids.filtered('sale_line_ids'))
+            product = company.construction_invoice_product_id
+            for move in single:
+                billed = sum(move.invoice_line_ids.filtered(
+                    lambda ml: product and ml.product_id == product).mapped('price_subtotal'))
+                billed = move.currency_id._convert(
+                    billed, company.currency_id, company,
+                    move.invoice_date or move.date or fields.Date.context_today(self))
+                if valuation.currency_id.compare_amounts(
+                        billed, sum(valuation.line_ids.mapped('amount_confirmed'))
+                        + MAX_INVOICE_ROUNDING) > 0:
+                    errors.append(self.env._(
+                        '%(invoice)s: facturado %(invoiced)s, confirmado %(confirmed)s',
+                        invoice=move.display_name, invoiced=round(billed, 2),
+                        confirmed=round(sum(valuation.line_ids.mapped('amount_confirmed')), 2)))
             for line in valuation.line_ids:
                 invoiced = 0.0
-                for move_line in moves.invoice_line_ids.filtered(
+                for move_line in (moves - single).invoice_line_ids.filtered(
                         lambda ml, s=line.sale_line_id: s in ml.sale_line_ids):
                     move = move_line.move_id
                     sign = -1 if move.move_type == 'out_refund' else 1
@@ -573,6 +598,7 @@ class ConstructionValuation(models.Model):
         company = self.company_id
         vals_list = []
         delivered = {}
+        recorded = []
         # Con signo: el descuento valorizado en proporción es negativo (CR-12).
         # Por avance de la partida la línea se cobra por porcentaje (CR-01): la
         # cantidad lleva la precisión de la cantidad, no el redondeo de su
@@ -592,7 +618,8 @@ class ConstructionValuation(models.Model):
                     if line.price else 0.0, precision_digits=qty_digits)
             else:
                 cumulative = uom.round(sale_line.product_uom_qty * line.progress_confirmed)
-                quantity = uom.round(cumulative - sale_line.qty_invoiced)
+                quantity = uom.round(cumulative - self.env[
+                    'construction.valuation.invoiced'].sudo()._recorded_qty(sale_line))
             if quantity <= 0:
                 raise UserError(self.env._(
                     '%(partida)s: el %% acumulado confirmado (%(pct)s %%) no alcanza una unidad '
@@ -623,6 +650,11 @@ class ConstructionValuation(models.Model):
                     reason=line.manual_reason)
             vals_list.append(vals)
             delivered[sale_line] = cumulative
+            recorded.append({'sale_line': sale_line, 'qty': quantity, 'amount': line.amount_confirmed,
+                             'converted': amount})
+        self.env.context.get('construction_invoice_recorded', []).extend(recorded)
+        if self._construction_invoice_form() == 'single':
+            vals_list = self._construction_single_lines(recorded, invoice_date)
         for field, account, label in (
                 ('amount_guarantee', company.construction_guarantee_account_id,
                  self.env._('Fondo de garantía retenido (%s %%)', round(self.guarantee_pct, 2))),
@@ -640,6 +672,105 @@ class ConstructionValuation(models.Model):
                 })
         return vals_list, delivered
 
+    # ------------------------------------------------------------------
+    # M117-25: forma de la factura
+    # ------------------------------------------------------------------
+    def _construction_invoice_form(self):
+        self.ensure_one()
+        return self.contract_id.invoice_form or self.company_id.construction_invoice_form \
+            or 'by_partida'
+
+    def _construction_invoice_text(self):
+        """El texto de la línea, con la plantilla de la compañía. Un dato vacío
+        impide crear la factura y dice dónde se llena."""
+        self.ensure_one()
+        company = self.company_id
+        template = company.construction_invoice_text or DEFAULT_INVOICE_TEXT
+        symbol = company.currency_id.symbol or ''
+        values = {
+            'numero': ('%s' % self.sequence_number, False),
+            'obra': (self.project_id.name or '', False),
+            'os': (self.contract_id.client_order_ref or '', self.env._(
+                'Falta la O.S. del cliente: llénela en el contrato %s.',
+                self.contract_id.display_name or '')),
+            'fondo': (formatLang(self.env, self.amount_guarantee), False),
+            'amortizacion': (formatLang(self.env, self.amount_amortization), False),
+        }
+        for _literal, field, _spec, _conv in Formatter().parse(template):
+            if field is None:
+                continue
+            if field not in values:
+                raise UserError(self.env._(
+                    'La plantilla del texto de la factura usa {%(field)s}, que no existe. Se '
+                    'corrige en Ajustes › Planificación de obra.', field=field))
+            value, message = values[field]
+            if not value:
+                raise UserError(message or self.env._('Falta el dato {%s} de la factura.', field))
+            template = template.replace('{%s}' % field, value)
+        # Sin cuentas, los dos montos van en el texto.
+        extras = []
+        for field, account, label in (
+                ('amount_guarantee', company.construction_guarantee_account_id,
+                 self.env._('Fondo de garantía')),
+                ('amount_amortization', company.construction_advance_account_id,
+                 self.env._('Amortización del adelanto'))):
+            if not account and not self.currency_id.is_zero(self[field]):
+                extras.append('%s %s %s' % (label, symbol, formatLang(self.env, self[field])))
+        return ' · '.join([template] + extras)
+
+    def _construction_single_lines(self, recorded, invoice_date):
+        """Una línea por valorización (una por impuesto si las partidas tienen
+        distintos). La analítica de cada partida se reparte en proporción a lo
+        confirmado de cada una."""
+        self.ensure_one()
+        product = self.company_id.construction_invoice_product_id
+        if not product:
+            raise UserError(self.env._(
+                'Indique el producto de la factura de valorización en Ajustes › Planificación '
+                'de obra.'))
+        text = self._construction_invoice_text()
+        groups = {}
+        for row in recorded:
+            key = tuple(sorted(row['sale_line'].tax_ids.ids))
+            groups.setdefault(key, []).append(row)
+        lines = []
+        for taxes, rows in groups.items():
+            total = sum(row['converted'] for row in rows)
+            distribution = {}
+            for row in rows:
+                for key, pct in (row['sale_line'].analytic_distribution or {}).items():
+                    share = row['converted'] / total if total else 0.0
+                    distribution[key] = distribution.get(key, 0.0) + pct * share
+            lines.append({
+                'display_type': 'product', 'product_id': product.id, 'name': text, 'quantity': 1.0,
+                'price_unit': total, 'tax_ids': [Command.set(list(taxes))],
+                'analytic_distribution': distribution or False,
+            })
+        return lines
+
+    def _construction_annex_detail(self):
+        """Detalle del avance por los niveles de la obra: cada vertical agrega lo suyo."""
+        self.ensure_one()
+        return [{'level': line.task_id.display_name, 'detail': '', 'pct': line.pct_now,
+                 'amount': line.amount} for line in self.milestone_line_ids]
+
+    def _construction_attach_annex(self, invoice):
+        """El anexo de la valorización, junto a la factura, en las dos formas."""
+        report = self.env.ref('al_construction_planner_sale.action_report_construction_valuation')
+        pdf, _kind = self.env['ir.actions.report'].sudo()._render_qweb_pdf(report, self.ids)
+        self.env['ir.attachment'].create({
+            'name': 'Anexo_%s.pdf' % (self.name or '').replace('/', '_'),
+            'datas': base64.b64encode(pdf), 'res_model': invoice._name, 'res_id': invoice.id,
+            'mimetype': 'application/pdf'})
+
+    def action_open_invoice_preview(self):
+        """Vista previa antes de crear la factura: un dato que falta se descubre aquí."""
+        self.ensure_one()
+        wizard = self.env['construction.valuation.invoice.wizard'].create({'valuation_id': self.id})
+        return {'type': 'ir.actions.act_window', 'res_model': wizard._name, 'res_id': wizard.id,
+                'name': self.env._('Crear factura'), 'view_mode': 'form',
+                'views': [(False, 'form')], 'target': 'new'}
+
     def action_create_invoice(self):
         """Factura lo confirmado desde la OV del contrato (Administración y
         Finanzas): la factura guarda la valorización y la línea de la OV
@@ -654,7 +785,9 @@ class ConstructionValuation(models.Model):
         self._construction_check_invoice_balance()
         order = self.sale_order_id.with_company(self.company_id)
         today = fields.Date.context_today(self)
-        lines, delivered = self._prepare_invoice_lines(today)
+        recorded = []
+        lines, delivered = self.with_context(
+            construction_invoice_recorded=recorded)._prepare_invoice_lines(today)
         if not lines:
             raise UserError(self.env._('No hay montos confirmados que facturar.'))
         vals = order._prepare_invoice()
@@ -671,7 +804,12 @@ class ConstructionValuation(models.Model):
             if sale_line.qty_delivered_method == 'manual':
                 sale_line.qty_delivered = qty
         self.invoice_id = invoice
+        self.env['construction.valuation.invoiced'].sudo().create([{
+            'valuation_id': self.id, 'invoice_id': invoice.id,
+            'sale_line_id': row['sale_line'].id, 'qty': row['qty'], 'amount': row['amount'],
+        } for row in recorded])
         self._construction_check_invoice_balance()
+        self._construction_attach_annex(invoice)
         self.message_post(body=Markup(self.env._('Factura creada: %s')) % invoice._get_html_link())
         return self.action_view_invoice()
 
@@ -712,6 +850,11 @@ class ConstructionValuation(models.Model):
             self.message_post(body=self.env._(
                 'La factura %(invoice)s difiere en %(diff)s de la valorización: pasa el ajuste de '
                 'redondeo permitido y se revisa a mano.', invoice=invoice.display_name, diff=diff))
+            return
+        if self._construction_invoice_form() == 'single':
+            # M117-25: en la forma de una línea, el ajuste va en esa línea.
+            main = lines.filtered(lambda line: line.price_unit > 0)[:1]
+            main.price_unit = main.price_unit + diff
             return
         main = invoice.invoice_line_ids.filtered('sale_line_ids')[:1]
         invoice.write({'invoice_line_ids': [Command.create({
@@ -902,3 +1045,36 @@ class ConstructionValuationMilestone(models.Model):
     pct_now = fields.Float(string='Avance al corte %', digits=(16, 2))
     amount = fields.Monetary(string='Monto del periodo', currency_field='currency_id')
 
+
+class ConstructionValuationInvoiced(models.Model):
+    """Lo facturado por partida en cada factura (paquete 1.17, M117-25): con una línea
+    por valorización, la factura no tiene vínculo con las líneas de venta."""
+    _name = 'construction.valuation.invoiced'
+    _description = 'Facturado por partida de la valorización'
+
+    valuation_id = fields.Many2one('construction.valuation', required=True, index=True,
+                                   ondelete='cascade')
+    company_id = fields.Many2one(related='valuation_id.company_id', store=True, index=True)
+    invoice_id = fields.Many2one('account.move', required=True, index=True, ondelete='cascade')
+    sale_line_id = fields.Many2one('sale.order.line', string='Partida', required=True, index=True,
+                                   ondelete='cascade')
+    qty = fields.Float(string='Cantidad', digits='Product Unit')
+    amount = fields.Float(string='Importe', digits='Product Price',
+                          help='En la moneda de la compañía.')
+
+    def _net_factor(self):
+        """Lo que sigue facturado: 0 con la factura cancelada; una nota de crédito
+        resta en proporción."""
+        self.ensure_one()
+        invoice = self.invoice_id
+        if invoice.state == 'cancel':
+            return 0.0
+        refunds = invoice.reversal_move_ids.filtered(lambda move: move.state != 'cancel')
+        if not refunds or not invoice.amount_untaxed:
+            return 1.0
+        return max(1.0 - sum(refunds.mapped('amount_untaxed')) / invoice.amount_untaxed, 0.0)
+
+    @api.model
+    def _recorded_qty(self, sale_line):
+        rows = self.search([('sale_line_id', '=', sale_line.id)])
+        return sum(row.qty * row._net_factor() for row in rows)

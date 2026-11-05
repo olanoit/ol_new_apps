@@ -159,6 +159,20 @@
                     </td>
                 </tr>
             </table>
+            <t t-set="annex" t-value="o._construction_annex_detail()"/>
+            <table class="pe-doc-table pe-doc-lines mb-3" t-if="annex">
+                <thead class="pe-doc-thead">
+                    <tr><th>Nivel</th><th>Detalle</th><th class="text-end">Avance %</th><th class="text-end">Periodo</th></tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="annex" t-as="row">
+                        <td t-out="row['level']"/>
+                        <td t-out="row['detail']"/>
+                        <td class="text-end" t-out="'%.2f' % row['pct']"/>
+                        <td class="text-end"><span t-out="row['amount']" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                </tbody>
+            </table>
             <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
                 <tr>
                     <td><div t-out="company.name"/></td>

@@ -14,6 +14,21 @@ class PurchaseOrderLine(models.Model):
     construction_request_task_ids = fields.Many2many(
         'project.task', string='Partidas', compute='_compute_construction_request_task_ids')
 
+    # M117-12: para que Compras vea qué precio tiene que escribir.
+    construction_no_vendor_price = fields.Boolean(
+        string='Sin tarifa del proveedor', compute='_compute_construction_no_vendor_price')
+
+    @api.depends('product_id', 'partner_id', 'product_qty', 'product_uom_id',
+                 'purchase_request_lines')
+    def _compute_construction_no_vendor_price(self):
+        for line in self:
+            line.construction_no_vendor_price = bool(
+                line.product_id and line.purchase_request_lines
+                and not line.product_id._select_seller(
+                    partner_id=line.partner_id, quantity=line.product_qty,
+                    date=line.order_id.date_order and line.order_id.date_order.date(),
+                    uom_id=line.product_uom_id))
+
     @api.depends('purchase_request_lines.construction_request_line_id.task_id')
     def _compute_construction_request_task_ids(self):
         for line in self:

@@ -22,6 +22,8 @@ from odoo.fields import Domain
 
 from odoo.addons.al_construction_planner.models.common import norm, stage_selection
 
+from .construction_furniture_type import furniture_kind_selection, special_kind_selection
+
 FURNITURE_KINDS = [
     ('low', 'Mueble bajo'),
     ('high', 'Mueble alto'),
@@ -104,7 +106,7 @@ class ConstructionTypologyFurniture(models.Model):
     _inherit = 'construction.typology.furniture'
 
     furniture_kind = fields.Selection(
-        FURNITURE_KINDS, string='Tipo de mueble', compute='_compute_furniture_kind', store=True,
+        furniture_kind_selection, string='Tipo de mueble', compute='_compute_furniture_kind', store=True,
         readonly=False,
         help='Bajo, alto, torre o isla en cocinas; en closet, baño, lavandería, ducto y '
              'estacionamiento el bloque del despiece es el mueble completo.')
@@ -131,8 +133,13 @@ class ConstructionTypologyModule(models.Model):
         MODULE_CLASSES, string='Tipo de módulo', compute='_compute_module_class', store=True,
         readonly=False, help='Estándar o especial (microondas, campana, torre de horno…).')
     special_kind = fields.Selection(
-        SPECIAL_KINDS, string='Módulo especial', compute='_compute_module_class', store=True,
-        readonly=False)
+        special_kind_selection, string='Módulo especial', compute='_compute_module_class',
+        store=True, readonly=False)
+    # Paquete 1.17, M117-24: el tipo del catálogo. Al actualizar, cada módulo toma el
+    # de su especial o el de su tipo anterior; el grupo ML sigue siendo suyo.
+    type_id = fields.Many2one(
+        'construction.furniture.type', string='Tipo de módulo', domain="[('level', '=', 'module')]",
+        compute='_compute_type_id', store=True, readonly=False, ondelete='restrict')
     join_method = fields.Selection(
         JOIN_METHODS, string='Método de unión', compute='_compute_join_method', store=True,
         readonly=False,
@@ -156,12 +163,45 @@ class ConstructionTypologyModule(models.Model):
 
     @api.depends('name', 'code')
     def _compute_module_class(self):
+        Type = self.env['construction.furniture.type']
         for module in self:
             if module.module_class:
                 continue
-            kind = special_kind_from_name(module.name or module.code)
-            module.special_kind = kind
-            module.module_class = 'special' if kind else 'standard'
+            kind = Type._from_name(module.name or module.code)
+            special = kind if kind.module_class == 'special' else Type
+            module.special_kind = special.code or False
+            module.module_class = 'special' if special else 'standard'
+
+    @api.depends('special_kind', 'module_type')
+    def _compute_type_id(self):
+        Type = self.env['construction.furniture.type']
+        for module in self:
+            kind = Type._by_code('module', module.special_kind) \
+                or Type._by_code('module', module.module_type)
+            # Un tipo sin código anterior («Panel de TV») se conserva.
+            if module.type_id and module.type_id.code not in (
+                    module.special_kind, module.module_type) and not module.special_kind:
+                continue
+            module.type_id = kind
+
+    @api.onchange('type_id')
+    def _onchange_type_id(self):
+        """Elegir el tipo propone la clase y el grupo ML."""
+        for module in self.filtered('type_id'):
+            module.update(self.env['construction.furniture.type']._construction_module_values(
+                module.type_id, module.ml_group not in (False, 'none') and module.ml_group))
+
+    @api.model
+    def _construction_type_vals(self, vals):
+        """Con el tipo elegido, la clase y lo demás salen de él; lo que viene
+        escrito en ``vals`` se respeta."""
+        if not vals.get('type_id'):
+            return vals
+        Type = self.env['construction.furniture.type']
+        derived = Type._construction_module_values(
+            Type.browse(vals['type_id']), vals.get('ml_group') not in (None, False, 'none')
+            and vals['ml_group'], vals.get('module_class'))
+        return dict(derived, **vals)
 
     @api.depends('material_ids.product_id', 'material_ids.qty', 'material_ids.stage',
                  'special_kind')
@@ -184,12 +224,14 @@ class ConstructionTypologyModule(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        vals_list = [self._construction_type_vals(vals) for vals in vals_list]
         for vals in vals_list:
             if vals.get('join_method'):
                 vals.setdefault('join_method_manual', True)
         return super().create(vals_list)
 
     def write(self, vals):
+        vals = self._construction_type_vals(vals)
         if 'join_method' in vals and 'join_method_manual' not in vals:
             vals = dict(vals, join_method_manual=bool(vals['join_method']))
         return super().write(vals)
@@ -317,7 +359,7 @@ class ConstructionJoinRule(models.Model):
     active = fields.Boolean(default=True)
     method = fields.Selection(JOIN_METHODS, string='Método', required=True)
     special_kind = fields.Selection(
-        SPECIAL_KINDS, string='Módulo especial',
+        special_kind_selection, string='Módulo especial',
         help='Si se indica, la regla vale para ese tipo de módulo sin mirar los insumos '
              '(el zócalo va sin unión).')
     screws_min = fields.Float(string='Tornillos desde')
@@ -348,7 +390,7 @@ class ConstructionLaborActivity(models.Model):
     activity_class = fields.Selection(ACTIVITY_CLASSES, string='Clase de actividad')
     join_method = fields.Selection(JOIN_METHODS, string='Método de unión',
                                    help='Armado del casco: el método que paga.')
-    special_kind = fields.Selection(SPECIAL_KINDS, string='Módulo especial',
+    special_kind = fields.Selection(special_kind_selection, string='Módulo especial',
                                     help='Armado de módulo especial: el tipo que paga.')
     piece_types = fields.Char(
         string='Piezas que la generan',
@@ -485,7 +527,21 @@ class ResConfigSettings(models.TransientModel):
 class ProjectTask(models.Model):
     _inherit = 'project.task'
 
-    construction_furniture_kind = fields.Selection(FURNITURE_KINDS, string='Tipo de mueble')
+    construction_furniture_kind = fields.Selection(furniture_kind_selection,
+                                                   string='Tipo de mueble')
     construction_module_class = fields.Selection(MODULE_CLASSES, string='Clase de módulo')
-    construction_special_kind = fields.Selection(SPECIAL_KINDS, string='Módulo especial')
+    construction_special_kind = fields.Selection(special_kind_selection, string='Módulo especial')
+    # Paquete 1.17, M117-24: el tipo del catálogo, desde lo que guarda la tarea.
+    construction_furniture_type_id = fields.Many2one(
+        'construction.furniture.type', string='Tipo de módulo', domain="[('level', '=', 'module')]",
+        compute='_compute_construction_furniture_type_id', store=True, readonly=False,
+        ondelete='restrict')
     construction_join_method = fields.Selection(JOIN_METHODS, string='Método de unión')
+
+    @api.depends('construction_special_kind', 'construction_module_type')
+    def _compute_construction_furniture_type_id(self):
+        Type = self.env['construction.furniture.type']
+        for task in self:
+            task.construction_furniture_type_id = Type._by_code(
+                'module', task.construction_special_kind or task.construction_module_type)
+

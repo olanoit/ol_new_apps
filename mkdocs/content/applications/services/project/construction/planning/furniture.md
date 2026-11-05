@@ -23,6 +23,25 @@ una contrata de muebles.
 3. Revise las **Reglas del método de unión** y las **Listas de tarifas** en
    **Configuración ‣ Plan de obra**.
 
+## Tipos de mueble y de módulo
+
+**Tipos de mueble y de módulo**, en la configuración del planificador, reúne la lista
+que usan los módulos y la hoja de trabajo. Para un tipo nuevo, por ejemplo «Panel de
+TV», no hace falta programar:
+
+| Campo | Para qué sirve |
+|---|---|
+| **Nivel** | Mueble o módulo |
+| **Clase** | Estándar o especial; un módulo especial no se arma como los estándar |
+| **Grupo de ML sugerido** | El grupo que propone al elegir el tipo |
+| **Palabras que lo delatan** | Reconoce el tipo por el nombre del módulo al importar |
+| **Actividad de armado por defecto** | La actividad que propone para ese tipo |
+| **No cuenta como módulo a armar** | Lo saca de la columna «A armar» de la hoja |
+
+Las listas de la hoja leen este catálogo: el tipo nuevo aparece al volver a abrirla.
+Una hoja creada antes de este catálogo lo toma al usar **Actualizar a la plantilla
+vigente**.
+
 ## Modelo del mueble
 
 La plantilla **Edificio** ordena la obra en piso › departamento › ambiente ›

@@ -154,6 +154,24 @@ Ejemplo con los datos de demostración (solo el piso 05): la partida vale
 S/ 8,698.43 y la valorización 1 entrega S/ 408.31 (4.69 %), con S/ 20.42 de
 fondo de garantía y S/ 387.89 neto.
 
+### Forma de la factura
+
+Cada contrato elige cómo se factura su valorización; si no lo indica, usa
+**Forma de la factura por defecto** de los ajustes de la compañía:
+
+| Forma | Qué lleva la factura |
+|---|---|
+| Por partida | Una línea por partida de la orden de venta |
+| Una línea por valorización | Una sola línea con el **Producto de la factura de valorización** y su texto, y el detalle en un anexo adjunto |
+
+El **Texto de la factura de valorización** admite `{numero}`, `{obra}`, `{os}`,
+`{fondo}` y `{amortizacion}`. Si falta el dato de una de ellas, por ejemplo la orden de
+servicio del contrato, la factura no se crea y el mensaje dice cuál falta.
+
+**Crear factura** muestra antes una vista previa. Lo facturado queda registrado por
+partida, así que el avance de la siguiente valorización se calcula igual con las dos
+formas.
+
 ## Casos especiales
 
 | Situación | Qué pasa | Qué hacer |

@@ -112,4 +112,21 @@
         </field>
     </record>
 
+    <!-- Paquete 1.17, M117-25. -->
+    <record id="construction_valuation_invoice_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.valuation.invoice.wizard.form</field>
+        <field name="model">construction.valuation.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Crear factura">
+                <field name="valuation_id" invisible="1"/>
+                <field name="missing" invisible="1"/>
+                <div class="alert alert-warning" invisible="not missing"><field name="missing" nolabel="1" readonly="1"/></div>
+                <field name="preview_html" nolabel="1" readonly="1" invisible="missing"/>
+                <footer>
+                    <button name="action_create" type="object" string="Crear factura" class="btn-primary" invisible="missing"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 </odoo>

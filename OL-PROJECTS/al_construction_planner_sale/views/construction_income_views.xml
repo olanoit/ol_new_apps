@@ -201,7 +201,7 @@
                             class="btn-primary" invisible="state != 'observed'"/>
                     <button name="action_open_confirm_wizard" type="object" string="Confirmar"
                             class="btn-primary" invisible="state != 'sent'"/>
-                    <button name="action_create_invoice" type="object" string="Crear factura"
+                    <button name="action_open_invoice_preview" type="object" string="Crear factura"
                             class="btn-primary"
                             invisible="state != 'confirmed' or (invoice_id and invoice_state != 'cancel')"
                             groups="al_construction_planner.group_planner_revenue"/>

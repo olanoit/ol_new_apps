@@ -160,7 +160,19 @@ class ConstructionResourcePlanAllocation(models.Model):
         # La compra masiva es stock general: no es lo pedido por la obra.
         if self.kind == 'purchase_request':
             return 0.0
-        return super()._get_requested_qty()
+        qty = super()._get_requested_qty()
+        # M117-11: lo pedido cuenta neto de lo devuelto de la obra; se reparte
+        # entre las asignaciones de la línea en proporción a lo asignado.
+        line = self.material_request_line_id
+        if self.kind == 'material_request' and line and self.state != 'cancel' and (
+                line.qty_returned_from_site or line.closed_with_received):
+            # Sobre lo asignado en este plan: la regularización ya asigna neto.
+            siblings = line.construction_allocation_ids.filtered(
+                lambda a: a.plan_line_id.plan_id == self.plan_line_id.plan_id)
+            total = sum(a._to_product_uom(a.qty_allocated) for a in siblings)
+            if total:
+                qty = qty * line._construction_net_qty() / total
+        return qty
 
     def _get_open_document_dates(self):
         result = super()._get_open_document_dates()

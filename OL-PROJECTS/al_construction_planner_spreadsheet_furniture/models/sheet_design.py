@@ -103,7 +103,7 @@ SHEET_DESIGN = {
         'Tipología': (120, None), 'Orden': (105, INTEGER), 'Código del módulo': (105, None),
         'Tipo': (125, None), 'Ancho (mm)': (105, INTEGER), 'Grupo ML': (130, None),
         'Actividad de armado': (125, None), 'Mueble': (135, None), 'Nombre': (170, None),
-        'Tipo de módulo': (120, None), 'Método de unión': (120, None),
+        'Clase (calc.)': (105, None), 'Método de unión': (120, None),
         'A armar (calc.)': (105, INTEGER), 'ML (calc.)': (105, MONEY)}},
     'ACTIVIDADES': {'freeze': 2, 'columns': {
         'Tipología': (120, None), 'Actividad': (135, None),
@@ -146,7 +146,8 @@ SHEET_DESIGN = {
     'CONTRATOS': {'freeze': 1, 'columns': {
         'Contrato': (200, None), 'Cliente': (235, None), 'Adelanto %': (105, PERCENT),
         'Fondo de garantía %': (105, PERCENT), 'Plantilla de hitos': (175, None),
-        'Factor de descuento': (105, '0.000000')}},
+        'Factor de descuento': (105, '0.000000'), 'Forma de la factura': (165, None),
+        'O.S. del cliente': (120, None)}},
     'HITOS': {'freeze': 1, 'columns': {
         'Plantilla': (160, None), 'Hito': (200, None), '%': (105, PERCENT),
         'Etapa': (165, None)}},

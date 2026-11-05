@@ -376,6 +376,31 @@ class ConstructionMaterialRequest(models.Model):
             if open_lines and all(l.line_state == 'done' for l in open_lines):
                 request.state = 'done'
 
+    def _construction_notify_return(self):
+        """Una actividad por requerimiento, mientras no se atienda la anterior."""
+        summary = self.env._('Devolución desde la obra: cierre con lo recibido')
+        for request in self:
+            if not request.activity_ids.filtered(lambda a: a.summary == summary):
+                request.activity_schedule(
+                    'mail.mail_activity_data_todo', summary=summary,
+                    user_id=(request.requested_by or request.create_uid).id)
+
+    def action_close_with_received(self):
+        """«Cerrar con lo recibido»: las líneas con diferencia, para marcarlas."""
+        self.ensure_one()
+        lines = self.line_ids.filtered(
+            lambda l: not l.cancelled and not l.closed_with_received and l.product_id
+            and l.product_uom_id.compare(l.qty_received_on_site, l.product_qty) < 0)
+        if not lines:
+            raise UserError(self.env._('Ninguna línea tiene diferencia entre lo pedido y lo recibido.'))
+        wizard = self.env['construction.request.close.wizard'].create({
+            'request_id': self.id,
+            'line_ids': [Command.create({'line_id': line.id, 'selected': True}) for line in lines],
+        })
+        return {'type': 'ir.actions.act_window', 'res_model': wizard._name, 'res_id': wizard.id,
+                'name': self.env._('Cerrar con lo recibido'), 'view_mode': 'form',
+                'views': [(False, 'form')], 'target': 'new'}
+
     def action_cancel(self):
         self._check_state(('draft', 'to_approve', 'approved', 'rejected', 'in_progress'))
         for request in self.filtered(lambda r: r.state == 'in_progress'):

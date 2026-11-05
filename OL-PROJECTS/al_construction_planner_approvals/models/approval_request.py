@@ -39,8 +39,11 @@ class ApprovalCategory(models.Model):
         # Quien envía un plan o un requerimiento no administra Aprobaciones:
         # el tipo de obra lo crea el sistema.
         Category_sudo = self.sudo()
+        # M117-13: la del requerimiento interno es aparte.
         category = Category_sudo.search([
-            ('approval_type', '=', 'construction'), ('company_id', '=', company.id)], limit=1)
+            ('approval_type', '=', 'construction'), ('company_id', '=', company.id),
+            ('id', '!=', company.sudo().construction_internal_approval_category_id.id)],
+            order='id', limit=1)
         if not category:
             category = Category_sudo.create({
                 'name': self.env._('Aprobación de obra'),

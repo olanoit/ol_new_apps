@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261104 — 04/11/2026
+
+- M117-25: el anexo de la factura trae el detalle por departamento y tipología.
+
 ## 3.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

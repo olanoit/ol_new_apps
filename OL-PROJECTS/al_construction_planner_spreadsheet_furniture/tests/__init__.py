@@ -10,3 +10,4 @@ from . import test_package_117_e2
 from . import test_package_117_e3a
 from . import test_package_117_e3b
 from . import test_package_117_e3e
+from . import test_package_117_e4

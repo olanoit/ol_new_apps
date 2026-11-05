@@ -224,6 +224,123 @@ class TestPackage116Stage2a(PlannerCommon):
         self.assertEqual(line.qty_requested, 0)
 
     # ------------------------------------------------------------------
+    # Paquete 1.17, M117-11, M117-12, M117-13 y M117-14
+    # ------------------------------------------------------------------
+    def _return_from_site(self, request, qty):
+        """Una devolución de la obra al almacén, ya hecha."""
+        line = request.line_ids
+        site = line._get_site_location()
+        move = self.env['stock.move'].sudo().create({
+            'product_id': line.product_id.id, 'product_uom_qty': qty, 'quantity': qty,
+            'product_uom': line.product_uom_id.id, 'location_id': site.id,
+            'location_dest_id': self.env.ref('stock.stock_location_stock').id,
+            'construction_request_line_id': line.id, 'picked': True})
+        move._action_done()
+        return move
+
+    def test_return_from_site_counts_net_in_the_plan(self):
+        self._setting('approve')
+        request = self._request(self.p_screw, 100)
+        request.with_user(self.requester).action_request_approval()
+        self._return_from_site(request, 10)
+        self.assertEqual(request.line_ids.qty_returned_from_site, 10)
+        self.assertEqual(request.line_ids._construction_net_qty(), 90)
+        plan, line = self._approve_plan_with(60)
+        self.assertEqual(line.qty_requested, 90)
+        log = self.env['construction.exceed.log'].search([('plan_id', '=', plan.id)])
+        self.assertEqual(log.qty, 30)
+        self.assertIn('Devolución desde la obra', ''.join(request.activity_ids.mapped('summary')))
+
+    def test_return_after_the_plan_lowers_what_is_requested(self):
+        self._setting('approve')
+        request = self._request(self.p_screw, 50)
+        request.with_user(self.requester).action_request_approval()
+        _plan, line = self._approve_plan_with(60)
+        self.assertEqual(line.qty_requested, 50)
+        self._return_from_site(request, 10)
+        line.invalidate_recordset()
+        self.assertEqual(line.qty_requested, 40)
+
+    def test_close_with_received(self):
+        self._setting('approve')
+        request = self._request(self.p_screw, 100)
+        request.with_user(self.requester).action_request_approval()
+        request.state = 'in_progress'
+        self._return_from_site(request, 10)
+        action = request.action_close_with_received()
+        wizard = self.env[action['res_model']].browse(action['res_id'])
+        self.assertEqual(wizard.line_ids.qty_difference, 110, 'pedido 100, neto -10')
+        wizard.action_confirm()
+        self.assertTrue(request.line_ids.closed_with_received)
+        self.assertEqual(request.line_ids.line_state, 'done')
+        self.assertEqual(request.state, 'done')
+        self.assertEqual(request.line_ids._construction_net_qty(), 0)
+
+    def test_vendor_price_reaches_the_quotation(self):
+        vendor = self.env['res.partner'].create({'name': 'Proveedor 1.17 (test)'})
+        self.env['product.supplierinfo'].create({
+            'partner_id': vendor.id, 'product_tmpl_id': self.p_screw.product_tmpl_id.id,
+            'price': 0.48, 'min_qty': 1})
+        purchase = self.env['purchase.request'].create({'line_ids': [
+            Command.create({'product_id': self.p_screw.id, 'product_qty': 40,
+                            'product_uom_id': self.p_screw.uom_id.id}),
+            Command.create({'product_id': self.p_anchor.id, 'product_qty': 5,
+                            'product_uom_id': self.p_anchor.uom_id.id})]})
+        purchase.button_to_approve()
+        purchase.button_approved()
+        wizard = self.env['purchase.request.line.make.purchase.order'].with_context(
+            active_model='purchase.request', active_ids=purchase.ids).create(
+            {'supplier_id': vendor.id})
+        wizard.make_purchase_order()
+        lines = purchase.line_ids.purchase_lines
+        priced = lines.filtered(lambda l: l.product_id == self.p_screw)
+        self.assertEqual(priced.price_unit, 0.48)
+        self.assertFalse(priced.construction_no_vendor_price)
+        self.assertTrue(lines.filtered(
+            lambda l: l.product_id == self.p_anchor).construction_no_vendor_price)
+
+    def _internal_request(self):
+        area = self.env['account.analytic.account'].create({
+            'name': 'TI', 'plan_id': self.env['account.analytic.plan'].create(
+                {'name': 'Áreas 1.17 (test)'}).id})
+        return self.env['construction.material.request'].with_user(self.requester).create({
+            'request_type': 'internal', 'area_id': area.id, 'line_ids': [Command.create({
+                'product_id': self.p_screw.id, 'product_qty': 5})]})
+
+    def test_internal_request_has_its_own_name_with_approvals(self):
+        self.company.write({
+            'construction_approval_engine': 'approvals',
+            'construction_internal_fallback_group_id': self.env.ref('base.group_user').id})
+        request = self._internal_request()
+        request.with_user(self.requester).action_request_approval()
+        approval = request.construction_approval_id
+        self.assertEqual(approval.name,
+                         'Aprobación de requerimiento interno · %s · TI' % request.display_name)
+        self.assertEqual(approval.category_id.name, 'Aprobación de requerimiento interno')
+        self.assertEqual(self.company.construction_internal_approval_category_id,
+                         approval.category_id)
+        self.assertNotEqual(approval.category_id,
+                            self.env['approval.category']._construction_category(self.company))
+
+    def test_internal_request_has_its_own_name_with_tiers(self):
+        self.company.write({
+            'construction_approval_engine': 'tier',
+            'construction_internal_fallback_group_id': self.env.ref('base.group_user').id})
+        request = self._internal_request()
+        request.with_user(self.requester).action_request_approval()
+        self.assertIn('Aprobación de requerimiento interno', request.review_ids.definition_id.name)
+
+    def test_slip_prints_the_level_path(self):
+        project, nodes = self._template_project()
+        request = self.env['construction.material.request'].create({'project_id': project.id})
+        request.write({'line_ids': [Command.create({
+            'product_id': self.p_screw.id, 'product_qty': 1, 'task_id': nodes[-1].id,
+            'construction_stage': 'installation'})]})
+        label = request.line_ids._get_report_level_label()
+        self.assertIn(' / ', label)
+        self.assertTrue(label.endswith('Bajo'))
+
+    # ------------------------------------------------------------------
     # M114-03 / M116-04
     # ------------------------------------------------------------------
     def _template_project(self, start=None):

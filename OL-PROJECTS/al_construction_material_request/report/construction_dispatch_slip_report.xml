@@ -134,7 +134,7 @@
                         <td t-out="row['index']"/>
                         <td>
                             <div t-out="line.product_id.display_name"/>
-                            <div class="pe-doc-fs-11" t-if="line.task_id" t-out="line.task_id.display_name"/>
+                            <div class="pe-doc-fs-11" t-if="line.task_id" t-out="line._get_report_level_label()"/>
                         </td>
                         <td t-out="line.product_uom_id.name"/>
                         <td class="text-end" t-out="row['qty']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>

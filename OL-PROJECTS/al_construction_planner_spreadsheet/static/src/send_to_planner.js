@@ -1,14 +1,18 @@
-import { registries, UIPlugin } from "@odoo/o-spreadsheet";
+import { helpers, registries, UIPlugin } from "@odoo/o-spreadsheet";
 import { useSubEnv } from "@odoo/owl";
 import { SpreadsheetAction } from "@documents_spreadsheet/bundle/actions/spreadsheet_action";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 
-const { featurePluginRegistry, topbarMenuRegistry } = registries;
+const { corePluginRegistry, featurePluginRegistry, topbarMenuRegistry } = registries;
 
 const BATCH_COMMAND = "AL_CONSTRUCTION_BATCH";
 const BATCH_SIZE = 2000;
+// M117-08: desde aquí un lote recalcula el libro una vez, al terminar. Celda por
+// celda, la hoja actualiza sus dependencias y recalcula cada búsqueda que mira esas
+// columnas: con las fórmulas de 1,500 filas, cada lote tardaba minutos.
+const FULL_EVALUATION_FROM = 200;
 
 /**
  * Agrupa muchos comandos en una sola revisión de la hoja: cada dispatch
@@ -18,13 +22,41 @@ const BATCH_SIZE = 2000;
 class ConstructionBatchPlugin extends UIPlugin {
     handle(cmd) {
         if (cmd.type === BATCH_COMMAND) {
+            if (cmd.commands.length >= FULL_EVALUATION_FROM) {
+                this.dispatch("EVALUATE_CELLS", { cellIds: [] });
+            }
             for (const [type, payload] of cmd.commands) {
-                this.dispatch(type, payload);
+                const result = this.dispatch(type, payload);
+                // Las reglas y las tablas se rechazan sin aviso si llegan mal.
+                if (type !== "UPDATE_CELL" && !result.isSuccessful) {
+                    console.warn(`La hoja rechazó ${type}:`, result.reasons);
+                }
             }
         }
     }
 }
 featurePluginRegistry.add("al_construction_batch", ConstructionBatchPlugin);
+
+/**
+ * M117-08: cada regla nueva de validación copia y recalcula todas las reglas de la
+ * pestaña para quitarles lo que se solape. BOM y PIEZAS llevan tres reglas por fila:
+ * con 1,700 filas son 10,000 reglas y varios minutos, también al reabrir la hoja. Sin
+ * solape no hay nada que quitar, y el resultado es el mismo sin esa copia.
+ */
+patch(corePluginRegistry.get("dataValidation").prototype, {
+    removeRangesFromRules(sheetId, ranges, rules, editingRuleId) {
+        const overlaps = rules.some(
+            (rule) =>
+                rule.id !== editingRuleId &&
+                rule.ranges.some((one) =>
+                    ranges.some((other) => helpers.overlap(one.zone, other.zone))
+                )
+        );
+        return overlaps
+            ? super.removeRangesFromRules(sheetId, ranges, rules, editingRuleId)
+            : [...rules];
+    },
+});
 
 /** Despacha ``commands`` ([tipo, datos]) en revisiones de 2 000 comandos. */
 export function dispatchBatch(model, commands) {

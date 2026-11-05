@@ -209,6 +209,18 @@ class ConstructionValuation(models.Model):
 
             def convert(amount, move=move, date=date):
                 return move.currency_id._convert(amount, company.currency_id, company, date)
+            # M117-25: con una línea por valorización, lo facturado está en el registro.
+            Recorded = self.env['construction.valuation.invoiced'].sudo()
+            recorded = Recorded.search([('invoice_id', '=', move.id)]) or Recorded.search(
+                [('invoice_id', '=', move.reversed_entry_id.id)]) if not move.invoice_line_ids.filtered(
+                    'sale_line_ids') else Recorded
+            if recorded:
+                ratio = 1.0
+                if move.move_type == 'out_refund' and move.reversed_entry_id.amount_untaxed:
+                    ratio = move.amount_untaxed / move.reversed_entry_id.amount_untaxed
+                for row in recorded:
+                    result[row.sale_line_id.sudo(False)][0] += sign * row.amount * ratio
+                continue
             lines = move.invoice_line_ids.filtered(lambda l: l.sale_line_ids)
             advance = lines.filtered(lambda l: any(l.sale_line_ids.mapped('is_downpayment')))
             lines -= advance

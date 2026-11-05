@@ -141,7 +141,7 @@ class ResCompany(models.Model):
                 rule.active = False
                 continue
             vals = {
-                'name': _('Requerimiento interno sin jefe: %s', group.name),
+                'name': _('Aprobación de requerimiento interno: %s', group.name),
                 'model_id': model.id,
                 'review_type': 'group',
                 'reviewer_group_id': group.id,

@@ -29,6 +29,11 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '24.20261104'
+  fecha: 04/11/2026
+  cambios:
+    - "M117-24: catálogo «Tipos de mueble y de módulo», con clase, grupo de ML, palabras clave y actividad de armado; se pueden agregar tipos sin programar."
+    - "M117-25: CONTRATOS admite forma de factura y orden de servicio."
 - version: '23.20261104'
   fecha: 04/11/2026
   cambios:

@@ -19,7 +19,7 @@ import {
     validate,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
 import { TREE_SHEET, clearFloorGroups, groupTreeByFloor } from "./floor_groups";
-import { columnsOf, ensureCapacity, ensureRows } from "./sheet_import";
+import { columnsOf, ensureCapacity, ensureRows, writeWithProgress } from "./sheet_import";
 
 const { topbarMenuRegistry } = registries;
 const TRACE = "_HUELLA";
@@ -230,7 +230,10 @@ async function applyBring(env, tabs, data) {
             }
         }
     }
-    dispatchBatch(model, commands);
+    // M117-08: con el avance a la vista.
+    if (!(await writeWithProgress(env, _t("Traer la venta"), commands))) {
+        return;
+    }
     if (hasTree) {
         groupTreeByFloor(model);
     }
@@ -409,7 +412,7 @@ function offerBoards(env) {
                     commands.push(["UPDATE_CELL", { sheetId, col, row, content: group.board }]);
                 }
             }
-            dispatchBatch(model, commands);
+            await writeWithProgress(env, _t("Aplicar propuestas"), commands);
         },
     });
 }

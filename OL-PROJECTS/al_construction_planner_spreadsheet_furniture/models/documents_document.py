@@ -34,7 +34,7 @@ SALE_BRING_HEADERS = {
               'space': 'Ambiente', 'typology': 'Tipología', 'unit_type': 'Tipo de unidad'},
     'CONTRATOS': {'name': 'Contrato', 'partner': 'Cliente', 'advance': 'Adelanto %',
                   'guarantee': 'Fondo de garantía %', 'milestone_template': 'Plantilla de hitos',
-                  'discount_factor': 'Factor de descuento'},
+                  'discount_factor': 'Factor de descuento', 'invoice_form': 'Forma de la factura'},
     'VENTA': {'contract': 'Contrato', 'typology': 'Tipología', 'price': 'Precio por ambiente'},
     'OBRA': {'key': 'Dato', 'value': 'Valor'},
     'ACABADOS DE OBRA': {'code': 'Código del cliente (calc.)', 'description': 'Descripción (calc.)',
@@ -224,6 +224,9 @@ class DocumentsDocument(models.Model):
         formula_cols = set(spec.get('formula_cols') or [])
         letters = dict(info['letters'])
         headers = dict(info['columns'])
+        if name == 'MODULOS':
+            # M117-24: la clase es calculada; una hoja anterior la tenía de dato.
+            letters.pop('module_class', None)
         # El código del producto es fórmula desde «Producto»: no se copia.
         pick = PRODUCT_PICK.get(name)
         if pick:
@@ -449,13 +452,16 @@ class DocumentsDocument(models.Model):
                       'match': ['group', 'floor', 'apartment', 'space'],
                       'rows': self._construction_tree_rows_from_sale(summary)},
             'CONTRATOS': {'keys': ['name', 'partner', 'advance', 'guarantee', 'milestone_template',
-                                   'discount_factor'], 'match': ['name'],
+                                   'discount_factor', 'invoice_form'], 'match': ['name'],
                           'keep_extra': True,
                           'rows': [[contract, obra.get('Cliente') or '',
                                     str(obra.get('Adelanto %') or ''),
                                     str(obra.get('Fondo de garantía %') or ''),
                                     order_sudo.company_id.construction_sale_milestone_template or '',
-                                    '%.6f' % discount]]},
+                                    '%.6f' % discount, {
+                                        'by_partida': 'Por partida',
+                                        'single': 'Una línea por valorización',
+                                    }.get(order_sudo.company_id.construction_invoice_form, '')]]},
             'VENTA': {'keys': ['contract', 'typology', 'price'], 'match': ['contract', 'typology'],
                       'rows': [[contract, t['code'], number((t.get('price') or 0.0) / factor)]
                                for t in summary.get('typologies', [])]},
@@ -791,8 +797,7 @@ class DocumentsDocument(models.Model):
             typology = space.construction_typology_id
             if typology not in modules_by_typology:
                 modules_by_typology[typology] = len(typology.module_line_ids.filtered(
-                    lambda module: module.special_kind != 'plinth' and 'zocalo' not in norm(
-                        '%s %s' % (module.code or '', module.name or ''))))
+                    lambda module: not module.type_id.not_counted))
             row = totals.setdefault(key, [key, 0, 0, 0.0])
             row[1] += 1
             row[2] += modules_by_typology[typology]
@@ -841,7 +846,7 @@ class DocumentsDocument(models.Model):
             for t in typologies for f in t.furniture_line_ids])
         add('MODULOS', ['typology', 'sequence', 'code', 'type', 'width', 'ml_group', 'activity',
                         'furniture', 'name', 'module_class', 'join_method'], [[
-            m.typology_id.code, str(m.sequence), m.code or '', label(m, 'module_type'),
+            m.typology_id.code, str(m.sequence), m.code or '', m.type_id.name or label(m, 'module_type'),
             str(m.width_mm or ''), label(m, 'ml_group'), m.assembly_activity_id.code or '',
             m.furniture_id.name or '', m.name or '', label(m, 'module_class'),
             label(m, 'join_method')] for t in typologies for m in t.module_line_ids])

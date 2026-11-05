@@ -31,7 +31,8 @@
             </group>
             <field name="construction_unit_state" position="before">
                 <field name="construction_module_code"/>
-                <field name="construction_module_type"/>
+                <field name="construction_furniture_type_id" options="{'no_open': True}"/>
+                <field name="construction_module_type" invisible="1"/>
                 <field name="construction_width_mm"/>
                 <field name="construction_ml_group"/>
             </field>

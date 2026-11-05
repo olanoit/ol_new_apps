@@ -59,8 +59,10 @@ class ConstructionResourcePlan(models.Model):
                 unplanned |= line_sudo
                 continue
             # Las asignaciones de versiones anteriores quedan como historia.
-            _balance, _tolerance, excess = plan_lines._supply_check(line_sudo.product_uom_qty)
-            shares = plan_lines._supply_split(line_sudo.product_uom_qty)
+            # M117-11: lo pedido neto de lo que ya volvió de la obra.
+            net = line_sudo._construction_net_qty()
+            _balance, _tolerance, excess = plan_lines._supply_check(net)
+            shares = plan_lines._supply_split(net)
             Allocation_sudo.create([{
                 'plan_line_id': plan_line.id,
                 'kind': 'material_request',

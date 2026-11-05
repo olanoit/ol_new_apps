@@ -165,6 +165,10 @@ class ConstructionApprovalMixin(models.AbstractModel):
             ladder[0].category_id, approver_values, info, summary,
             ladder._construction_follower_partners(project))
 
+    def _construction_approval_name(self, category):
+        self.ensure_one()
+        return '%s · %s' % (category.name, self.display_name)
+
     def _construction_open_approval(self, category, approver_values, info, summary,
                                     followers=None):
         """Crea y confirma la solicitud con sus aprobadores ya armados."""
@@ -176,7 +180,7 @@ class ConstructionApprovalMixin(models.AbstractModel):
         # Quien envía no administra Aprobaciones (no crea aprobadores): la
         # solicitud y sus aprobadores salen de la ruta, no de su elección.
         request_sudo = self.env['approval.request'].sudo().create({
-            'name': '%s · %s' % (category.name, self.display_name),
+            'name': self._construction_approval_name(category),
             'category_id': category.id,
             'request_owner_id': self.env.user.id,
             'company_id': self.company_id.id,

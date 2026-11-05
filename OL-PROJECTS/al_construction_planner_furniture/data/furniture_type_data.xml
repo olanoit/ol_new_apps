@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Paquete 1.17, M117-24: los valores de hoy, con su misma conducta. -->
+    <record id="furniture_type_module_low" model="construction.furniture.type">
+        <field name="name">Bajo</field>
+        <field name="code">low</field>
+        <field name="level">module</field>
+        <field name="sequence">10</field>
+        <field name="module_class">standard</field>
+        <field name="ml_group">low</field>
+    </record>
+    <record id="furniture_type_module_high" model="construction.furniture.type">
+        <field name="name">Alto</field>
+        <field name="code">high</field>
+        <field name="level">module</field>
+        <field name="sequence">20</field>
+        <field name="module_class">standard</field>
+        <field name="ml_group">high</field>
+    </record>
+    <record id="furniture_type_module_drawer" model="construction.furniture.type">
+        <field name="name">Cajonera</field>
+        <field name="code">drawer</field>
+        <field name="level">module</field>
+        <field name="sequence">30</field>
+        <field name="module_class">special</field>
+        <field name="keywords">CAJONERA</field>
+    </record>
+    <record id="furniture_type_module_hood" model="construction.furniture.type">
+        <field name="name">Campana</field>
+        <field name="code">hood</field>
+        <field name="level">module</field>
+        <field name="sequence">40</field>
+        <field name="module_class">special</field>
+        <field name="keywords">CAMPANA</field>
+    </record>
+    <record id="furniture_type_module_shelf" model="construction.furniture.type">
+        <field name="name">Repisero</field>
+        <field name="code">shelf</field>
+        <field name="level">module</field>
+        <field name="sequence">50</field>
+        <field name="module_class">special</field>
+        <field name="keywords">REPISERO</field>
+    </record>
+    <record id="furniture_type_module_microwave" model="construction.furniture.type">
+        <field name="name">Microondas</field>
+        <field name="code">microwave</field>
+        <field name="level">module</field>
+        <field name="sequence">5</field>
+        <field name="module_class">special</field>
+        <field name="keywords">MICROONDAS;MICRO ONDAS</field>
+    </record>
+    <record id="furniture_type_module_cupboard" model="construction.furniture.type">
+        <field name="name">Alacena con puertas</field>
+        <field name="code">cupboard</field>
+        <field name="level">module</field>
+        <field name="sequence">60</field>
+        <field name="module_class">special</field>
+        <field name="keywords">ALACENA</field>
+    </record>
+    <record id="furniture_type_module_oven_tower" model="construction.furniture.type">
+        <field name="name">Torre de horno</field>
+        <field name="code">oven_tower</field>
+        <field name="level">module</field>
+        <field name="sequence">6</field>
+        <field name="module_class">special</field>
+        <field name="keywords">TORRE DE HORNO;TORRE HORNO;HORNO</field>
+    </record>
+    <record id="furniture_type_module_fridge" model="construction.furniture.type">
+        <field name="name">Refrigeradora</field>
+        <field name="code">fridge</field>
+        <field name="level">module</field>
+        <field name="sequence">7</field>
+        <field name="module_class">special</field>
+        <field name="keywords">REFRIGERADORA;REFRI</field>
+    </record>
+    <record id="furniture_type_module_corner" model="construction.furniture.type">
+        <field name="name">Esquinero</field>
+        <field name="code">corner</field>
+        <field name="level">module</field>
+        <field name="sequence">8</field>
+        <field name="module_class">special</field>
+        <field name="keywords">ESQUINERO;ESQUINA</field>
+    </record>
+    <record id="furniture_type_module_spice" model="construction.furniture.type">
+        <field name="name">Condimentero</field>
+        <field name="code">spice</field>
+        <field name="level">module</field>
+        <field name="sequence">9</field>
+        <field name="module_class">special</field>
+        <field name="keywords">CONDIMENTERO</field>
+    </record>
+    <record id="furniture_type_module_bottle" model="construction.furniture.type">
+        <field name="name">Botellero</field>
+        <field name="code">bottle</field>
+        <field name="level">module</field>
+        <field name="sequence">11</field>
+        <field name="module_class">special</field>
+        <field name="keywords">BOTELLERO</field>
+    </record>
+    <record id="furniture_type_module_plinth" model="construction.furniture.type">
+        <field name="name">Zócalo</field>
+        <field name="code">plinth</field>
+        <field name="level">module</field>
+        <field name="sequence">12</field>
+        <field name="module_class">special</field>
+        <field name="ml_group">none</field>
+        <field name="keywords">ZOCALO</field>
+        <field name="not_counted" eval="True"/>
+    </record>
+    <record id="furniture_type_module_other" model="construction.furniture.type">
+        <field name="name">Otro</field>
+        <field name="code">other</field>
+        <field name="level">module</field>
+        <field name="sequence">90</field>
+        <field name="module_class">standard</field>
+    </record>
+    <record id="furniture_type_furniture_low" model="construction.furniture.type">
+        <field name="name">Mueble bajo</field>
+        <field name="code">low</field>
+        <field name="level">furniture</field>
+        <field name="sequence">10</field>
+        <field name="ml_group">low</field>
+    </record>
+    <record id="furniture_type_furniture_high" model="construction.furniture.type">
+        <field name="name">Mueble alto</field>
+        <field name="code">high</field>
+        <field name="level">furniture</field>
+        <field name="sequence">20</field>
+        <field name="ml_group">high</field>
+    </record>
+    <record id="furniture_type_furniture_tower" model="construction.furniture.type">
+        <field name="name">Torre</field>
+        <field name="code">tower</field>
+        <field name="level">furniture</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="furniture_type_furniture_island" model="construction.furniture.type">
+        <field name="name">Isla</field>
+        <field name="code">island</field>
+        <field name="level">furniture</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="furniture_type_furniture_block" model="construction.furniture.type">
+        <field name="name">Mueble completo</field>
+        <field name="code">block</field>
+        <field name="level">furniture</field>
+        <field name="sequence">50</field>
+        <field name="ml_group">full</field>
+    </record>
+    <record id="seq_furniture_type" model="ir.sequence">
+        <field name="name">Tipo de mueble o de módulo</field>
+        <field name="code">construction.furniture.type</field>
+        <field name="prefix">tipo_</field>
+        <field name="padding">3</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

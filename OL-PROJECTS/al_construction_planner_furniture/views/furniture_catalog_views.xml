@@ -165,4 +165,48 @@
             </field>
         </field>
     </record>
+    <!-- Paquete 1.17, M117-24. -->
+    <record id="construction_furniture_type_view_list" model="ir.ui.view">
+        <field name="name">construction.furniture.type.list</field>
+        <field name="model">construction.furniture.type</field>
+        <field name="arch" type="xml">
+            <list string="Tipos de mueble y de módulo" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="level"/>
+                <field name="name"/>
+                <field name="code" optional="show"/>
+                <field name="ml_group"/>
+                <field name="module_class" invisible="level != 'module'"/>
+                <field name="keywords"/>
+                <field name="activity_id" optional="show"/>
+                <field name="not_counted" invisible="level != 'module'"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_furniture_type_view_search" model="ir.ui.view">
+        <field name="name">construction.furniture.type.search</field>
+        <field name="model">construction.furniture.type</field>
+        <field name="arch" type="xml">
+            <search string="Tipos">
+                <field name="name"/>
+                <field name="keywords"/>
+                <filter name="modules" string="Módulos" domain="[('level', '=', 'module')]"/>
+                <filter name="furniture" string="Muebles" domain="[('level', '=', 'furniture')]"/>
+                <filter name="inactive" string="Inactivos" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_furniture_type" model="ir.actions.act_window">
+        <field name="name">Tipos de mueble y de módulo</field>
+        <field name="res_model">construction.furniture.type</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_construction_furniture_type" action="action_construction_furniture_type"
+              parent="al_construction_planner.menu_planner_config_plan"
+              name="Tipos de mueble y de módulo" sequence="42"
+              groups="al_construction_planner.group_planner_manager"/>
 </odoo>

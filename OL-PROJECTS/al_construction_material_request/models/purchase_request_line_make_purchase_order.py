@@ -33,6 +33,9 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     @api.model
     def _prepare_purchase_order_line(self, po, item):
         vals = super()._prepare_purchase_order_line(po, item)
+        # M117-12: OCA escribe 0 y Odoo no reemplaza un precio escrito: sin el
+        # valor, el cálculo nativo toma la tarifa del proveedor de la solicitud.
+        vals.pop('price_unit', None)
         site = self._al_final_location(item)
         if site:
             vals['location_final_id'] = site.id

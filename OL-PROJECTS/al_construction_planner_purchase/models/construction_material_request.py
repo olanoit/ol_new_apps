@@ -257,6 +257,13 @@ class ConstructionMaterialRequest(models.Model):
 class ConstructionMaterialRequestLine(models.Model):
     _inherit = 'construction.material.request.line'
 
+    def _construction_moves_done(self):
+        # M117-11: el plan cuenta lo pedido neto de lo devuelto.
+        res = super()._construction_moves_done()
+        self.env['construction.resource.plan.allocation'].sudo()._refresh_for_documents(
+            'material_request_line_id', self)
+        return res
+
     construction_allocation_ids = fields.One2many(
         'construction.resource.plan.allocation', 'material_request_line_id',
         string='Asignaciones del plan')

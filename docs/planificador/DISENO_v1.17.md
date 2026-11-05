@@ -188,6 +188,67 @@ su lugar y queda sin dato hasta que el envío la ignora.
 | Vaciar un parámetro vuelve a escribir el inicial | La celda queda vacía y la hoja calcula con el inicial | Reescribirla exigiría una regla en cada edición |
 | «Departamentos vendidos» y «Subtotal de la cotización» en CONTROL | Filas nuevas en OBRA, que escribe «Traer la venta» | VENDIDO no tiene un total por obra |
 
+## 3d. Entrega 4
+
+| Código | Qué se hizo | Dónde |
+|---|---|---|
+| M117-08 | Cuadro de avance, Cancelar a la versión guardada, un recálculo por lote, reglas sin solape sin copia | `sheet_progress.js`, `sheet_import.js`, `send_to_planner.js` |
+| M117-11 | Devolución descontada de lo entregado y «Cerrar con lo recibido» | `al_construction_material_request`, `al_construction_planner_purchase` |
+| M117-12 | Precio del proveedor en la solicitud de presupuesto | `purchase_request_line_make_purchase_order.py`, `purchase_order_line.py` |
+| M117-13 | Categoría y nombre propios para el requerimiento interno | `al_construction_planner_approvals` |
+| M117-14 | Ruta completa del nivel en vales y requerimiento | `_get_report_level_label` |
+| M117-24 | Catálogo `construction.furniture.type` | `al_construction_planner_furniture`, hoja |
+| M117-25 | Factura por partida o de una línea, vista previa, anexo y registro `construction.valuation.invoiced` | `al_construction_planner_sale`, `_sale_furniture` |
+
+### Medición de M117-08
+
+La causa del congelamiento no era el tamaño de la escritura sino dos costos que
+crecían con la hoja. La plantilla nace con 300 filas, así que toda importación
+grande amplía antes de escribir:
+
+1. **Dependencias celda por celda.** Un lote de 2,000 celdas actualizaba las
+   dependencias de cada una y recalculaba las búsquedas que miran esas columnas. Un
+   lote grande pide ahora un solo recálculo completo al terminar. Los lotes de menos
+   de 200 comandos siguen siendo incrementales.
+2. **Reglas de validación.** BOM y PIEZAS llevan tres reglas por fila. Cada regla
+   nueva copiaba y recortaba todas las anteriores de la pestaña: con 10,000 reglas,
+   varios minutos, también al reabrir la hoja antes de su siguiente instantánea.
+
+El tamaño del lote (2,000 comandos) se revisó con 1,000, 2,000 y 10,000 y se
+mantiene: uno mayor deja la pantalla quieta más tiempo sin ganar nada apreciable.
+
+| Caso, en el recorrido automático con Chrome sin ventana | Antes | Después |
+|---|---|---|
+| Ampliar de 10 a 1,650 filas, con sus tablas dinámicas | más de 6 min, congelada | unos 40 s, con la pantalla viva |
+| Escribir y validar 1,500 filas de ARBOL en una hoja ya ampliada | no medido por separado | unos 17 s |
+| Cancelar a la mitad | no existía | unos 3 s |
+
+**Sin medir: la obra grande de 8,000 líneas en BOM** (punto 1 del pedido). La corrida
+anterior de 8,000 filas agotó la memoria de la máquina de desarrollo y no se repitió.
+La meta de menos de 60 s (D3) sigue sin acordar: con 1,500 filas se cumple; con 8,000
+hay que medirla en un equipo con más memoria antes de darla por cumplida.
+
+«Actualizar a la plantilla vigente» no lleva el cuadro: la hace el servidor y no
+escribe por lotes en el navegador.
+
+### Decisiones y diferencias
+
+- **M117-24, el dato guardado sigue siendo el código.** Como las etapas, reglas,
+  actividades y tareas guardan el código del tipo y no una relación: agregar un tipo
+  no obliga a migrar esos datos. El módulo sí guarda `type_id`.
+- **M117-24, `FURNITURE_LAYOUT` 4.** La clase de MODULOS pasa a ser calculada y las
+  fórmulas leen REFERENCIAS AB:AD. Una hoja anterior debe usar «Actualizar a la plantilla
+  vigente» antes de ampliarse; hasta entonces sigue funcionando y lo avisa al ampliar.
+- **M117-08, la ampliación no se cancela.** «Cancelar» se desactiva mientras se amplía
+  y vale desde la primera fila de datos: una ampliación a medias dejaría filas sin
+  fórmulas. Las filas de más quedan en la hoja y no molestan.
+- **M117-13, con el motor de niveles** la regla se llama «Aprobación de requerimiento
+  interno: grupo», sin documento ni área: la regla es una sola para todos los
+  documentos. Con el motor `approvals` el nombre sí lleva documento y área.
+- **M117-08, atajo en un método de la hoja.** `removeRangesFromRules` se parchea para
+  toda hoja de la base y llama a `super()` si hay solape. Sin solape el resultado es
+  el mismo.
+
 ## 4. Pruebas
 
 Bases autorizadas para el paquete: `test_pe_construction_core` (núcleo y

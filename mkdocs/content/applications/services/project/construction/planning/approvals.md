@@ -181,6 +181,14 @@ siga en aprobación. Si llega a aprobarse después, su conversación y la del pl
 dicen a qué plan quedó asignado y cuántas líneas quedaron en exceso. Quien aprueba
 no hace ningún paso adicional.
 
+## Requerimiento interno
+
+En los ajustes del planificador, **Categoría del requerimiento interno** separa estas
+aprobaciones de las del requerimiento de obra. Con el motor de aprobaciones, cada
+solicitud se llama «Aprobación de requerimiento interno · documento · área». Con el
+motor por niveles, el nombre de la regla es «Aprobación de requerimiento interno:
+grupo».
+
 !!! info "Ver también"
     - [Requerimientos de materiales](../material_requests.md)
     - [Asignaciones y compras](supply.md)

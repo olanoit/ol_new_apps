@@ -57,6 +57,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='order_line']/list/field[@name='analytic_distribution']" position="after">
                 <field name="construction_request_task_ids" widget="many2many_tags" optional="show"/>
+                <field name="construction_no_vendor_price" widget="boolean_toggle" readonly="1" optional="show"
+                       invisible="not construction_no_vendor_price"/>
             </xpath>
         </field>
     </record>

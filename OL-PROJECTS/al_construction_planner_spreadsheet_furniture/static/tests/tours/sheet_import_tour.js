@@ -159,6 +159,10 @@ registry.category("web_tour.tours").add("al_construction_furniture_sheet_import"
             },
         },
         {
+            content: "M117-08: el cuadro de avance se abrió y se cerró",
+            trigger: "body:not(:has(.o_construction_progress_cancel))",
+        },
+        {
             content: "M117-03: restaurar la versión anterior",
             trigger: ".o-topbar-menu:contains('Planificación de obra')",
             run: "click",

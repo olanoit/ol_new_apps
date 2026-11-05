@@ -97,9 +97,9 @@ CALCULATED = {
     ],
     # El zócalo no se arma (va sin unión): no cuenta en «módulos a armar».
     'MODULOS': [
-        ('A armar (calc.)', '=IF({c:code}{r}="","",IF(OR(ISNUMBER(SEARCH("ZOCALO",{c:code}{r}&" "'
-                            '&{c:name}{r})),ISNUMBER(SEARCH("ZÓCALO",{c:code}{r}&" "&{c:name}{r}'
-                            '))),0,1))'),
+        # M117-24: la marca «No cuenta como módulo a armar» del tipo, del catálogo.
+        ('A armar (calc.)', '=IF({c:code}{r}="","",IF(IFERROR(XLOOKUP({c:type}{r},REFERENCIAS!'
+                            '$AB$3:$AB$102,REFERENCIAS!$AD$3:$AD$102),FALSE),0,1))'),
         ('ML (calc.)', '=IF(OR({c:code}{r}="",{c:width}{r}=""),"",IF(OR(%s),{c:width}{r}/1000,0))'
          % ','.join('{c:ml_group}{r}="%s"' % group for group in _ML_GROUPS_COUNTED)),
     ],
@@ -172,6 +172,7 @@ TYPOLOGY_BLOCK = 500
 FINISH_SHEET = 'ACABADOS DE OBRA'
 SOLD_SHEET = 'VENDIDO'
 TRACE_SHEET = '_HUELLA'
+MODULE_CLASS_HEADER = 'Clase (calc.)'
 FINISH_ROWS = 60
 OBRA_SEED = ('Obra', 'Cliente', 'Inicio', 'Fin', 'Adelanto %', 'Fondo de garantía %',
              'Hoja de venta', 'Venta traída el', 'Inicio de la venta', 'Fin de la venta',
@@ -202,19 +203,17 @@ def category_parts(path):
 FIXED_LISTS = {
     ('TIPOLOGIAS', 'family'): ['Cocina', 'Closet', 'Baño', 'Lavandería', 'Ducto', 'Área común',
                                'Especial', 'Otro'],
-    ('MODULOS', 'type'): ['Bajo', 'Alto', 'Cajonera', 'Campana', 'Repisero', 'Otro'],
-    ('MODULOS', 'module_class'): ['Estándar', 'Especial'],
     ('MODULOS', 'join_method'): ['Tornillo', 'Tarugo', 'Mixto', 'Minifix', 'Sin unión'],
     ('MODULOS', 'ml_group'): ['Mueble bajo', 'Mueble alto', 'Mueble completo', 'Sin ML'],
     ('MUEBLES', 'ml_group'): ['Bajo', 'Alto', 'Completo', 'Otro'],
     ('TARIFAS', 'family'): ['Cocina y baño', 'Closet y cajones'],
+    ('CONTRATOS', 'invoice_form'): ['Por partida', 'Una línea por valorización'],
     # Paquete 1.17, Anexo A: los valores que aceptan la importación y el envío.
     ('PIEZAS', 'piece_type'): ['COSTADO', 'BASE', 'TECHO', 'FONDO', 'PUERTA', 'FRENTE', 'TAPA',
                                'REPISA', 'OTRO'],
     ('ARBOL', 'unit_type'): ['Departamento', 'Nivel de dúplex', 'Ducto', 'Estacionamiento',
                              'Área común', 'Depósito', 'Local', 'Piloto'],
     ('VARIANTES', 'kind'): ['Color', 'Excluir', 'Metrado'],
-    ('ETO', 'type'): ['Bajo', 'Alto', 'Cajonera', 'Campana', 'Repisero', 'Otro'],
     ('ETO', 'ml_group'): ['Mueble bajo', 'Mueble alto', 'Mueble completo', 'Sin ML'],
     ('CATALOGO', 'stage'): ['Producción', 'Armado', 'Instalación', 'Acabado y entrega'],
     ('CATALOGO', 'measure'): ['Módulo', 'ML', 'Ambiente'],
@@ -235,6 +234,10 @@ RANGE_LISTS = {
     ('MODULOS', 'furniture'): 'MUEBLES!$B$2:$B$5000',
     ('VENTA', 'contract'): 'CONTRATOS!$A$2:$A$500',
     ('CONTRATOS', 'milestone_template'): 'HITOS!$A$2:$A$500',
+    # Paquete 1.17, M117-24: los tipos del catálogo.
+    ('MODULOS', 'type'): 'REFERENCIAS!$AB$3:$AB$102',
+    ('ETO', 'type'): 'REFERENCIAS!$AB$3:$AB$102',
+    ('MUEBLES', 'name'): 'REFERENCIAS!$AE$3:$AE$42',
     # Paquete 1.17, Anexo A: listas de Odoo en REFERENCIAS (Y a AA).
     ('PRODUCTOS NUEVOS', 'uom'): 'REFERENCIAS!$Y$3:$Y$102',
     ('PRODUCTOS NUEVOS', 'categ'): 'REFERENCIAS!$W$3:$W$500',
@@ -341,6 +344,10 @@ class ProjectProject(models.Model):
             # importador: la hoja lo usa para la lista de categorías).
             index = next(i for i, (key, _h) in enumerate(columns) if key == 'categ')
             columns.insert(index, ('categ_group', GROUP_HEADER))
+        if name == 'MODULOS':
+            # M117-24: la clase sale del tipo; la clave no cambia.
+            columns = [(key, MODULE_CLASS_HEADER if key == 'module_class' else header)
+                       for key, header in columns]
         order = design.COLUMN_ORDER.get(name)
         if order:
             # M117-02: el orden en pantalla; el libro de carga no cambia.
@@ -462,6 +469,12 @@ class ProjectProject(models.Model):
             part['formatting'] = self._construction_row_formatting(name, info, first, last)
             part['table_bottom'] = last - 1
             part['conditional'].extend(self._construction_row_marks(name, letters, info, first, last))
+            if name == 'MODULOS':
+                type_col, class_col = letters['type'], letters['module_class']
+                for row in range(first, last + 1):
+                    cells['%s%s' % (class_col, row)] = (
+                        '=IF({t}{r}="","",IFERROR(XLOOKUP({t}{r},REFERENCIAS!$AB$3:$AB$102,'
+                        'REFERENCIAS!$AC$3:$AC$102),""))').format(t=type_col, r=row)
             for (sheet, key), target in RANGE_LISTS.items():
                 if sheet == name and key in letters:
                     part['rules'].append({
@@ -577,6 +590,8 @@ class ProjectProject(models.Model):
         calculated = set(info['calc_letters'].values())
         if name in PRODUCT_PICK:
             calculated.add(info['letters']['product_code'])
+        if name == 'MODULOS':
+            calculated.add(info['letters']['module_class'])
         result = []
         for index, header in enumerate(info['headers']):
             letter = _col(index)
@@ -629,6 +644,11 @@ class ProjectProject(models.Model):
             marks.append(mark('typology', [column(typology)], (
                 '=AND({c}{f}<>"",COUNTIF(MODULOS!$A:$A,{c}{f})=0)'
             ).format(c=typology, f=first), UNKNOWN_STYLE))
+        elif name == 'MODULOS':
+            kind = letters['type']
+            marks.append(mark('type', [column(kind)], (
+                '=AND({k}{f}<>"",COUNTIF(REFERENCIAS!$AB$3:$AB$102,{k}{f})=0)'
+            ).format(k=kind, f=first), UNKNOWN_STYLE))
         elif name == 'HITOS':
             template, pct = letters['template'], letters['pct']
             marks.append(mark('total', [column(pct)], (
@@ -736,6 +756,8 @@ class ProjectProject(models.Model):
             styles = {'%s1' % _col(i): HEAD_DATA_STYLE for i in range(len(info['columns']))}
             for letter in info['calc_letters'].values():
                 styles['%s1' % letter] = HEAD_CALC_STYLE
+            if name == 'MODULOS':
+                styles['%s1' % info['letters']['module_class']] = HEAD_CALC_STYLE
             if name in PRODUCT_PICK:
                 styles['%s1' % info['letters']['product_code']] = HEAD_CALC_STYLE
             cells.update(parts[name]['cells'])
@@ -804,6 +826,11 @@ class ProjectProject(models.Model):
              [['customer_rank', '>', 0], ['company_id', 'in', [company.id, False]]], 'name'),
             ('6', 'Contratas', 'res.partner', ['name'], 26, 800,
              [['supplier_rank', '>', 0], ['company_id', 'in', [company.id, False]]], 'name'),
+            # M117-24: vivas, una lista nueva llega al abrir la hoja.
+            ('7', 'Tipos de módulo', 'construction.furniture.type',
+             ['name', 'module_class', 'not_counted'], 27, 100, [['level', '=', 'module']], 'sequence'),
+            ('8', 'Tipos de mueble', 'construction.furniture.type', ['name'], 30, 40,
+             [['level', '=', 'furniture']], 'sequence'),
         ]
         cells, styles, lists = {}, {}, {}
         for list_id, title, model, columns, start, count, domain, order in reference_lists:
@@ -862,7 +889,7 @@ class ProjectProject(models.Model):
             last_product, last_product)
         styles['V2'] = styles['W2'] = HEADER_STYLE
         sheets.append({
-            'id': 'sheet_ref', 'name': REFERENCE_SHEET, 'colNumber': 30,
+            'id': 'sheet_ref', 'name': REFERENCE_SHEET, 'colNumber': 34,
             'rowNumber': max(last_product, 802) + 2, 'cells': cells, 'styles': styles,
         })
 

@@ -15,3 +15,4 @@ from . import purchase_request_line_make_purchase_order
 from . import tier_definition
 from . import purchase_request_messages
 from . import dispatch_slip
+from . import construction_request_close_wizard

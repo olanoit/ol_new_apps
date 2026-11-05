@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261104 — 04/11/2026
+
+- M117-24: catálogo «Tipos de mueble y de módulo», con clase, grupo de ML, palabras clave y actividad de armado; se pueden agregar tipos sin programar.
+- M117-25: CONTRATOS admite forma de factura y orden de servicio.
+
 ## 23.20261104 — 04/11/2026
 
 - M117-22: el envío no pone en 0 el adelanto ni el fondo de un contrato existente cuando CONTRATOS los trae vacíos; columna opcional «Factor de descuento»; cada precio nuevo queda asociado a la línea de la orden de su partida.

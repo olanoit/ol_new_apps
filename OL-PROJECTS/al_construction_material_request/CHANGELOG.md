@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 34.20261104 — 04/11/2026
+
+- M117-11: la devolución desde la obra se descuenta de lo entregado, avisa con una actividad y puede cerrarse la línea con «Cerrar con lo recibido».
+- M117-12: la solicitud de presupuesto toma el precio del proveedor en vez del costo interno, y avisa si el proveedor no tiene precio.
+- M117-14: los vales y el requerimiento imprimen la ruta completa del nivel cuando el plan la conoce.
+
 ## 33.20261103 — 03/11/2026
 
 - El consumo interno conserva su analítica aunque otro módulo cambie la cuenta de gasto.

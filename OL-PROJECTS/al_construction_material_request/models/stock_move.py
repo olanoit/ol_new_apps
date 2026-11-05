@@ -100,4 +100,11 @@ class StockMove(models.Model):
         # tener acceso a los requerimientos de obra: solo se cierra su estado.
         lines_sudo = lines.sudo()
         lines_sudo.request_id._check_done()
+        lines_sudo._construction_moves_done()
+        # M117-11: una devolución desde la obra avisa al responsable.
+        for move in moves.filtered(lambda m: m.state == 'done' and m.construction_request_line_id):
+            line_sudo = move.construction_request_line_id.sudo()
+            site = line_sudo._get_site_location()
+            if site and move.location_id._child_of(site) and not move.location_dest_id._child_of(site):
+                line_sudo.request_id._construction_notify_return()
         return moves

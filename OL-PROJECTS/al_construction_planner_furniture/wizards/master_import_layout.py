@@ -126,6 +126,9 @@ SHEETS = {
         ('milestone_template', 'Plantilla de hitos', False, 'Nombre de la plantilla (hoja HITOS).'),
         ('discount_factor', 'Factor de descuento', False,
          'Multiplica el precio de cada unidad; vacío: el del contrato.'),
+        ('invoice_form', 'Forma de la factura', False,
+         'Por partida o Una línea por valorización; vacía: la de la compañía.'),
+        ('client_order_ref', 'O.S. del cliente', False, 'La usa el texto de la factura.'),
     ]),
     'HITOS': ('Hitos de cobro por unidad (v1.8, con Ventas).', [
         ('template', 'Plantilla', True, 'Nombre de la plantilla de hitos.'),

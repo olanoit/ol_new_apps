@@ -71,3 +71,5 @@ from . import test_package_116_stage2
 from . import test_package_116_stage2b
 from . import test_package_116_stage3
 from . import test_package_116_stage4
+from . import test_package_117_invoice
+from . import test_package_117_types

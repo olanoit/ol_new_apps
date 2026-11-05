@@ -15,6 +15,7 @@ import {
     writeRows,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
 import { TREE_SHEET, clearFloorGroups, groupTreeByFloor } from "./floor_groups";
+import { CancelledError, openProgress } from "./sheet_progress";
 
 const { topbarMenuRegistry } = registries;
 
@@ -51,15 +52,36 @@ export function ensureRows(model, sheetId, rows) {
  * Amplía el maestro con las fórmulas, listas y marcas de la plantilla para
  * las filas nuevas (M113-05), y los rangos de RESUMEN.
  */
-function applyExtension(model, extension) {
+async function applyExtension(env, extension, runner) {
+    const model = env.model;
     const getters = model.getters;
     const commands = [];
-    for (const [name, part] of Object.entries(extension.sheets || {})) {
+    const parts = Object.entries(extension.sheets || {}).filter(([name]) =>
+        getters.getSheetIdByName(name)
+    );
+    // M117-08: todas las filas en un lote, un solo recálculo del libro.
+    dispatchBatch(
+        model,
+        parts
+            .map(([name, part]) => [getters.getSheetIdByName(name), part.row_number])
+            .filter(([sheetId, rows]) => getters.getNumberRows(sheetId) < rows)
+            .map(([sheetId, rows]) => {
+                const current = getters.getNumberRows(sheetId);
+                return [
+                    "ADD_COLUMNS_ROWS",
+                    {
+                        sheetId,
+                        sheetName: getters.getSheetName(sheetId),
+                        dimension: "ROW",
+                        base: current - 1,
+                        quantity: rows - current,
+                        position: "after",
+                    },
+                ];
+            })
+    );
+    for (const [name, part] of parts) {
         const sheetId = getters.getSheetIdByName(name);
-        if (!sheetId) {
-            continue;
-        }
-        ensureRows(model, sheetId, part.row_number);
         for (const [ref, content] of Object.entries(part.cells)) {
             commands.push(["UPDATE_CELL", { sheetId, ...parseRef(ref), content }]);
         }
@@ -86,35 +108,34 @@ function applyExtension(model, extension) {
             ]);
         }
         // La hoja de Odoo 19 exige los rangos con su pestaña y rechaza el comando
-        // sin aviso si llegan como texto (M117-05). Van sueltos, fuera del lote,
-        // para ver su resultado.
+        // sin aviso si llegan como texto (M117-05); el lote avisa del rechazo.
         for (const cf of part.conditional) {
-            const result = model.dispatch("ADD_CONDITIONAL_FORMAT", {
-                sheetId,
-                cf: { id: cf.id, rule: cf.rule, stopIfTrue: cf.stopIfTrue },
-                ranges: cf.ranges.map((xc) =>
-                    getters.getRangeDataFromZone(sheetId, helpers.toZone(xc))
-                ),
-            });
-            if (!result.isSuccessful) {
-                console.warn(`La hoja rechazó la marca ${cf.id} de ${name}:`, result.reasons);
-            }
+            commands.push([
+                "ADD_CONDITIONAL_FORMAT",
+                {
+                    sheetId,
+                    cf: { id: cf.id, rule: cf.rule, stopIfTrue: cf.stopIfTrue },
+                    ranges: cf.ranges.map((xc) =>
+                        getters.getRangeDataFromZone(sheetId, helpers.toZone(xc))
+                    ),
+                },
+            ]);
         }
         // La tabla nativa crece con las filas.
         const table = part.table_bottom !== undefined && getters.getCoreTables(sheetId)[0];
         if (table) {
             const zone = table.range.zone;
-            const result = model.dispatch("UPDATE_TABLE", {
-                sheetId,
-                zone,
-                newTableRange: getters.getRangeDataFromZone(sheetId, {
-                    ...zone,
-                    bottom: Math.max(zone.bottom, part.table_bottom),
-                }),
-            });
-            if (!result.isSuccessful) {
-                console.warn(`La hoja rechazó ampliar la tabla de ${name}:`, result.reasons);
-            }
+            commands.push([
+                "UPDATE_TABLE",
+                {
+                    sheetId,
+                    zone,
+                    newTableRange: getters.getRangeDataFromZone(sheetId, {
+                        ...zone,
+                        bottom: Math.max(zone.bottom, part.table_bottom),
+                    }),
+                },
+            ]);
         }
     }
     const summaryId = getters.getSheetIdByName("RESUMEN");
@@ -123,26 +144,32 @@ function applyExtension(model, extension) {
             commands.push(["UPDATE_CELL", { sheetId: summaryId, ...parseRef(ref), content }]);
         }
     }
-    dispatchBatch(model, commands);
+    runner.progress.total += commands.length;
+    await runner.write(model, _t("Ampliando la hoja"), commands, { locked: true });
+    const pivots = [];
     for (const [pivotId, bottom] of Object.entries(extension.pivots || {})) {
         try {
             const definition = getters.getPivotCoreDefinition(pivotId);
             if (definition?.dataSet?.zone) {
-                model.dispatch("UPDATE_PIVOT", {
-                    pivotId,
-                    pivot: {
-                        ...definition,
-                        dataSet: {
-                            ...definition.dataSet,
-                            zone: { ...definition.dataSet.zone, bottom },
+                pivots.push([
+                    "UPDATE_PIVOT",
+                    {
+                        pivotId,
+                        pivot: {
+                            ...definition,
+                            dataSet: {
+                                ...definition.dataSet,
+                                zone: { ...definition.dataSet.zone, bottom },
+                            },
                         },
                     },
-                });
+                ]);
             }
         } catch {
             // Una tabla dinámica borrada por el usuario: nada que ampliar.
         }
     }
+    dispatchBatch(model, pivots);
 }
 
 /** M117-15: el valor y el motivo de cada parámetro, por su clave (columna G). */
@@ -210,7 +237,7 @@ export function columnsOf(model, sheetId, name, spec, keys) {
     return { columns, header };
 }
 
-function writeSheet(model, name, spec, payload, keys) {
+async function writeSheet(model, name, spec, payload, keys, runner) {
     const getters = model.getters;
     const sheetId = ensureSheet(model, name);
     const { columns, header } = columnsOf(model, sheetId, name, spec, keys);
@@ -272,7 +299,7 @@ function writeSheet(model, name, spec, payload, keys) {
             });
         });
     }
-    dispatchBatch(model, commands);
+    await runner.write(model, name, commands);
     return start + spec.rows.length;
 }
 
@@ -281,7 +308,7 @@ function writeSheet(model, name, spec, payload, keys) {
  * ``needed`` filas de datos (M113-05): las del pedido más un 10 %. Las hojas
  * anteriores al paquete 1.16 no se amplían y lo avisan.
  */
-export async function ensureCapacity(env, needed) {
+export async function ensureCapacity(env, needed, runner = null) {
     const current = env.constructionSheetRows();
     if (needed <= current) {
         return true;
@@ -307,9 +334,43 @@ export async function ensureCapacity(env, needed) {
         return false;
     }
     if (extension && extension.rows) {
-        applyExtension(env.model, extension);
+        const own = runner || openProgress(env, 0);
+        try {
+            await applyExtension(env, extension, own);
+        } finally {
+            if (!runner) {
+                own.finish();
+            }
+        }
         env.constructionSetSheetRows(extension.rows);
     }
+    return true;
+}
+
+// Lo pone «Restaurar versión»: volver a la versión guardada antes de empezar. Es
+// inyectado: restaurar usa applyImport, y un módulo no puede importar al otro.
+let cancelHandler = async () => {};
+export function setCancelHandler(handler) {
+    cancelHandler = handler;
+}
+
+/**
+ * M117-08: una acción masiva que ya guardó su versión. Escribe con el avance a la
+ * vista; devuelve ``false`` si el usuario canceló y la hoja volvió a esa versión.
+ */
+export async function writeWithProgress(env, label, commands) {
+    const runner = openProgress(env, commands.length);
+    try {
+        await runner.write(env.model, label, commands);
+    } catch (error) {
+        if (!(error instanceof CancelledError)) {
+            throw error;
+        }
+        runner.finish();
+        await cancelHandler(env);
+        return false;
+    }
+    runner.finish();
     return true;
 }
 
@@ -370,12 +431,28 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         const base = payload.mode === "append" && sheetId ? lastDataRow(getters, sheetId) : 0;
         needed = Math.max(needed, base + spec.rows.length);
     }
-    if (payload.expand_rows) {
-        await ensureCapacity(env, needed);
+    // M117-08: por tramos, con el avance a la vista; se puede cancelar.
+    const total = Object.values(payload.sheets).reduce(
+        (sum, spec) => sum + spec.rows.length * spec.keys.length,
+        0
+    );
+    const runner = openProgress(env, total);
+    try {
+        if (payload.expand_rows) {
+            await ensureCapacity(env, needed, runner);
+        }
+        for (const [name, spec] of Object.entries(payload.sheets)) {
+            await writeSheet(model, name, spec, payload, keys, runner);
+        }
+    } catch (error) {
+        runner.finish();
+        if (!(error instanceof CancelledError)) {
+            throw error;
+        }
+        await cancelHandler(env);
+        return { errors: 0, warnings: 0, cancelled: true };
     }
-    for (const [name, spec] of Object.entries(payload.sheets)) {
-        writeSheet(model, name, spec, payload, keys);
-    }
+    runner.finish();
     for (const [name, rows] of Object.entries(payload.other || {})) {
         const sheetId = ensureSheet(model, name);
         if (payload.mode === "replace") {

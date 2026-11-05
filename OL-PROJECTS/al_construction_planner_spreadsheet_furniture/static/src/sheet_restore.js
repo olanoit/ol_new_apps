@@ -10,7 +10,7 @@ import { fetchSpreadsheetModel } from "@spreadsheet/helpers/model";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
 import { keyColumns, lastDataRow, normText } from "@al_construction_planner_spreadsheet/send_to_planner";
-import { applyImport } from "./sheet_import";
+import { applyImport, setCancelHandler } from "./sheet_import";
 
 const { topbarMenuRegistry } = registries;
 
@@ -216,6 +216,39 @@ class RestoreVersionDialog extends Component {
     }
 }
 
+/** Vuelve a ``version``: reescribe por clave lo que difiere. */
+async function writeVersion(env, version, rows) {
+    const sheets = {};
+    for (const { name, added, changed, spec } of rows) {
+        if (added || changed) {
+            sheets[name] = { ...spec, extra_headers: [], extra_rows: [] };
+        }
+    }
+    await applyImport(
+        env,
+        {
+            filename: _t("la versión %(version)s", { version: version.version }),
+            mode: "replace",
+            expand_rows: true,
+            keep_extra: false,
+            sheets,
+            other: {},
+        },
+        { logImport: false }
+    );
+}
+
+// M117-08: «Cancelar» vuelve a la versión que guardó la acción antes de escribir.
+setCancelHandler(async (env) => {
+    const [version] = await env.constructionCall("construction_versions");
+    if (!version) {
+        return;
+    }
+    const old = await fetchSpreadsheetModel(env, "documents.document", version.id);
+    await writeVersion(env, version, comparePreview(readSheets(env, env.model), readSheets(env, old)));
+    env.constructionNotify(_t("Acción cancelada: la hoja volvió a como estaba."));
+});
+
 export async function restoreVersion(env) {
     const model = env.model;
     const versions = await env.constructionCall("construction_versions");
@@ -230,24 +263,7 @@ export async function restoreVersion(env) {
                 "construction_version_before",
                 _t("Antes de restaurar la versión %(version)s", { version: version.version })
             );
-            const sheets = {};
-            for (const { name, added, changed, spec } of rows) {
-                if (added || changed) {
-                    sheets[name] = { ...spec, extra_headers: [], extra_rows: [] };
-                }
-            }
-            await applyImport(
-                env,
-                {
-                    filename: _t("la versión %(version)s", { version: version.version }),
-                    mode: "replace",
-                    expand_rows: true,
-                    keep_extra: false,
-                    sheets,
-                    other: {},
-                },
-                { logImport: false }
-            );
+            await writeVersion(env, version, rows);
         },
     });
 }

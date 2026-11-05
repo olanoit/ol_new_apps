@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261104 — 04/11/2026
+
+- M117-08: cuadro de avance con pestaña, filas y total, y «Cancelar» que vuelve a la versión guardada, en importar, «Traer de Odoo», «Traer la venta», «Traer tarifario», «Aplicar propuestas» y al ampliar la hoja.
+- M117-24: la hoja lee el catálogo de tipos: listas, «Clase (calc.)» y «A armar».
+
 ## 12.20261104 — 04/11/2026
 
 - M117-15: «Parámetros de las hojas de trabajo» por compañía y pestaña PARAMETROS en las dos hojas; PROGRAMA y CONTROL leen sus valores por clave.

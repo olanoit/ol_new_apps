@@ -367,6 +367,16 @@ Compras junta en una sola orden lo que piden varias obras:
 - Una línea ya puesta en una orden sale de la lista; si la orden se cancela,
   vuelve.
 
+### Devoluciones desde la obra
+
+Lo que vuelve de la obra al almacén se descuenta de lo entregado: la columna
+**Devuelto de la obra** lo muestra en cada línea, quien lleva el requerimiento recibe
+una actividad para revisarlo, y el plan cuenta solo lo que quedó en la obra.
+
+Si una línea no va a completarse, use **Cerrar con lo recibido** en un requerimiento
+en proceso. Marque las líneas que da por terminadas y confirme: quedan cerradas con lo
+recibido, y el plan cuenta ese neto como lo pedido.
+
 ### Cancelar
 
 Solo Logística cancela un requerimiento en proceso: se anulan las

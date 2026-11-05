@@ -363,7 +363,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
             if not typology:
                 continue
             code = _text(row['code'])
-            module_type = selection_value(MODULE_TYPE_VALUES, row['type'])
+            # M117-24: el tipo del catálogo; lo que delata su nombre o lo escrito.
+            furniture_type = self.env['construction.furniture.type']._resolve(
+                row['type'], _text(row.get('name')) or _text(row['code']))
+            module_type = furniture_type.code if furniture_type else False
             activity = _text(row['activity'])
             width = _number(row.get('width'))
             ml_group = selection_value(ML_GROUP_VALUES, row.get('ml_group')) or 'none'
@@ -388,7 +391,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
             modules = result['modules'].setdefault(typology, {})
             modules[code] = {
                 'sequence': int(sequence) if sequence is not None else (len(modules) + 1) * 10,
-                'code': code, 'module_type': module_type, 'width_mm': int(round(width or 0)),
+                'code': code, 'type_id': furniture_type.id, 'width_mm': int(round(width or 0)),
                 'ml_group': ml_group, '_activity': activity,
                 '_furniture': _text(row.get('furniture')),
             }
@@ -619,8 +622,13 @@ class ConstructionMasterImportWizard(models.TransientModel):
                     _text(row['space']))
             code = _text(row['code'])
             width = _number(row['width'])
-            module_type = selection_value(MODULE_TYPE_VALUES, row.get('type')) \
+            # M117-24: el ETO acepta el catálogo; sin lo equivalente a un tipo
+            # anterior, el módulo queda «Otro» para el plan.
+            eto_type = self.env['construction.furniture.type']._resolve(row.get('type')) \
                 if _text(row.get('type')) else False
+            module_type = False if eto_type is False else (
+                eto_type.code if eto_type.code in MODULE_TYPE_VALUES else 'other' if eto_type
+                else None)
             ml_group = selection_value(ML_GROUP_VALUES, row.get('ml_group')) \
                 if _text(row.get('ml_group')) else False
             if path not in known_paths:

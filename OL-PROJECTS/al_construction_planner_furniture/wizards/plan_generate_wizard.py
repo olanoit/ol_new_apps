@@ -508,6 +508,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                 construction_module_type=template.module_type,
                 construction_module_class=template.module_class,
                 construction_special_kind=template.special_kind,
+                construction_furniture_type_id=template.type_id.id,
                 construction_join_method=template.join_method,
                 construction_width_mm=template.width_mm,
                 construction_ml_group=template.ml_group,

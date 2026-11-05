@@ -27,7 +27,7 @@ from odoo import Command, models
 from odoo.addons.al_construction_planner.models.common import norm
 
 from ..models.construction_furniture_model import (
-    JOIN_METHODS, MODULE_CLASSES, special_kind_from_name,
+    JOIN_METHODS, MODULE_CLASSES,
 )
 from .master_import_wizard import _number, _text
 
@@ -154,9 +154,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
             # deduce del nombre (paquete 1.16, M113-01), o la actividad de
             # armado del catálogo para especiales no lo encuentra.
             if module_class == 'special':
-                kind = special_kind_from_name(_text(row.get('name')) or _text(row.get('code')))
-                if kind:
-                    values['special_kind'] = kind
+                kind = self.env['construction.furniture.type']._from_name(
+                    _text(row.get('name')) or _text(row.get('code')))
+                if kind.module_class == 'special':
+                    values['special_kind'] = kind.code
         join_method = _choice(JOIN_METHODS, row.get('join_method'))
         if join_method:
             values['join_method'] = join_method
@@ -578,6 +579,13 @@ class ConstructionMasterImportWizard(models.TransientModel):
             factor = _number(row.get('discount_factor'))
             if factor:
                 vals['discount_factor'] = factor
+            # M117-25: vacías, el contrato conserva lo suyo.
+            form = {'por partida': 'by_partida', 'una linea por valorizacion': 'single'}.get(
+                norm(row.get('invoice_form')))
+            if form:
+                vals['invoice_form'] = form
+            if _text(row.get('client_order_ref')):
+                vals['client_order_ref'] = _text(row['client_order_ref'])
             partner = self._contract_partner(row)
             if partner:
                 vals['partner_id'] = partner.id

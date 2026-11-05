@@ -131,6 +131,16 @@ tiene en el planificador. Antes de escribir muestra cuántas filas son nuevas,
 cambian o quedan iguales en cada pestaña, y al confirmar guarda una versión. Lo
 traído se puede enviar otra vez sin corregirlo.
 
+### Avance de las acciones masivas
+
+Importar, **Traer de Odoo**, **Traer la venta**, **Traer tarifario** y aplicar las
+propuestas de tablero muestran un cuadro con la pestaña que se escribe, lo escrito y el
+total. La pantalla sigue respondiendo mientras avanza.
+
+**Cancelar** detiene la escritura y devuelve la hoja a la versión que la acción guardó
+antes de empezar. Mientras la hoja amplía sus filas, el botón queda desactivado hasta
+que empiezan a escribirse los datos: las filas agregadas se conservan.
+
 ### Importar un Excel
 
 **Planificación de obra ‣ Importar Excel a la hoja** trae un libro de carga, por

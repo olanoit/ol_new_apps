@@ -33,6 +33,14 @@ class ConstructionMaterialRequest(models.Model):
             self = self.with_context(construction_exceed_checked=True)
         return super().action_request_approval()
 
+    def _construction_approval_name(self, category):
+        """M117-13: quien aprueba distingue un pedido de oficina por su nombre."""
+        self.ensure_one()
+        if self.request_type == 'internal':
+            return self.env._('Aprobación de requerimiento interno · %(doc)s · %(area)s',
+                              doc=self.display_name, area=self.area_id.name or '—')
+        return super()._construction_approval_name(category)
+
     def _construction_submit_approval(self):
         internal = self.filtered(lambda r: r.request_type == 'internal')
         submitted = super(ConstructionMaterialRequest, self - internal)._construction_submit_approval()
@@ -48,7 +56,7 @@ class ConstructionMaterialRequest(models.Model):
                 'construction_slots': '1:any:internal',
                 'status': 'new',
             } for index, user in enumerate(users)]
-            category = self.env['approval.category']._construction_category(request.company_id)
+            category = request.company_id._construction_internal_approval_category()
             summary = self.env._(
                 '%(doc)s · requerimiento interno de %(user)s · %(approver)s.',
                 doc=request.display_name, user=request.requested_by.name,

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261104 — 04/11/2026
+
+- M117-11: lo pedido en el plan descuenta lo devuelto por la asignación de cada plan, y se refresca al validar el movimiento.
+- M117-14: la ruta completa del nivel en los reportes del requerimiento.
+
 ## 22.20261104 — 04/11/2026
 
 - M117-10: la regularización incluye los requerimientos «En aprobación»; un requerimiento «Sin plan» que se aprueba con plan vigente entra a ese plan con la misma regla, con los dos motores de aprobación, y su conversación y la del plan dicen cuántas líneas quedaron asignadas y cuántas en exceso.

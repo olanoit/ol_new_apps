@@ -113,6 +113,8 @@
                         <group>
                             <field name="milestone_template_id" options="{'no_create': True}"/>
                             <field name="discount_factor"/>
+                            <field name="invoice_form"/>
+                            <field name="client_order_ref"/>
                             <field name="unit_count"/>
                             <field name="amount_total"/>
                             <field name="amount_earned"/>

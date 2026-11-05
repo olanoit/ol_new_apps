@@ -14,7 +14,7 @@ import {
     validate,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
 import { upgradeSheet } from "./planning_panel";
-import { importExcel } from "./sheet_import";
+import { importExcel, writeWithProgress } from "./sheet_import";
 import { restoreVersion } from "./sheet_restore";
 
 const { topbarMenuRegistry } = registries;
@@ -207,8 +207,9 @@ async function bringRates(env) {
                     { sheetId, col: RATE_STATUS_COL, row: line.row, content: _t("Ya no está") },
                 ]);
             }
-            dispatchBatch(model, commands);
-            env.constructionNotify(_t("Tarifario actualizado (versión anterior guardada)."));
+            if (await writeWithProgress(env, _t("Traer tarifario"), commands)) {
+                env.constructionNotify(_t("Tarifario actualizado (versión anterior guardada)."));
+            }
         },
     });
 }

@@ -15,7 +15,7 @@ ambientes de esa familia; la única partida sin familia toma el resto.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_sale_furniture/static/description/icon.png',
-    'version': '3.20261027',
+    'version': '4.20261104',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_sale', 'al_construction_planner_furniture'],

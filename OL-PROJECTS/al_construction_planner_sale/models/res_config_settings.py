@@ -29,6 +29,12 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_income_calendar_id', readonly=False)
     construction_guarantee_account_id = fields.Many2one(
         related='company_id.construction_guarantee_account_id', readonly=False)
+    construction_invoice_form = fields.Selection(
+        related='company_id.construction_invoice_form', readonly=False)
+    construction_invoice_product_id = fields.Many2one(
+        related='company_id.construction_invoice_product_id', readonly=False)
+    construction_invoice_text = fields.Char(
+        related='company_id.construction_invoice_text', readonly=False)
     construction_advance_account_id = fields.Many2one(
         related='company_id.construction_advance_account_id', readonly=False)
     construction_sheet_change_pct = fields.Float(

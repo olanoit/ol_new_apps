@@ -149,6 +149,14 @@ class ConstructionContract(models.Model):
         'construction.milestone.template', string='Hitos de cobro', tracking=True,
         help='Plantilla del contrato; cada precio por tipología puede llevar la suya (una por '
              'familia).')
+    # Paquete 1.17, M117-25.
+    invoice_form = fields.Selection(
+        [('by_partida', 'Por partida'), ('single', 'Una línea por valorización')],
+        string='Forma de la factura',
+        default=lambda self: self.env.company.construction_invoice_form or 'by_partida',
+        tracking=True)
+    client_order_ref = fields.Char(string='O.S. del cliente', tracking=True,
+                                   help='La usa el texto de la factura.')
     discount_factor = fields.Float(
         string='Factor de descuento', default=1.0, digits=(16, 6), tracking=True,
         help='Multiplica el precio de cada unidad (p. ej. 0.95 por un descuento del 5 %).')

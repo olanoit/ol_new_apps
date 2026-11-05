@@ -69,7 +69,8 @@
                                     <field name="sequence" widget="handle"/>
                                     <field name="code"/>
                                     <field name="name" optional="show"/>
-                                    <field name="module_type"/>
+                                    <field name="type_id" options="{'no_open': True}"/>
+                                    <field name="module_type" column_invisible="1"/>
                                     <field name="module_class" optional="show"/>
                                     <field name="special_kind" optional="show" invisible="module_class != 'special'"/>
                                     <field name="join_method" optional="show"/>
@@ -87,7 +88,8 @@
                                         <group>
                                             <field name="code"/>
                                             <field name="name"/>
-                                            <field name="module_type"/>
+                                            <field name="type_id" options="{'no_open': True}"/>
+                                            <field name="module_type" invisible="1"/>
                                             <field name="module_class"/>
                                             <field name="special_kind" invisible="module_class != 'special'"/>
                                             <field name="join_method"/>

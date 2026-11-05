@@ -423,6 +423,11 @@ class ConstructionMaterialRequestLine(models.Model):
         for line in self:
             line.construction_level_label = line._construction_level_path() or False
 
+    def _get_report_level_label(self):
+        """M117-14: en los vales, la ruta completa del nivel."""
+        self.ensure_one()
+        return self._construction_level_path() or super()._get_report_level_label()
+
     def _construction_level_path(self):
         """Ruta del nivel (paquete 1.16, M116-04): desde el primer nivel de la
         ruta de la plantilla hasta la tarea, p. ej. «Dpto 101 / Cocina /

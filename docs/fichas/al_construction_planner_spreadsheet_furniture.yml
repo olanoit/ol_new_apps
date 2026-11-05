@@ -61,6 +61,11 @@ pasos:
     imagen: screenshots/04-importar.png
 
 novedades:
+  - version: '13.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-08: cuadro de avance con pestaña, filas y total, y «Cancelar» que vuelve a la versión guardada, en importar, «Traer de Odoo», «Traer la venta», «Traer tarifario», «Aplicar propuestas» y al ampliar la hoja."
+      - "M117-24: la hoja lee el catálogo de tipos: listas, «Clase (calc.)» y «A armar»."
   - version: '12.20261104'
     fecha: 04/11/2026
     cambios:

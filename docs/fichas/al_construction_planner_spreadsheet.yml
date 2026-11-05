@@ -38,6 +38,10 @@ funcionalidades:
   - "Las obras de mobiliario llenan su maestro con el puente de mobiliario."
 
 novedades:
+  - version: '17.20261104'
+    fecha: 04/11/2026
+    cambios:
+      - "M117-08: un lote grande recalcula el libro una sola vez, y agregar reglas de validación sin solape deja de copiar todas las reglas de la pestaña. Una ampliación de 1,700 filas pasa de más de 6 min a unos 40 s."
   - version: '16.20261104'
     fecha: 04/11/2026
     cambios:

@@ -31,6 +31,10 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '21.20261104'
+  fecha: 04/11/2026
+  cambios:
+    - "M117-25: factura de valorización por partida o con una línea; forma, producto y texto por contrato y compañía; vista previa antes de crearla; anexo con el detalle y registro de lo facturado por partida."
 - version: '20.20261104'
   fecha: 04/11/2026
   cambios:

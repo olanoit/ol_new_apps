@@ -100,6 +100,10 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
             return [('material', ['Material'])]
         columns = [(key, [header]) for key, header, _r, _h in SHEETS[name][1]]
         keys = {key for key, _t in columns}
+        if name == 'MODULOS':
+            # M117-24: la columna, con el encabezado de hoy o el anterior.
+            columns = [(key, texts + ['Clase (calc.)'] if key == 'module_class' else texts)
+                       for key, texts in columns]
         if name in ('PIEZAS', 'BOM'):
             if 'product_name' not in keys:
                 columns.append(('product_name', ['Producto']))
@@ -246,6 +250,7 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
         categoría y grupo si el archivo no los trae, y los códigos que no
         están en el maestro en PRODUCTOS NUEVOS."""
         sheets = data['sheets']
+        self._prepare_module_types(sheets.get('MODULOS'))
         codes = set()
         for name in ('PIEZAS', 'BOM'):
             spec = sheets.get(name)
@@ -318,6 +323,20 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
                 spec['extra_rows'].append([''] * len(spec['extra_headers']))
         data['added_products'] = len(added)
         return data
+
+    def _prepare_module_types(self, spec):
+        """M117-24: la hoja lista el nombre del catálogo: «Bajo», sus palabras o lo
+        que delata el nombre del módulo se escriben como ese tipo."""
+        if not spec or 'type' not in spec['keys']:
+            return
+        Type = self.env['construction.furniture.type']
+        index = {key: position for position, key in enumerate(spec['keys'])}
+        for row in spec['rows']:
+            name = row[index['name']] if 'name' in index else ''
+            code = row[index['code']] if 'code' in index else ''
+            kind = Type._resolve(row[index['type']], name or code)
+            if kind:
+                row[index['type']] = kind.name
 
     def _analysis(self):
         """Errores y avisos del importador del maestro sobre el archivo, sin

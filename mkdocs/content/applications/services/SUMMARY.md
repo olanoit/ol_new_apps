@@ -36,3 +36,4 @@
             * [Ruta del ingreso](project/construction/planning/income.md)
             * [Cronograma valorizado e inicio](project/construction/planning/valued_schedule.md)
             * [Pestaña Planificación y hoja de trabajo](project/construction/planning/planning_worksheet.md)
+            * [Hoja de venta de mobiliario](project/construction/planning/sale_worksheet.md)
