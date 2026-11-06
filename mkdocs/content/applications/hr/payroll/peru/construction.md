@@ -101,7 +101,28 @@ persona la revisa y la activa. Una vigencia ya cargada no se duplica.
 
 Para ver qué pasó, abra **Configuración ‣ Construcción civil ‣ Búsquedas de la tabla**.
 Cada búsqueda muestra las direcciones revisadas y su resultado. **Buscar ahora** lanza
-una búsqueda sin esperar a la siguiente fecha.
+una búsqueda sin esperar a la siguiente fecha. Una búsqueda manual también cuenta: si
+ya buscó este mes, la acción planificada no vuelve a hacerlo hasta el mes siguiente, o
+hasta el 1 de diciembre.
+
+| Resultado de la búsqueda | Qué significa |
+|---|---|
+| **Sin novedad** | Revisó todo sin errores y no encontró una vigencia nueva. Es lo normal mientras el convenio del año siguiente no se publique |
+| **Tabla nueva importada** | Encontró y cargó una vigencia nueva, archivada: revísela y actívela |
+| **Con errores** | Alguna dirección no se pudo leer; las demás se revisaron |
+| **Falló** | Ninguna dirección se pudo leer; se reintenta al día siguiente |
+
+Cada dirección revisada tiene su propio resultado:
+
+| Resultado de la dirección | Qué significa |
+|---|---|
+| **Revisada** | Página leída; el detalle dice cuántos PDF y páginas del convenio buscado encontró |
+| **Aún no publicada** | La página del año buscado todavía no existe. No es un error |
+| **Ya estaba cargada** | El PDF trae una vigencia que ya tiene una tabla, activa o archivada |
+| **Importada** | El PDF trajo una vigencia nueva y se creó la tabla |
+| **Error** | No se pudo descargar o leer; el detalle dice por qué |
+
+Una página a la que ya se llegó por un enlace de otra no se revisa dos veces.
 
 Las páginas y las direcciones de respaldo se cambian en **Importar tabla del convenio**.
 En una página, `{year}` se reemplaza por el año buscado.

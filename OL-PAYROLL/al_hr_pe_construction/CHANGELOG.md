@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 27.20261027 — 05/11/2026
+
+- Corrección: una página vigilada a la que ya se llegó por un enlace de otra ya no se revisa ni se anota dos veces.
+
 ## 26.20261027 — 05/11/2026
 
 - Búsqueda de la tabla salarial por página: revisa las páginas de CAPECO y de la FTCCP y detecta el PDF del convenio siguiente; las direcciones fijas quedan como respaldo.

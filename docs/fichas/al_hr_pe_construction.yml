@@ -607,6 +607,10 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: '27.20261027'
+    fecha: 05/11/2026
+    cambios:
+      - "Corrección: una página vigilada a la que ya se llegó por un enlace de otra ya no se revisa ni se anota dos veces."
   - version: '26.20261027'
     fecha: 05/11/2026
     cambios:

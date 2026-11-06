@@ -34,7 +34,7 @@ módulo | versión | licencia | resumen
 [al_hr_pe_account](al_hr_pe_account/) | 15.20261104 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
 [al_hr_pe_attendance](al_hr_pe_attendance/) | 23.20261027 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
 [al_hr_pe_benefits](al_hr_pe_benefits/) | 24.20261027 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
-[al_hr_pe_construction](al_hr_pe_construction/) | 26.20261027 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
+[al_hr_pe_construction](al_hr_pe_construction/) | 27.20261027 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
 [al_hr_pe_import](al_hr_pe_import/) | 12.20261027 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
 [al_hr_pe_public_holidays](al_hr_pe_public_holidays/) | 11.20261027 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
 [al_hr_pe_reports](al_hr_pe_reports/) | 24.20261027 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
