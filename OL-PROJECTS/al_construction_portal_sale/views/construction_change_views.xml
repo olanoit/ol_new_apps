@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lo registrado en obra desde el portal (paquete 6, CR-53). -->
+    <record id="view_construction_change_order_form_portal" model="ir.ui.view">
+        <field name="name">construction.change.order.form.portal</field>
+        <field name="model">construction.change.order</field>
+        <field name="inherit_id" ref="al_construction_planner_sale.view_construction_change_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='lines']" position="after">
+                <page string="Registrado en obra" name="portal" invisible="not construction_portal_user_id">
+                    <group>
+                        <group>
+                            <field name="construction_portal_user_id"/>
+                            <field name="construction_client_rep_name" readonly="state != 'draft'"/>
+                            <field name="construction_client_rep_role" readonly="state != 'draft'"/>
+                            <field name="construction_record_sent_to_id" invisible="not construction_record_sent_to_id"/>
+                        </group>
+                        <group>
+                            <field name="construction_portal_task_ids" widget="many2many_tags" readonly="1"/>
+                            <field name="construction_portal_new_item" readonly="state != 'draft'"/>
+                            <field name="construction_portal_qty_estimate" readonly="state != 'draft'"/>
+                            <field name="construction_client_signature" widget="image" options="{'size': [240, 100]}" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="construction_portal_attachment_ids" widget="many2many_binary" readonly="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

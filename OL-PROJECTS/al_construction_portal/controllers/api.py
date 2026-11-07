@@ -215,6 +215,34 @@ class ConstructionPortalApi(http.Controller):
         """Aprobar o rechazar un requerimiento de la obra."""
         return self._service().resident_request(_body())
 
+    @http.route(PREFIX + '/resident/close-day', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_close_day(self, **kw):
+        """«Cerrar el día»: parte diario de obra al cliente (CR-56)."""
+        return self._service().close_day(_body())
+
+    @http.route(PREFIX + '/resident/deduction', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_deduction(self, **kw):
+        """Deductivo de contrata con foto (CR-51)."""
+        return self._service().deduction(_body())
+
+    @http.route(PREFIX + '/resident/crew-request', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_crew_request(self, **kw):
+        """Solicitud de contrata o de cuadrilla adicional (CR-52)."""
+        return self._service().crew_request(_body())
+
+    @http.route(PREFIX + '/resident/change-order', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_change_order(self, **kw):
+        """Cambio pedido por el cliente en obra (CR-53)."""
+        return self._service().change_order(_body())
+
     @http.route(PREFIX + '/photo/<int:project_id>/<int:attachment_id>', type='http',
                 auth='public', methods=['GET'], csrf=False, save_session=False)
     @portal_api(raw=True)

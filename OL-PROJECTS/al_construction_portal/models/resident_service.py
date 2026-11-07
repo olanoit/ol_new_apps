@@ -318,8 +318,12 @@ class ConstructionPortalService(models.AbstractModel):
         progress = self.env['construction.task.progress'].sudo().search([
             ('project_id', '=', project.id), ('attachment_ids', 'in', attachment.ids)], limit=1) \
             if attachment else False
-        if not progress:
-            raise AccessError(self.env._('Esa foto no es de un avance de su obra.'))
+        # También las fotos de los partes del día de la obra (CR-56).
+        report = self.env['construction.daily.report'].sudo().search([
+            ('project_id', '=', project.id), ('attachment_ids', 'in', attachment.ids)], limit=1) \
+            if attachment and not progress else False
+        if not progress and not report:
+            raise AccessError(self.env._('Esa foto no es de un avance ni de un parte de su obra.'))
         data = attachment.raw or b''
         mimetype = attachment.mimetype or 'image/jpeg'
         if size == 'thumb' and data and mimetype.startswith('image/'):

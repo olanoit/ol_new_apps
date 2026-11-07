@@ -49,6 +49,8 @@ LICENSE_EXCEPTIONS = {
     'al_construction_planner_mrp_request': 'LGPL-3',
     # Aplicación de obra (CREVAL v1.0, 4.11): extiende el planificador.
     'al_construction_portal': 'LGPL-3',
+    # Paquete 6, CR-53: puente del portal con el puente de Ventas.
+    'al_construction_portal_sale': 'LGPL-3',
     # Paquetes de industria que instalan el planificador (LGPL-3 por él).
     'al_industry_construction': 'LGPL-3',
     'al_industry_furniture': 'LGPL-3',

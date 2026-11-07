@@ -88,6 +88,12 @@ class ProjectProject(models.Model):
         help='El miembro del portal con papel Residente marcado como aprobador por defecto de '
              'la obra. Las reglas de aprobación de requerimientos lo usan como revisor '
              '«Residente de la obra».')
+    # Paquete 6, CR-56 y CR-53: quien recibe el parte diario de obra y la
+    # constancia de los cambios que pide el cliente.
+    construction_client_contact_id = fields.Many2one(
+        'res.partner', string='Contacto del cliente en obra',
+        help='Recibe el parte diario de obra al «Cerrar el día» y la constancia de los cambios '
+             'que pide el cliente. Vacío: el PDF queda en la obra.')
     construction_portal_url = fields.Char(
         string='Enlace del QR', compute='_compute_construction_portal_url',
         groups='al_construction_planner.group_planner_user')

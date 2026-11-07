@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261027 — 07/11/2026
+
+- Paquete 6, CR-56: un parte diario por persona y día (también lo envía la contrata). El residente ve los partes del día y quién no envió, y con «Cerrar el día» arma el parte diario de obra (personal, avances, restricciones, ocurrencias, fotos y su comentario) y lo envía en PDF al «Contacto del cliente en obra»; sin contacto, queda en la obra. Los partes quedan «Revisado por el residente».
+- Paquete 6, CR-51: deductivo de contrata con foto desde el portal (por monto o por cantidad al precio de la partida en la orden); queda «Pendiente» y entra en la siguiente valorización.
+- Paquete 6, CR-52: solicitud de contrata o de cuadrilla adicional como actividad en la partida para el jefe de la obra, con su estado (Pedida, Asignada, Cancelada).
+- Accesos a un toque en «Mi día» (cambio del cliente, deductivo, pedir cuadrilla o contrata).
+
 ## 9.20261027 — 07/11/2026
 
 - Paquete 6, CR-48: rol «Residente de obra» en el portal, sin usuario interno (puede ser un locador sin ficha de empleado). Ve lo del capataz y la oficina técnica, más «Mi día» (contadores y agenda de hoy por urgencia) y su barra Inicio, Bandejas, Obra y Por enviar. Con el QR y el PIN no tiene el rol Residente. «Aprobador por defecto de la obra» en el personal del portal.

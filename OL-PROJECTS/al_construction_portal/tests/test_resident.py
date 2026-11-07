@@ -11,8 +11,8 @@ from odoo.addons.al_construction_planner_subcontract.tests.test_contract_terms_c
 )
 
 
-@tagged('post_install', '-at_install')
-class TestResident(ContractTermsCommon):
+class ResidentCommon(ContractTermsCommon):
+    """Obra con contrata, capataz y residente locador (sin pruebas propias)."""
 
     @classmethod
     def setUpClass(cls):
@@ -50,6 +50,10 @@ class TestResident(ContractTermsCommon):
             'qty': qty, 'photos': PHOTOS, 'latitude': -12.1, 'longitude': -77.0}, **extra)
         result = self._service(self.contractor_user).progress(values)
         return self.env['construction.task.progress'].browse(int(result['ids']))
+
+
+@tagged('post_install', '-at_install')
+class TestResident(ResidentCommon):
 
     # CR-48 ------------------------------------------------------------
     def test_role_and_scope(self):

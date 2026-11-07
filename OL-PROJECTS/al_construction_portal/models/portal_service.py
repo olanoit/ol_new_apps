@@ -214,11 +214,12 @@ class ConstructionPortalService(models.AbstractModel):
             'weather': [[code, label] for code, label in WEATHER],
             'synced_at': fields.Datetime.to_string(fields.Datetime.now()),
         }
+        if roles & {'foreman', 'office', 'contractor'}:
+            data['daily'] = self._daily_data(project, site, today)
         if roles & {'foreman', 'office'}:
             data['catalog'] = self._catalog(project, lines, roles)
             data['deliveries'] = self._deliveries(project)
             data['returnables'] = self._returnables(project)
-            data['daily'] = self._daily_data(project, site, today)
         if 'foreman' in roles:
             data['crew'] = self._crew(project, members)
         if 'contractor' in roles:
@@ -236,7 +237,7 @@ class ConstructionPortalService(models.AbstractModel):
         return dict(labels, **{
             # «item» y «path» siguen para la aplicación ya instalada, sin la
             # ruta interna (CR-17): el código de la partida y su nivel superior.
-            'id': line.id, 'item': labels['task_code'],
+            'id': line.id, 'item': labels['task_code'], 'task_id': line.task_id.id,
             'name': line.task_id.name, 'path': labels['parent_label'],
             'activity': line.activity_id.display_name, 'uom': line.activity_id.uom_id.name,
             'kind': line.resource_type, 'planned': line.qty_planned, 'validated': validated,
@@ -372,20 +373,27 @@ class ConstructionPortalService(models.AbstractModel):
     # ------------------------------------------------------------------
     @api.model
     def daily_report(self, values):
+        """Parte de la persona del día (uno por persona, obra y día): lo
+        envían al residente el capataz, la contrata y la oficina técnica
+        (paquete 6, CR-56)."""
         submission = self._submission('daily_report', values.get('uuid'))
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
         project, members = self._project(values.get('project_id'))
-        if not self._roles(members) & {'foreman', 'office'}:
-            raise AccessError(self.env._('El parte diario lo envía el maestro de obra.'))
+        if not self._roles(members) & {'foreman', 'office', 'contractor'}:
+            raise AccessError(self.env._('El parte diario lo envía el personal de la obra.'))
         company = project.company_id or self.env.company
         day = self._portal_date(values.get('date'), company)
         Report = self.env['construction.daily.report'].sudo()
-        report = Report.search([('project_id', '=', project.id), ('date', '=', day)], limit=1)
+        report = Report.search([('project_id', '=', project.id), ('date', '=', day),
+                                ('kind', '=', 'member'), ('user_id', '=', self.env.uid)], limit=1)
+        if report.state in ('reviewed', 'closed'):
+            raise UserError(self.env._(
+                'El residente ya revisó su parte de ese día: pídale que lo corrija.'))
         restrictions = set(values.get('restrictions') or [])
         attachments = self._photos(values.get('photos'), 'construction.daily.report')
         vals = {
-            'project_id': project.id, 'date': day, 'user_id': self.env.uid,
+            'project_id': project.id, 'date': day, 'user_id': self.env.uid, 'kind': 'member',
             'weather': values.get('weather') or False,
             'restriction_material': 'material' in restrictions,
             'restriction_front': 'front' in restrictions,
@@ -398,7 +406,7 @@ class ConstructionPortalService(models.AbstractModel):
         }
         if values.get('signature'):
             vals['signature'] = values['signature'].split(',', 1)[-1]
-        # sudo: el parte lo crea el maestro de obra del portal de su obra.
+        # sudo: el parte lo crea la persona del portal de su obra.
         if report:
             report.write(vals)
         else:
@@ -406,9 +414,10 @@ class ConstructionPortalService(models.AbstractModel):
         if attachments:
             attachments.write({'res_id': report.id})
             report.attachment_ids = [(4, a.id) for a in attachments]
-        if project.user_id:
-            report.message_post(body=self.env._('Parte diario enviado al residente.'),
-                                partner_ids=project.user_id.partner_id.ids)
+        residents = project.construction_portal_resident_id | project.user_id
+        report.message_post(body=self.env._('Parte diario enviado al residente.'),
+                            author_id=self.env.user.partner_id.id,
+                            partner_ids=(residents.partner_id - self.env.user.partner_id).ids)
         self._portal_register('daily_report', values['uuid'], report)
         return {'status': 'done', 'ids': str(report.id), 'name': report.name}
 
@@ -1002,3 +1011,13 @@ class ConstructionPortalService(models.AbstractModel):
         pdf, _type = self.env['ir.actions.report'].sudo()._render_qweb_pdf(report, record.ids)
         filename = '%s.pdf' % (record.name or record.display_name).replace('/', '-')
         return pdf, filename
+
+    # ------------------------------------------------------------------
+    # Cambio pedido por el cliente (paquete 6, CR-53)
+    # ------------------------------------------------------------------
+    @api.model
+    def change_order(self, values):
+        """Lo implementa el puente con Ventas (al_construction_portal_sale),
+        donde vive el cambio de obra."""
+        raise UserError(self.env._(
+            'Los cambios de obra piden el puente de Ventas del planificador.'))

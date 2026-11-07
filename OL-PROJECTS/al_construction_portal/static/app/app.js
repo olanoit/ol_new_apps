@@ -14,7 +14,7 @@
     "use strict";
 
     const API = "/construction/api/v1";
-    const MAX_PHOTOS = { progress: 5, daily: 10 };
+    const MAX_PHOTOS = { progress: 5, daily: 10, change: 8, deduction: 5 };
     const state = {
         session: null, // {token, name}
         remember: true, // «Mantener la sesión en este celular»
@@ -565,7 +565,7 @@
         const tiles = [];
         if (data) {
             tiles.push(["partidas", "chart", "Avance"]);
-            if (role("foreman") || role("office")) {
+            if (role("foreman") || role("office") || role("contractor")) {
                 tiles.push(["daily", "report", "Parte diario"]);
             }
             if (role("foreman")) {
@@ -676,7 +676,8 @@
             .join("");
         return `<div class="stats">${stat(c.inbox_progress, "por validar", "por validar", "inbox", "progress", true)}
             ${stat(c.inbox_requests, "por aprobar", "por aprobar", "inbox", "requests", true)}
-            ${stat(c.daily_to_review, "parte por revisar", "partes por revisar")}</div>
+            ${stat(c.daily_to_review, "parte por revisar", "partes por revisar", "parts", null, true)}</div>
+            ${quickActions()}
             <h2>Hoy</h2>
             <div class="card list">${agenda || '<small class="muted">Nada urgente para hoy.</small>'}</div>`;
     }
@@ -856,6 +857,186 @@
         cachePut("sync:" + state.projectId, state.data);
     }
 
+    // ------------------------------------------------------------------
+    // Residente, entrega 2: partes del día, cambio del cliente, deductivo y
+    // solicitudes de contrata o cuadrilla (paquete 6, CR-51 a CR-53, CR-56)
+    // ------------------------------------------------------------------
+    const resident = () => (state.data && state.data.resident) || {};
+    const features = () => resident().features || {};
+    // Partidas de la obra (una por tarea), nombre primero y código al final.
+    function taskOptions() {
+        const seen = new Map();
+        ((state.data && state.data.partidas) || []).forEach((p) => {
+            if (p.task_id && !seen.has(p.task_id)) seen.set(p.task_id, p);
+        });
+        return [...seen.values()].sort((a, b) => taskName(a).localeCompare(taskName(b)));
+    }
+    function taskPicker(key, selected) {
+        const q = (state.params.tq || "").toLowerCase();
+        const rows = taskOptions().filter((p) => selected.includes(p.task_id) || matches(q, taskName(p), taskCode(p), p.parent_label));
+        return `<label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar partida" value="${esc(state.params.tq || "")}" data-input="tq" aria-label="Buscar partida"></label>
+            <div class="card list pick-list">${rows
+                .slice(0, 40)
+                .map((p) => `<label class="pick"><input type="checkbox" data-taskpick="${key}:${p.task_id}" ${selected.includes(p.task_id) ? "checked" : ""}>
+                    <span class="grow"><b>${esc(taskName(p))}${taskCode(p) ? ` · ${esc(taskCode(p))}` : ""}</b><small>${esc(p.parent_label || "")}</small></span></label>`)
+                .join("") || '<small class="muted">Sin partidas.</small>'}</div>`;
+    }
+    function signatureCard(key, title) {
+        const d = state.draft[key];
+        return `<div class="card form"><b>${esc(title)}</b><div class="sign-wrap"><canvas id="signature" data-sign="${key}" class="signature" width="340" height="140" aria-label="Firma"></canvas>
+            ${d.signature ? "" : '<span class="sign-hint" aria-hidden="true">Firme con el dedo aquí</span>'}</div>
+            <button class="link" data-clear-sign="${key}">Borrar la firma</button></div>`;
+    }
+
+    // U13: registros del residente a un toque desde el inicio.
+    function quickActions() {
+        const f = features();
+        const items = [
+            f.change_order && ["change", "doc", "Cambio del cliente"],
+            f.deduction && ["deduction", "undo", "Deductivo"],
+            f.crew_request && ["crewreq", "crew", "Pedir cuadrilla o contrata"],
+        ].filter(Boolean);
+        return items.length
+            ? `<div class="quick">${items.map(([go, ic, label]) => `<button class="quick-btn" data-go="${go}">${svg(ic, 22)}<span>${label}</span></button>`).join("")}</div>`
+            : "";
+    }
+
+    // CR-56 (U10, U16): partes del día y parte diario de obra.
+    screens.parts = () => {
+        const p = resident().parts || { reports: [], missing: [] };
+        const id = Number(state.params.id) || 0;
+        const d = (state.draft.closeDay = state.draft.closeDay || { comment: (p.site && p.site.comment) || "" });
+        const closed = p.site && p.site.state === "closed";
+        const card = (r) => `<button class="card inbox-card plain ${r.id === id ? "on" : ""}" data-go="parts" data-id="${r.id}">
+            <div class="row between"><b>${esc(r.name)}</b>${pill(r.state === "sent" ? "Por revisar" : "Revisado", r.state === "sent" ? "warn" : "ok")}</div>
+            <small>${esc(join(r.role, r.partner, "a las " + clock(String(r.sent_at).replace(" ", "T") + "Z")))}</small>
+            <small>${esc(join(`${r.staff_total} personas`, r.restrictions.join(", ")))}</small></button>`;
+        const row = p.reports.find((r) => r.id === id);
+        const detail = row
+            ? `<div class="card detail"><b class="title">${esc(row.name)}</b><small>${esc(join(row.role, row.partner, row.weather))}</small>
+                ${row.staff.map((s) => `<div class="kv"><span>${esc(s.name)}</span><b>${s.count}</b></div>`).join("")}
+                ${row.restrictions.length ? `<small class="warn-line warn">${svg("alert", 16)} ${esc(row.restrictions.join(", "))}</small>` : ""}
+                ${row.occurrences ? `<p class="note">${esc(row.occurrences)}</p>` : ""}
+                ${row.photos.length ? `<div class="photos">${row.photos.map((ph, i) => photoBox(ph.id, `Foto ${i + 1}`)).join("")}</div>` : ""}</div>`
+            : "";
+        const summary = `<div class="card"><small class="eyebrow">Parte diario de obra · ${esc(longDay(p.date))}</small>
+            <div class="grid4"><span>Partes<b>${p.reports.length}</b></span><span>Sin parte<b class="${p.missing.length ? "warn" : ""}">${p.missing.length}</b></span>
+            <span>Validados<b>${p.validated || 0}</b></span><span>Por validar<b class="warn">${p.pending || 0}</b></span></div>
+            <small>${esc(join(`Asistencia propia de hoy: ${p.own_today || 0}`, p.client_contact ? "se envía a " + p.client_contact : "la obra no tiene contacto del cliente: el PDF queda en la obra"))}</small></div>
+            ${p.missing.length ? `<div class="card list">${p.missing.map((m) => `<div class="queue-row"><span class="dot" aria-hidden="true"></span><div class="grow"><b>${esc(m.name)}</b><small>${esc(join(m.role, m.partner, "sin parte"))}</small></div></div>`).join("")}</div>` : ""}
+            ${
+                closed
+                    ? `<p class="hint">El día ya se cerró y se envió.</p>`
+                    : `<div class="card form"><label>Comentario del residente<textarea rows="3" data-bind="closeDay.comment" placeholder="Puede dictarlo con el micrófono del teclado">${esc(d.comment)}</textarea></label></div>
+                       ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
+                       <button class="primary" data-action="close-day">Cerrar el día y enviar al cliente</button>`
+            }`;
+        return `${header("Partes del día", join(projectParts().code, longDay(p.date)), "home")}
+            <main class="page split ${row ? "has-detail" : ""}">
+                <section class="split-list">${state.params.flash ? `<p class="hint">${esc(state.params.flash)}</p>` : ""}${p.reports.map(card).join("") || '<p class="muted">Aún no llegan partes hoy.</p>'}${summary}</section>
+                <section class="split-detail">${row ? `<button class="link only-phone" data-go="parts">‹ Volver a los partes</button>` : ""}${detail || '<p class="muted only-tablet">Elija un parte para ver el detalle.</p>'}</section>
+            </main>${photoOverlay()}${nav("home")}`;
+    };
+
+    // CR-53 (U11): cambio pedido por el cliente, con su firma.
+    screens.change = () => {
+        const d = (state.draft.change = state.draft.change || {
+            kind: "additional", description: "", task_ids: [], new_item: "", qty_estimate: "", rep_name: "", rep_role: "", photos: [], signature: "",
+        });
+        return `${header("Cambio del cliente", projectParts().code, "home")}
+            <main class="page">
+                <div class="card form">
+                    <div class="toggle"><button class="${d.kind === "additional" ? "on" : ""}" data-set="change.kind=additional" aria-pressed="${d.kind === "additional"}">Adicional</button>
+                    <button class="${d.kind === "deductive" ? "on" : ""}" data-set="change.kind=deductive" aria-pressed="${d.kind === "deductive"}">Deductivo</button></div>
+                    <label>Qué pide el cliente<textarea rows="3" data-bind="change.description" placeholder="Puede dictarlo con el micrófono del teclado">${esc(d.description)}</textarea></label>
+                </div>
+                <h2>Partidas afectadas</h2>
+                ${taskPicker("change", d.task_ids)}
+                <div class="card form">
+                    <label>O partida nueva<input data-bind="change.new_item" value="${esc(d.new_item)}" placeholder="Lo que no está en el presupuesto"></label>
+                    <label>Metrado estimado<input data-bind="change.qty_estimate" value="${esc(d.qty_estimate)}" placeholder="Ej.: 12 m²"></label>
+                </div>
+                ${photosCard("change", d, true)}
+                <div class="card form">
+                    <label>Lo pidió (nombre)<input data-bind="change.rep_name" value="${esc(d.rep_name)}" autocomplete="off"></label>
+                    <label>Cargo<input data-bind="change.rep_role" value="${esc(d.rep_role)}" placeholder="Ej.: supervisor del cliente"></label>
+                </div>
+                ${signatureCard("change", "Firma de quien lo pidió")}
+                <p class="hint">Queda en borrador: lo valoriza el coordinador en Odoo. Al llegar a Odoo, el cliente recibe la constancia en PDF.</p>
+                ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
+                <button class="primary" data-action="save-change">Registrar el cambio</button>
+            </main>`;
+    };
+
+    // CR-51: deductivo de contrata con foto.
+    screens.deduction = () => {
+        const r = resident();
+        const orders = r.orders || [];
+        const d = (state.draft.deduction = state.draft.deduction || {
+            order: orders.length === 1 ? String(orders[0].id) : "", line: "", type: "", mode: "amount", amount: "", qty: "", description: "", photos: [],
+        });
+        const order = orders.find((o) => String(o.id) === String(d.order));
+        const line = order && order.lines.find((l) => String(l.id) === String(d.line));
+        return `${header("Deductivo de contrata", projectParts().code, "home")}
+            <main class="page">
+                <div class="card form">
+                    <label>Contrata y orden<select data-bind="deduction.order" data-rerender="1"><option value="">Elija la orden</option>${orders
+                        .map((o) => `<option value="${o.id}" ${String(o.id) === String(d.order) ? "selected" : ""}>${esc(o.partner)} · ${esc(o.name)}</option>`)
+                        .join("")}</select></label>
+                    ${order ? `<label>Partida<select data-bind="deduction.line" data-rerender="1"><option value="">Sin partida</option>${order.lines
+                        .map((l) => `<option value="${l.id}" ${String(l.id) === String(d.line) ? "selected" : ""}>${esc(join(l.task_name, l.task_code))}</option>`)
+                        .join("")}</select></label>` : ""}
+                    <label>Motivo<select data-bind="deduction.type"><option value="">Elija el motivo</option>${(r.deduction_types || [])
+                        .map(([id, name]) => `<option value="${id}" ${String(id) === String(d.type) ? "selected" : ""}>${esc(name)}</option>`)
+                        .join("")}</select></label>
+                    ${line ? `<div class="toggle"><button class="${d.mode === "amount" ? "on" : ""}" data-set="deduction.mode=amount">Monto</button><button class="${d.mode === "qty" ? "on" : ""}" data-set="deduction.mode=qty">Cantidad (${esc(line.uom)})</button></div>` : ""}
+                    ${
+                        line && d.mode === "qty"
+                            ? `<label>Cantidad<input type="number" inputmode="decimal" step="0.01" min="0" data-bind="deduction.qty" value="${esc(d.qty)}"></label>`
+                            : `<label>Monto sin IGV<input type="number" inputmode="decimal" step="0.01" min="0" data-bind="deduction.amount" value="${esc(d.amount)}"></label>`
+                    }
+                    <label>Descripción<textarea rows="2" data-bind="deduction.description" placeholder="Qué no hizo o qué se descuenta">${esc(d.description)}</textarea></label>
+                </div>
+                ${photosCard("deduction", d, true)}
+                <p class="hint">Queda pendiente y entra en la siguiente valorización de la contrata, como el del escritorio.</p>
+                ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
+                <button class="primary" data-action="save-deduction">Registrar el deductivo</button>
+            </main>`;
+    };
+
+    // CR-52: solicitud de contrata o cuadrilla adicional.
+    screens.crewreq = () => {
+        const d = (state.draft.crewreq = state.draft.crewreq || {
+            kind: "crew", task_ids: [], date_needed: today(), people: [{ role: "operario", count: 1 }], scope: "", comment: "",
+        });
+        const mine = resident().crew_requests || [];
+        const cls = { assigned: "ok", requested: "warn", cancelled: "" };
+        return `${header("Pedir cuadrilla o contrata", projectParts().code, "home")}
+            <main class="page">
+                <div class="toggle"><button class="${d.kind === "crew" ? "on" : ""}" data-set="crewreq.kind=crew">Cuadrilla adicional</button>
+                <button class="${d.kind === "contract" ? "on" : ""}" data-set="crewreq.kind=contract">Contrata</button></div>
+                <h2>Partidas</h2>
+                ${taskPicker("crewreq", d.task_ids)}
+                <div class="card form">
+                    <label>Se necesita el<input type="date" data-bind="crewreq.date_needed" value="${esc(d.date_needed)}" min="${today()}"></label>
+                    ${
+                        d.kind === "crew"
+                            ? d.people.map((p, i) => `<div class="row staff"><input class="grow" data-bind="crewreq.people.${i}.role" value="${esc(p.role)}" aria-label="Rol">${stepper(`data-person="${i}"`, p.count, "Personas", true)}</div>`).join("") +
+                              `<button class="link" data-action="add-person">+ Agregar otro rol</button>`
+                            : `<label>Metrado que hará la contrata<input data-bind="crewreq.scope" value="${esc(d.scope)}" placeholder="Ej.: 120 m² de tarrajeo"></label>`
+                    }
+                    <label>Comentario<textarea rows="2" data-bind="crewreq.comment">${esc(d.comment)}</textarea></label>
+                </div>
+                <p class="hint">Le llega al planificador de la obra como actividad en la partida; la asignación la hace en Odoo.</p>
+                ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
+                <button class="primary" data-action="save-crewreq">Enviar la solicitud</button>
+                ${mine.length ? `<h2>Mis solicitudes</h2><div class="card list">${mine
+                    .map((m) => `<div class="queue-row"><div class="grow"><div class="row between"><b>${esc(m.kind_label.charAt(0).toUpperCase() + m.kind_label.slice(1))} · ${esc(dayMonth(m.date_needed))}</b>${pill(m.state_label, cls[m.state])}</div>
+                        <small>${esc(join(m.detail, m.tasks.join(", ")))}</small></div></div>`)
+                    .join("")}</div>` : ""}
+            </main>`;
+    };
+
     // 4. Mis partidas.
     function partidaState(p) {
         if (p.pending > 0) return [`${qtyText(p.pending)} ${p.uom} por validar`, "warn"];
@@ -1009,6 +1190,10 @@
         return: ["Devolución", "el almacén la recibe"],
         resident_progress: ["Validación", "Odoo la vuelve a comprobar al recibirla"],
         resident_request: ["Aprobación", "Odoo la vuelve a comprobar al recibirla"],
+        close_day: ["Parte diario de obra", "sale en PDF al contacto del cliente"],
+        deduction: ["Deductivo", "entra en la siguiente valorización de la contrata"],
+        crew_request: ["Solicitud", "le llega al planificador de la obra"],
+        change_order: ["Cambio del cliente", "queda en borrador y el cliente recibe la constancia"],
     };
     function queueRow(item) {
         const photos = (item.payload && item.payload.photos ? item.payload.photos.length : 0);
@@ -1421,7 +1606,7 @@
     function render() {
         const screen = screens[state.route] || screens.home;
         $app().innerHTML = screen();
-        if (state.route === "daily") {
+        if (state.route === "daily" || state.route === "change") {
             setupSignature();
         }
         if (state.route === "qr" && state.params.scanning) {
@@ -1495,11 +1680,12 @@
 
     document.addEventListener("input", (event) => {
         const el = event.target;
-        if (el.dataset.input === "q") {
-            state.params.q = el.value;
+        if (el.dataset.input === "q" || el.dataset.input === "tq") {
+            const name = el.dataset.input;
+            state.params[name] = el.value;
             const pos = el.selectionStart;
             render();
-            const again = document.querySelector('[data-input="q"]');
+            const again = document.querySelector(`[data-input="${name}"]`);
             if (again) {
                 again.focus();
                 again.setSelectionRange(pos, pos);
@@ -1522,6 +1708,15 @@
             await loadCache();
             render();
             await refresh();
+            render();
+        } else if (el.dataset.taskpick) {
+            const [key, id] = el.dataset.taskpick.split(":");
+            const list = state.draft[key].task_ids;
+            const index = list.indexOf(Number(id));
+            if (el.checked && index < 0) list.push(Number(id));
+            if (!el.checked && index >= 0) list.splice(index, 1);
+        } else if (el.dataset.rerender && el.dataset.bind) {
+            setPath(el.dataset.bind, el.value);
             render();
         } else if (el.dataset.pick) {
             const id = Number(el.dataset.pick);
@@ -1662,6 +1857,15 @@
         }
         if (data.photoClose) {
             state.params.photo = null;
+            return render();
+        }
+        if (data.person !== undefined) {
+            const p = state.draft.crewreq.people[Number(data.person)];
+            p.count = bump(p.count, Number(data.delta));
+            return render();
+        }
+        if (data.clearSign) {
+            state.draft[data.clearSign].signature = "";
             return render();
         }
         if (data.valqty) {
@@ -1875,6 +2079,64 @@
             dropFromInbox("requests", [id]);
             go("inbox", { tab: "requests", flash: `${label}: ${state.online ? "enviado a Odoo." : "en «Por enviar»; Odoo lo confirma al volver la señal."}` });
         },
+        "add-person": () => {
+            state.draft.crewreq.people.push({ role: "", count: 1 });
+            render();
+        },
+        "close-day": async () => {
+            const p = resident().parts;
+            const d = state.draft.closeDay;
+            const payload = { uuid: uuid(), project_id: state.projectId, date: p.date, comment: d.comment || "", seen_report_ids: p.reports.map((r) => r.id) };
+            await enqueue("close_day", "/resident/close-day", payload, `Cerrar el día ${dayMonth(p.date)}`);
+            state.draft.closeDay = null;
+            p.site = { id: 0, state: "closed", comment: d.comment };
+            p.reports.forEach((r) => (r.state = "reviewed"));
+            state.data.counters.daily_to_review = 0;
+            go("queue", { saved: "close_day" });
+        },
+        "save-change": async () => {
+            const d = state.draft.change;
+            const canvas = document.getElementById("signature");
+            const signature = d.signature || (canvas && canvas.dataset.signed ? canvas.toDataURL("image/png") : "");
+            if (!d.description.trim()) return alertInline("Describa el cambio que pide el cliente.");
+            if (!d.task_ids.length && !d.new_item.trim()) return alertInline("Elija las partidas afectadas o describa la partida nueva.");
+            if (!d.photos.length) return alertInline("Tome al menos una foto.");
+            if (!d.rep_name.trim()) return alertInline("Indique quién lo pidió por el cliente.");
+            if (!signature) return alertInline("Falta la firma de quien lo pidió.");
+            const payload = Object.assign({ uuid: uuid(), project_id: state.projectId, date: today() }, d, { signature });
+            await enqueue("change_order", "/resident/change-order", payload, `Cambio del cliente: ${d.description.slice(0, 40)}`);
+            state.draft.change = null;
+            go("queue", { saved: "change_order" });
+        },
+        "save-deduction": async () => {
+            const d = state.draft.deduction;
+            if (!d.order) return alertInline("Elija la orden de la contrata.");
+            if (!d.type) return alertInline("Elija el motivo del deductivo.");
+            if (!d.description.trim()) return alertInline("Describa el deductivo.");
+            const byQty = d.mode === "qty" && d.line;
+            if (!(Number(byQty ? d.qty : d.amount) > 0)) return alertInline(byQty ? "Indique la cantidad." : "Indique el monto.");
+            if (!d.photos.length) return alertInline("Tome al menos una foto.");
+            const order = resident().orders.find((o) => String(o.id) === String(d.order));
+            const payload = {
+                uuid: uuid(), project_id: state.projectId, date: today(), purchase_order_id: Number(d.order),
+                order_line_id: Number(d.line) || false, type_id: Number(d.type), description: d.description,
+                amount: byQty ? 0 : Number(d.amount), qty: byQty ? Number(d.qty) : 0, photos: d.photos,
+            };
+            await enqueue("deduction", "/resident/deduction", payload, `Deductivo a ${order ? order.partner : "la contrata"}`);
+            state.draft.deduction = null;
+            go("queue", { saved: "deduction" });
+        },
+        "save-crewreq": async () => {
+            const d = state.draft.crewreq;
+            if (!d.task_ids.length) return alertInline("Elija las partidas.");
+            if (!d.date_needed) return alertInline("Indique la fecha en que se necesita.");
+            if (d.kind === "crew" && !d.people.some((p) => p.role && p.count > 0)) return alertInline("Indique cuántas personas y de qué rol.");
+            if (d.kind === "contract" && !d.scope.trim()) return alertInline("Indique el metrado que hará la contrata.");
+            const payload = Object.assign({ uuid: uuid(), project_id: state.projectId }, d, { people: d.people.filter((p) => p.role && p.count > 0) });
+            await enqueue("crew_request", "/resident/crew-request", payload, `Pedir ${d.kind === "crew" ? "cuadrilla adicional" : "contrata"} para el ${dayMonth(d.date_needed)}`);
+            state.draft.crewreq = null;
+            go("queue", { saved: "crew_request" });
+        },
         "save-progress": async () => {
             const d = state.draft.progress;
             const line = state.data.partidas.find((p) => p.id === Number(state.params.id));
@@ -2012,19 +2274,21 @@
             canvas.dataset.signed = "1";
             e.preventDefault();
         };
+        // El borrador que guarda la firma: el parte diario o el cambio del cliente.
+        const key = canvas.dataset.sign || "daily";
         const end = () => {
-            if (drawing && canvas.dataset.signed && state.draft.daily) {
-                state.draft.daily.signature = canvas.toDataURL("image/png");
+            if (drawing && canvas.dataset.signed && state.draft[key]) {
+                state.draft[key].signature = canvas.toDataURL("image/png");
             }
             drawing = false;
         };
         canvas.addEventListener("pointerdown", start);
         canvas.addEventListener("pointermove", move);
         window.addEventListener("pointerup", end, { once: false });
-        if (state.draft.daily && state.draft.daily.signature) {
+        if (state.draft[key] && state.draft[key].signature) {
             const img = new Image();
             img.onload = () => ctx.drawImage(img, 0, 0);
-            img.src = state.draft.daily.signature;
+            img.src = state.draft[key].signature;
             canvas.dataset.signed = "1";
         }
     }

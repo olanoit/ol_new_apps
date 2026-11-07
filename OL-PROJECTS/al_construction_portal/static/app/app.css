@@ -260,6 +260,15 @@ form.form { display: flex; flex-direction: column; gap: 12px; }
 .pill.warn { background: #FFF4D6; color: var(--warn); }
 .valuation { cursor: pointer; }
 .row.two > * { flex: 1; }
+/* Residente, entrega 2: accesos a un toque (U13) y selector de partidas. */
+.quick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.quick-btn { min-height: 76px; border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+    color: var(--brand); display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;
+    gap: 6px; padding: 10px 12px; cursor: pointer; text-align: left; }
+.quick-btn span { color: var(--ink); font-weight: 600; font-size: 14px; line-height: 1.25; }
+.pick-list { max-height: 320px; overflow-y: auto; }
+.pick-list .pick { padding: 0 14px; }
+.pick-list .pick input { width: 24px; height: 24px; accent-color: var(--brand); flex-shrink: 0; }
 /* Residente (paquete 6): «Mi día» y bandejas. */
 button.stat { cursor: pointer; text-align: left; font: inherit; }
 .agenda-row { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 14px; width: 100%;

@@ -129,8 +129,10 @@ class TestPortalService(ContractTermsCommon):
         self.assertEqual(self.env['construction.daily.report'].search_count(
             [('project_id', '=', self.project.id)]), 1)
         self.assertEqual(report.staff_total, 3)
-        with self.assertRaises(AccessError):
-            self._service(self.contractor_user).daily_report(dict(values, uuid='parte-3'))
+        # La contrata también envía su parte (paquete 6, CR-56): uno por persona.
+        self._service(self.contractor_user).daily_report(dict(values, uuid='parte-3'))
+        self.assertEqual(self.env['construction.daily.report'].search_count(
+            [('project_id', '=', self.project.id)]), 2)
 
     def test_material_requests(self):
         cement = self.env['product.product'].create({

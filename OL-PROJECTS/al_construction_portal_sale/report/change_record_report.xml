@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Constancia del cambio pedido por el cliente en obra (paquete 6, CR-53),
+         con el formato común de la suite. Sin montos: los pone el coordinador. -->
+    <record id="action_report_change_record" model="ir.actions.report">
+        <field name="name">Constancia de cambio en obra</field>
+        <field name="model">construction.change.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_portal_sale.report_change_record</field>
+        <field name="report_file">al_construction_portal_sale.report_change_record</field>
+        <field name="print_report_name">('Constancia %s' % object.name).replace('/', '-')</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="al_construction_planner_sale.model_construction_change_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_change_record">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="'Constancia de cambio en obra'"/>
+                    <t t-set="doc_number" t-value="o.name"/>
+                    <t t-set="doc_extra" t-value="o.date.strftime('%d/%m/%Y') if o.date else ''"/>
+                    <table class="pe-doc-table mb-3">
+                        <tr>
+                            <td class="pe-doc-label">Obra</td>
+                            <td class="pe-doc-value" t-out="o.project_id.display_name"/>
+                            <td class="pe-doc-label">Tipo</td>
+                            <td class="pe-doc-value" t-out="dict(o._fields['kind']._description_selection(o.env)).get(o.kind)"/>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Lo pidió</td>
+                            <td class="pe-doc-value"><t t-out="o.construction_client_rep_name"/><t t-if="o.construction_client_rep_role">, <t t-out="o.construction_client_rep_role"/></t></td>
+                            <td class="pe-doc-label">Registró</td>
+                            <td class="pe-doc-value" t-out="o.construction_portal_user_id.name"/>
+                        </tr>
+                        <tr t-if="o.construction_portal_task_ids">
+                            <td class="pe-doc-label">Partidas</td>
+                            <td class="pe-doc-value" colspan="3" t-out="', '.join(o.construction_portal_task_ids.mapped('display_name'))"/>
+                        </tr>
+                        <tr t-if="o.construction_portal_new_item">
+                            <td class="pe-doc-label">Partida nueva</td>
+                            <td class="pe-doc-value" colspan="3" t-out="o.construction_portal_new_item"/>
+                        </tr>
+                        <tr t-if="o.construction_portal_qty_estimate">
+                            <td class="pe-doc-label">Metrado estimado</td>
+                            <td class="pe-doc-value" colspan="3" t-out="o.construction_portal_qty_estimate"/>
+                        </tr>
+                    </table>
+                    <div class="pe-doc-section">Descripción</div>
+                    <p class="pe-doc-text" style="white-space: pre-line;" t-out="o.reason"/>
+                    <t t-set="photos" t-value="o.construction_portal_attachment_ids.filtered(lambda a: (a.mimetype or '').startswith('image/'))"/>
+                    <t t-if="photos">
+                        <div class="pe-doc-section">Fotos</div>
+                        <table class="pe-doc-table mb-3">
+                            <t t-foreach="range(0, len(photos), 3)" t-as="start">
+                                <tr class="pe-doc-keep">
+                                    <td t-foreach="photos[start:start + 3]" t-as="photo" style="width: 33%; text-align: center;">
+                                        <img t-att-src="image_data_uri(photo.datas)" style="max-width: 100%; max-height: 180px;"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </table>
+                    </t>
+                    <p class="pe-doc-fs-11">
+                        El cambio queda registrado en borrador. La empresa lo valoriza y lo
+                        presenta para su aprobación; esta constancia no es un presupuesto.
+                    </p>
+                    <table class="pe-doc-signatures pe-doc-keep">
+                        <tr>
+                            <td>
+                                <div style="height: 70px;">
+                                    <img t-if="o.construction_client_signature" class="pe-doc-sign-img" style="max-height: 70px;" t-att-src="image_data_uri(o.construction_client_signature)"/>
+                                </div>
+                                <div class="pe-doc-sign-line"/>
+                                <div t-out="o.construction_client_rep_name"/>
+                                <div t-out="o.construction_client_rep_role or 'Representante del cliente'"/>
+                            </td>
+                            <td>
+                                <div style="height: 70px;"/>
+                                <div class="pe-doc-sign-line"/>
+                                <div t-out="o.construction_portal_user_id.name"/>
+                                <div>Residente de obra</div>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

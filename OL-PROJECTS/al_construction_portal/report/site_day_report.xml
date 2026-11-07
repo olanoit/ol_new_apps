@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Parte diario de obra al cliente (paquete 6, CR-56): lo arma el residente
+         al «Cerrar el día» con el formato común de la suite. -->
+    <record id="action_report_site_day" model="ir.actions.report">
+        <field name="name">Parte diario de obra</field>
+        <field name="model">construction.daily.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_portal.report_site_day</field>
+        <field name="report_file">al_construction_portal.report_site_day</field>
+        <field name="print_report_name">('Parte diario %s' % object.name).replace('/', '-')</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_construction_daily_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_site_day">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="s" t-value="o._site_summary()"/>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="company" t-value="o.company_id or o.project_id.company_id or o.env.company"/>
+                    <t t-set="doc_title" t-value="'Parte diario de obra'"/>
+                    <t t-set="doc_extra" t-value="o.date.strftime('%d/%m/%Y') if o.date else ''"/>
+                    <table class="pe-doc-table mb-3">
+                        <tr>
+                            <td class="pe-doc-label">Obra</td>
+                            <td class="pe-doc-value" t-out="o.project_id.display_name"/>
+                            <td class="pe-doc-label">Fecha</td>
+                            <td class="pe-doc-value" t-out="o.date"/>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Residente</td>
+                            <td class="pe-doc-value" t-out="o.user_id.name"/>
+                            <td class="pe-doc-label">Clima</td>
+                            <td class="pe-doc-value" t-out="s['weather'] or '—'"/>
+                        </tr>
+                        <tr t-if="o.project_id.construction_client_contact_id">
+                            <td class="pe-doc-label">Para</td>
+                            <td class="pe-doc-value" colspan="3" t-out="o.project_id.construction_client_contact_id.display_name"/>
+                        </tr>
+                    </table>
+
+                    <div class="pe-doc-section">Personal en obra</div>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead><tr class="pe-doc-thead"><td>Cuadrilla o contrata</td><td>Origen</td><td class="text-end">Personas</td></tr></thead>
+                        <tbody>
+                            <tr t-foreach="s['staff']" t-as="line">
+                                <td t-out="line.name"/>
+                                <td t-out="dict(line._fields['source']._description_selection(line.env)).get(line.source)"/>
+                                <td class="text-end" t-out="line.count"/>
+                            </tr>
+                            <tr t-if="not s['staff']"><td colspan="3">Sin personal informado.</td></tr>
+                        </tbody>
+                        <tfoot><tr class="pe-doc-total"><td colspan="2">Total</td><td class="text-end" t-out="o.staff_total"/></tr></tfoot>
+                    </table>
+
+                    <div class="pe-doc-section">Avances validados del día</div>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead><tr class="pe-doc-thead"><td>Partida</td><td>Ejecutó</td><td class="text-end">Cantidad</td></tr></thead>
+                        <tbody>
+                            <tr t-foreach="s['validated']" t-as="p">
+                                <td t-out="p.task_id.display_name"/>
+                                <td t-out="p.partner_id.commercial_partner_id.name or 'Personal propio'"/>
+                                <td class="text-end"><t t-out="round(p.qty, 2)"/> <t t-out="p.uom_id.name"/></td>
+                            </tr>
+                            <tr t-if="not s['validated']"><td colspan="3">Sin avances validados en el día.</td></tr>
+                        </tbody>
+                    </table>
+                    <p t-if="s['pending']" class="pe-doc-fs-11">
+                        Avances por validar del día: <t t-out="len(s['pending'])"/>.
+                    </p>
+
+                    <div class="pe-doc-section">Restricciones y ocurrencias</div>
+                    <table class="pe-doc-table mb-3">
+                        <tr>
+                            <td class="pe-doc-label">Restricciones</td>
+                            <td class="pe-doc-value" t-out="', '.join(s['restrictions']) or 'Ninguna'"/>
+                        </tr>
+                        <tr t-foreach="s['occurrences']" t-as="occ">
+                            <td class="pe-doc-label" t-out="occ[0]"/>
+                            <td class="pe-doc-value" t-out="occ[1]"/>
+                        </tr>
+                        <tr t-if="o.resident_comment">
+                            <td class="pe-doc-label">Comentario del residente</td>
+                            <td class="pe-doc-value" t-out="o.resident_comment"/>
+                        </tr>
+                    </table>
+
+                    <t t-if="s['photos']">
+                        <div class="pe-doc-section">Fotos</div>
+                        <table class="pe-doc-table mb-3">
+                            <t t-foreach="range(0, len(s['photos']), 3)" t-as="start">
+                                <tr class="pe-doc-keep">
+                                    <td t-foreach="s['photos'][start:start + 3]" t-as="photo" style="width: 33%; text-align: center;">
+                                        <img t-att-src="image_data_uri(photo.datas)" style="max-width: 100%; max-height: 180px;"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </table>
+                    </t>
+
+                    <p class="pe-doc-fs-11">
+                        Partes revisados: <t t-out="', '.join(s['members'].mapped('user_id.name')) or 'ninguno'"/>.
+                        <t t-if="o.closed_at">Cerrado el <t t-out="o.closed_at" t-options="{'widget': 'datetime'}"/>.</t>
+                    </p>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,34 @@
+titulo: 'Portal de obra: cambios del cliente'
+subtitulo: El residente registra en el celular el cambio que pide el cliente, con fotos y su
+  firma, y el cliente recibe la constancia en PDF.
+categoria: Construcción · Proyectos
+etiquetas:
+- Portal de obra
+- Cambio de obra
+- Firma en pantalla
+destacados:
+- icono: ✍️
+  titulo: Firma del cliente en obra
+  texto: Quien pide el cambio firma con el dedo en el celular o la tablet del residente; su
+    nombre y cargo quedan en el cambio.
+- icono: 📄
+  titulo: Constancia en PDF
+  texto: Al llegar a Odoo, el contacto del cliente de la obra recibe la constancia con la
+    descripción, las fotos y la firma. No lleva montos.
+- icono: 📝
+  titulo: Cambio en borrador
+  texto: Se crea el cambio de obra con las partidas afectadas o la partida nueva y el metrado
+    estimado; lo valoriza y aprueba el coordinador en el escritorio.
+configuracion:
+- Se instala solo cuando están el portal de obra y el puente de Ventas del planificador.
+- En la obra, pestaña Portal de obra, elija el «Contacto del cliente en obra».
+requisitos_nota: Se instala automáticamente con `al_construction_portal` y `al_construction_planner_sale`.
+  Licencia LGPL-3 como el portal y el planificador.
+novedades:
+- version: '1.20261107'
+  fecha: 07/11/2026
+  cambios:
+  - "Puente nuevo (paquete 6, CR-53): cambio pedido por el cliente en obra desde el portal, con fotos, firma en pantalla y constancia en PDF al contacto del cliente; funciona sin señal."
+relacionados:
+- al_construction_portal
+- al_construction_planner_sale

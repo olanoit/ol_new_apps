@@ -73,6 +73,13 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '10.20261027'
+    fecha: 07/11/2026
+    cambios:
+      - "Paquete 6, CR-56: un parte diario por persona y día (también lo envía la contrata). El residente ve los partes del día y quién no envió, y con «Cerrar el día» arma el parte diario de obra (personal, avances, restricciones, ocurrencias, fotos y su comentario) y lo envía en PDF al «Contacto del cliente en obra»; sin contacto, queda en la obra. Los partes quedan «Revisado por el residente»."
+      - "Paquete 6, CR-51: deductivo de contrata con foto desde el portal (por monto o por cantidad al precio de la partida en la orden); queda «Pendiente» y entra en la siguiente valorización."
+      - "Paquete 6, CR-52: solicitud de contrata o de cuadrilla adicional como actividad en la partida para el jefe de la obra, con su estado (Pedida, Asignada, Cancelada)."
+      - "Accesos a un toque en «Mi día» (cambio del cliente, deductivo, pedir cuadrilla o contrata)."
   - version: '9.20261027'
     fecha: 07/11/2026
     cambios:

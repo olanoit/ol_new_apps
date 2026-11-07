@@ -12,6 +12,10 @@ portador.
   (`construction.portal.member`, `construction.portal.token`).
 - Cada envío lleva un `uuid`; `construction.portal.submission` evita
   duplicados al reintentar.
+- Rol Residente (paquete 6): bandejas «Por validar» y «Por aprobar»
+  (`resident_service.py`), partes del día y «Cerrar el día», deductivo y
+  solicitudes de cuadrilla o contrata (`resident_records.py`); el cambio del
+  cliente está en `al_construction_portal_sale`.
 - Parte diario (`construction.daily.report`), tareo por partida
   (`construction.portal.tareo`, reparte el jornal ejecutado), catálogos del
   portal y kits, requerimiento de obra o interno, recepción y devolución.

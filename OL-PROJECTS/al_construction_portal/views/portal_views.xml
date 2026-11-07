@@ -24,6 +24,9 @@
                         <group string="Requerimientos del portal">
                             <field name="construction_portal_overhead_area_id" options="{'no_create': True}"/>
                         </group>
+                        <group string="Cliente en obra">
+                            <field name="construction_client_contact_id" options="{'no_create': True}"/>
+                        </group>
                     </group>
                     <field name="construction_portal_member_ids" context="{'default_project_id': id}">
                         <list editable="bottom">
