@@ -44,6 +44,10 @@ Se desarrolló en cuatro entregas, en este orden, todas el 07-nov-2026.
 - Un usuario de portal no puede adjuntar a un mensaje archivos que no vengan
   del redactor (`_process_attachments_for_post`): los PDF que se envían desde
   el portal se crean con el mensaje.
+- Abierta en `/obra/app` (sin la barra final), la aplicación quedaba fuera del
+  alcance de su service worker: no abría sin señal y «Activar avisos» se
+  quedaba esperando sin error. Ahora esa dirección redirige a `/obra/app/` y
+  la activación avisa si el service worker no responde (`controllers/app.py`).
 
 ## 4. Pruebas del requerimiento (sección 9)
 

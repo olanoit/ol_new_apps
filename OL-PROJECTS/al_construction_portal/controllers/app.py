@@ -20,8 +20,13 @@ class ConstructionPortalApp(http.Controller):
         # sudo: el nombre y el color de la empresa del sitio, públicos.
         return request.env['res.company'].sudo().search([], limit=1, order='id')
 
-    @http.route(['/obra/app', '/obra/app/'], type='http', auth='public', methods=['GET'],
-                sitemap=False)
+    @http.route('/obra/app', type='http', auth='public', methods=['GET'], sitemap=False)
+    def app_no_slash(self, **kw):
+        # Sin la barra final la página queda fuera del alcance del service
+        # worker: no abre sin señal y la activación de avisos no termina.
+        return request.redirect('/obra/app/', code=301, local=True)
+
+    @http.route('/obra/app/', type='http', auth='public', methods=['GET'], sitemap=False)
     def app(self, **kw):
         company = self._company()
         return request.render('al_construction_portal.portal_app', {

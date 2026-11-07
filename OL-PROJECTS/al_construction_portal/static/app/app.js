@@ -659,7 +659,13 @@
             throw new Error("Sin permiso para los avisos: actívelo en los ajustes del navegador.");
         }
         const { public_key: key } = await call("/push/key");
-        const registration = await navigator.serviceWorker.ready;
+        // «ready» no termina si la página está fuera del alcance del service
+        // worker o si este no se instaló: se avisa en vez de quedar esperando.
+        const registration = await Promise.race([
+            navigator.serviceWorker.ready,
+            new Promise((resolve, reject) => setTimeout(() => reject(new Error(
+                "La aplicación no terminó de instalarse en este celular. Ciérrela, ábrala de nuevo desde " + location.origin + "/obra/app/ y vuelva a intentarlo.")), 10000)),
+        ]);
         const send = (subscription) => {
             const json = subscription.toJSON();
             return call("/push/subscribe", { endpoint: json.endpoint, keys: json.keys, expirationTime: json.expirationTime || null, vapid_public_key: key });

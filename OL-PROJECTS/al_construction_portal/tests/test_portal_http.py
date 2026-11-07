@@ -63,6 +63,11 @@ class TestPortalHttp(HttpCase):
         self.assertEqual(manifest['display'], 'standalone')
         worker = self.url_open('/obra/app/sw.js')
         self.assertEqual(worker.headers.get('Service-Worker-Allowed'), '/obra/app/')
+        # Sin la barra final la página quedaría fuera del alcance del service
+        # worker (P17: la activación de avisos no terminaba).
+        bare = self.url_open('/obra/app', allow_redirects=False)
+        self.assertEqual(bare.status_code, 301)
+        self.assertTrue(bare.headers['Location'].endswith('/obra/app/'))
 
     def test_qr_and_pin(self):
         code = self.project.construction_portal_code
