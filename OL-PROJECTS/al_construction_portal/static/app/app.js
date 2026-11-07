@@ -436,7 +436,7 @@
             ? [
                   ["home", "home", "Inicio"],
                   ["inbox", "inbox", "Bandejas"],
-                  ["partidas", "site", "Obra"],
+                  ["site", "site", "Obra"],
                   ["queue", "sync", "Por enviar"],
               ]
             : [
@@ -1037,6 +1037,162 @@
             </main>`;
     };
 
+    // ------------------------------------------------------------------
+    // Obra en el portal del residente (paquete 6, CR-58 y CR-54): Resumen,
+    // Semana, Tareas y Gantt, de solo lectura y con los datos de la última
+    // sincronización.
+    // ------------------------------------------------------------------
+    const pct = (value) => `${Math.round(100 * (value || 0))} %`;
+    // Programado y real: azul y naranja de la paleta validada (contraste y
+    // daltonismo); la línea discontinua y la leyenda los distinguen sin color.
+    const SERIES = { real: "#2a78d6", programmed: "#eb6834" };
+    const COLUMNS = [
+        ["todo", "Por iniciar"],
+        ["doing", "En curso"],
+        ["ending", "Por terminar esta semana"],
+        ["done", "Terminadas"],
+    ];
+
+    function siteCurve(curve) {
+        if (!curve.length) return "";
+        const w = 340, h = 160, pad = { l: 34, r: 10, t: 10, b: 22 };
+        const x = (i) => pad.l + (i * (w - pad.l - pad.r)) / Math.max(1, curve.length - 1);
+        const y = (v) => pad.t + (1 - v) * (h - pad.t - pad.b);
+        const path = (key) => curve
+            .map((p, i) => (p[key] === null || p[key] === undefined ? null : `${x(i).toFixed(1)},${y(p[key]).toFixed(1)}`))
+            .filter(Boolean).join(" L ");
+        const grid = [0, 0.5, 1].map((v) => `<line x1="${pad.l}" x2="${w - pad.r}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${pad.l - 6}" y="${y(v) + 4}" text-anchor="end" class="axis">${v * 100}%</text>`).join("");
+        const first = curve[0].week, last = curve[curve.length - 1].week;
+        const todayIndex = curve.findIndex((p) => p.week >= today());
+        const realPts = curve.filter((p) => p.real !== null && p.real !== undefined);
+        const lastReal = realPts[realPts.length - 1];
+        const hits = curve.map((p, i) => `<rect x="${x(i) - 8}" y="${pad.t}" width="16" height="${h - pad.t - pad.b}" class="hit"><title>Semana al ${dayMonth(p.week)} · programado ${pct(p.programmed)}${p.real === null || p.real === undefined ? "" : ` · real ${pct(p.real)}`}</title></rect>`).join("");
+        return `<svg viewBox="0 0 ${w} ${h}" class="chart" role="img" aria-label="Curva de avance programado y real">
+            ${grid}
+            ${todayIndex >= 0 ? `<line x1="${x(todayIndex)}" x2="${x(todayIndex)}" y1="${pad.t}" y2="${h - pad.b}" class="today"/>` : ""}
+            <path d="M ${path("programmed")}" fill="none" stroke="${SERIES.programmed}" stroke-width="2" stroke-dasharray="5 4"/>
+            <path d="M ${path("real")}" fill="none" stroke="${SERIES.real}" stroke-width="2"/>
+            ${lastReal ? `<circle cx="${x(curve.indexOf(lastReal))}" cy="${y(lastReal.real)}" r="4" fill="${SERIES.real}" stroke="#fff" stroke-width="2"/>` : ""}
+            <text x="${pad.l}" y="${h - 6}" class="axis">${dayMonth(first)}</text><text x="${w - pad.r}" y="${h - 6}" text-anchor="end" class="axis">${dayMonth(last)}</text>
+            ${hits}</svg>
+            <div class="legend"><span><i class="swatch" style="background:${SERIES.real}"></i>Real validado</span><span><svg width="16" height="8" aria-hidden="true"><line x1="0" x2="16" y1="4" y2="4" stroke="${SERIES.programmed}" stroke-width="2" stroke-dasharray="4 3"/></svg>Programado</span></div>
+            <details class="table-view"><summary>Ver como tabla</summary><table class="lines"><thead><tr><th>Semana al</th><th>Programado</th><th>Real</th></tr></thead><tbody>${curve
+                .map((p) => `<tr><td>${esc(dayMonth(p.week))}</td><td>${pct(p.programmed)}</td><td>${p.real === null || p.real === undefined ? "—" : pct(p.real)}</td></tr>`)
+                .join("")}</tbody></table></details>`;
+    }
+
+    function pairBar(real, programmed) {
+        return `<div class="pair-bar" title="Real ${pct(real)} · programado ${pct(programmed)}"><div class="bar-bg"><div class="bar-fill real" style="width:${Math.min(100, 100 * real)}%"></div></div>
+            <div class="bar-bg thin"><div class="bar-fill programmed" style="width:${Math.min(100, 100 * programmed)}%"></div></div></div>`;
+    }
+
+    function siteTaskCard(t, compact) {
+        const who = t.partners.length ? t.partners.join(", ") : t.own_staff ? "Personal propio" : "";
+        return `<button class="card task-card plain" data-task="${t.id}">
+            <b class="clamp2">${esc(t.task_name)}${t.task_code ? ` · ${esc(t.task_code)}` : ""}</b>
+            ${compact ? "" : `<small>${esc(join(who, t.start ? `${dayMonth(t.start)} → ${dayMonth(t.end)}` : "sin fechas"))}</small>`}
+            <div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100, 100 * t.progress)}%"></div></div>
+            <small class="row between"><span>${pct(t.progress)} validado</span>${t.late ? `<span class="strong bad">${svg("alert", 14)} atrasada ${t.late_days} d</span>` : t.warning ? `<span class="strong warn">${esc(t.warning)}</span>` : ""}</small>
+        </button>`;
+    }
+
+    function siteGantt(site) {
+        const zoom = state.params.zoom || "week";
+        const perDay = zoom === "week" ? 22 : 6;
+        const rows = site.tasks.filter((t) => t.start && t.end);
+        if (!rows.length) return '<p class="muted">Las partidas no tienen fechas en el plan.</p>';
+        const day0 = asDate(site.start || rows[0].start);
+        const days = (iso) => Math.round((asDate(iso) - day0) / 86400000);
+        const span = Math.max(...rows.map((t) => days(t.end))) + 7;
+        const rowH = 30, labelW = 0, top = 26;
+        const width = labelW + span * perDay;
+        const height = top + rows.length * rowH + 10;
+        const ticks = [];
+        for (let d = 0; d <= span; d += zoom === "week" ? 7 : 30) {
+            const iso = new Date(day0.getTime() + d * 86400000).toISOString().slice(0, 10);
+            ticks.push(`<line x1="${d * perDay}" x2="${d * perDay}" y1="${top - 6}" y2="${height}" class="grid"/><text x="${d * perDay + 3}" y="${top - 10}" class="axis">${esc(dayMonth(iso))}</text>`);
+        }
+        const todayX = days(today()) * perDay;
+        const bars = rows
+            .map((t, i) => {
+                const x = days(t.start) * perDay;
+                const w = Math.max(perDay, (days(t.end) - days(t.start) + 1) * perDay);
+                const y = top + i * rowH + 6;
+                return `<g class="gantt-row"><title>${esc(t.task_name)} · ${dayMonth(t.start)} → ${dayMonth(t.end)} · ${pct(t.progress)} validado${t.late ? ` · atrasada ${t.late_days} d` : ""}</title>
+                    <rect x="${x}" y="${y}" width="${w}" height="18" rx="4" class="track ${t.late ? "late" : ""}"/>
+                    <rect x="${x}" y="${y}" width="${(w * Math.min(1, t.progress)).toFixed(1)}" height="18" rx="4" fill="${SERIES.real}"/></g>`;
+            })
+            .join("");
+        const milestones = (site.milestones || [])
+            .map((m) => {
+                const mx = days(m.date) * perDay;
+                return `<g><title>Hito: ${esc(m.name)} · ${dayMonth(m.date)}${m.reached ? " · alcanzado" : ""}</title><path d="M ${mx} ${top - 4} l 6 6 l -6 6 l -6 -6 z" class="milestone ${m.reached ? "reached" : ""}"/><text x="${mx + 9}" y="${top + 6}" class="axis">${esc(m.name.length > 24 ? m.name.slice(0, 23) + "…" : m.name)}</text></g>`;
+            })
+            .join("");
+        const labels = rows
+            .map((t) => `<div class="gantt-label ${t.late ? "late" : ""}" style="height:${rowH}px"><span class="clamp1">${esc(t.task_name)}</span><small>${esc(t.task_code)}</small></div>`)
+            .join("");
+        return `<div class="chips"><button class="chip ${zoom === "week" ? "on" : ""}" data-zoom="week">Semana</button><button class="chip ${zoom === "month" ? "on" : ""}" data-zoom="month">Mes</button></div>
+            <div class="gantt"><div class="gantt-labels" style="padding-top:${top}px">${labels}</div>
+            <div class="gantt-scroll" data-today-x="${todayX}"><svg width="${width}" height="${height}" class="gantt-svg" role="img" aria-label="Gantt de la obra">${ticks.join("")}${bars}
+            ${todayX >= 0 && todayX <= width ? `<line x1="${todayX}" x2="${todayX}" y1="${top - 6}" y2="${height}" class="today"/><text x="${todayX + 3}" y="${height - 2}" class="axis strong">hoy</text>` : ""}
+            ${milestones}</svg></div></div>
+            <div class="legend"><span><i class="swatch" style="background:${SERIES.real}"></i>Avance validado</span><span><i class="swatch track"></i>Programado</span><span><i class="swatch late"></i>Atrasada</span><span>◆ Hito</span></div>`;
+    }
+
+    screens.site = () => {
+        const site = state.data && state.data.site;
+        const view = state.params.view || "summary";
+        const tabs = [["summary", "Resumen"], ["week", "Semana"], ["tasks", "Tareas"], ["gantt", "Gantt"]];
+        const head = `${header("Obra", join(projectParts().code, site ? "datos del " + clock(String(site.as_of || "").replace(" ", "T") + "Z") : ""), "home")}
+            <div class="tabs" role="tablist">${tabs.map(([key, label]) => `<button role="tab" aria-selected="${view === key}" class="${view === key ? "on" : ""}" data-view="${key}">${label}</button>`).join("")}</div>`;
+        if (!site) {
+            return `${head}<main class="page"><p class="muted">Sin datos de la obra: conéctese para descargarlos.</p></main>${nav("site")}`;
+        }
+        if (!site.has_plan) {
+            return `${head}<main class="page"><p class="muted">La obra aún no tiene un plan aprobado.</p></main>${nav("site")}`;
+        }
+        let body = "";
+        if (view === "summary") {
+            const s = site.summary;
+            const behind = s.programmed - s.real;
+            const stat = (n, label, cls) => `<div class="card stat"><b class="${cls || ""}">${n}</b><small>${label}</small></div>`;
+            body = `<div class="card hero">
+                    <div class="row between"><span><small class="eyebrow">Avance físico real</small><b class="hero-num">${pct(s.real)}</b></span>
+                    <span class="right"><small class="eyebrow">Programado a hoy</small><b class="hero-num muted-num">${pct(s.programmed)}</b></span></div>
+                    ${pairBar(s.real, s.programmed)}
+                    <small class="${behind > 0.05 ? "warn strong" : ""}">${behind > 0.005 ? `${Math.round(100 * behind)} puntos por debajo de lo programado` : behind < -0.005 ? `${Math.round(-100 * behind)} puntos por encima de lo programado` : "Al día con lo programado"}</small></div>
+                <div class="stats four">${stat(s.late, "partidas atrasadas", s.late ? "bad" : "")}${stat(s.to_validate, "avances por validar")}${stat(s.open_requests, "pedidos abiertos")}${stat(s.staff_today, "personas hoy")}</div>
+                ${s.amounts ? `<div class="card"><small class="eyebrow">Montos del plan</small>
+                    <div class="kv"><span>Planificado</span><b>${money(s.amounts.planned)}</b></div><div class="kv"><span>Comprometido</span><b>${money(s.amounts.committed)}</b></div>
+                    <div class="kv"><span>Real</span><b>${money(s.amounts.actual)}</b></div><div class="kv"><span>Saldo del plan</span><b>${money(s.amounts.remaining)}</b></div></div>` : ""}
+                <div class="card"><b>Curva de avance</b>${siteCurve(site.curve)}</div>
+                <div class="card"><b>Avance por especialidad</b>${site.specialties
+                    .map((g) => `<div class="spec"><div class="row between"><span class="clamp1">${esc(g.name)}</span><small class="strong">${pct(g.real)} <span class="muted">/ ${pct(g.programmed)}</span></small></div>${pairBar(g.real, g.programmed)}</div>`)
+                    .join("")}
+                    <div class="legend"><span><i class="swatch" style="background:${SERIES.real}"></i>Real</span><span><i class="swatch" style="background:${SERIES.programmed}"></i>Programado a hoy</span></div></div>`;
+        } else if (view === "week") {
+            const w = site.week;
+            body = `<p class="muted">Semana ${esc(range(site.week_start, site.week_end))}</p>
+                <h2>Inician esta semana (${w.starting.length})</h2>${w.starting.map((t) => siteTaskCard(t)).join("") || '<p class="muted">Ninguna.</p>'}
+                <h2>Terminan esta semana (${w.ending.length})</h2>${w.ending.map((t) => siteTaskCard(t)).join("") || '<p class="muted">Ninguna.</p>'}
+                <h2>Inician la semana siguiente (${(w.next_starting || []).length})</h2>${(w.next_starting || []).map((t) => siteTaskCard(t)).join("") || '<p class="muted">Ninguna.</p>'}`;
+        } else if (view === "tasks") {
+            const filter = state.params.tfilter || "all";
+            const rows = site.tasks.filter((t) => filter === "all" || (filter === "crew" ? t.own_staff : filter === "contract" ? t.partners.length : t.late));
+            const chip = (key, label) => `<button class="chip ${filter === key ? "on" : ""}" data-tfilter="${key}" aria-pressed="${filter === key}">${label}</button>`;
+            body = `<div class="chips">${chip("all", "Todas")}${chip("crew", "Personal propio")}${chip("contract", "Por contrata")}${chip("late", "Atrasadas")}</div>
+                <p class="hint">Las columnas las calcula Odoo con las fechas del plan y el avance validado. Toque una partida para registrar su avance.</p>
+                <div class="kanban">${COLUMNS.map(([key, label]) => {
+                    const items = rows.filter((t) => t.column === key);
+                    return `<section class="kanban-col"><h3>${label} <span class="muted">${items.length}</span></h3>${items.slice(0, 60).map((t) => siteTaskCard(t, true)).join("") || '<small class="muted">—</small>'}${items.length > 60 ? `<small class="muted">y ${items.length - 60} más</small>` : ""}</section>`;
+                }).join("")}</div>`;
+        } else {
+            body = siteGantt(site);
+        }
+        return `${head}<main class="page ${view === "tasks" || view === "gantt" ? "wide" : ""}">${body}</main>${nav("site")}`;
+    };
+
     // 4. Mis partidas.
     function partidaState(p) {
         if (p.pending > 0) return [`${qtyText(p.pending)} ${p.uom} por validar`, "warn"];
@@ -1609,6 +1765,11 @@
         if (state.route === "daily" || state.route === "change") {
             setupSignature();
         }
+        // El Gantt abre con «hoy» a la vista.
+        const gantt = document.querySelector(".gantt-scroll[data-today-x]");
+        if (gantt) {
+            gantt.scrollLeft = Math.max(0, Number(gantt.dataset.todayX) - gantt.clientWidth / 3);
+        }
         if (state.route === "qr" && state.params.scanning) {
             attachScanner();
         }
@@ -1846,6 +2007,24 @@
         if (data.filter) {
             state.params.filter = data.filter;
             return render();
+        }
+        if (data.view) {
+            state.params.view = data.view;
+            return render();
+        }
+        if (data.tfilter) {
+            state.params.tfilter = data.tfilter;
+            return render();
+        }
+        if (data.zoom) {
+            state.params.zoom = data.zoom;
+            return render();
+        }
+        if (data.task) {
+            // La partida del tablero abre el registro de su avance.
+            const line = ((state.data && state.data.partidas) || []).find((p) => p.task_id === Number(data.task));
+            state.draft.progress = null;
+            return line ? go("progress", { id: line.id }) : go("partidas", { q: "" });
         }
         if (data.order) {
             state.params.order = data.order;

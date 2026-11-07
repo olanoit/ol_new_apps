@@ -73,6 +73,11 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '11.20261027'
+    fecha: 07/11/2026
+    cambios:
+      - "Paquete 6, CR-58: pestaña «Obra» del residente. Resumen con el avance físico real (el mismo del tablero de obra del escritorio) frente al programado a hoy, partidas atrasadas, avances por validar, pedidos abiertos y personal de hoy, curva de avance y avance por especialidad; montos solo si la compañía lo permite (Ajustes). Semana: partidas que inician y terminan esta semana y las que inician la siguiente, con aviso de las que inician sin contrata ni cuadrilla y de las que terminan en riesgo (umbral en Ajustes). Tareas: partidas en columnas que calcula Odoo (solo lectura); tocar una abre el registro de su avance."
+      - "Paquete 6, CR-54: Gantt liviano para celular y tablet, de solo lectura, con el avance validado como relleno, las partidas atrasadas, los hitos y la línea de hoy; zoom de semana y mes. Las cuatro vistas funcionan sin señal con los datos de la última sincronización."
   - version: '10.20261027'
     fecha: 07/11/2026
     cambios:

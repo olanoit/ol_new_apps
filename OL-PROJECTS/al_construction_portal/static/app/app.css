@@ -260,6 +260,51 @@ form.form { display: flex; flex-direction: column; gap: 12px; }
 .pill.warn { background: #FFF4D6; color: var(--warn); }
 .valuation { cursor: pointer; }
 .row.two > * { flex: 1; }
+/* Obra del residente (paquete 6, CR-58 y CR-54). */
+.hero .hero-num { display: block; font-size: 32px; line-height: 1.1; }
+.hero .muted-num { color: var(--muted); }
+.hero .right { text-align: right; }
+.stats.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pair-bar { display: flex; flex-direction: column; gap: 3px; }
+.bar-bg.thin, .bar-bg.thin .bar-fill { height: 4px; }
+.bar-fill.real { background: #2a78d6; }
+.bar-fill.programmed { background: #eb6834; }
+.chart { width: 100%; height: auto; }
+.chart .grid, .gantt-svg .grid { stroke: #E3E5E8; stroke-width: 1; }
+.chart .axis, .gantt-svg .axis { font-size: 10px; fill: var(--muted); }
+.chart .today, .gantt-svg .today { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 3; }
+.chart .hit { fill: transparent; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { display: inline-block; width: 14px; height: 8px; border-radius: 2px; }
+.swatch.dashed { height: 0; border-top: 2px dashed; border-radius: 0; }
+.swatch.track { background: #DDE1E6; }
+.swatch.late { background: #FDECEA; border: 1px solid #B3261E; }
+.table-view summary { cursor: pointer; color: var(--brand); font-weight: 600; font-size: 13px; min-height: 32px; }
+.spec { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; }
+.clamp1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.task-card { gap: 6px; }
+.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, 85%); gap: 10px; overflow-x: auto;
+    scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.kanban-col { display: flex; flex-direction: column; gap: 8px; scroll-snap-align: start; background: #E9EBEE;
+    border-radius: 12px; padding: 10px; align-self: start; }
+.kanban-col h3 { margin: 0; font-size: 14px; }
+.gantt { display: grid; grid-template-columns: 150px minmax(0, 1fr); background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; }
+.gantt-labels { border-right: 1px solid var(--line); }
+.gantt-label { display: flex; flex-direction: column; justify-content: center; padding: 0 8px; font-size: 12px; line-height: 1.2; }
+.gantt-label small { font-size: 10px; }
+.gantt-label.late span { color: #B3261E; font-weight: 600; }
+.gantt-scroll { overflow-x: auto; }
+.gantt-svg .track { fill: #DDE1E6; }
+.gantt-svg .track.late { fill: #FDECEA; stroke: #B3261E; stroke-width: 1; }
+.gantt-svg .milestone { fill: var(--ink); }
+.gantt-svg .milestone.reached { fill: var(--ok); }
+@media (min-width: 768px) {
+    .stats.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .kanban { grid-auto-flow: initial; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow-x: visible; }
+    .gantt { grid-template-columns: 220px minmax(0, 1fr); }
+}
 /* Residente, entrega 2: accesos a un toque (U13) y selector de partidas. */
 .quick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .quick-btn { min-height: 76px; border: 1px solid var(--line); border-radius: 12px; background: var(--card);

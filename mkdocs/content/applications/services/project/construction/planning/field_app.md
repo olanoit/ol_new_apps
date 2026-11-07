@@ -156,6 +156,26 @@ Mi día tiene accesos directos para lo que registra el residente:
 
 Todos entran a **Por enviar** si no hay señal.
 
+### La obra: Resumen, Semana, Tareas y Gantt
+
+La pestaña **Obra** de la barra inferior muestra cómo va la obra, sin poder
+cambiar nada. Sin señal, muestra los datos de la última sincronización, con
+la hora en el encabezado.
+
+| Vista | Qué muestra |
+|---|---|
+| **Resumen** | El avance físico real validado (el mismo número del tablero de obra del escritorio) frente al **programado a hoy**; las partidas atrasadas, los avances por validar, los pedidos abiertos y el personal de hoy (asistencia propia y personal de contrata de los partes). La **curva de avance** por semanas (programado y real, con su tabla) y el **avance por especialidad**. Los montos del plan solo aparecen si **Ajustes ‣ Portal de obra ‣ Montos en la pestaña Obra** está activo. |
+| **Semana** | Las partidas que inician y las que terminan en la semana de la obra, y las que inician la semana siguiente. Avisa de las que inician sin contrata ni cuadrilla y de las que terminan con menos avance que **Ajustes ‣ Portal de obra ‣ Partida en riesgo** (70 % por defecto). |
+| **Tareas** | Las partidas en cuatro columnas: **Por iniciar**, **En curso**, **Por terminar esta semana** y **Terminadas**, con filtros **Personal propio**, **Por contrata** y **Atrasadas**. La columna la calcula Odoo con las fechas del plan y el avance validado: no se arrastra. Tocar una partida abre el registro de su avance. |
+| **Gantt** | Una barra por partida con el avance validado como relleno, las atrasadas en rojo, los hitos de la obra y la línea de hoy. Zoom de **semana** y de **mes**; abre con hoy a la vista. |
+
+!!! note "De dónde salen las fechas"
+    Las fechas de cada partida son las de las etapas de su ambiente en el
+    plan vigente, las mismas del Cronograma del planificador; sin etapas, la
+    fecha de necesidad de la línea. El **programado a una fecha** reparte el
+    monto de cada línea del plan entre los días hábiles de la obra (los días
+    con horario en el calendario de la compañía, sin feriados) de su etapa.
+
 ### Validar y aprobar sin señal
 
 Validar, rechazar y aprobar también entran a **Por enviar**. Cada decisión

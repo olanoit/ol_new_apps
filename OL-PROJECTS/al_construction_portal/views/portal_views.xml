@@ -252,6 +252,14 @@
                              help="El celular comprime las fotos a este lado mayor antes de guardarlas.">
                         <field name="construction_portal_photo_max_px" class="oe_inline"/> px
                     </setting>
+                    <setting company_dependent="1" string="Montos en la pestaña Obra"
+                             help="El residente del portal ve el planificado, comprometido, real y saldo del plan, como el tablero de obra del escritorio.">
+                        <field name="construction_portal_show_amounts"/>
+                    </setting>
+                    <setting company_dependent="1" string="Partida en riesgo"
+                             help="En la semana de la obra, una partida que termina con menos avance validado que este porcentaje sale en riesgo.">
+                        <field name="construction_portal_risk_pct" class="oe_inline"/> %
+                    </setting>
                 </block>
             </xpath>
         </field>

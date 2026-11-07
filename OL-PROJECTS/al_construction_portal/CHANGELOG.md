@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261027 — 07/11/2026
+
+- Paquete 6, CR-58: pestaña «Obra» del residente. Resumen con el avance físico real (el mismo del tablero de obra del escritorio) frente al programado a hoy, partidas atrasadas, avances por validar, pedidos abiertos y personal de hoy, curva de avance y avance por especialidad; montos solo si la compañía lo permite (Ajustes). Semana: partidas que inician y terminan esta semana y las que inician la siguiente, con aviso de las que inician sin contrata ni cuadrilla y de las que terminan en riesgo (umbral en Ajustes). Tareas: partidas en columnas que calcula Odoo (solo lectura); tocar una abre el registro de su avance.
+- Paquete 6, CR-54: Gantt liviano para celular y tablet, de solo lectura, con el avance validado como relleno, las partidas atrasadas, los hitos y la línea de hoy; zoom de semana y mes. Las cuatro vistas funcionan sin señal con los datos de la última sincronización.
+
 ## 10.20261027 — 07/11/2026
 
 - Paquete 6, CR-56: un parte diario por persona y día (también lo envía la contrata). El residente ve los partes del día y quién no envió, y con «Cerrar el día» arma el parte diario de obra (personal, avances, restricciones, ocurrencias, fotos y su comentario) y lo envía en PDF al «Contacto del cliente en obra»; sin contacto, queda en la obra. Los partes quedan «Revisado por el residente».
