@@ -317,6 +317,15 @@ class ConstructionMaterialRequest(models.Model):
                 raise UserError(_(
                     'Indique el motivo del material extra de %s.', request.name))
 
+    def _construction_site_fallback_reviewer(self):
+        """Quien revisa el requerimiento de obra al que no le aplica otra
+        regla (7.4), según la opción de la compañía; vacío si se aprueba al
+        enviar. Lo usan la regla de respaldo y la aplicación Aprobaciones."""
+        self.ensure_one()
+        field_name = self.company_id._construction_site_fallback_field() \
+            if self.request_type == 'site' else False
+        return self[field_name] if field_name else self.env['res.users']
+
     def _check_state(self, allowed):
         if any(request.state not in allowed for request in self):
             raise UserError(_(

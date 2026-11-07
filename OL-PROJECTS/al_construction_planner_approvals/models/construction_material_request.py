@@ -201,11 +201,10 @@ class ConstructionMaterialRequest(models.Model):
         el requerimiento de obra pasa al jefe de la obra si la compañía lo pide
         (con la validación por niveles lo hace la regla de respaldo)."""
         self.ensure_one()
-        manager = self.project_manager_id
-        return manager if (
-            self.request_type == 'site' and manager and manager != self.env.user
-            and self.company_id.construction_site_request_without_rule == 'manager') \
-            else self.env['res.users']
+        # El revisor sale de la opción de la compañía: el jefe de la obra o,
+        # con el portal de obra, el residente (paquete 6, CR-50).
+        reviewer = self._construction_site_fallback_reviewer()
+        return reviewer if reviewer and reviewer != self.env.user else self.env['res.users']
 
     def action_draft(self):
         self.filtered(lambda r: r.state == 'to_approve')._construction_cancel_open_approvals()

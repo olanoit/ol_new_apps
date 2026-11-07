@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261104 — 07/11/2026
+
+- Paquete 6, CR-50: la regla 7.4 con Aprobaciones usa el revisor de la opción de la compañía (jefe o residente de la obra). Corrige el envío a Aprobaciones de un requerimiento pedido desde el portal de obra (el nombre del tipo de aprobación se leía con el usuario de portal).
+
 ## 10.20261104 — 04/11/2026
 
 - M117-13: categoría propia para el requerimiento interno en Ajustes, y aprobación con nombre «Aprobación de requerimiento interno · documento · área».

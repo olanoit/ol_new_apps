@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '35.20261104'
+    fecha: 07/11/2026
+    cambios:
+      - "Paquete 6, CR-50: la regla de los requerimientos de obra sin otra regla toma su revisor de un gancho de la compañía (_construction_site_fallback_field), que el portal de obra amplía con el residente de la obra; Aprobaciones usa el mismo revisor."
   - version: '34.20261104'
     fecha: 04/11/2026
     cambios:

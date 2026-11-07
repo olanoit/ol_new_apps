@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261027 — 07/11/2026
+
+- Paquete 6, CR-48: rol «Residente de obra» en el portal, sin usuario interno (puede ser un locador sin ficha de empleado). Ve lo del capataz y la oficina técnica, más «Mi día» (contadores y agenda de hoy por urgencia) y su barra Inicio, Bandejas, Obra y Por enviar. Con el QR y el PIN no tiene el rol Residente. «Aprobador por defecto de la obra» en el personal del portal.
+- Paquete 6, CR-49: bandeja «Por validar» con orden por corte de valorización, avisos (saldo, exceso que espera a la jefatura, GPS, semana valorizada), fotos ampliables y la última validada; validar corrigiendo a la baja, rechazar y re-trabajo con motivos configurables; validar en lote solo lo que no tiene aviso. Quien reportó recibe el aviso.
+- Paquete 6, CR-50: bandeja «Por aprobar» con saldo del plan y exceso por línea; aprobar lo pedido, el saldo u otra cantidad menor, o rechazar con motivo; con validación por niveles y con Aprobaciones. Revisor por campo «Residente de la obra» y opción «Pasar al residente de la obra» para los requerimientos sin regla.
+- Paquete 6, regla «Sin señal»: validar, rechazar y aprobar entran a la cola; Odoo vuelve a comprobar el registro al recibirlos y rechaza la decisión con el motivo si cambió.
+- Tablet: lista y detalle lado a lado en las bandejas.
+
 ## 8.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

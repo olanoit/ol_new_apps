@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Motivos del residente (paquete 6, U8): cada empresa los ajusta. -->
+    <record id="reason_progress_reject_quality" model="construction.portal.reason">
+        <field name="name">No cumple la calidad especificada</field>
+        <field name="kind">progress_reject</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="reason_progress_reject_not_done" model="construction.portal.reason">
+        <field name="name">El trabajo no está ejecutado</field>
+        <field name="kind">progress_reject</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="reason_progress_reject_photo" model="construction.portal.reason">
+        <field name="name">La foto no muestra el avance</field>
+        <field name="kind">progress_reject</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="reason_progress_reject_wrong_item" model="construction.portal.reason">
+        <field name="name">Partida equivocada</field>
+        <field name="kind">progress_reject</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="reason_progress_correct_measure" model="construction.portal.reason">
+        <field name="name">Medición en campo menor</field>
+        <field name="kind">progress_correct</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="reason_progress_correct_partial" model="construction.portal.reason">
+        <field name="name">Parte del trabajo está incompleta</field>
+        <field name="kind">progress_correct</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="reason_request_reject_stock" model="construction.portal.reason">
+        <field name="name">Hay material en la obra</field>
+        <field name="kind">request_reject</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="reason_request_reject_qty" model="construction.portal.reason">
+        <field name="name">Cantidad no justificada</field>
+        <field name="kind">request_reject</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="reason_request_reject_not_needed" model="construction.portal.reason">
+        <field name="name">No se necesita en esta etapa</field>
+        <field name="kind">request_reject</field>
+        <field name="sequence">30</field>
+    </record>
+</odoo>

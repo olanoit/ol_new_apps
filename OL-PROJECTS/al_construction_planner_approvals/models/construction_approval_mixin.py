@@ -167,7 +167,10 @@ class ConstructionApprovalMixin(models.AbstractModel):
 
     def _construction_approval_name(self, category):
         self.ensure_one()
-        return '%s · %s' % (category.name, self.display_name)
+        # sudo: quien envía puede ser un usuario del portal de obra, que no
+        # lee los tipos de aprobación; el nombre lo arma el sistema.
+        category_sudo = category.sudo()
+        return '%s · %s' % (category_sudo.name, self.display_name)
 
     def _construction_open_approval(self, category, approver_values, info, summary,
                                     followers=None):

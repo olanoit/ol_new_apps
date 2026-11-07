@@ -92,7 +92,10 @@ class ConstructionPortalService(models.AbstractModel):
         return project, members
 
     def _roles(self, members):
-        return set(members.mapped('role'))
+        """Papeles con los que trabaja la persona en la sesión: el residente
+        ve también lo del capataz y de la oficina técnica, y con el QR y el
+        PIN no tiene el papel Residente (paquete 6, CR-48)."""
+        return members._effective_roles(self.env.context.get('construction_portal_login'))
 
     def _partners(self, members):
         return members.filtered(lambda m: m.role == 'contractor').partner_id.commercial_partner_id
@@ -168,7 +171,7 @@ class ConstructionPortalService(models.AbstractModel):
         user = self.env.user
         projects = defaultdict(set)
         for member in self._members():
-            projects[member.project_id].add(member.role)
+            projects[member.project_id] |= self._roles(member)
         company = user.company_id
         return {
             'api': API_VERSION,

@@ -397,6 +397,10 @@
         check: '<path d="M20 6L9 17l-5-5"/>',
         clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
         search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+        inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+        site: '<path d="M3 21h18M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/>',
+        alert: '<path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+        close: '<path d="M18 6L6 18M6 6l12 12"/>',
     };
     const svg = (name, size = 24) =>
         `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon[name]}</svg>`;
@@ -421,19 +425,33 @@
         return count === 1 ? "1 registro espera para enviarse." : `${count} registros esperan para enviarse.`;
     }
 
+    // Paquete 6, CR-48 (U2): el residente tiene su propia barra.
+    const isResident = () => role("resident");
+    const inboxTotal = () => {
+        const r = (state.data && state.data.resident) || { progress: [], requests: [] };
+        return r.progress.length + r.requests.length;
+    };
     function nav(active) {
-        const items = [
-            ["home", "home", "Inicio"],
-            ["partidas", "chart", "Avance"],
-            ["catalog", "cart", "Pedidos"],
-            ["queue", "sync", "Por enviar"],
-        ];
+        const items = isResident()
+            ? [
+                  ["home", "home", "Inicio"],
+                  ["inbox", "inbox", "Bandejas"],
+                  ["partidas", "site", "Obra"],
+                  ["queue", "sync", "Por enviar"],
+              ]
+            : [
+                  ["home", "home", "Inicio"],
+                  ["partidas", "chart", "Avance"],
+                  ["catalog", "cart", "Pedidos"],
+                  ["queue", "sync", "Por enviar"],
+              ];
         const pending = state.queue.filter((q) => q.status !== "done").length;
+        const inbox = isResident() ? inboxTotal() : 0;
         return `<nav class="nav" aria-label="Navegación principal">${items
             .map(
                 ([route, ic, label]) =>
                     `<button data-go="${route}" class="${active === route ? "active" : ""}">${svg(ic)}<span>${label}${
-                        route === "queue" && pending ? ` (${pending})` : ""
+                        route === "queue" && pending ? ` (${pending})` : route === "inbox" && inbox ? ` (${inbox})` : ""
                     }</span></button>`
             )
             .join("")}</nav>`;
@@ -580,12 +598,17 @@
                             : ""
                     }
                 </label>
+                ${data && isResident() ? myDay(data, c) : ""}
                 ${
-                    data
+                    data && !isResident()
                         ? `<div class="stats">${counter(c.progress_to_validate, "avance por validar", "avances por validar")}
                            ${counter(c.requests_to_approve, "pedido en aprobación", "pedidos en aprobación")}
-                           ${counter(c.deliveries_today, "entrega por recibir hoy", "entregas por recibir hoy", true)}</div>
-                           <div class="tiles">${tiles
+                           ${counter(c.deliveries_today, "entrega por recibir hoy", "entregas por recibir hoy", true)}</div>`
+                        : ""
+                }
+                ${
+                    data
+                        ? `${isResident() ? "<h2>Registrar y consultar</h2>" : ""}<div class="tiles">${tiles
                                .map(([route, ic, label]) => `<button class="tile" data-go="${route}">${svg(ic, 28)}<span>${label}</span></button>`)
                                .join("")}</div>
                            ${
@@ -600,6 +623,238 @@
                 <button class="link" data-action="logout">Salir</button>
             </main>${nav("home")}`;
     };
+
+    // ------------------------------------------------------------------
+    // Residente (paquete 6): «Mi día» y bandejas
+    // ------------------------------------------------------------------
+    // Fotos de los avances: se piden con el token y quedan en memoria.
+    const photoUrls = {};
+    function photoUrl(id, size) {
+        const key = `${id}:${size || "full"}`;
+        if (photoUrls[key]) {
+            return photoUrls[key] === "loading" || photoUrls[key] === "error" ? "" : photoUrls[key];
+        }
+        if (!state.online || !state.session) return "";
+        photoUrls[key] = "loading";
+        fetch(`${API}/photo/${state.projectId}/${id}${size ? "?size=" + size : ""}`, {
+            headers: { Authorization: "Bearer " + state.session.token },
+        })
+            .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
+            .then((blob) => {
+                photoUrls[key] = URL.createObjectURL(blob);
+                render();
+            })
+            .catch(() => {
+                photoUrls[key] = "error";
+            });
+        return "";
+    }
+    const photoBox = (id, label, size) => {
+        const url = photoUrl(id, size || "thumb");
+        return `<button class="thumb photo-btn" data-photo="${id}" style="${url ? `background-image:url(${url})` : ""}" aria-label="Ver ${esc(label)}">
+            ${url ? "" : `<em>${state.online ? "Cargando…" : "Con señal"}</em>`}<span>${esc(label)}</span></button>`;
+    };
+
+    // «Mi día» (CR-48, U1): contadores y agenda de hoy por urgencia.
+    function myDay(data, c) {
+        const r = data.resident || { agenda: [] };
+        const stat = (n, one, many, go, tab, accent) =>
+            go
+                ? `<button class="card stat" data-go="${go}" ${tab ? `data-tab-go="${tab}"` : ""}><b class="${accent && n ? "accent" : ""}">${n || 0}</b><small>${n === 1 ? one : many}</small></button>`
+                : `<div class="card stat"><b>${n || 0}</b><small>${n === 1 ? one : many}</small></div>`;
+        const AGENDA = { urgent: ["alert", "bad"], cutoff: ["doc", "warn"], delivery: ["truck", ""], start: ["chart", "ok"] };
+        const agenda = (r.agenda || [])
+            .map((item) => {
+                const [ic, cls] = AGENDA[item.kind] || ["clock", ""];
+                const target =
+                    item.kind === "urgent" ? `data-go="inbox" data-tab-go="requests" data-id="${item.id}"`
+                    : item.kind === "cutoff" ? `data-go="inbox" data-tab-go="progress"`
+                    : item.kind === "delivery" ? `data-go="reception" data-id="${item.id}"`
+                    : `data-go="partidas"`;
+                return `<button class="agenda-row" ${target}><span class="${cls}">${svg(ic, 22)}</span><span class="grow"><b>${esc(item.title)}</b><small>${esc(item.kind === "cutoff" ? item.sub.replace(/(\d{4}-\d{2}-\d{2})/, (d) => dayMonth(d)) : item.sub)}</small></span>${svg("next", 18)}</button>`;
+            })
+            .join("");
+        return `<div class="stats">${stat(c.inbox_progress, "por validar", "por validar", "inbox", "progress", true)}
+            ${stat(c.inbox_requests, "por aprobar", "por aprobar", "inbox", "requests", true)}
+            ${stat(c.daily_to_review, "parte por revisar", "partes por revisar")}</div>
+            <h2>Hoy</h2>
+            <div class="card list">${agenda || '<small class="muted">Nada urgente para hoy.</small>'}</div>`;
+    }
+
+    // Avisos de un avance (CR-49, punto 5).
+    const warningPills = (row) =>
+        (row.warnings || []).map((w) => `<small class="warn-line ${w.blocking ? "bad" : "warn"}">${svg("alert", 16)} ${esc(w.text)}</small>`).join("");
+    const sendingNote = () =>
+        state.online ? "" : `<p class="notice box">Sin señal: su decisión queda en «Por enviar» y Odoo la confirma al volver la conexión. Si el registro cambió, la rechaza con el motivo.</p>`;
+
+    function progressCard(row, selected, picked) {
+        const free = !(row.warnings || []).length;
+        return `<div class="card inbox-card ${selected ? "on" : ""}">
+            <div class="row top">${free ? `<input type="checkbox" class="pick-box" data-pick="${row.id}" ${picked ? "checked" : ""} aria-label="Elegir para validar en lote">` : ""}
+            <button class="grow plain" data-go="inbox" data-tab-go="progress" data-id="${row.id}">
+                <b class="clamp2">${esc(taskName(row))}${taskCode(row) ? ` · ${esc(taskCode(row))}` : ""}</b>
+                <small>${esc(join(row.partner || row.reported_by, row.role_label))}</small>
+                <small class="strong">${qtyText(row.qty)} ${esc(row.uom)} · ${esc(dayMonth(row.date))}${row.cutoff ? ` · corte ${esc(dayMonth(row.cutoff))}` : ""}${row.is_rework ? " · re-trabajo" : ""}</small>
+                ${warningPills(row)}
+            </button></div></div>`;
+    }
+
+    function progressDetail(row) {
+        const d = (state.draft["val" + row.id] = state.draft["val" + row.id] || { qty: row.qty, reason: "", comment: "", mode: "" });
+        const reasons = (state.data.resident.reasons || {});
+        const corrected = d.qty < row.qty - 1e-6;
+        const blocking = (row.warnings || []).some((w) => w.blocking);
+        const options = (list, value) => `<option value="">Elija el motivo</option>${(list || []).map(([id, name]) => `<option value="${id}" ${String(value) === String(id) ? "selected" : ""}>${esc(name)}</option>`).join("")}`;
+        const radius = state.data.project.radius_m;
+        return `<div class="card detail">
+            <div class="row between"><small class="eyebrow">${esc(row.name)}</small>${row.is_rework ? pill("Re-trabajo", "warn") : ""}</div>
+            <b class="title">${esc(taskName(row))}${taskCode(row) ? ` · ${esc(taskCode(row))}` : ""}</b>
+            <small>${esc(join(row.parent_label, row.role_label))}</small>
+            <small>${esc(join("Reportó " + row.reported_by, row.partner, longDay(row.date)))}</small>
+            <div class="grid4"><span>Plan<b>${qtyText(row.planned)}</b></span><span>Validado<b>${qtyText(row.validated)}</b></span>
+            <span>Reportado<b class="warn">${qtyText(row.qty)}</b></span><span>Saldo ${esc(row.uom)}<b class="accent">${qtyText(row.balance)}</b></span></div>
+            ${warningPills(row)}
+            <b>Evidencia</b>
+            <div class="photos">${row.photos.map((ph, i) => photoBox(ph.id, `Foto ${i + 1} · ${clock(ph.taken)}`)).join("")}
+            ${row.last_photo ? photoBox(row.last_photo.id, `Última validada · ${dayMonth(row.last_photo.date)}`) : ""}</div>
+            <small class="gps ${row.has_gps ? (radius && row.distance_m > radius ? "warn" : "ok") : "warn"}">${svg("pin", 18)} ${
+                row.has_gps ? `A ${row.distance_m} m de la obra${radius ? ` (radio ${radius} m)` : ""}` : "Sin ubicación GPS"
+            }</small>
+        </div>
+        <div class="card form">
+            <b>Cantidad a validar</b>
+            <div class="stepper"><button data-valqty="${row.id}" data-delta="-1" aria-label="Restar">−</button>
+            <input type="number" step="0.01" min="0" max="${row.qty}" inputmode="decimal" data-bind="val${row.id}.qty" value="${d.qty}" aria-label="Cantidad a validar">
+            <button data-valqty="${row.id}" data-delta="1" aria-label="Sumar">+</button></div>
+            <small>Solo se corrige a la baja; reportado ${qtyText(row.qty)} ${esc(row.uom)}.</small>
+            ${corrected ? `<label>Motivo de la corrección<select data-bind="val${row.id}.reason">${options(reasons.progress_correct, d.reason)}</select></label>` : ""}
+            ${
+                d.mode === "reject"
+                    ? `<label>Motivo del rechazo<select data-bind="val${row.id}.reason">${options(reasons.progress_reject, d.reason)}</select></label>`
+                    : d.mode === "rework"
+                    ? `<label>Motivo del re-trabajo<select data-bind="val${row.id}.rework">${`<option value="">Elija el motivo</option>` + (state.data.rework_reasons || []).map(([code, label]) => `<option value="${code}" ${d.rework === code ? "selected" : ""}>${esc(label)}</option>`).join("")}</select></label>
+                       <small>El re-trabajo se valida con 0 a liquidar, como en el escritorio.</small>`
+                    : ""
+            }
+            <label>Comentario<textarea rows="2" data-bind="val${row.id}.comment" placeholder="Opcional; puede dictarlo con el micrófono del teclado">${esc(d.comment)}</textarea></label>
+        </div>
+        ${sendingNote()}
+        ${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
+        <div class="action-bar">${
+            d.mode
+                ? `<button class="secondary" data-set="val${row.id}.mode=">Volver</button>
+                   <button class="primary ${d.mode === "reject" ? "danger" : ""}" data-action="resident-progress" data-id="${row.id}" data-kind="${d.mode}">${d.mode === "reject" ? "Rechazar" : "Validar como re-trabajo"}</button>`
+                : `<button class="secondary" data-set="val${row.id}.mode=reject">Rechazar</button>
+                   <button class="secondary" data-set="val${row.id}.mode=rework">Re-trabajo</button>
+                   <button class="primary" data-action="resident-progress" data-id="${row.id}" data-kind="validate" ${blocking ? "disabled" : ""}>Validar</button>`
+        }</div>`;
+    }
+
+    function requestCard(row, selected) {
+        const kinds = { partida: "De partida", epp: "EPP", office: "Útiles y aseo", text: "Fuera de catálogo", internal: "Interno" };
+        return `<button class="card inbox-card plain ${selected ? "on" : ""}" data-go="inbox" data-tab-go="requests" data-id="${row.id}">
+            <div class="row between"><b>${esc(row.name)}</b>${row.urgent ? pill("Urgente", "bad") : ""}</div>
+            <small>${esc(join(kinds[row.kind] || row.type_label, "pidió " + row.requested_by))}</small>
+            <small>${esc(join(`${row.lines.length} ${row.lines.length === 1 ? "línea" : "líneas"}`, row.date_required ? "para el " + dayMonth(row.date_required) : ""))}</small>
+            ${row.lines.some((l) => l.excess > 0 || l.out_of_plan) ? `<small class="warn-line warn">${svg("alert", 16)} Con exceso o fuera del plan</small>` : ""}
+        </button>`;
+    }
+
+    function requestDetail(row) {
+        const d = (state.draft["apr" + row.id] = state.draft["apr" + row.id] || {
+            qty: Object.fromEntries(row.lines.map((l) => [l.id, l.qty])), reason: "", comment: "", mode: "",
+        });
+        const reasons = (state.data.resident.reasons || {}).request_reject || [];
+        return `<div class="card detail">
+            <div class="row between"><b class="title">${esc(row.name)}</b>${row.urgent ? pill("Urgente", "bad") : ""}</div>
+            <small>${esc(join(row.type_label, "pidió " + row.requested_by, row.date_required ? "para el " + dayMonth(row.date_required) : ""))}</small>
+            ${row.note ? `<p class="muted note">${esc(row.note)}</p>` : ""}
+        </div>
+        ${row.lines
+            .map((l) => {
+                const value = d.qty[l.id];
+                const hasPlan = l.plan_remaining !== null && l.plan_remaining !== undefined;
+                const balance = hasPlan ? Math.max(0, Math.min(l.qty, l.plan_remaining)) : null;
+                return `<div class="card req-line">
+                    <b>${esc(l.name)}</b>
+                    <small>${esc(join(l.task_code ? `${l.task_name} · ${l.task_code}` : l.task_name, `pedido ${qtyText(l.qty)} ${l.uom}`))}</small>
+                    ${hasPlan ? `<small>Saldo del plan <b>${qtyText(l.plan_remaining)} ${esc(l.uom)}</b>${l.excess > 0 ? ` · <span class="bad">exceso ${qtyText(l.excess)}</span>` : ""}</small>` : l.out_of_plan ? `<small class="bad">Fuera del plan</small>` : ""}
+                    <div class="row between"><div class="pills">
+                        <button class="pill-btn ${Math.abs(value - l.qty) < 1e-6 ? "ok" : ""}" data-aprset="${row.id}:${l.id}:${l.qty}">Lo pedido</button>
+                        ${balance !== null && balance > 0 && balance < l.qty ? `<button class="pill-btn ${Math.abs(value - balance) < 1e-6 ? "ok" : ""}" data-aprset="${row.id}:${l.id}:${balance}">El saldo</button>` : ""}
+                    </div>${stepper(`data-aprqty="${row.id}:${l.id}"`, value, "Cantidad aprobada", true)}</div>
+                </div>`;
+            })
+            .join("")}
+        ${
+            d.mode === "reject"
+                ? `<div class="card form"><label>Motivo del rechazo<select data-bind="apr${row.id}.reason"><option value="">Elija el motivo</option>${reasons
+                      .map(([id, name]) => `<option value="${id}" ${String(d.reason) === String(id) ? "selected" : ""}>${esc(name)}</option>`)
+                      .join("")}</select></label>
+                   <label>Comentario<textarea rows="2" data-bind="apr${row.id}.comment" placeholder="Opcional; puede dictarlo con el micrófono del teclado">${esc(d.comment)}</textarea></label></div>`
+                : `<div class="card form"><label>Comentario<textarea rows="2" data-bind="apr${row.id}.comment" placeholder="Opcional">${esc(d.comment)}</textarea></label></div>`
+        }
+        ${sendingNote()}
+        ${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
+        <div class="action-bar sticky">${
+            d.mode === "reject"
+                ? `<button class="secondary" data-set="apr${row.id}.mode=">Volver</button>
+                   <button class="primary danger" data-action="resident-request" data-id="${row.id}" data-kind="reject">Rechazar</button>`
+                : `<button class="secondary" data-set="apr${row.id}.mode=reject">Rechazar</button>
+                   <button class="primary" data-action="resident-request" data-id="${row.id}" data-kind="approve">Aprobar</button>`
+        }</div>`;
+    }
+
+    // Bandejas (CR-49 y CR-50): lista y, en la tablet, el detalle al lado (U6).
+    screens.inbox = () => {
+        const r = (state.data && state.data.resident) || { progress: [], requests: [] };
+        const tab = state.params.tab || (r.progress.length || !r.requests.length ? "progress" : "requests");
+        const id = Number(state.params.id) || 0;
+        const tabs = [["progress", `Por validar (${r.progress.length})`], ["requests", `Por aprobar (${r.requests.length})`]];
+        let list = "";
+        let detail = "";
+        if (tab === "progress") {
+            const order = state.params.order || "cutoff";
+            let rows = r.progress.slice();
+            if (order === "item") rows.sort((a, b) => (taskName(a) + taskCode(a)).localeCompare(taskName(b) + taskCode(b)) || a.id - b.id);
+            if (order === "warn") rows = rows.filter((x) => (x.warnings || []).length);
+            const picked = state.draft.picked || [];
+            const chip = (key, label) => `<button class="chip ${order === key ? "on" : ""}" data-order="${key}" aria-pressed="${order === key}">${label}</button>`;
+            list = `<div class="chips">${chip("cutoff", "Por corte")}${chip("item", "Por partida")}${chip("warn", "Con aviso")}</div>
+                ${rows.map((row) => progressCard(row, row.id === id, picked.includes(row.id))).join("") || '<p class="muted">No hay avances por validar.</p>'}
+                ${picked.length ? `<button class="primary" data-action="resident-batch">Validar seleccionados (${picked.length})</button>` : ""}`;
+            const row = r.progress.find((x) => x.id === id);
+            detail = row ? progressDetail(row) : "";
+        } else {
+            list = r.requests.map((row) => requestCard(row, row.id === id)).join("") || '<p class="muted">No hay requerimientos por aprobar.</p>';
+            const row = r.requests.find((x) => x.id === id);
+            detail = row ? requestDetail(row) : "";
+        }
+        const back = detail ? `<button class="link only-phone" data-go="inbox" data-tab-go="${tab}">‹ Volver a la lista</button>` : "";
+        return `${header("Bandejas", join(projectParts().code, state.data ? "datos del " + clock(String(state.data.synced_at).replace(" ", "T") + "Z") : ""), "home")}
+            <div class="tabs" role="tablist">${tabs.map(([key, label]) => `<button role="tab" aria-selected="${tab === key}" class="${tab === key ? "on" : ""}" data-go="inbox" data-tab-go="${key}">${label}</button>`).join("")}</div>
+            <main class="page split ${detail ? "has-detail" : ""}">
+                <section class="split-list">${state.params.flash ? `<p class="hint">${esc(state.params.flash)}</p>` : ""}${list}</section>
+                <section class="split-detail">${back}${detail || '<p class="muted only-tablet">Elija un registro de la lista.</p>'}</section>
+            </main>${photoOverlay()}${nav("inbox")}`;
+    };
+
+    function photoOverlay() {
+        if (!state.params.photo) return "";
+        const url = photoUrl(state.params.photo);
+        return `<div class="overlay" role="dialog" aria-label="Foto"><button class="icon-btn close" data-photo-close="1" aria-label="Cerrar">${svg("close")}</button>
+            ${url ? `<img src="${url}" alt="Foto del avance">` : `<p>${state.online ? "Cargando la foto…" : "La foto se ve con señal."}</p>`}</div>`;
+    }
+
+    // Lo decidido sale de la bandeja en el equipo; Odoo lo confirma al recibirlo.
+    function dropFromInbox(kind, ids) {
+        const r = state.data.resident;
+        r[kind] = r[kind].filter((x) => !ids.includes(x.id));
+        const c = state.data.counters;
+        c.inbox_progress = r.progress.length;
+        c.inbox_requests = r.requests.length;
+        cachePut("sync:" + state.projectId, state.data);
+    }
 
     // 4. Mis partidas.
     function partidaState(p) {
@@ -752,6 +1007,8 @@
         material_request: ["Requerimiento", "va a la aprobación del coordinador de la obra"],
         reception: ["Recepción", "lo que faltó queda pendiente de entrega"],
         return: ["Devolución", "el almacén la recibe"],
+        resident_progress: ["Validación", "Odoo la vuelve a comprobar al recibirla"],
+        resident_request: ["Aprobación", "Odoo la vuelve a comprobar al recibirla"],
     };
     function queueRow(item) {
         const photos = (item.payload && item.payload.photos ? item.payload.photos.length : 0);
@@ -1266,6 +1523,16 @@
             render();
             await refresh();
             render();
+        } else if (el.dataset.pick) {
+            const id = Number(el.dataset.pick);
+            const picked = (state.draft.picked = state.draft.picked || []);
+            if (el.checked && !picked.includes(id)) picked.push(id);
+            if (!el.checked) picked.splice(picked.indexOf(id), 1);
+            render();
+        } else if (el.dataset.bind && /^val\d+\.qty$/.test(el.dataset.bind)) {
+            render();
+        } else if (el.tagName === "SELECT" && el.dataset.bind && /^(val|apr)\d+\./.test(el.dataset.bind)) {
+            setPath(el.dataset.bind, el.value);
         } else if (el.dataset.return) {
             const id = el.dataset.return;
             const item = (state.data.returnables || []).find((it) => String(it.product_id) === id);
@@ -1374,10 +1641,47 @@
                 }
                 return render();
             }
-            return go(data.go, data.id ? { id: data.id } : {});
+            const params = data.id ? { id: data.id } : {};
+            if (data.tabGo) {
+                params.tab = data.tabGo;
+                params.order = state.route === "inbox" ? state.params.order : undefined;
+            }
+            return go(data.go, params);
         }
         if (data.filter) {
             state.params.filter = data.filter;
+            return render();
+        }
+        if (data.order) {
+            state.params.order = data.order;
+            return render();
+        }
+        if (data.photo) {
+            state.params.photo = Number(data.photo);
+            return render();
+        }
+        if (data.photoClose) {
+            state.params.photo = null;
+            return render();
+        }
+        if (data.valqty) {
+            const row = state.data.resident.progress.find((x) => x.id === Number(data.valqty));
+            const d = state.draft["val" + data.valqty];
+            const step = row.qty >= 10 ? 1 : 0.5;
+            d.qty = Math.round(bump(d.qty, Number(data.delta) * step, 0, row.qty) * 100) / 100;
+            return render();
+        }
+        if (data.aprset) {
+            const [req, line, qty] = data.aprset.split(":");
+            state.draft["apr" + req].qty[line] = Number(qty);
+            return render();
+        }
+        if (data.aprqty) {
+            const [req, line] = data.aprqty.split(":");
+            const row = state.data.resident.requests.find((x) => x.id === Number(req));
+            const l = row.lines.find((x) => x.id === Number(line));
+            const d = state.draft["apr" + req];
+            d.qty[line] = bump(d.qty[line], Number(data.delta), 0, l.qty);
             return render();
         }
         if (data.tab) {
@@ -1507,6 +1811,69 @@
         "clear-signature": () => {
             state.draft.daily.signature = "";
             render();
+        },
+        "resident-progress": async (el) => {
+            const id = Number(el.dataset.id);
+            const kind = el.dataset.kind;
+            const row = state.data.resident.progress.find((x) => x.id === id);
+            const d = state.draft["val" + id];
+            const payload = { uuid: uuid(), project_id: state.projectId, action: kind, items: [{ id, seen_qty: row.qty }], comment: d.comment || "" };
+            let label;
+            if (kind === "validate") {
+                const qty = Number(d.qty);
+                if (!(qty > 0) || qty > row.qty + 1e-6) {
+                    return alertInline(`La cantidad validada va de más de 0 a ${qtyText(row.qty)} ${row.uom}.`);
+                }
+                if (qty < row.qty - 1e-6) {
+                    if (!d.reason) return alertInline("Elija el motivo de la corrección.");
+                    payload.qty = qty;
+                    payload.reason_id = Number(d.reason);
+                }
+                label = `Validar ${row.name}: ${qtyText(qty)} ${row.uom}`;
+            } else if (kind === "reject") {
+                if (!d.reason) return alertInline("Elija el motivo del rechazo.");
+                payload.reason_id = Number(d.reason);
+                label = `Rechazar ${row.name}`;
+            } else {
+                if (!d.rework) return alertInline("Elija el motivo del re-trabajo.");
+                payload.rework_reason = d.rework;
+                label = `Re-trabajo ${row.name}`;
+            }
+            await enqueue("resident_progress", "/resident/progress", payload, `${label} · ${taskName(row)}`);
+            state.draft["val" + id] = null;
+            dropFromInbox("progress", [id]);
+            go("inbox", { tab: "progress", order: state.params.order, flash: `${label}: ${state.online ? "enviado a Odoo." : "en «Por enviar»; Odoo lo confirma al volver la señal."}` });
+        },
+        "resident-batch": async () => {
+            const picked = state.draft.picked || [];
+            const rows = state.data.resident.progress.filter((x) => picked.includes(x.id) && !(x.warnings || []).length);
+            if (!rows.length) return;
+            const payload = { uuid: uuid(), project_id: state.projectId, action: "validate", items: rows.map((x) => ({ id: x.id, seen_qty: x.qty })) };
+            await enqueue("resident_progress", "/resident/progress", payload, `Validar ${rows.length} ${rows.length === 1 ? "avance" : "avances"} sin aviso`);
+            state.draft.picked = [];
+            dropFromInbox("progress", rows.map((x) => x.id));
+            go("inbox", { tab: "progress", flash: `${rows.length} ${rows.length === 1 ? "avance validado" : "avances validados"}${state.online ? "." : "; quedan en «Por enviar»."}` });
+        },
+        "resident-request": async (el) => {
+            const id = Number(el.dataset.id);
+            const kind = el.dataset.kind;
+            const row = state.data.resident.requests.find((x) => x.id === id);
+            const d = state.draft["apr" + id];
+            const payload = { uuid: uuid(), project_id: state.projectId, request_id: id, action: kind, seen: row.seen, comment: d.comment || "" };
+            if (kind === "approve") {
+                if (row.lines.some((l) => !(Number(d.qty[l.id]) > 0))) {
+                    return alertInline("Cada línea aprobada lleva una cantidad mayor que cero; si no va, rechace el requerimiento.");
+                }
+                payload.lines = row.lines.map((l) => ({ id: l.id, qty: Number(d.qty[l.id]) }));
+            } else {
+                if (!d.reason) return alertInline("Elija el motivo del rechazo.");
+                payload.reason_id = Number(d.reason);
+            }
+            const label = `${kind === "approve" ? "Aprobar" : "Rechazar"} ${row.name}`;
+            await enqueue("resident_request", "/resident/request", payload, label);
+            state.draft["apr" + id] = null;
+            dropFromInbox("requests", [id]);
+            go("inbox", { tab: "requests", flash: `${label}: ${state.online ? "enviado a Odoo." : "en «Por enviar»; Odoo lo confirma al volver la señal."}` });
         },
         "save-progress": async () => {
             const d = state.draft.progress;

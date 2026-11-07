@@ -90,30 +90,44 @@ class ResCompany(models.Model):
             self._construction_sync_site_fallback_rule()
         return res
 
+    def _construction_site_fallback_field(self):
+        """Campo del requerimiento que es el revisor de la regla «sin regla»
+        (vacío: se aprueba al enviar). Gancho: el portal de obra agrega el
+        residente de la obra (paquete 6, CR-50)."""
+        self.ensure_one()
+        return 'project_manager_id' \
+            if self.construction_site_request_without_rule == 'manager' else False
+
+    def _construction_site_fallback_name(self):
+        """Nombre de la regla «sin regla» de la compañía."""
+        self.ensure_one()
+        return _('Requerimiento de obra sin otra regla: jefe de la obra')
+
     def _construction_sync_site_fallback_rule(self):
-        """Regla «requerimiento de obra sin otra regla → jefe de la obra» de
-        cada compañía; archivada si la compañía aprueba al enviar."""
+        """Regla «requerimiento de obra sin otra regla → revisor de la
+        opción» de cada compañía; archivada si la compañía aprueba al
+        enviar."""
         # Configuración técnica, como la regla del interno sin jefe.
         Definition_sudo = self.env['tier.definition'].sudo().with_context(active_test=False)
         model = self.env['ir.model']._get('construction.material.request')
-        field = self.env['ir.model.fields']._get('construction.material.request',
-                                                 'project_manager_id')
         for company in self:
             rule = Definition_sudo.search([
                 ('construction_site_fallback', '=', True),
                 ('company_id', '=', company.id)], limit=1)
-            if company.construction_site_request_without_rule != 'manager':
+            field_name = company._construction_site_fallback_field()
+            if not field_name:
                 rule.active = False
                 continue
+            field = self.env['ir.model.fields']._get('construction.material.request', field_name)
             vals = {
-                'name': _('Requerimiento de obra sin otra regla: jefe de la obra'),
+                'name': company._construction_site_fallback_name(),
                 'model_id': model.id,
                 'review_type': 'field',
                 'reviewer_field_id': field.id,
                 'definition_domain': repr([
                     ('request_type', '=', 'site'),
                     ('construction_without_rule', '=', True),
-                    ('project_manager_id', '!=', False),
+                    (field_name, '!=', False),
                     ('company_id', '=', company.id)]),
                 'company_id': company.id,
                 'sequence': 90,

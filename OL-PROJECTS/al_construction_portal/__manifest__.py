@@ -29,7 +29,7 @@ por WhatsApp:
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_portal/static/description/icon.png',
-    'version': '8.20261027',
+    'version': '9.20261027',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'countries': ['pe'],
@@ -43,6 +43,7 @@ por WhatsApp:
     'data': [
         'security/ir.model.access.csv',
         'security/portal_security.xml',
+        'data/portal_reason_data.xml',
         'views/portal_app_templates.xml',
         'views/portal_views.xml',
     ],

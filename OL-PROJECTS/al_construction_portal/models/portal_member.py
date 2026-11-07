@@ -25,7 +25,12 @@ PORTAL_ROLES = [
     ('foreman', 'Capataz o maestro de obra'),
     ('contractor', 'Contrata'),
     ('office', 'Oficina técnica'),
+    # Paquete 6, CR-48: valida, aprueba y registra lo del residente sin
+    # usuario interno; ve también todo lo del capataz y de la oficina técnica.
+    ('resident', 'Residente de obra'),
 ]
+#: Lo que ve cada papel además del suyo (CR-48, punto 2).
+ROLE_INCLUDES = {'resident': {'office', 'foreman'}}
 MAX_PIN_FAILURES = 3
 
 
@@ -75,6 +80,14 @@ class ProjectProject(models.Model):
         'account.analytic.account', string='Analítica de gastos generales de la obra',
         check_company=True,
         help='Área de los requerimientos internos del portal (EPP, útiles y aseo de la obra).')
+    # CR-48, punto 8: el residente que aprueba los requerimientos de la obra
+    # (revisor por campo de las reglas de aprobación, CR-50).
+    construction_portal_resident_id = fields.Many2one(
+        'res.users', string='Residente de la obra (portal)',
+        compute='_compute_construction_portal_resident_id', store=True, index='btree_not_null',
+        help='El miembro del portal con papel Residente marcado como aprobador por defecto de '
+             'la obra. Las reglas de aprobación de requerimientos lo usan como revisor '
+             '«Residente de la obra».')
     construction_portal_url = fields.Char(
         string='Enlace del QR', compute='_compute_construction_portal_url',
         groups='al_construction_planner.group_planner_user')
@@ -82,6 +95,15 @@ class ProjectProject(models.Model):
     construction_portal_qr_html = fields.Html(
         string='QR del cartel', compute='_compute_construction_portal_url', sanitize=False,
         groups='al_construction_planner.group_planner_user')
+
+    @api.depends('construction_portal_member_ids.is_default_approver',
+                 'construction_portal_member_ids.active', 'construction_portal_member_ids.role',
+                 'construction_portal_member_ids.user_id')
+    def _compute_construction_portal_resident_id(self):
+        for project in self:
+            member = project.construction_portal_member_ids.filtered(
+                lambda m: m.active and m.role == 'resident' and m.is_default_approver)[:1]
+            project.construction_portal_resident_id = member.user_id
 
     def _compute_construction_portal_url(self):
         base = self.get_base_url()
@@ -131,6 +153,10 @@ class ConstructionPortalMember(models.Model):
     employee_id = fields.Many2one(
         'hr.employee', string='Empleado', index='btree_not_null',
         help='Capataz o maestro de obra de la planilla: su cuadrilla y su tareo.')
+    is_default_approver = fields.Boolean(
+        string='Aprobador por defecto de la obra',
+        help='Solo para el papel Residente: es el revisor «Residente de la obra» de las reglas '
+             'de aprobación de los requerimientos de esta obra.')
     pin_hash = fields.Char(string='Huella del PIN', copy=False, readonly=True,
                            groups='base.group_system')
     has_pin = fields.Boolean(string='Tiene PIN', compute='_compute_has_pin')
@@ -140,6 +166,9 @@ class ConstructionPortalMember(models.Model):
 
     _project_user_unique = models.UniqueIndex(
         '(project_id, user_id)', 'La persona ya está en el portal de esta obra.')
+    _one_default_approver = models.UniqueIndex(
+        '(project_id) WHERE is_default_approver AND active',
+        'La obra ya tiene su residente aprobador por defecto.')
 
     def _compute_has_pin(self):
         for member, pin_hash in zip(self, self.sudo().mapped('pin_hash')):
@@ -151,6 +180,25 @@ class ConstructionPortalMember(models.Model):
             if member.role == 'contractor' and not member.partner_id:
                 raise ValidationError(self.env._(
                     '%s es de una contrata: indique la empresa.', member.name))
+
+    @api.constrains('role', 'is_default_approver')
+    def _check_default_approver(self):
+        for member in self:
+            if member.is_default_approver and member.role != 'resident':
+                raise ValidationError(self.env._(
+                    'Solo un residente de obra puede ser el aprobador por defecto de la obra.'))
+
+    def _effective_roles(self, login=None):
+        """Papeles con los que trabaja la persona: el residente ve también lo
+        del capataz y de la oficina técnica. Con el QR y el PIN no tiene el
+        papel Residente, porque el residente aprueba (CR-48, punto 6)."""
+        roles = set()
+        for member in self:
+            roles.add(member.role)
+            roles |= ROLE_INCLUDES.get(member.role, set())
+        if login == 'qr':
+            roles.discard('resident')
+        return roles
 
     @api.onchange('user_id', 'role')
     def _onchange_user_id(self):
@@ -226,17 +274,23 @@ class ConstructionPortalToken(models.Model):
     @api.model
     def _check(self, token):
         """Usuario del token vigente; vacío si no lo es."""
+        return self._check_session(token).user_id
+
+    @api.model
+    def _check_session(self, token):
+        """Sesión vigente del token (con su forma de ingreso); vacía si no lo
+        es."""
         if not token:
-            return self.env['res.users']
+            return self.browse()
         # sudo: se busca la sesión por la huella del token del encabezado.
         record = self.sudo().search([('token_hash', '=', _hash(token)),
                                      ('expiration', '>', fields.Datetime.now())], limit=1)
         if not record or not record.user_id.active:
-            return self.env['res.users']
+            return self.browse()
         now = fields.Datetime.now()
         if not record.last_used or (now - record.last_used).total_seconds() > 300:
             record.last_used = now
-        return record.user_id
+        return record
 
     @api.autovacuum
     def _gc_expired(self):

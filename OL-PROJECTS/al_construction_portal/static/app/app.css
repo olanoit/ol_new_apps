@@ -260,6 +260,50 @@ form.form { display: flex; flex-direction: column; gap: 12px; }
 .pill.warn { background: #FFF4D6; color: var(--warn); }
 .valuation { cursor: pointer; }
 .row.two > * { flex: 1; }
+/* Residente (paquete 6): «Mi día» y bandejas. */
+button.stat { cursor: pointer; text-align: left; font: inherit; }
+.agenda-row { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 14px; width: 100%;
+    border: 0; border-bottom: 1px solid #EEF0F2; background: none; text-align: left; cursor: pointer; }
+.agenda-row:last-child { border-bottom: 0; }
+.agenda-row > span:first-child { display: flex; flex-shrink: 0; }
+.agenda-row svg:last-child { color: var(--muted); flex-shrink: 0; }
+.plain { border: 0; background: none; padding: 0; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+button.card.plain { border: 1px solid var(--line); padding: 12px 14px; }
+.inbox-card { cursor: pointer; }
+.inbox-card.on { border: 2px solid var(--brand); }
+.pick-box { width: 26px; height: 26px; margin: 2px 0 0; accent-color: var(--brand); flex-shrink: 0; }
+.warn-line { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.warn-line.warn { color: var(--warn); }
+.warn-line.bad { color: var(--danger); }
+.pill.bad { background: #FDECEA; color: var(--danger); }
+.photo-btn { border: 0; padding: 0; cursor: zoom-in; display: flex; align-items: center; justify-content: center; }
+.photo-btn em { font-size: 12px; color: var(--muted); font-style: normal; }
+.note { margin: 0; white-space: pre-line; }
+.req-line .pills { flex: 1; }
+.req-line .row { flex-wrap: wrap; }
+/* Aprobar y Rechazar al alcance del pulgar (U15): fijos sobre la barra inferior. */
+.action-bar { display: flex; gap: 10px; }
+.action-bar > * { flex: 1; }
+.action-bar.sticky, .split-detail .action-bar { position: sticky; bottom: calc(76px + env(safe-area-inset-bottom)); z-index: 4;
+    background: var(--bg); padding: 8px 0; }
+.primary.danger { background: #B3261E; }
+.overlay { position: fixed; inset: 0; z-index: 20; background: rgba(0, 0, 0, .92); display: flex; align-items: center;
+    justify-content: center; color: #FFF; }
+.overlay img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.overlay .close { position: absolute; top: 8px; right: 8px; color: #FFF; }
+.split-list, .split-detail { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* Celular: la lista o el detalle, uno a la vez. */
+.split.has-detail .split-list { display: none; }
+.split:not(.has-detail) .split-detail { display: none; }
+.only-tablet { display: none; }
+@media (min-width: 768px) {
+    /* Tablet (U6): lista a la izquierda y detalle a la derecha. */
+    .split { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); align-items: start; }
+    .split.has-detail .split-list, .split:not(.has-detail) .split-detail { display: flex; }
+    .split-list { position: sticky; top: 112px; max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 4px; }
+    .only-phone { display: none; }
+    .only-tablet { display: block; }
+}
 @media (min-width: 768px) {
     .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .page.wide { max-width: none; }

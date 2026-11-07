@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 35.20261104 — 07/11/2026
+
+- Paquete 6, CR-50: la regla de los requerimientos de obra sin otra regla toma su revisor de un gancho de la compañía (_construction_site_fallback_field), que el portal de obra amplía con el residente de la obra; Aprobaciones usa el mismo revisor.
+
 ## 34.20261104 — 04/11/2026
 
 - M117-11: la devolución desde la obra se descuenta de lo entregado, avisa con una actividad y puede cerrarse la línea con «Cerrar con lo recibido».

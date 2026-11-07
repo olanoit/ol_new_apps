@@ -22,7 +22,8 @@ usar la aplicación:
 |---|---|---|
 | Capataz o maestro de obra | Personal propio en la obra | Avance de todas las partidas, parte diario, cuadrilla y tareo, requerimientos, recepción y devolución. |
 | Contrata | Usuario de portal de la empresa de la contrata | Solo las partidas asignadas a su empresa y sus valorizaciones con el neto a su cuenta. |
-| Oficina técnica | Residente o asistente | Lo mismo que el capataz salvo el tareo de la cuadrilla. |
+| Oficina técnica | Asistente de la oficina técnica | Lo mismo que el capataz salvo el tareo de la cuadrilla. |
+| Residente de obra | El residente, aunque sea un locador sin ficha de empleado | Todo lo del capataz y de la oficina técnica, más **Mi día** y las bandejas **Por validar** y **Por aprobar**. Solo con usuario y clave. |
 
 Hay dos formas de ingresar, que se activan por obra:
 
@@ -33,6 +34,11 @@ Hay dos formas de ingresar, que se activan por obra:
   persona lo escanea, elige su nombre y escribe su PIN de 4 dígitos. Tres PIN
   errados bloquean a la persona hasta que la oficina la desbloquee. **Nuevo
   código del QR** invalida el cartel anterior.
+
+!!! important "El residente entra con usuario y clave"
+    Quien entra con el QR y el PIN no tiene el rol Residente, aunque lo tenga
+    en la obra: ve lo del capataz y la oficina técnica, pero no las bandejas.
+    El residente valida y aprueba, y eso pide su usuario y clave.
 
 !!! note "El PIN"
     El PIN lo asigna la oficina con el botón **PIN** de la persona. Odoo solo
@@ -53,6 +59,85 @@ Hay dos formas de ingresar, que se activan por obra:
 | Devolución | Devuelve al almacén lo que sobra (andamios, herramientas, material) o lo da de baja como merma. |
 | Valorizaciones | La contrata ve sus valorizaciones, su detalle con deductivos, fondo de garantía y detracción, y el pago de la factura. |
 | Por enviar | Cola de lo registrado sin señal; se envía sola al volver la conexión o con **Reintentar el envío ahora**. |
+
+## El residente en la aplicación
+
+El residente trabaja en la aplicación sin usuario interno. Su barra inferior
+es **Inicio**, **Bandejas** (con el total pendiente), **Obra** y **Por
+enviar**.
+
+### Mi día
+
+El inicio del residente muestra arriba cuántos avances hay **por validar**,
+cuántos requerimientos **por aprobar** y cuántos partes del día **por
+revisar**. Debajo, la agenda de hoy por urgencia:
+
+1. pedidos urgentes que esperan su aprobación;
+2. cortes de valorización de las contratas en los próximos 7 días, con sus
+   avances por validar;
+3. entregas por recibir hoy;
+4. partidas que empiezan hoy según el cronograma.
+
+Cada fila abre la pantalla donde se atiende.
+
+### Por validar
+
+Los avances **Reportados** de la obra, de capataces y contratas. Tres órdenes:
+**Por corte** (primero los de la contrata cuyo corte de valorización está más
+cerca), **Por partida** y **Con aviso**.
+
+Cada avance muestra quién lo reportó, la cantidad, las fotos (se amplían al
+tocarlas), la última foto validada de la partida y la distancia a la obra. Los
+avisos son:
+
+- supera el saldo del plan;
+- espera la aprobación de la jefatura por exceso (no se puede validar hasta
+  que la jefatura lo apruebe en el escritorio);
+- foto sin ubicación GPS o tomada fuera del radio de la obra;
+- fecha en una semana cuya valorización ya se presentó.
+
+Acciones:
+
+- **Validar**. Se puede corregir la cantidad **a la baja** con **−** y **+**;
+  entonces se elige el motivo de la corrección.
+- **Rechazar**, con un motivo de la lista y un comentario opcional.
+- **Re-trabajo**, con su motivo. Se valida con 0 a liquidar, la misma regla
+  del escritorio.
+- **Validar seleccionados**: los avances **sin aviso** tienen casilla y se
+  validan juntos. Los que tienen aviso van de uno en uno.
+
+Quien reportó el avance recibe el aviso en su portal. En Odoo, el avance
+queda con el residente como **Validado por**.
+
+### Por aprobar
+
+Los requerimientos **En aprobación** de la obra en los que el residente es
+revisor del nivel actual. Por línea se ve lo pedido, el saldo del plan y el
+exceso; **Lo pedido** y **El saldo** fijan la cantidad de un toque, y **−** y
+**+** dan otra menor. **Aprobar** y **Rechazar** quedan fijos abajo.
+
+Si la regla tiene otro nivel después del residente (por ejemplo, la
+jefatura por encima de un monto), el requerimiento sigue a ese nivel. Con la
+aplicación Aprobaciones, rechazar devuelve el requerimiento a borrador con el
+motivo, igual que en el escritorio.
+
+En la tablet, las dos bandejas muestran la lista a la izquierda y el detalle
+a la derecha.
+
+### Validar y aprobar sin señal
+
+Validar, rechazar y aprobar también entran a **Por enviar**. Cada decisión
+guarda lo que vio el residente: el avance reportado con su cantidad, o el
+nivel de aprobación del requerimiento. Al recibirla, Odoo la vuelve a
+comprobar. Si el registro cambió (ya validado, rechazado, con otra cantidad o
+en otro nivel), no la aplica y **Por enviar** la muestra como rechazada, con
+el motivo.
+
+!!! example
+    El residente valida sin señal un avance de 24 m². Antes de que vuelva la
+    señal, la oficina lo rechaza en el escritorio. Al volver la conexión, la
+    validación aparece rechazada con el motivo «El avance … ya fue
+    rechazado» y el avance sigue rechazado.
 
 ## Sin señal
 
@@ -86,6 +171,20 @@ obra ‣ Fotos** (1600 px por defecto) antes de guardarse.
 3. Asigne el PIN si usa el QR.
 4. Para los requerimientos internos elija el **área de gastos generales** de
    la obra.
-5. Marque en las **categorías de producto** el catálogo del portal en que
+5. Para el residente: agréguelo con el rol **Residente de obra** y marque
+   **Aprobador por defecto de la obra** (uno por obra). No necesita ficha de
+   empleado.
+6. Para que los requerimientos lleguen al residente, elija una de estas
+   formas (o las dos):
+    - en **Ajustes ‣ Requerimientos de obra ‣ Requerimiento de obra sin regla
+      de aprobación**, la opción **Pasar al residente de la obra (portal)**:
+      lo que no tiene otra regla pasa al residente y, si la obra no tiene
+      residente, al jefe de la obra;
+    - en las reglas de aprobación de los requerimientos, el revisor por campo
+      **Residente de la obra**. Con varios niveles, la regla de **secuencia
+      más alta** revisa primero.
+7. Ajuste los motivos en **Configuración ‣ Motivos del residente**: rechazo de
+   un avance, corrección de su cantidad y rechazo de un requerimiento.
+8. Marque en las **categorías de producto** el catálogo del portal en que
    aparecen (EPP o útiles) y arme los kits en **Configuración ‣ Kits del
    portal**.

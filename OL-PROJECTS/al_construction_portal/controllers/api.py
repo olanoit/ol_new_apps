@@ -41,10 +41,14 @@ def portal_api(func=None, raw=False):
     def wrapper(self, *args, **kwargs):
         header = request.httprequest.headers.get('Authorization', '')
         match = re.match(r'^bearer\s+(.+)$', header, re.IGNORECASE)
-        user = request.env['construction.portal.token']._check(match.group(1) if match else '')
-        if not user:
+        session = request.env['construction.portal.token']._check_session(
+            match.group(1) if match else '')
+        if not session:
             return _json({'error': 'Sesión vencida o no válida: vuelva a ingresar.'}, 401)
-        request.update_env(user=user.id)
+        # La forma de ingreso decide los papeles: con el QR y el PIN no se
+        # tiene el de Residente (paquete 6, CR-48).
+        request.update_env(user=session.user_id.id)
+        request.update_context(construction_portal_login=session.method)
         try:
             result = func(self, *args, **kwargs)
             return result if raw else _json(result)
@@ -193,6 +197,33 @@ class ConstructionPortalApi(http.Controller):
     @portal_api
     def return_material(self, **kw):
         return self._service().return_material(_body())
+
+    # ------------------------------------------------------------------
+    # Residente (paquete 6, CR-49 y CR-50)
+    # ------------------------------------------------------------------
+    @http.route(PREFIX + '/resident/progress', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_progress(self, **kw):
+        """Validar, rechazar o marcar re-trabajo de avances reportados."""
+        return self._service().resident_progress(_body())
+
+    @http.route(PREFIX + '/resident/request', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_request(self, **kw):
+        """Aprobar o rechazar un requerimiento de la obra."""
+        return self._service().resident_request(_body())
+
+    @http.route(PREFIX + '/photo/<int:project_id>/<int:attachment_id>', type='http',
+                auth='public', methods=['GET'], csrf=False, save_session=False)
+    @portal_api(raw=True)
+    def photo(self, project_id, attachment_id, size=None, **kw):
+        """Foto de un avance de la obra (la evidencia que revisa el residente)."""
+        data, mimetype = self._service().progress_photo(project_id, attachment_id, size)
+        return request.make_response(data, headers=[
+            ('Content-Type', mimetype), ('Content-Length', len(data)),
+            ('Cache-Control', 'private, max-age=86400')])
 
     @http.route(PREFIX + '/valuations/<int:project_id>', type='http', auth='public',
                 methods=['GET'], csrf=False, save_session=False)

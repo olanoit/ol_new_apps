@@ -31,6 +31,7 @@
                             <field name="role"/>
                             <field name="partner_id" required="role == 'contractor'" options="{'no_create': True}"/>
                             <field name="employee_id" options="{'no_create': True}" optional="show"/>
+                            <field name="is_default_approver" invisible="role != 'resident'"/>
                             <field name="has_pin" optional="show"/>
                             <field name="pin_locked" optional="show"/>
                             <button name="action_open_pin_wizard" type="object" string="PIN" icon="fa-key"/>
@@ -259,6 +260,49 @@
     <menuitem id="menu_construction_portal_tareo" name="Tareo de cuadrillas"
               parent="al_construction_planner.menu_planner_execution" sequence="41"
               action="action_construction_portal_tareo" groups="al_construction_planner.group_planner_user"/>
+    <!-- Motivos del residente (paquete 6, U8) -->
+    <record id="construction_portal_reason_view_list" model="ir.ui.view">
+        <field name="name">construction.portal.reason.list</field>
+        <field name="model">construction.portal.reason</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="kind"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_portal_reason_view_search" model="ir.ui.view">
+        <field name="name">construction.portal.reason.search</field>
+        <field name="model">construction.portal.reason</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_kind" string="Para" context="{'group_by': 'kind'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_portal_reason" model="ir.actions.act_window">
+        <field name="name">Motivos del residente</field>
+        <field name="res_model">construction.portal.reason</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_kind': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin motivos</p>
+            <p>El residente elige uno de estos motivos en el portal al rechazar o corregir un avance o al rechazar un requerimiento.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_portal_reasons" name="Motivos del residente"
+              parent="al_construction_planner.menu_planner_config_plan" sequence="91"
+              action="action_construction_portal_reason" groups="al_construction_planner.group_planner_manager"/>
     <menuitem id="menu_construction_portal_kits" name="Kits del portal"
               parent="al_construction_planner.menu_planner_config_plan" sequence="90"
               action="action_construction_portal_kit" groups="al_construction_planner.group_planner_manager"/>
