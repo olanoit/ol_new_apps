@@ -14,7 +14,7 @@
     "use strict";
 
     const API = "/construction/api/v1";
-    const MAX_PHOTOS = { progress: 5, daily: 10, change: 8, deduction: 5 };
+    const MAX_PHOTOS = { progress: 5, daily: 10, change: 8, deduction: 5, expense: 3 };
     const state = {
         session: null, // {token, name}
         remember: true, // «Mantener la sesión en este celular»
@@ -598,6 +598,7 @@
                             : ""
                     }
                 </label>
+                ${data ? pushCard() : ""}
                 ${data && isResident() ? myDay(data, c) : ""}
                 ${
                     data && !isResident()
@@ -623,6 +624,71 @@
                 <button class="link" data-action="logout">Salir</button>
             </main>${nav("home")}`;
     };
+
+    // ------------------------------------------------------------------
+    // Avisos al celular (paquete 6, CR-57)
+    // ------------------------------------------------------------------
+    const pushSupported = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    function pushCard() {
+        let dismissed = false;
+        try {
+            dismissed = localStorage.getItem("obra-push-dismissed") === "1";
+        } catch {
+            dismissed = false;
+        }
+        if (dismissed || state.params.pushDone) return "";
+        if (isIos() && !isStandalone()) {
+            return `<div class="card push-card"><b>Avisos en el celular</b><small>En iPhone, agregue la aplicación a la pantalla de inicio (Compartir ▸ Agregar a inicio) y ábrala desde ahí para recibir avisos.</small>
+                <button class="link" data-action="push-dismiss">Ahora no</button></div>`;
+        }
+        if (!pushSupported() || Notification.permission !== "default") return "";
+        return `<div class="card push-card"><b>Avisos en el celular</b><small>Reciba en el celular, con la aplicación cerrada, los pedidos urgentes, las entregas en camino y la validación de sus avances.</small>
+            <div class="row two"><button class="secondary compact" data-action="push-dismiss">Ahora no</button><button class="primary compact" data-action="push-enable">Activar avisos</button></div>
+            ${state.params.pushError ? `<p class="error">${esc(state.params.pushError)}</p>` : ""}</div>`;
+    }
+    function urlBase64ToUint8Array(base64) {
+        const padding = "=".repeat((4 - (base64.length % 4)) % 4);
+        const raw = atob((base64 + padding).replace(/-/g, "+").replace(/_/g, "/"));
+        return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+    }
+    async function enablePush() {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+            throw new Error("Sin permiso para los avisos: actívelo en los ajustes del navegador.");
+        }
+        const { public_key: key } = await call("/push/key");
+        const registration = await navigator.serviceWorker.ready;
+        const send = (subscription) => {
+            const json = subscription.toJSON();
+            return call("/push/subscribe", { endpoint: json.endpoint, keys: json.keys, expirationTime: json.expirationTime || null, vapid_public_key: key });
+        };
+        const subscribe = () => registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(key) });
+        const current = await registration.pushManager.getSubscription();
+        try {
+            await send(current || (await subscribe()));
+        } catch (error) {
+            // Cambiaron las claves de Odoo o venció la suscripción: se rehace.
+            if (!current || error.status === 401) throw error;
+            await current.unsubscribe();
+            await send(await subscribe());
+        }
+    }
+    // Pantalla del registro del aviso: el residente va a su bandeja; los
+    // demás, a la pantalla donde trabajan ese registro.
+    function openRecord(model, resId) {
+        const id = Number(resId) || 0;
+        if (model === "construction.task.progress") {
+            return isResident() ? go("inbox", { tab: "progress", id }) : go("queue", {});
+        }
+        if (model === "construction.material.request") {
+            return isResident() ? go("inbox", { tab: "requests", id }) : go("queue", {});
+        }
+        if (model === "stock.picking") return go("reception", { id });
+        if (model === "construction.daily.report") return isResident() ? go("parts", {}) : go("daily", {});
+        return go("home");
+    }
 
     // ------------------------------------------------------------------
     // Residente (paquete 6): «Mi día» y bandejas
@@ -895,6 +961,7 @@
             f.change_order && ["change", "doc", "Cambio del cliente"],
             f.deduction && ["deduction", "undo", "Deductivo"],
             f.crew_request && ["crewreq", "crew", "Pedir cuadrilla o contrata"],
+            f.expense && ["expense", "doc", "Gasto con mi fondo"],
         ].filter(Boolean);
         return items.length
             ? `<div class="quick">${items.map(([go, ic, label]) => `<button class="quick-btn" data-go="${go}">${svg(ic, 22)}<span>${label}</span></button>`).join("")}</div>`
@@ -1001,6 +1068,58 @@
                 <p class="hint">Queda pendiente y entra en la siguiente valorización de la contrata, como el del escritorio.</p>
                 ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
                 <button class="primary" data-action="save-deduction">Registrar el deductivo</button>
+            </main>`;
+    };
+
+    // CR-55: caja chica y entrega a rendir del residente.
+    screens.expense = () => {
+        const cash = resident().cash || { funds: [], doc_types: [] };
+        const funds = cash.funds || [];
+        const d = (state.draft.expense = state.draft.expense || {
+            fund: funds.length ? String(funds[0].id) : "", doc_type: "", ruc: "", number: "", date: today(), amount: "",
+            general: false, task_ids: [], description: "", photos: [], picked: [],
+        });
+        const fund = funds.find((f) => String(f.id) === String(d.fund));
+        const head = header("Gasto con mi fondo", projectParts().code, "home");
+        if (!funds.length) {
+            return `${head}<main class="page"><p class="muted">No tiene una caja chica ni una entrega a rendir entregada. Pídala a Contabilidad.</p></main>`;
+        }
+        const cur = (n) => `${fund.currency} ${num(n)}`;
+        const pending = fund.receipts.filter((r) => r.state === "registered");
+        const cls = { registered: "warn", sent: "", approved: "ok" };
+        return `${head}
+            <main class="page">
+                ${funds.length > 1 ? `<div class="card form"><label>Fondo<select data-bind="expense.fund" data-rerender="1">${funds
+                    .map((f) => `<option value="${f.id}" ${String(f.id) === String(d.fund) ? "selected" : ""}>${esc(join(f.type_label, f.name))}</option>`)
+                    .join("")}</select></label></div>` : ""}
+                <div class="card"><small class="eyebrow">${esc(join(fund.type_label, fund.name))}</small>
+                    <div class="grid4"><span>Entregado<b>${cur(fund.delivered)}</b></span><span>Rendido<b>${cur(fund.sent)}</b></span>
+                    <span>Aprobado<b class="ok">${cur(fund.approved)}</b></span><span>Por rendir<b class="accent">${cur(fund.balance)}</b></span></div>
+                    ${fund.overdue ? `<small class="warn-line bad">${svg("alert", 16)} Rendición vencida desde el ${esc(dayMonth(fund.date_due))}</small>` : fund.date_due ? `<small>Rendir hasta el ${esc(dayMonth(fund.date_due))}</small>` : ""}</div>
+                <h2>Registrar un comprobante</h2>
+                ${photosCard("expense", d, true, "Foto del comprobante")}
+                <div class="card form">
+                    <label>Tipo de comprobante<select data-bind="expense.doc_type"><option value="">Elija el tipo</option>${(cash.doc_types || [])
+                        .map(([id, name]) => `<option value="${id}" ${String(id) === String(d.doc_type) ? "selected" : ""}>${esc(name)}</option>`)
+                        .join("")}</select></label>
+                    <label>RUC del emisor<input inputmode="numeric" maxlength="11" data-bind="expense.ruc" value="${esc(d.ruc)}" placeholder="11 dígitos"></label>
+                    <label>Serie y número<input data-bind="expense.number" value="${esc(d.number)}" placeholder="Ej.: B001-123" autocapitalize="characters"></label>
+                    <label>Fecha<input type="date" data-bind="expense.date" value="${esc(d.date)}" max="${today()}"></label>
+                    <label>Monto total<input type="number" inputmode="decimal" step="0.01" min="0" data-bind="expense.amount" value="${esc(d.amount)}"></label>
+                    <label>Qué se compró<input data-bind="expense.description" value="${esc(d.description)}" placeholder="Opcional"></label>
+                    <label class="check"><input type="checkbox" data-bind="expense.general" data-rerender="1" ${d.general ? "checked" : ""}> Gastos generales de la obra (sin partida)</label>
+                </div>
+                ${d.general ? "" : `<h2>Partida</h2>${taskPicker("expense", d.task_ids)}`}
+                ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
+                <button class="primary" data-action="save-expense">Registrar el comprobante</button>
+                <h2>Mis comprobantes</h2>
+                <div class="card list">${fund.receipts
+                    .map((r) => `<label class="pick">${r.state === "registered" ? `<input type="checkbox" data-settlepick="${r.id}" ${d.picked.includes(r.id) ? "checked" : ""}>` : ""}
+                        <span class="grow"><b>${esc(join(r.number, r.partner))}</b><small>${esc(join(r.doc_type, dayMonth(r.date), r.task))}</small></span>
+                        <span class="right"><b>${cur(r.amount)}</b>${pill(r.state_label, cls[r.state])}</span></label>`)
+                    .join("") || '<small class="muted">Aún no registra comprobantes con este fondo.</small>'}</div>
+                ${pending.length ? `<button class="secondary" data-action="settle" ${d.picked.length ? "" : "disabled"}>Rendir ${d.picked.length || ""} ${d.picked.length === 1 ? "comprobante" : "comprobantes"}</button>
+                    <small class="muted center">Marque los comprobantes por rendir. Contabilidad los revisa y aprueba la rendición.</small>` : ""}
             </main>`;
     };
 
@@ -1350,6 +1469,8 @@
         deduction: ["Deductivo", "entra en la siguiente valorización de la contrata"],
         crew_request: ["Solicitud", "le llega al planificador de la obra"],
         change_order: ["Cambio del cliente", "queda en borrador y el cliente recibe la constancia"],
+        expense: ["Comprobante", "Contabilidad lo revisa; queda por rendir en su fondo"],
+        settle: ["Rendición", "Contabilidad la revisa y la aprueba"],
     };
     function queueRow(item) {
         const photos = (item.payload && item.payload.photos ? item.payload.photos.length : 0);
@@ -1870,6 +1991,17 @@
             render();
             await refresh();
             render();
+        } else if (el.dataset.settlepick) {
+            const id = Number(el.dataset.settlepick);
+            const picked = state.draft.expense.picked;
+            if (el.checked && !picked.includes(id)) picked.push(id);
+            if (!el.checked && picked.includes(id)) picked.splice(picked.indexOf(id), 1);
+            render();
+        } else if (el.dataset.taskpick && el.dataset.taskpick.startsWith("expense:")) {
+            // El gasto va a una sola partida.
+            const id = Number(el.dataset.taskpick.split(":")[1]);
+            state.draft.expense.task_ids = el.checked ? [id] : [];
+            render();
         } else if (el.dataset.taskpick) {
             const [key, id] = el.dataset.taskpick.split(":");
             const list = state.draft[key].task_ids;
@@ -1877,7 +2009,7 @@
             if (el.checked && index < 0) list.push(Number(id));
             if (!el.checked && index >= 0) list.splice(index, 1);
         } else if (el.dataset.rerender && el.dataset.bind) {
-            setPath(el.dataset.bind, el.value);
+            setPath(el.dataset.bind, el.type === "checkbox" ? el.checked : el.value);
             render();
         } else if (el.dataset.pick) {
             const id = Number(el.dataset.pick);
@@ -2258,6 +2390,56 @@
             dropFromInbox("requests", [id]);
             go("inbox", { tab: "requests", flash: `${label}: ${state.online ? "enviado a Odoo." : "en «Por enviar»; Odoo lo confirma al volver la señal."}` });
         },
+        "push-enable": async () => {
+            state.params.pushError = "";
+            try {
+                await enablePush();
+                state.params.pushDone = true;
+            } catch (error) {
+                state.params.pushError = state.online ? error.message : "Sin señal: active los avisos con conexión.";
+            }
+            render();
+        },
+        "push-dismiss": () => {
+            try {
+                localStorage.setItem("obra-push-dismissed", "1");
+            } catch {
+                // Sin almacenamiento: se oculta solo en esta sesión.
+            }
+            state.params.pushDone = true;
+            render();
+        },
+        "save-expense": async () => {
+            const d = state.draft.expense;
+            if (!d.photos.length) return alertInline("Tome la foto del comprobante.");
+            if (!d.doc_type) return alertInline("Elija el tipo de comprobante.");
+            if (!/^\d{11}$/.test(d.ruc)) return alertInline("El RUC del emisor tiene 11 dígitos.");
+            if (!d.number.trim()) return alertInline("Indique la serie y el número del comprobante.");
+            if (!(Number(d.amount) > 0)) return alertInline("Indique el monto del comprobante.");
+            if (!d.general && !d.task_ids.length) return alertInline("Elija la partida o marque gastos generales de la obra.");
+            const payload = {
+                uuid: uuid(), project_id: state.projectId, fund_id: Number(d.fund), doc_type_id: Number(d.doc_type),
+                ruc: d.ruc, number: d.number.trim().toUpperCase(), date: d.date, amount: Number(d.amount),
+                task_id: d.general ? false : d.task_ids[0], description: d.description, photos: d.photos,
+            };
+            await enqueue("expense", "/resident/expense", payload, `Comprobante ${payload.number}: ${num(payload.amount)}`);
+            state.draft.expense = Object.assign({}, d, { doc_type: "", ruc: "", number: "", amount: "", description: "", photos: [], task_ids: [] });
+            go("queue", { saved: "expense" });
+        },
+        settle: async () => {
+            const d = state.draft.expense;
+            if (!d.picked.length) return alertInline("Marque los comprobantes que rinde.");
+            await enqueue("settle", "/resident/settle", { uuid: uuid(), project_id: state.projectId, fund_id: Number(d.fund), receipt_ids: d.picked }, `Rendición de ${d.picked.length} ${d.picked.length === 1 ? "comprobante" : "comprobantes"}`);
+            const fund = resident().cash.funds.find((f) => String(f.id) === String(d.fund));
+            fund.receipts.forEach((r) => {
+                if (d.picked.includes(r.id)) {
+                    r.state = "sent";
+                    r.state_label = "Rendido";
+                }
+            });
+            d.picked = [];
+            go("queue", { saved: "settle" });
+        },
         "add-person": () => {
             state.draft.crewreq.people.push({ role: "", count: 1 });
             render();
@@ -2488,6 +2670,9 @@
         navigator.serviceWorker.register("/obra/app/sw.js", { scope: "/obra/app/" }).catch(() => {});
         navigator.serviceWorker.addEventListener("message", (event) => {
             if (event.data && event.data.type === "flush") flush();
+            if (event.data && event.data.type === "open") {
+                refresh().then(() => openRecord(event.data.model, event.data.res_id));
+            }
         });
     }
 
@@ -2503,8 +2688,21 @@
             return go("login");
         }
         await loadCache();
+        // Desde un aviso: abre la pantalla de su registro con los datos al día.
+        const open = hash.get("open");
+        if (open) {
+            history.replaceState(null, "", location.pathname);
+        }
         go("home");
         await refresh();
+        // Con el permiso ya dado, el celular queda registrado en este Odoo.
+        if (pushSupported() && Notification.permission === "granted" && state.session) {
+            enablePush().catch(() => {});
+        }
+        if (open) {
+            const [model, resId] = open.split(":");
+            return openRecord(model, resId);
+        }
         render();
         flush();
     }

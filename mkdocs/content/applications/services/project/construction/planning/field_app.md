@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_portal, al_construction_portal_sale]
+modulos: [al_construction_portal, al_construction_portal_sale, al_construction_portal_cash_fund]
 ---
 
 # Aplicación de obra en el celular
@@ -154,7 +154,33 @@ Mi día tiene accesos directos para lo que registra el residente:
 | **Deductivo** | Un deductivo de la contrata en **Pendiente**, con foto obligatoria: la orden, la partida, el motivo, y el monto o la cantidad (al precio de la partida en la orden). La contrata lo ve en su pantalla Valorizaciones y entra en su siguiente valorización. |
 | **Pedir cuadrilla o contrata** | Una actividad en cada partida pedida, para el jefe de la obra, con la fecha en que se necesita y las personas por rol (cuadrilla) o el metrado (contrata). La asignación sigue en el escritorio. En **Mis solicitudes** el residente ve cada una como **Pedida**, **Asignada** (la partida ya tiene contrata en el plan o cuadrilla en esa fecha) o **Cancelada** (la actividad se cerró sin asignar). |
 
+| **Gasto con mi fondo** | Con la entrega a rendir o la caja chica a nombre del residente: registra cada comprobante (foto, tipo, RUC del emisor, número, fecha, monto y la partida o los gastos generales de la obra) como factura del proveedor en borrador, y con **Rendir** arma la rendición del fondo. Muestra lo **entregado**, **rendido**, **aprobado** y **por rendir**. Contabilidad publica los comprobantes y confirma la rendición en el escritorio. Necesita el módulo `al_construction_portal_cash_fund`, que se instala solo con las entregas a rendir y caja chica. |
+
 Todos entran a **Por enviar** si no hay señal.
+
+!!! note "Residente sin ficha de empleado"
+    El fondo va a nombre del contacto del residente, no de un empleado: el
+    locador contratado solo para la obra usa la misma pantalla que un
+    residente de planilla, sin pasar por la aplicación Gastos. En una
+    factura, el monto incluye el IGV de compra por defecto de la compañía;
+    Contabilidad lo revisa al publicarla.
+
+### Avisos al celular
+
+En el inicio, **Activar avisos** registra el celular para recibir avisos con
+la aplicación cerrada. En iPhone, primero hay que agregar la aplicación a la
+pantalla de inicio y abrirla desde ahí. Tocar un aviso abre la pantalla del
+registro.
+
+| Aviso | Quién lo recibe por defecto |
+|---|---|
+| Pedido urgente por aprobar | Residente |
+| Entrega en camino a la obra (revisión cada 15 minutos) | Residente, capataz y oficina técnica |
+| Avance reportado fuera del radio de la obra | Residente |
+| Avance validado o rechazado | Quien lo reportó: capataz, contrata u oficina técnica |
+
+Qué aviso recibe cada papel se cambia en **Configuración ‣ Avisos al
+celular**. El mismo aviso llega por correo de respaldo.
 
 ### La obra: Resumen, Semana, Tareas y Gantt
 
@@ -237,8 +263,11 @@ obra ‣ Fotos** (1600 px por defecto) antes de guardarse.
       más alta** revisa primero.
 7. Elija el **Contacto del cliente en obra** en la pestaña Portal de obra:
    recibe el parte diario de obra y las constancias de los cambios.
-8. Ajuste los motivos en **Configuración ‣ Motivos del residente**: rechazo de
+8. Para la caja chica del residente: en **Contabilidad**, cree la entrega a
+   rendir o la caja chica a nombre del contacto del residente y entréguela.
+9. Ajuste los avisos en **Configuración ‣ Avisos al celular**.
+10. Ajuste los motivos en **Configuración ‣ Motivos del residente**: rechazo de
    un avance, corrección de su cantidad y rechazo de un requerimiento.
-9. Marque en las **categorías de producto** el catálogo del portal en que
+11. Marque en las **categorías de producto** el catálogo del portal en que
    aparecen (EPP o útiles) y arme los kits en **Configuración ‣ Kits del
    portal**.

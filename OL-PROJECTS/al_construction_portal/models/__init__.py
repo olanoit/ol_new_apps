@@ -10,3 +10,4 @@ from . import material_request
 from . import task_progress
 from . import resident_records
 from . import site_overview
+from . import portal_notice

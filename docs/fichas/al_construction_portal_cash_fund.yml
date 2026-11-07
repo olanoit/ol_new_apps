@@ -1,0 +1,32 @@
+titulo: 'Portal de obra: caja chica y entrega a rendir'
+subtitulo: El residente registra en el celular los comprobantes que paga con su fondo, los
+  rinde y ve su saldo, aunque no tenga ficha de empleado.
+categoria: Construcción · Proyectos
+etiquetas:
+- Portal de obra
+- Caja chica
+- Entrega a rendir
+destacados:
+- icono: 🧾
+  titulo: Comprobante con foto
+  texto: Tipo de comprobante, RUC del emisor, número, fecha, monto y la partida o los gastos
+    generales de la obra. Queda como factura del proveedor en borrador para Contabilidad.
+- icono: 📤
+  titulo: Rendir desde la obra
+  texto: El residente marca sus comprobantes y arma la rendición del fondo; Contabilidad los
+    publica y confirma la rendición en el escritorio.
+- icono: 💰
+  titulo: Su saldo
+  texto: Entregado, rendido, aprobado y por rendir, con el aviso de la rendición vencida.
+configuracion:
+- Se instala solo con el portal de obra y las entregas a rendir y caja chica.
+- La entrega a rendir o la caja chica va a nombre del contacto del residente.
+requisitos_nota: Se instala automáticamente con `al_construction_portal` y `al_l10n_pe_cash_fund`.
+novedades:
+- version: '1.20261107'
+  fecha: 07/11/2026
+  cambios:
+  - "Puente nuevo (paquete 6, CR-55): comprobantes pagados con el fondo del residente desde el portal de obra, rendición y saldo; sirve con o sin ficha de empleado."
+relacionados:
+- al_construction_portal
+- al_l10n_pe_cash_fund

@@ -260,6 +260,12 @@ form.form { display: flex; flex-direction: column; gap: 12px; }
 .pill.warn { background: #FFF4D6; color: var(--warn); }
 .valuation { cursor: pointer; }
 .row.two > * { flex: 1; }
+/* Gasto con el fondo (paquete 6, CR-55). */
+.card.list > .pick { padding: 0 14px; }
+.pick .right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; }
+/* Avisos al celular (paquete 6, CR-57). */
+.push-card { border-color: #B8DEDF; background: #F3FAFA; }
+.push-card .row.two { gap: 10px; }
 /* Obra del residente (paquete 6, CR-58 y CR-54). */
 .hero .hero-num { display: block; font-size: 32px; line-height: 1.1; }
 .hero .muted-num { color: var(--muted); }

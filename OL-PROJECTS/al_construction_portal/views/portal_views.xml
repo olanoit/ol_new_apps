@@ -311,6 +311,34 @@
         </field>
     </record>
 
+    <!-- Avisos al celular por papel (paquete 6, CR-57) -->
+    <record id="construction_portal_notice_rule_view_list" model="ir.ui.view">
+        <field name="name">construction.portal.notice.rule.list</field>
+        <field name="model">construction.portal.notice.rule</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="event"/>
+                <field name="role"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_portal_notice_rule" model="ir.actions.act_window">
+        <field name="name">Avisos al celular</field>
+        <field name="res_model">construction.portal.notice.rule</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin avisos</p>
+            <p>Qué avisos recibe en el celular cada papel del portal de obra. La persona los activa en la aplicación de obra.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_portal_notice_rules" name="Avisos al celular"
+              parent="al_construction_planner.menu_planner_config_plan" sequence="92"
+              action="action_construction_portal_notice_rule" groups="al_construction_planner.group_planner_manager"/>
     <menuitem id="menu_construction_portal_reasons" name="Motivos del residente"
               parent="al_construction_planner.menu_planner_config_plan" sequence="91"
               action="action_construction_portal_reason" groups="al_construction_planner.group_planner_manager"/>

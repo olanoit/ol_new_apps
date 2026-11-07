@@ -363,6 +363,14 @@ class ConstructionPortalService(models.AbstractModel):
         attachments.write({'res_id': progress.id})
         if values.get('note'):
             progress.message_post(body=values['note'], author_id=self.env.user.partner_id.id)
+        # Paquete 6, CR-57: el avance reportado fuera del radio de la obra
+        # avisa al celular del residente.
+        site = project._construction_site() if hasattr(project, '_construction_site') else False
+        if site and site.radius_m and progress.distance_m > site.radius_m:
+            self._portal_notice(progress, project, 'out_of_radius', self.env._(
+                'Avance %(name)s reportado a %(m)s m de la obra (radio %(r)s m): %(task)s.',
+                name=progress.name, m=round(progress.distance_m), r=site.radius_m,
+                task=progress.task_id.display_name))
         self._portal_register('progress', values['uuid'], progress)
         return {'status': 'done', 'ids': str(progress.id), 'name': progress.name,
                 'over_balance': line.qty_planned < line.qty_executed + line._get_reported_qty(),
@@ -1021,3 +1029,17 @@ class ConstructionPortalService(models.AbstractModel):
         donde vive el cambio de obra."""
         raise UserError(self.env._(
             'Los cambios de obra piden el puente de Ventas del planificador.'))
+
+    # ------------------------------------------------------------------
+    # Caja chica y entrega a rendir (paquete 6, CR-55)
+    # ------------------------------------------------------------------
+    @api.model
+    def expense(self, values):
+        """Lo implementa el puente con las entregas a rendir
+        (al_construction_portal_cash_fund)."""
+        raise UserError(self.env._(
+            'La caja chica del portal pide el módulo de entregas a rendir y caja chica.'))
+
+    @api.model
+    def settle(self, values):
+        return self.expense(values)

@@ -24,6 +24,18 @@ class ConstructionMaterialRequest(models.Model):
         compute='_compute_construction_site_reviewer_id', store=True,
         help='El residente de la obra; sin residente, el jefe de la obra.')
 
+    def action_request_approval(self):
+        res = super().action_request_approval()
+        # Paquete 6, CR-57: el pedido urgente que espera aprobación avisa al
+        # celular de quien lo aprueba en el portal de la obra.
+        service = self.env['construction.portal.service']
+        for request in self.filtered(lambda r: r.priority == '1' and r.state == 'to_approve'
+                                     and r.project_id):
+            service._portal_notice(request, request.project_id, 'urgent_request', self.env._(
+                'Pedido urgente %(name)s por aprobar: %(lines)s.', name=request.name,
+                lines=', '.join(request.line_ids.product_id.mapped('display_name')[:3]) or '-'))
+        return res
+
     @api.depends('construction_site_resident_id', 'project_manager_id')
     def _compute_construction_site_reviewer_id(self):
         for request in self:

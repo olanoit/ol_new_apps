@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261027 — 07/11/2026
+
+- Paquete 6, CR-57: avisos al celular con la aplicación cerrada (envío web nativo de Odoo): pedido urgente por aprobar, entrega en camino a la obra (acción programada cada 15 minutos), avance reportado fuera del radio de la obra y avance validado o rechazado a quien lo reportó. Qué aviso recibe cada papel se configura en «Avisos al celular»; la persona los activa en la aplicación. Tocar el aviso abre la pantalla del registro.
+- Paquete 6, CR-55: acceso «Gasto con mi fondo» en «Mi día» cuando está instalado el puente con la caja chica (al_construction_portal_cash_fund).
+
 ## 11.20261027 — 07/11/2026
 
 - Paquete 6, CR-58: pestaña «Obra» del residente. Resumen con el avance físico real (el mismo del tablero de obra del escritorio) frente al programado a hoy, partidas atrasadas, avances por validar, pedidos abiertos y personal de hoy, curva de avance y avance por especialidad; montos solo si la compañía lo permite (Ajustes). Semana: partidas que inician y terminan esta semana y las que inician la siguiente, con aviso de las que inician sin contrata ni cuadrilla y de las que terminan en riesgo (umbral en Ajustes). Tareas: partidas en columnas que calcula Odoo (solo lectura); tocar una abre el registro de su avance.

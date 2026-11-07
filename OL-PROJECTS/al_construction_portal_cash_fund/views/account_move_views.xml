@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lo registrado en obra desde el portal (paquete 6, CR-55). -->
+    <record id="view_move_form_construction_portal_cash" model="ir.ui.view">
+        <field name="name">account.move.form.construction.portal.cash</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="construction_portal_fund_id" invisible="not construction_portal_fund_id"/>
+                <field name="construction_portal_project_id" invisible="not construction_portal_project_id"/>
+                <field name="construction_portal_task_id" invisible="not construction_portal_task_id"/>
+                <field name="construction_portal_user_id" invisible="not construction_portal_user_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

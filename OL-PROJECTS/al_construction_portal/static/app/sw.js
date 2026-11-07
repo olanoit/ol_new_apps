@@ -1,6 +1,6 @@
 /* Service worker del portal de obra: guarda la aplicación para abrirla sin
  * señal. Los datos y la cola de envíos los maneja la página (IndexedDB). */
-const CACHE = "obra-app-v8";
+const CACHE = "obra-app-v9";
 const SHELL = [
     "/obra/app/",
     "/al_construction_portal/static/app/app.js",
@@ -49,4 +49,41 @@ self.addEventListener("sync", (event) => {
             })
         );
     }
+});
+
+// Avisos al celular (paquete 6, CR-57): Odoo envía el mensaje con su título,
+// texto y el registro; al tocarlo se abre la aplicación en esa pantalla.
+self.addEventListener("push", (event) => {
+    let data = {};
+    try {
+        data = event.data ? event.data.json() : {};
+    } catch {
+        data = { title: event.data ? event.data.text() : "Portal de obra" };
+    }
+    const options = data.options || {};
+    event.waitUntil(
+        self.registration.showNotification(data.title || "Portal de obra", {
+            body: options.body || "",
+            icon: "/al_construction_portal/static/app/icon-192.png",
+            badge: "/al_construction_portal/static/app/icon-192.png",
+            data: options.data || {},
+            tag: options.data && options.data.model ? `${options.data.model}:${options.data.res_id}` : undefined,
+        })
+    );
+});
+
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+    const data = event.notification.data || {};
+    const target = data.model ? `/obra/app/#open=${encodeURIComponent(data.model)}:${data.res_id || ""}` : "/obra/app/";
+    event.waitUntil(
+        self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+            const client = clients.find((c) => new URL(c.url).pathname.startsWith("/obra/app"));
+            if (client) {
+                client.postMessage({ type: "open", model: data.model, res_id: data.res_id });
+                return client.focus();
+            }
+            return self.clients.openWindow(target);
+        })
+    );
 });

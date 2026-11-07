@@ -73,6 +73,11 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '12.20261027'
+    fecha: 07/11/2026
+    cambios:
+      - "Paquete 6, CR-57: avisos al celular con la aplicación cerrada (envío web nativo de Odoo): pedido urgente por aprobar, entrega en camino a la obra (acción programada cada 15 minutos), avance reportado fuera del radio de la obra y avance validado o rechazado a quien lo reportó. Qué aviso recibe cada papel se configura en «Avisos al celular»; la persona los activa en la aplicación. Tocar el aviso abre la pantalla del registro."
+      - "Paquete 6, CR-55: acceso «Gasto con mi fondo» en «Mi día» cuando está instalado el puente con la caja chica (al_construction_portal_cash_fund)."
   - version: '11.20261027'
     fecha: 07/11/2026
     cambios:

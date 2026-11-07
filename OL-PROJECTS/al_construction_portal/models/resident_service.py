@@ -275,9 +275,10 @@ class ConstructionPortalService(models.AbstractModel):
             text = self.env._('Validado como re-trabajo (%s) por el residente desde el portal.',
                               codes[code])
         for progress in progresses:
-            reporter = progress.reported_by_id.partner_id
-            # Quien reportó recibe el aviso (CR-49, punto 8; CR-57 lo lleva al
-            # celular).
+            # Quien reportó recibe el aviso (CR-49, punto 8), en el celular si
+            # su papel lo recibe (CR-57); si no, queda en el historial.
+            reporter = self._notice_users(project, 'progress_decision',
+                                          progress.reported_by_id).partner_id
             progress.message_post(
                 body='%s%s' % (text, (' %s' % comment) if comment and action != 'reject' else ''),
                 author_id=partner.id, message_type='comment',

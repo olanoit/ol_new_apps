@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Avisos al celular por papel (paquete 6, CR-57): cada empresa los ajusta. -->
+    <data noupdate="1">
+        <record id="notice_urgent_request_resident" model="construction.portal.notice.rule">
+            <field name="event">urgent_request</field>
+            <field name="role">resident</field>
+        </record>
+        <record id="notice_delivery_resident" model="construction.portal.notice.rule">
+            <field name="event">delivery</field>
+            <field name="role">resident</field>
+        </record>
+        <record id="notice_delivery_foreman" model="construction.portal.notice.rule">
+            <field name="event">delivery</field>
+            <field name="role">foreman</field>
+        </record>
+        <record id="notice_delivery_office" model="construction.portal.notice.rule">
+            <field name="event">delivery</field>
+            <field name="role">office</field>
+        </record>
+        <record id="notice_out_of_radius_resident" model="construction.portal.notice.rule">
+            <field name="event">out_of_radius</field>
+            <field name="role">resident</field>
+        </record>
+        <record id="notice_decision_foreman" model="construction.portal.notice.rule">
+            <field name="event">progress_decision</field>
+            <field name="role">foreman</field>
+        </record>
+        <record id="notice_decision_contractor" model="construction.portal.notice.rule">
+            <field name="event">progress_decision</field>
+            <field name="role">contractor</field>
+        </record>
+        <record id="notice_decision_office" model="construction.portal.notice.rule">
+            <field name="event">progress_decision</field>
+            <field name="role">office</field>
+        </record>
+    </data>
+    <record id="ir_cron_construction_portal_delivery_notice" model="ir.cron">
+        <field name="name">Portal de obra: aviso de entregas en camino</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_construction_portal_delivery_notice()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">True</field>
+    </record>
+</odoo>

@@ -243,6 +243,34 @@ class ConstructionPortalApi(http.Controller):
         """Cambio pedido por el cliente en obra (CR-53)."""
         return self._service().change_order(_body())
 
+    @http.route(PREFIX + '/resident/expense', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_expense(self, **kw):
+        """Comprobante pagado con la caja chica o entrega a rendir (CR-55)."""
+        return self._service().expense(_body())
+
+    @http.route(PREFIX + '/resident/settle', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def resident_settle(self, **kw):
+        """Rendición del fondo con los comprobantes elegidos (CR-55)."""
+        return self._service().settle(_body())
+
+    @http.route(PREFIX + '/push/key', type='http', auth='public', methods=['GET'], csrf=False,
+                save_session=False)
+    @portal_api
+    def push_key(self, **kw):
+        """Clave pública del envío web para activar los avisos (CR-57)."""
+        return self._service().push_key()
+
+    @http.route(PREFIX + '/push/subscribe', type='http', auth='public', methods=['POST'],
+                csrf=False, save_session=False)
+    @portal_api
+    def push_subscribe(self, **kw):
+        """Activa o quita los avisos en este celular (CR-57)."""
+        return self._service().push_subscribe(_body())
+
     @http.route(PREFIX + '/photo/<int:project_id>/<int:attachment_id>', type='http',
                 auth='public', methods=['GET'], csrf=False, save_session=False)
     @portal_api(raw=True)
