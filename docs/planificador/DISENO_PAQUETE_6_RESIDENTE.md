@@ -48,8 +48,19 @@ Se desarrolló en cuatro entregas, en este orden, todas el 07-nov-2026.
 ## 4. Pruebas del requerimiento (sección 9)
 
 Las pruebas automáticas reproducen cada caso con datos ficticios en
-`test_pe_creval`. La prueba en creval-dev, sin Administración, la hace
-Vicente.
+`test_pe_creval`. El 07-nov-2026 se repitieron P1 a P16 y P18 en creval-dev
+por la API real del portal (residente de portal de prueba, capataz y contrata
+de prueba, obra de prueba), con la aplicación real revisada en celular y
+tablet: todas pasaron. Salió una corrección: la curva de avance y el Gantt
+llegan hasta hoy aunque el plan haya terminado antes (`6f536565`).
+
+Configuración que no está en la obra de prueba de creval-dev:
+
+- La obra no tiene sede de marcación: sin coordenadas ni radio, no salen el
+  aviso de GPS ni el aviso «fuera del radio».
+- La cuenta 1413000 «Personal - Entregas a rendir cuenta» está archivada: no
+  se puede entregar un fondo, y P11 no se probó en creval-dev (sí en las
+  pruebas automáticas, con el paso de Contabilidad).
 
 | N.º | Prueba | Prueba automática | Estado |
 |---|---|---|---|
@@ -69,7 +80,7 @@ Vicente.
 | P14 | Aprobación sin señal | `test_request_approval_by_resident` | Verde |
 | P15 | Partes del día del capataz y la contrata | `test_daily_parts_and_close_day` | Verde |
 | P16 | «Cerrar el día» con PDF al cliente | `test_close_day_sends_pdf_to_client` | Verde; PDF revisado por HTTP |
-| P17 | Pedido urgente llega al celular con la aplicación cerrada | `test_portal_notice.test_urgent_request_reaches_resident` (el mensaje) | Falta la prueba con un teléfono: el navegador automático no da permiso de avisos |
+| P17 | Pedido urgente llega al celular con la aplicación cerrada | `test_portal_notice.test_urgent_request_reaches_resident` (el mensaje) | El mensaje al residente sale en creval-dev; falta la prueba con un teléfono: el navegador automático no da permiso de avisos |
 | P18 | Resumen igual al tablero del escritorio | `test_site_overview.test_summary_matches_desktop_board` | Verde; medido en la obra más grande de creval-dev (432 líneas, 1,5 s) |
 
 ## 5. Configuración por obra
