@@ -61,6 +61,34 @@ class TestBudgetWorksheet(TestBudgetBook):
             ('construction_project_id', '=', self.project.id),
             ('construction_source_id', '=', False)]), 1)
 
+    def test_current_sheet_is_searchable(self):
+        """La hoja vigente de la obra se puede buscar y la ficha sigue su
+        estado (sin el aviso «should be searchable» al arrancar)."""
+        Project = self.env['project.project']
+        other = Project.create({'name': 'Obra sin hoja (hojas)'})
+        self.project.construction_sale_order_id = self.order
+        self.project.action_construction_open_spreadsheet()
+        document = self.project.construction_sheet_document_id
+        self.assertTrue(document)
+        projects = (self.project | other).ids
+        found = Project.search([('id', 'in', projects),
+                                ('construction_sheet_document_id', 'in', document.ids)])
+        self.assertEqual(found, self.project)
+        found = Project.search([('id', 'in', projects),
+                                ('construction_sheet_document_id', '=', False)])
+        self.assertEqual(found, other)
+        found = Project.search([('id', 'in', projects),
+                                ('construction_sheet_document_id', 'not in', document.ids)])
+        self.assertEqual(found, other)
+        # Una copia numerada no es la hoja vigente.
+        document.action_construction_new_version()
+        copy = self.env['documents.document'].search([('construction_source_id', '=',
+                                                       document.id)], limit=1)
+        self.assertFalse(Project.search([('construction_sheet_document_id', 'in', copy.ids)]))
+        self.assertEqual(self.project.construction_sheet_version, document.construction_version)
+        document.construction_sheet_state = 'validated'
+        self.assertEqual(self.project.construction_sheet_state, 'validated')
+
     def test_send_validate_costs_and_versions(self):
         document = self._document()
         sheets = _sheets_from_book(base64.b64decode(self._book()))

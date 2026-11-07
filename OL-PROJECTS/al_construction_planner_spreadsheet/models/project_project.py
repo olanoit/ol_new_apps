@@ -284,7 +284,8 @@ class ProjectProject(models.Model):
     # Paquete 1.13, M113-12: la hoja vigente y su estado, en la ficha.
     construction_sheet_document_id = fields.Many2one(
         'documents.document', string='Hoja de trabajo vigente',
-        compute='_compute_construction_sheet_document_id')
+        compute='_compute_construction_sheet_document_id',
+        search='_search_construction_sheet_document_id')
     construction_sheet_state = fields.Selection(
         related='construction_sheet_document_id.construction_sheet_state')
     construction_sheet_version = fields.Integer(
@@ -318,6 +319,29 @@ class ProjectProject(models.Model):
             by_project.setdefault(document_sudo.construction_project_id.id, document_sudo)
         for project in self:
             project.construction_sheet_document_id = by_project.get(project.id, False)
+
+    def _search_construction_sheet_document_id(self, operator, value):
+        # Búsqueda del campo calculado: Odoo la usa para saber qué proyectos
+        # recalcular cuando cambia el estado de la hoja (campos relacionados).
+        if operator not in ('in', 'not in'):
+            return NotImplemented
+        ids = {v for v in value if v}
+        # sudo: solo el vínculo de la hoja con su obra, como en el cálculo.
+        documents_sudo = self.env['documents.document'].sudo().browse(ids).exists().filtered(
+            lambda d: d.construction_project_id and not d.construction_source_id
+            and d.handler == 'spreadsheet')
+        projects = documents_sudo.construction_project_id
+        current = projects.filtered(
+            lambda p: p.construction_sheet_document_id in documents_sudo).ids
+        if False in value:
+            # Sin hoja vigente: las obras sin documento de hoja.
+            with_sheet = self.env['documents.document'].sudo().search([
+                ('construction_project_id', '!=', False), ('construction_source_id', '=', False),
+                ('handler', '=', 'spreadsheet')]).construction_project_id.ids
+            domain = ['|', ('id', 'in', current), ('id', 'not in', with_sheet)]
+        else:
+            domain = [('id', 'in', current)]
+        return domain if operator == 'in' else ['!', *domain]
 
     def action_construction_open_sheet_message(self):
         """Abre el registro con el mensaje del último envío de la hoja."""
