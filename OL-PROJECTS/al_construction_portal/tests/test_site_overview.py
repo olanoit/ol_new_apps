@@ -50,6 +50,9 @@ class TestSiteOverview(ResidentCommon):
         self.assertGreaterEqual(site['summary']['late'], 1)
         self.assertGreater(site['summary']['programmed'], 0.0)
         self.assertTrue(site['curve'])
+        # La curva y el Gantt llegan hasta hoy aunque el plan termine antes.
+        self.assertGreaterEqual(site['end'], fields.Date.to_string(today))
+        self.assertGreaterEqual(site['curve'][-1]['week'], fields.Date.to_string(today))
         self.assertTrue(site['specialties'])
         # Termina esta semana con poco avance: en riesgo en la Semana.
         self.wall.date_needed = week_end if week_end >= today else today

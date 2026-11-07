@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261027 — 07/11/2026
+
+- Pestaña Obra: la curva de avance y el Gantt llegan hasta hoy aunque el plan haya terminado antes (encontrado en la prueba del paquete 6 en creval-dev).
+
 ## 12.20261027 — 07/11/2026
 
 - Paquete 6, CR-57: avisos al celular con la aplicación cerrada (envío web nativo de Odoo): pedido urgente por aprobar, entrega en camino a la obra (acción programada cada 15 minutos), avance reportado fuera del radio de la obra y avance validado o rechazado a quien lo reportó. Qué aviso recibe cada papel se configura en «Avisos al celular»; la persona los activa en la aplicación. Tocar el aviso abre la pantalla del registro.

@@ -1222,7 +1222,8 @@
         if (!rows.length) return '<p class="muted">Las partidas no tienen fechas en el plan.</p>';
         const day0 = asDate(site.start || rows[0].start);
         const days = (iso) => Math.round((asDate(iso) - day0) / 86400000);
-        const span = Math.max(...rows.map((t) => days(t.end))) + 7;
+        // Hasta hoy aunque el plan haya terminado antes (la línea de hoy a la vista).
+        const span = Math.max(...rows.map((t) => days(t.end)), days(today())) + 7;
         const rowH = 30, labelW = 0, top = 26;
         const width = labelW + span * perDay;
         const height = top + rows.length * rowH + 10;

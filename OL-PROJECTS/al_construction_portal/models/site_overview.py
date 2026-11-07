@@ -257,6 +257,9 @@ class ConstructionPortalService(models.AbstractModel):
         # Curva de avance por semanas de la obra (U17).
         start = min((w[0] for w in windows.values()), default=plan.date_start) or today
         end = max((w[1] for w in windows.values()), default=plan.date_end) or today
+        # La curva llega hasta hoy aunque el plan haya terminado antes: lo
+        # validado después del fin del plan también cuenta.
+        curve_end = max(end, today)
         validated = defaultdict(float)
         # sudo: lo validado de la obra, por fecha de ejecución.
         for day, amount in self.env['construction.task.progress'].sudo()._read_group(
@@ -265,8 +268,8 @@ class ConstructionPortalService(models.AbstractModel):
             validated[day] += amount or 0.0
         planned_total = sum(r['_planned'] for r in rows) or 0.0
         weeks, day = [], project._construction_period(start)[1]
-        step = max(1, ((end - start).days // 7 + 1) // CURVE_POINTS + 1)
-        while day <= end + timedelta(days=6 * step):
+        step = max(1, ((curve_end - start).days // 7 + 1) // CURVE_POINTS + 1)
+        while day <= curve_end + timedelta(days=6 * step):
             weeks.append(day)
             day += timedelta(days=7 * step)
             if len(weeks) > CURVE_POINTS + 2:
@@ -313,7 +316,7 @@ class ConstructionPortalService(models.AbstractModel):
                     week={'starting': starting, 'ending': ending, 'next_starting': next_starting},
                     milestones=[{'name': m['name'], 'date': m['date'],
                                  'reached': m['is_reached']} for m in milestones if m['date']],
-                    start=fields.Date.to_string(start), end=fields.Date.to_string(end))
+                    start=fields.Date.to_string(start), end=fields.Date.to_string(curve_end))
 
     @staticmethod
     def _public_row(row):

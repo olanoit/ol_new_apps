@@ -73,6 +73,10 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '13.20261027'
+    fecha: 07/11/2026
+    cambios:
+      - "Pestaña Obra: la curva de avance y el Gantt llegan hasta hoy aunque el plan haya terminado antes (encontrado en la prueba del paquete 6 en creval-dev)."
   - version: '12.20261027'
     fecha: 07/11/2026
     cambios:
