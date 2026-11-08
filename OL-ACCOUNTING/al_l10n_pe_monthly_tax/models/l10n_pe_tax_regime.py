@@ -5,6 +5,7 @@ TAX_REGIMES = [
     ('general', 'Régimen General'),
     ('mype', 'Régimen MYPE Tributario'),
     ('special', 'Régimen Especial (RER)'),
+    ('agrarian', 'Régimen agrario (Ley 32434)'),
 ]
 
 

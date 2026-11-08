@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_monthly_tax.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261108 — 08/11/2026
+
+- Régimen agrario (Ley 32434): empresas agrarias de cultivo o crianza pagan a cuenta 0,8 % (art. 12.2), comparado con el coeficiente como en el Régimen General; desde 2036, como el General.
+
 ## 5.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

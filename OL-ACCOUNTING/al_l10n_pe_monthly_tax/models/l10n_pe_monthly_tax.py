@@ -15,7 +15,10 @@ Reúne en un documento por compañía y periodo:
   el mayor entre coeficiente y 1,5 % (art. 85 de la Ley del Impuesto a la
   Renta); MYPE Tributario, 1 % hasta 300 UIT de ingresos netos en el
   ejercicio y desde que se superan, como el General (art. 6 del D. Leg.
-  1269); Régimen Especial, cuota de 1,5 % (art. 120 de la Ley).
+  1269); Régimen Especial, cuota de 1,5 % (art. 120 de la Ley); régimen
+  agrario de la Ley 32434 (empresas agrarias de cultivo o crianza, tasa del
+  15 % de 2026 a 2035), como el General pero con 0,8 % en lugar de 1,5 %
+  (art. 12.2); desde 2036, como el General.
 """
 import calendar
 from datetime import date
@@ -33,6 +36,12 @@ MYPE_LIMIT_UIT = 300
 GENERAL_RATE = 0.015
 MYPE_RATE = 0.01
 SPECIAL_RATE = 0.015
+# Ley 32434, art. 12: empresas agrarias con la tasa del 15 % (ejercicios 2026 a
+# 2035) pagan a cuenta 0,8 % (art. 12.2); desde 2036, la tasa y el pago a
+# cuenta del Régimen General. Que el 0,8 % se compare con el coeficiente como
+# el 1,5 % del General es la lectura del art. 85; confirmar con el contador.
+AGRARIAN_RATE = 0.008
+AGRARIAN_LAST_YEAR = 2035
 IGV_CODE = '1000'
 
 
@@ -208,9 +217,13 @@ class L10nPeMonthlyTax(models.Model):
         if company.l10n_pe_income_suspended:
             return regime, coefficient, self.env._('Pagos a cuenta suspendidos'), 0.0
         by_coefficient = net_income * coefficient
-        by_rate = net_income * GENERAL_RATE
+        agrarian = regime == 'agrarian' and self.year <= AGRARIAN_LAST_YEAR
+        by_rate = net_income * (AGRARIAN_RATE if agrarian else GENERAL_RATE)
         if coefficient and by_coefficient > by_rate:
             return regime, coefficient, self.env._('Coeficiente %s', ('%.4f' % coefficient).replace('.', ',')), by_coefficient
+        if agrarian:
+            return regime, coefficient, self.env._('Agrario: 0,8 % (mayor que el coeficiente)') \
+                if coefficient else self.env._('Agrario: 0,8 % (sin impuesto calculado)'), by_rate
         return regime, coefficient, self.env._('1,5 % (mayor que el coeficiente)') if coefficient \
             else self.env._('1,5 % (sin impuesto calculado)'), by_rate
 

@@ -18,7 +18,8 @@ Un documento por compañía y periodo con todo lo que se declara en el 621:
 * **Pago a cuenta del impuesto a la renta** según el régimen vigente:
   Régimen General (mayor entre coeficiente y 1,5 %), MYPE Tributario (1 %
   hasta 300 UIT de ingresos netos del ejercicio; luego como el General) y
-  Régimen Especial (1,5 %); suspensión aprobada por SUNAT.
+  Régimen Especial (1,5 %) y régimen agrario de la Ley 32434 (0,8 % de
+  2026 a 2035, comparado con el coeficiente); suspensión aprobada por SUNAT.
 * Estados borrador, calculado y declarado; asiento opcional del pago a cuenta.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -28,7 +29,7 @@ Un documento por compañía y periodo con todo lo que se declara en el 621:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_monthly_tax/static/description/icon.png',
-    'version': '5.20261027',
+    'version': '6.20261108',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

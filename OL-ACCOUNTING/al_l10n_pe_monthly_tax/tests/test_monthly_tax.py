@@ -142,6 +142,24 @@ class TestMonthlyTax(TransactionCase):
         march.action_compute()
         self.assertEqual(march.income_tax_to_pay, 150.0, 'RER: 1,5 %')
 
+    def test_agrarian_regime(self):
+        """Ley 32434, art. 12.2: 0,8 % en lugar de 1,5 % hasta 2035; desde
+        2036, como el Régimen General."""
+        self.regime.regime = 'agrarian'
+        self._invoice('out_invoice', 10000.0, date(YEAR, 3, 10))
+        march = self._period(3)
+        self.assertEqual(march.income_tax_to_pay, 200.0, 'coeficiente 0,02 mayor que 0,8 %')
+        self.company.root_id.l10n_pe_income_coefficient = 0.005
+        march.action_compute()
+        self.assertEqual(march.income_tax_to_pay, 80.0, '0,8 % mayor que el coeficiente')
+        self.assertIn('0,8 %', march.income_rate_label)
+        self.company.root_id.l10n_pe_income_coefficient = 0.0
+        march.action_compute()
+        self.assertEqual(march.income_tax_to_pay, 80.0, '0,8 % sin impuesto calculado')
+        later = self.env['l10n_pe.monthly.tax'].create({'year': 2036, 'month': '3'})
+        regime, _coef, _label, amount = later._income_tax(10000.0, 10000.0)
+        self.assertEqual((regime, amount), ('agrarian', 150.0), 'desde 2036, 1,5 %')
+
     def test_january_uses_previous_coefficient(self):
         self._invoice('out_invoice', 10000.0, date(YEAR, 1, 10))
         january = self._period(1)
