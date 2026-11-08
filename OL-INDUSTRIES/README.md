@@ -16,9 +16,13 @@ planifican obras también aplican el perfil de vertical del planificador.
 Qué va aquí
 -----------
 
-- `al_industry_base`: lo común (localización peruana de la suite y el registro
-  de cada industria en **Ajustes ▸ Usuarios y compañías ▸ Industrias**, con el
-  botón «Aplicar a la compañía activa» para las demás compañías).
+- `al_industry_core`: el registro de cada industria en **Ajustes ▸ Usuarios y
+  compañías ▸ Industrias**, con su CIIU y el botón «Aplicar a la compañía
+  activa» para las demás compañías. No instala comprobantes electrónicos:
+  funciona en Odoo Community.
+- `al_industry_base`: `al_industry_core` más la localización peruana de la
+  suite con comprobantes electrónicos. Lo usan los paquetes que facturan desde
+  Odoo; los que no (ediciones Lite) dependen solo de `al_industry_core`.
 - Un `al_industry_<rubro>` por industria, con `application: True`. Casi todo es
   dato (XML); solo lleva Python lo que el rubro necesita y Odoo no trae (p. ej.
   los datos DIGEMID del producto en farmacia).
@@ -56,8 +60,9 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_industry_base](al_industry_base/) | 2.20261027 | OPL-1 | Lo que comparten los paquetes de industria: la localización peruana de la suite y el registro de cada industria, con su actividad CIIU, aplicable por compañía.
+[al_industry_base](al_industry_base/) | 3.20261108 | OPL-1 | Lo que comparten los paquetes de industria que facturan desde Odoo: el registro de industrias y la localización peruana de la suite con comprobantes electrónicos.
 [al_industry_construction](al_industry_construction/) | 3.20261027 | LGPL-3 | Constructora lista para planificar y ejecutar obras: plan de recursos por partidas, requerimientos de obra, compras, contratas, cuadrillas, presupuesto, valorización, aprobaciones y planilla de construcción civil.
+[al_industry_core](al_industry_core/) | 1.20261108 | OPL-1 | Registro de cada industria con su actividad CIIU, aplicable por compañía, sin comprobantes electrónicos: sirve también a los paquetes que no facturan desde Odoo.
 [al_industry_ecommerce](al_industry_ecommerce/) | 3.20261027 | OPL-1 | Tienda en línea lista para vender: catálogo web, checkout con RUC o DNI y ubigeo, pagos con Culqi, Niubiz o Izipay, boleta y factura electrónica y libro de reclamaciones virtual.
 [al_industry_furniture](al_industry_furniture/) | 3.20261027 | LGPL-3 | Fábrica de muebles a medida para obras: tipologías con módulos y piezas, lista de materiales, órdenes de fabricación, metrado, despacho e instalación por torre, piso y departamento.
 [al_industry_pharmacy](al_industry_pharmacy/) | 13.20261027 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.

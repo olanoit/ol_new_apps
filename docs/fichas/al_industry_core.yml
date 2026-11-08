@@ -1,0 +1,32 @@
+titulo: "Industrias: registro"
+subtitulo: "Registro de cada industria con su actividad CIIU, aplicable por compañía, sin comprobantes electrónicos: sirve también a los paquetes que no facturan desde Odoo."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Perú, CIIU, Multicompañía, Community]
+
+destacados:
+  - icono: "▦"
+    titulo: "Una industria, un registro"
+    texto: "Cada paquete deja su industria en Ajustes ▸ Usuarios y compañías ▸ Industrias, con su actividad CIIU."
+  - icono: "⌂"
+    titulo: "Por compañía"
+    texto: "Al instalar configura la compañía activa; las demás, con «Aplicar a la compañía activa»."
+  - icono: "◇"
+    titulo: "Sin comprobantes electrónicos"
+    texto: "Funciona en Odoo Community: base de los paquetes Lite que no facturan desde Odoo."
+
+funcionalidades:
+  - "Catálogo de industrias instaladas con su CIIU y las compañías donde se aplicaron."
+  - "Actividad económica principal del RUC desde la CIIU Rev. 4 de SUNAT, sin pisar la que ya tenga la compañía."
+  - "Perfil de vertical del planificador de obra para los rubros que planifican obras."
+
+configuracion:
+  - "Se instala sola con cualquier paquete de industria."
+  - "Para otra compañía: cámbiese a ella y use **Aplicar a la compañía activa** en Ajustes ▸ Usuarios y compañías ▸ Industrias."
+
+novedades:
+  - version: '1.20261108'
+    fecha: 08/11/2026
+    cambios:
+      - "Primera versión: el registro de industrias sale de `al_industry_base` para que los paquetes sin comprobantes electrónicos puedan usarlo en Odoo Community."
+
+relacionados: [al_industry_base, al_industry_pharmacy, al_industry_retail]

@@ -1,5 +1,5 @@
 titulo: "Industrias: base común"
-subtitulo: "Lo que comparten los paquetes de industria: la localización peruana de la suite y el registro de cada industria, con su actividad CIIU, aplicable por compañía."
+subtitulo: "Lo que comparten los paquetes de industria que facturan desde Odoo: el registro de industrias y la localización peruana de la suite con comprobantes electrónicos."
 categoria: "Industrias · Perú"
 etiquetas: [Industrias, Perú, CIIU, Multicompañía]
 
@@ -16,7 +16,7 @@ destacados:
 
 funcionalidades:
   - "Localización peruana de la suite: comprobantes, tipo de cambio, consulta de RUC y DNI."
-  - "Catálogo de industrias instaladas con su CIIU y las compañías donde se aplicaron."
+  - "Registro de industrias (`al_industry_core`): catálogo de industrias instaladas con su CIIU y las compañías donde se aplicaron."
   - "Actividad económica principal del RUC desde la CIIU Rev. 4 de SUNAT."
   - "Perfil de vertical del planificador de obra para los rubros que planifican obras."
 
@@ -25,6 +25,10 @@ configuracion:
   - "Para otra compañía: cámbiese a ella y use **Aplicar a la compañía activa** en Ajustes ▸ Usuarios y compañías ▸ Industrias."
 
 novedades:
+  - version: '3.20261108'
+    fecha: 08/11/2026
+    cambios:
+      - "El registro de industrias pasa a `al_industry_core`, que no instala comprobantes electrónicos; esta base lo instala solo al actualizarse y conserva las industrias aplicadas."
   - version: '2.20261027'
     fecha: 27/10/2026
     cambios:

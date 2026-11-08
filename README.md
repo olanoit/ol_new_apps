@@ -288,8 +288,9 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_industry_base](OL-INDUSTRIES/al_industry_base/) | 2.20261027 | OPL-1 | Lo que comparten los paquetes de industria: la localización peruana de la suite y el registro de cada industria, con su actividad CIIU, aplicable por compañía.
+[al_industry_base](OL-INDUSTRIES/al_industry_base/) | 3.20261108 | OPL-1 | Lo que comparten los paquetes de industria que facturan desde Odoo: el registro de industrias y la localización peruana de la suite con comprobantes electrónicos.
 [al_industry_construction](OL-INDUSTRIES/al_industry_construction/) | 3.20261027 | LGPL-3 | Constructora lista para planificar y ejecutar obras: plan de recursos por partidas, requerimientos de obra, compras, contratas, cuadrillas, presupuesto, valorización, aprobaciones y planilla de construcción civil.
+[al_industry_core](OL-INDUSTRIES/al_industry_core/) | 1.20261108 | OPL-1 | Registro de cada industria con su actividad CIIU, aplicable por compañía, sin comprobantes electrónicos: sirve también a los paquetes que no facturan desde Odoo.
 [al_industry_ecommerce](OL-INDUSTRIES/al_industry_ecommerce/) | 3.20261027 | OPL-1 | Tienda en línea lista para vender: catálogo web, checkout con RUC o DNI y ubigeo, pagos con Culqi, Niubiz o Izipay, boleta y factura electrónica y libro de reclamaciones virtual.
 [al_industry_furniture](OL-INDUSTRIES/al_industry_furniture/) | 3.20261027 | LGPL-3 | Fábrica de muebles a medida para obras: tipologías con módulos y piezas, lista de materiales, órdenes de fabricación, metrado, despacho e instalación por torre, piso y departamento.
 [al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 13.20261027 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.

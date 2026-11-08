@@ -5,7 +5,7 @@ from odoo.tests.common import TransactionCase, new_test_user
 
 
 @tagged('post_install', '-at_install')
-class TestIndustryBase(TransactionCase):
+class TestIndustryCore(TransactionCase):
 
     @classmethod
     def setUpClass(cls):

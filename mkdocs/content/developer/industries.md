@@ -1,5 +1,5 @@
 ---
-modulos: [al_industry_base]
+modulos: [al_industry_core, al_industry_base]
 ---
 
 # Paquetes de industria
@@ -14,7 +14,8 @@ del rubro y sus **datos** dejan la base configurada. La guía de uso está en
 
 ```text
 OL-INDUSTRIES/
-├── al_industry_base/            modelo al.industry y menú Industrias
+├── al_industry_core/            modelo al.industry y menú Industrias (sin EDI)
+├── al_industry_base/            al_industry_core + localización con comprobantes electrónicos
 └── al_industry_<rubro>/
     ├── __manifest__.py          application: True, category OL-INDUSTRIES/Apps
     ├── data/
@@ -29,7 +30,8 @@ OL-INDUSTRIES/
 ## Qué va en cada archivo
 
 - **Dependencias**: los módulos de Odoo y de la suite del rubro, más
-  `al_industry_base`. La funcionalidad vive en su área (`OL-POS/`,
+  `al_industry_base` si el paquete factura desde Odoo, o solo
+  `al_industry_core` si no (paquetes Lite, en Odoo Community). La funcionalidad vive en su área (`OL-POS/`,
   `OL-PROJECTS/`…); el paquete solo la instala y la configura.
 - **`al_industry_data.xml`**: el registro `al.industry` con su `code`, la
   clase CIIU (`ciiu_code`) y, si el rubro usa el planificador de obra,

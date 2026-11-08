@@ -1,5 +1,5 @@
 ---
-modulos: [al_industry_base]
+modulos: [al_industry_core, al_industry_base]
 ---
 
 # Industrias
