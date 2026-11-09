@@ -122,7 +122,9 @@ BUDGET_LAYOUT = 2
 # 4: M117-24, MODULOS calcula la clase desde el catálogo de tipos (REFERENCIAS AB:AD).
 # 5: M119-04, actividades en matriz por etapa (ACT …), ACTIVIDADES oculta y
 #    MODULOS con la actividad efectiva; REFERENCIAS con la lista 9 (AG:AI).
-FURNITURE_LAYOUT = 5
+# 6: M119-01, «Rendimientos» y banda en PARAMETROS, _MO y el presupuesto de mano
+#    de obra en PROGRAMA.
+FURNITURE_LAYOUT = 6
 # Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
 FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
                 ('profit', 'Utilidad %'), ('discount', 'Descuento %')]

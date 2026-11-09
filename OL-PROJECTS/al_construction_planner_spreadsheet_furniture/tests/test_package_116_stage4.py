@@ -63,7 +63,8 @@ class TestPackage116Stage4Furniture(TestWorksheetV18):
         # M119-04: y la matriz de actividades por etapa.
         matrix = {tab['name'] for tab in self.project._construction_matrix_tabs()}
         self.assertEqual(set(names), set(SHEETS) | {KEYS_SHEET, 'PARAMETROS', 'VENDIDO',
-                                                    'ACABADOS DE OBRA'} | matrix)
+                                                    'ACABADOS DE OBRA', 'PROGRAMA', '_MO'}
+                         | matrix)
 
     def _bad_sheets(self):
         sheets = self._sheets()

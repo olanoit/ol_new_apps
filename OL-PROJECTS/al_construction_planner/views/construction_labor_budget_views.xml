@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.19, M119-01: rendimientos de la obra y presupuesto de mano de obra. -->
+
+    <record id="construction_project_productivity_view_list" model="ir.ui.view">
+        <field name="name">construction.project.productivity.list</field>
+        <field name="model">construction.project.productivity</field>
+        <field name="arch" type="xml">
+            <list string="Rendimientos de la obra" editable="bottom" create="0">
+                <field name="project_id" column_invisible="1"/>
+                <field name="company_id" column_invisible="1"/>
+                <field name="activity_id" readonly="1"/>
+                <field name="stage" readonly="1"/>
+                <field name="uom_id" readonly="1"/>
+                <field name="productivity"/>
+                <field name="initial_productivity" optional="show"/>
+                <field name="origin" readonly="1" widget="badge"
+                       decoration-info="origin == 'initial'" decoration-warning="origin == 'adjusted'"
+                       decoration-success="origin == 'measured'"/>
+                <field name="reason"/>
+                <field name="date" readonly="1" optional="show"/>
+                <field name="user_id" readonly="1" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_labor_budget_view_list" model="ir.ui.view">
+        <field name="name">construction.labor.budget.list</field>
+        <field name="model">construction.labor.budget</field>
+        <field name="arch" type="xml">
+            <list string="Presupuesto de mano de obra" create="0">
+                <field name="stage_id"/>
+                <field name="mode"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="equivalent_days"/>
+                <field name="person_days_needed" optional="show"/>
+                <field name="persons_exact" optional="show"/>
+                <field name="persons"/>
+                <field name="deviation_pct"/>
+                <field name="person_days_budget"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="amount" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                <field name="warning" decoration-warning="warning"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_labor_budget_view_form" model="ir.ui.view">
+        <field name="name">construction.labor.budget.form</field>
+        <field name="model">construction.labor.budget</field>
+        <field name="arch" type="xml">
+            <form string="Presupuesto de mano de obra" create="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="stage_id" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="not warning">
+                        <field name="warning" nolabel="1"/>
+                    </div>
+                    <group>
+                        <group string="Plazo">
+                            <field name="project_id" readonly="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="mode" readonly="1"/>
+                            <field name="date_start" readonly="1"/>
+                            <field name="date_end" readonly="1"/>
+                            <field name="date_start_adjusted"/>
+                            <field name="date_end_adjusted"/>
+                            <field name="adjust_reason"
+                                   required="date_start_adjusted or date_end_adjusted"/>
+                            <field name="equivalent_days"/>
+                        </group>
+                        <group string="Personas y presupuesto">
+                            <field name="band" readonly="1"/>
+                            <field name="daily_wage" readonly="1" invisible="mode != 'own'"
+                                   groups="al_construction_planner.group_planner_amounts"/>
+                            <field name="person_days_needed"/>
+                            <field name="persons_exact"/>
+                            <field name="persons"/>
+                            <field name="deviation_pct"/>
+                            <field name="person_days_budget"/>
+                            <field name="amount" groups="al_construction_planner.group_planner_amounts"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Actividades" name="lines">
+                            <field name="line_ids" readonly="1">
+                                <list>
+                                    <field name="activity_id"/>
+                                    <field name="uom_id"/>
+                                    <field name="quantity"/>
+                                    <field name="productivity"/>
+                                    <field name="required_productivity"/>
+                                    <field name="person_days" sum="Total"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="unit_cost" groups="al_construction_planner.group_planner_amounts"/>
+                                    <field name="amount" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Metas por semana" name="weeks">
+                            <field name="week_ids" readonly="1">
+                                <list>
+                                    <field name="number"/>
+                                    <field name="week_start"/>
+                                    <field name="equivalent_days" sum="Total"/>
+                                    <field name="person_days" sum="Total"/>
+                                    <field name="person_days_cumulative"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="amount" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                                    <field name="amount_cumulative" groups="al_construction_planner.group_planner_amounts"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="project_project_view_form_construction_labor_budget" model="ir.ui.view">
+        <field name="name">project.project.form.construction.labor.budget</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_construction_productivity" type="object" class="oe_stat_button"
+                        icon="fa-tachometer" invisible="not is_construction_site"
+                        groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_productivity_count" widget="statinfo" string="Rendimientos"/>
+                </button>
+                <button name="action_open_construction_labor_budget" type="object" class="oe_stat_button"
+                        icon="fa-users" invisible="not is_construction_site or not construction_labor_budget_count"
+                        groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_labor_budget_count" widget="statinfo" string="Presupuesto de MO"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

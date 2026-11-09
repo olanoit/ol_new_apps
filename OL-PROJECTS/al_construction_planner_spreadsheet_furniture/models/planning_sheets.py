@@ -19,7 +19,7 @@ from odoo import models
 from .activity_matrix import (
     FIRST_ROW, MATRIX_ROWS, RATE_ROW, TOTAL_ROW, matrix_last_data, matrix_total_col,
 )
-from .construction_sheet_parameter import parameter_formula
+from .construction_sheet_parameter import PARAMETERS_SHEET, parameter_formula
 from .project_project import (
     CALC_STYLE, DATA_STYLE, FIXED_LISTS, HEADER_STYLE, REFERENCE_SHEET, TITLE_STYLE, _col,
     column_of, full_column, sheet_ref,
@@ -206,6 +206,12 @@ class ProjectProject(models.Model):
             (self.env._('Validar y enviar'), self.env._('Última validación sin errores'), ERRORS_SHEET,
              'AND(LEFT(ERRORES!$A$1,7)="Validad",ISNUMBER(SEARCH("· 0 errores",ERRORES!$A$1)))',
              False, self.env._('Menú Planificación de obra › Validar')),
+            # M119-01, al final para no mover las filas: las actividades del presupuesto de mano de obra tienen
+            # rendimiento (aviso: sin él no suman).
+            (self.env._('Rendimientos'), self.env._('Actividades del presupuesto de MO'),
+             PARAMETERS_SHEET, 'COUNTIF(_MO!$L:$L,1)=0',
+             '%s' % ('FALSE' if self._construction_budget_blocks() else 'TRUE'),
+             self.env._('Aviso: hay actividades sin rendimiento (PROGRAMA, presupuesto de MO)')),
         ]
         first_step = 12
         for index, (name, what, sheet, condition, not_applicable, missing) in enumerate(steps):
@@ -572,12 +578,17 @@ class ProjectProject(models.Model):
         ]
         cols = {'0': {'size': 220}, '1': {'size': 110}}
         cols.update({str(2 + index): {'size': 48} for index in range(PROGRAM_WEEKS)})
-        return {
+        sheet = {
             'name': PROGRAM_SHEET, 'colNumber': PROGRAM_WEEKS + 4,
             'rowNumber': last_floor + 10, 'cells': cells, 'styles': styles, 'formats': formats,
             'conditionalFormats': conditional, 'dataValidationRules': rules, 'cols': cols,
             'panes': {'xSplit': 2, 'ySplit': first - 1},
         }
+        # M119-01: presupuesto de mano de obra y metas por semana por sub etapa.
+        return self._construction_program_budget(
+            sheet, layout, stage_labels, first, last_floor, week_row, date_row, weeks,
+            {'title': TITLE_STYLE, 'header': HEADER_STYLE, 'calc': CALC_STYLE,
+             'data': DATA_STYLE})
 
     # ------------------------------------------------------------------
     # CONTROL (M113-11)

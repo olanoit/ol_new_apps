@@ -53,7 +53,12 @@ class ConstructionLaborActivity(models.Model):
         help='Tarifa si no hay una tarifa vigente de la obra o de la contrata.')
     currency_id = fields.Many2one(
         'res.currency', string='Moneda', compute='_compute_currency_id')
-    productivity = fields.Float(string='Rendimiento', help='Unidades de driver por hora.')
+    # M119-01: por persona-día (un día completo del horario de obra); cada obra
+    # lo copia a su tabla de rendimientos.
+    productivity = fields.Float(
+        string='Rendimiento inicial', digits=(16, 4),
+        help='Unidades del driver que hace una persona en un día completo del horario de obra '
+             '(persona-día). Cada obra lo copia a su tabla de rendimientos y lo puede ajustar.')
     productivity_source = fields.Selection(
         [('estimated', 'Estimado'), ('measured', 'Medido')], string='Origen del rendimiento',
         default='estimated')

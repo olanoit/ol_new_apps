@@ -120,19 +120,47 @@ fórmulas de PROGRAMA y en el servidor al enviar (ver D10).
 
 ## 6. Entrega 3 · M119-01 Presupuesto de mano de obra
 
-- Núcleo: «Rendimiento inicial (por persona-día)» en el catálogo; modelo
-  `construction.project.productivity` (obra, actividad, sub etapa, unidad,
-  rendimiento, origen, motivo, fecha, usuario); modelo
-  `construction.labor.budget` por obra y sub etapa, con sus semanas; el cálculo
-  (días equivalentes, personas con banda, rendimiento exigido, metas, soles).
-- Hoja: sección «Rendimientos» y «Banda del rendimiento» en PARAMETROS;
-  bloques «Presupuesto de mano de obra» y «Metas por semana» en PROGRAMA, con
-  inicio y fin ajustados y su motivo.
-- Envío: escribe la tabla de rendimientos y el presupuesto de la obra.
-- «Generar plan»: líneas de personal propio con costo jornal ÷ rendimiento
-  exigido (D3) y persona-días en toda línea de mano de obra.
-- «Asignar cuadrilla»: propone las personas del presupuesto y avisa la
-  diferencia sin bloquear.
+- **Núcleo** (`construction_labor_budget.py`):
+  - `compute_budget`: persona-días necesarios, personas exactas, personas con
+    la banda (⌈exactas ÷ (1 + banda)⌉), rendimiento exigido, desviación,
+    persona-días presupuestados y soles (propio: persona-días × jornal;
+    contrata: cantidad × tarifa). «Capacidad ociosa» bajo rendimiento − banda.
+  - `construction.project.productivity`: tabla de rendimientos de la obra
+    (origen Inicial, Ajustado o Medido; cambiar pide motivo). Nace con el
+    rendimiento inicial del catálogo al enviar la hoja y al generar el plan.
+  - `construction.labor.budget` por obra, sub etapa y modalidad, con sus
+    actividades (`.line`, D3: costo = jornal ÷ rendimiento exigido de cada
+    actividad) y sus semanas de lunes a domingo (`.week`). El jefe de
+    proyecto ajusta el plazo en la obra con motivo; las metas se recalculan.
+  - Etapa: «Lleva presupuesto de mano de obra» (`labor_budget`), por
+    defecto las de campo que no consumen en taller (2.1, 2.2 y 2.3; no 1.2).
+  - Línea del plan: «Persona-días».
+- **Hoja** (`labor_budget_sheet.py`, plantilla 6):
+  - PARAMETROS: «Banda del rendimiento» (10 %) y la sección «Rendimientos»
+    (clave `rend:<código>`), con el valor de la obra o del catálogo como
+    inicial y el motivo obligatorio si cambia. La columna «Rendimiento» de MO
+    PROPIA queda en el libro de carga, pero no cuenta (el importador ya la
+    descartaba); el rendimiento se escribe en «Rendimientos». Menú «Traer rendimientos de la obra».
+  - `_MO` (oculta): días equivalentes por fecha (del horario de obra, se
+    actualiza al abrir la hoja) y una fila por columna de la matriz de las
+    sub etapas con presupuesto.
+  - PROGRAMA, debajo de la grilla de pisos (aviso en C14 con la fila): un
+    bloque por sub etapa y modalidad con plazo de los pisos o ajustado con
+    motivo, días equivalentes, personas, rendimiento exigido, presupuesto y
+    las metas por semana (meta, persona-días y soles con su acumulado).
+    Las columnas de semanas de PROGRAMA son angostas para una tabla aparte.
+  - INICIO: paso «Rendimientos» (aviso si una actividad no tiene).
+- **Envío:** lee los valores calculados de PARAMETROS, `_MO` y PROGRAMA; al
+  importar escribe la tabla de rendimientos y el presupuesto, que el servidor
+  recalcula con la misma regla. Un ajuste hecho en la obra se conserva si la
+  hoja no trae otro.
+- **«Generar plan»:** personal propio a jornal ÷ rendimiento exigido con la
+  base anotada; persona-días en toda línea de mano de obra; contrata con su
+  tarifa.
+- **«Asignar cuadrilla»:** muestra las personas del presupuesto y avisa la
+  diferencia en persona-días y soles de las semanas elegidas; no bloquea.
+- **Pendiente para la entrega 4:** «Usar como rendimiento medido» (el método
+  `_construction_productivity_write(..., origin='measured')` ya existe).
 
 ## 7. Entrega 4 · M119-02 Control semanal
 

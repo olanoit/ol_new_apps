@@ -73,6 +73,27 @@
             <!-- La compañía es la de la tarea; una obra sin compañía es compartida. -->
             <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
         </record>
+        <!-- Paquete 1.19, M119-01: rendimientos y presupuesto de mano de obra. -->
+        <record id="rule_construction_project_productivity_company" model="ir.rule">
+            <field name="name">Rendimiento de la obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_project_productivity"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+        <record id="rule_construction_labor_budget_company" model="ir.rule">
+            <field name="name">Presupuesto de mano de obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_labor_budget"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+        <record id="rule_construction_labor_budget_line_company" model="ir.rule">
+            <field name="name">Actividad del presupuesto de mano de obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_labor_budget_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
+        <record id="rule_construction_labor_budget_week_company" model="ir.rule">
+            <field name="name">Semana del presupuesto de mano de obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_labor_budget_week"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        </record>
         <record id="rule_construction_dependency_company" model="ir.rule">
             <field name="name">Dependencia de terceros: compañías del usuario</field>
             <field name="model_id" ref="model_construction_dependency"/>

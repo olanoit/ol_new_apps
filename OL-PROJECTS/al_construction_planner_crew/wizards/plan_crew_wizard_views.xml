@@ -27,6 +27,7 @@
                         <field name="time_mode" widget="radio" options="{'horizontal': True}"/>
                         <field name="days_per_week" invisible="time_mode != 'days'"/>
                         <field name="hours_per_week" invisible="time_mode != 'hours'"/>
+                        <field name="budget_persons" invisible="not budget_persons"/>
                         <field name="plan_line_count"/>
                         <field name="days_total"/>
                         <field name="hours_total"/>

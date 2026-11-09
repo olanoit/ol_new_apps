@@ -50,6 +50,7 @@
                 <field name="amount_remaining" optional="hide"/>
                 <field name="executed_pct" widget="percentage" optional="hide"/>
                 <field name="currency_id" column_invisible="True"/>
+                <field name="construction_person_days" optional="show" invisible="resource_type not in ('labor', 'contract')"/>
                 <field name="price_basis" optional="hide"/>
                 <field name="price_basis_date" optional="hide"/>
                 <field name="date_needed" optional="show"/>

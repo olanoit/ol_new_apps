@@ -20,6 +20,7 @@ from .activity_matrix import (
     CODE_ROW, FIRST_ROW, HEADER_ROW, KIND_DATA, MATRIX_PREFIX, SPARE_COLUMNS, merge_matrix,
 )
 from .construction_sheet_parameter import PARAMETERS_SHEET
+from .labor_budget_sheet import BUDGET_SHEET, read_labor_payload
 from .sale_order import LOCKED_PHASES, SALE_PHASES
 from .sale_sheet import (
     FINISHES_SHEET, OBRA_ROW, OBRA_SHEET, RATES_SHEET, SALE_COLUMNS, SALE_ROWS, SUMMARY_SHEET,
@@ -94,6 +95,13 @@ class DocumentsDocument(models.Model):
             data['construction_parameter_current'] = self.env[
                 'construction.sheet.parameter']._construction_current_values(
                 'planning', document_sudo.construction_project_id.company_id or self.env.company)
+            # M119-01: el rendimiento vigente de la obra.
+            if document_sudo.construction_project_id:
+                data['construction_parameter_current'].update(
+                    document_sudo.construction_project_id._construction_productivity_sheet_values())
+                data['construction_day_factors'] = [
+                    factor for _day, factor in
+                    document_sudo.construction_project_id._construction_day_factors()]
             # M119-03: los días y las horas del horario de obra.
             data['construction_parameter_forced'] = self.env[
                 'construction.sheet.parameter']._construction_forced_values(
@@ -418,7 +426,7 @@ class DocumentsDocument(models.Model):
         project = self.sudo().construction_project_id
         matrix = [tab['name'] for tab in project._construction_matrix_tabs()] if project else []
         return list(SHEETS) + [KEYS_SHEET, PARAMETERS_SHEET, 'VENDIDO', 'ACABADOS DE OBRA'] \
-            + matrix
+            + matrix + ['PROGRAMA', BUDGET_SHEET]
 
     def _construction_furniture_workbook(self, sheets):
         """Libro .xlsx (bytes) con las pestañas del maestro de la hoja. Con la
@@ -449,6 +457,9 @@ class DocumentsDocument(models.Model):
             'create_missing_products': True,
             # M113-11: al importar, guarda la versión enviada de la hoja.
             'spreadsheet_id': self.id if send else False,
+            # M119-01: lo que el envío escribe en la obra al importar.
+            'construction_labor_payload': _json_payload(read_labor_payload(sheets))
+            if send else False,
         })
 
     def _construction_send_furniture(self, sheets):
@@ -1080,3 +1091,10 @@ class DocumentsDocument(models.Model):
                          apartment.name if apartment else '', space.name,
                          space.construction_typology_id.code or '', unit_type])
         return rows
+
+
+def _json_payload(payload):
+    """El presupuesto con las fechas como texto, para un campo JSON."""
+    blocks = [{key: (value.isoformat() if hasattr(value, 'isoformat') else value)
+               for key, value in block.items()} for block in payload.get('blocks') or []]
+    return dict(payload, blocks=blocks)

@@ -98,6 +98,12 @@ DEFAULT_PARAMETERS = (
          name='Jornales por persona y semana', value_initial='5', value_type='number',
          unit='jornales', locked=True,
          help_text='Horas por semana del horario de obra ÷ jornada completa (Ajustes).'),
+    # M119-01: el rendimiento es un estadístico; las personas se ajustan dentro
+    # de esta banda (decisión del 09-nov).
+    dict(sheet='planning', group='Programa', key='banda_rendimiento',
+         name='Banda del rendimiento', value_initial='10',
+         help_text='Las personas del presupuesto de mano de obra se ajustan dentro de esta banda '
+                   'alrededor del rendimiento.', **_PERCENT),
     dict(sheet='planning', group='Programa', key='dias_sub_etapa',
          name='Días por sub etapa, si la celda de PROGRAMA está vacía', value_initial='5',
          value_type='number', use_range=True, min_value=1, max_value=365, unit='días',
@@ -240,14 +246,19 @@ class ConstructionSheetParameter(models.Model):
                 for parameter in parameters]
 
     @api.model
-    def _construction_sheet_data(self, sheet, company, styles, formats, overrides=None):
+    def _construction_sheet_data(self, sheet, company, styles, formats, overrides=None,
+                                 extra_rows=None):
         """La pestaña PARAMETROS de una hoja.
 
         :param styles: ``{'head_data', 'head_calc', 'data', 'calc', 'border'}``
             con los ids de estilo de la plantilla.
         :param formats: diccionario de formatos de la plantilla, que se completa.
+        :param extra_rows: filas que no son parámetros de la compañía y se
+            comportan igual (los rendimientos de la obra, M119-01):
+            ``[{'group', 'name', 'unit', 'help', 'key', 'initial'}]``.
         """
         rows = self._construction_for_sheet(sheet, company, overrides)
+        rows += [(ExtraParameter(item), item.get('initial')) for item in extra_rows or []]
         forced = self._construction_forced_values(sheet, company)
         last = len(rows) + 1
         cells = {chr(65 + index) + '1': header for index, header in enumerate(PARAMETER_HEADERS)}
@@ -422,3 +433,25 @@ class ConstructionVerticalProfile(models.Model):
 def _number(value):
     """5.625 → '5.625'; 8.0 → '8'."""
     return ('%.4f' % (value or 0.0)).rstrip('0').rstrip('.') or '0'
+
+
+class ExtraParameter:
+    """Fila de PARAMETROS que no es un parámetro de la compañía (un
+    rendimiento de la obra): número, con motivo si cambia."""
+    locked = False
+    use_range = False
+    value_type = 'number'
+
+    def __init__(self, item):
+        self.group = item.get('group') or ''
+        self.name = item.get('name') or ''
+        self.unit = item.get('unit') or ''
+        self.help_text = item.get('help') or ''
+        self.key = item['key']
+        self.allowed_values = False
+
+    def _sheet_value(self, value):
+        return '' if value in (False, None, '') else _number(float(value))
+
+    def _construction_cell_format(self):
+        return None

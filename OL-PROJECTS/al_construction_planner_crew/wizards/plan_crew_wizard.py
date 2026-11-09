@@ -73,6 +73,13 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         string='Nº de líneas del plan', compute='_compute_line_ids', store=True)
     hours_total = fields.Float(string='Horas', compute='_compute_line_ids', store=True)
     note = fields.Text(string='Avisos', compute='_compute_line_ids', store=True)
+    # M119-01: lo que pide el presupuesto de mano de obra en esas semanas.
+    budget_persons = fields.Integer(
+        string='Personas del presupuesto', compute='_compute_line_ids', store=True,
+        help='Las del presupuesto de mano de obra de las sub etapas de la selección.')
+    budget_person_days = fields.Float(
+        string='Persona-días del presupuesto', digits=(16, 2), compute='_compute_line_ids',
+        store=True)
 
     @api.depends('plan_id')
     def _compute_date_start(self):
@@ -193,11 +200,55 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                                     'days': round(hours / hours_per_day, 4)
                                     if hours_per_day else 0.0,
                                 }))
+            selected = wizard._get_selected_lines([('resource_type', '=', 'labor')]) \
+                if wizard.plan_id else all_lines
+            budget_note = wizard._budget_note(selected, hours_total, hours_per_day)
+            if budget_note:
+                notes.append(budget_note)
             wizard.line_ids = commands
             wizard.plan_line_count = len(all_lines)
             wizard.hours_total = hours_total
             wizard.days_total = round(hours_total / hours_per_day, 4) if hours_per_day else 0.0
             wizard.note = '\n'.join(notes) or False
+
+    def _budget_note(self, lines, hours_total, hours_per_day):
+        """Personas y persona-días que pide el presupuesto de mano de obra de
+        las sub etapas de ``lines`` en las semanas elegidas, y la diferencia con
+        la cuadrilla en persona-días y en soles. Avisa; no bloquea."""
+        self.ensure_one()
+        self.budget_persons, self.budget_person_days = 0, 0.0
+        project = self.plan_id.project_id
+        if not project or 'construction_labor_budget_ids' not in project._fields \
+                or not self.date_start or self.weeks <= 0:
+            return False
+        budgets = project.construction_labor_budget_ids.filtered(
+            lambda budget: budget.mode == 'own' and budget.stage in set(lines.mapped('stage')))
+        if not budgets:
+            return False
+        start = self._get_weeks()[0]
+        end = start + timedelta(days=7 * self.weeks - 1)
+        person_days = amount_per_day = 0.0
+        for budget in budgets:
+            for week in budget.week_ids:
+                if start <= week.week_start + timedelta(days=6) and week.week_start <= end:
+                    person_days += week.person_days
+        self.budget_persons = max(budgets.mapped('persons'))
+        self.budget_person_days = person_days
+        crew_days = hours_total / hours_per_day if hours_per_day else 0.0
+        difference = crew_days - person_days
+        wage = sum(budgets.mapped('daily_wage')) / len(budgets)
+        amount_per_day = wage
+        if abs(difference) < 0.01:
+            return self.env._('Presupuesto de mano de obra: %(persons)s personas, '
+                              '%(days)s persona-días; la cuadrilla coincide.',
+                              persons=self.budget_persons, days=round(person_days, 2))
+        return self.env._(
+            'Presupuesto de mano de obra: %(persons)s personas y %(budget)s persona-días en esas '
+            'semanas; la cuadrilla tiene %(crew)s (%(sign)s%(diff)s persona-días, '
+            '%(sign)s%(amount)s soles). Se puede asignar igual.',
+            persons=self.budget_persons, budget=round(person_days, 2), crew=round(crew_days, 2),
+            sign='+' if difference > 0 else '', diff=round(difference, 2),
+            amount=round(difference * amount_per_day, 2))
 
     # ------------------------------------------------------------------
     # Crear los turnos

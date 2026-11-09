@@ -218,6 +218,7 @@ patch(SpreadsheetAction.prototype, {
             writeCurrentParameters(this.model, this.data?.construction_parameter_current);
             if (!this.data?.isReadonly) {
                 writeForcedParameters(this.model, this.data?.construction_parameter_forced);
+                writeDayFactors(this.model, this.data?.construction_day_factors);
             }
             // Después de un envío, CONTROL compara la hoja con el planificador.
             if (this.data?.construction_control_pending && sheetIdOf(this.model, CONTROL_SHEET)) {
@@ -466,10 +467,60 @@ function writeDates(env) {
     );
 }
 
+/**
+ * M119-01: los días equivalentes de cada fecha (_MO, columna B) siguen al horario de
+ * obra y sus feriados; la hoja los recibe al abrirse.
+ */
+export function writeDayFactors(model, factors) {
+    const sheetId = sheetIdOf(model, "_MO");
+    if (!sheetId || !factors?.length) {
+        return;
+    }
+    const getters = model.getters;
+    const commands = [];
+    factors.forEach((factor, index) => {
+        const row = index + 1;
+        const content = String(factor);
+        if ((getters.getCell({ sheetId, col: 1, row })?.content || "") !== content) {
+            commands.push(["UPDATE_CELL", { sheetId, col: 1, row, content }]);
+        }
+    });
+    dispatchBatch(model, commands);
+}
+
+/** M119-01: «Traer rendimientos de la obra»: el valor inicial pasa a ser el de la obra. */
+function bringProductivity(env) {
+    const current = env.constructionMetadata?.("construction_parameter_current") || {};
+    const model = env.model;
+    const sheetId = sheetIdOf(model, "PARAMETROS");
+    if (!sheetId) {
+        return;
+    }
+    const getters = model.getters;
+    const commands = [];
+    for (let row = 1; row < getters.getNumberRows(sheetId); row++) {
+        const key = getters.getCell({ sheetId, col: 6, row })?.content;
+        if (!key || !key.startsWith("rend:") || current[key] === undefined) {
+            continue;
+        }
+        if ((getters.getCell({ sheetId, col: 5, row })?.content || "") !== current[key]) {
+            commands.push(["UPDATE_CELL", { sheetId, col: 5, row, content: current[key] }]);
+        }
+    }
+    dispatchBatch(model, commands);
+    env.constructionNotify(
+        commands.length
+            ? _t("%s rendimientos traídos de la obra.", commands.length)
+            : _t("Los rendimientos ya son los de la obra."),
+        "success"
+    );
+}
+
 // Opciones del menú «Planificación de obra» del maestro.
 const items = [
     ["construction_furniture_control", 150, _t("Actualizar CONTROL"), updateControl],
     ["construction_furniture_odoo", 170, _t("Traer de Odoo"), bringFromOdoo],
+    ["construction_furniture_productivity", 172, _t("Traer rendimientos de la obra"), bringProductivity],
     ["construction_furniture_view_card", 175, _t("Ver ficha de la tipología"), viewCard],
 ];
 for (const [id, sequence, name, execute] of items) {

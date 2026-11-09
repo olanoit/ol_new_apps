@@ -163,7 +163,36 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                 result['warnings']['full_contract'].append(activity.display_name)
             return 'labor' if mode == 'own' else 'contract'
 
+        # M119-01: con el presupuesto de mano de obra de la obra, el personal
+        # propio cuesta jornal ÷ rendimiento exigido y toda línea de mano de
+        # obra lleva sus persona-días. La contrata sigue con su tarifa.
+        labor_budgets, required_cache = {}, {}
+
+        def labor_budget(vals):
+            activity = self.env['construction.labor.activity'].browse(vals.get('activity_id'))
+            if not activity or vals['resource_type'] not in ('labor', 'contract'):
+                return None, 0.0
+            mode = 'own' if vals['resource_type'] == 'labor' else 'contract'
+            key = (activity.stage, mode)
+            if key not in labor_budgets:
+                labor_budgets[key] = project._construction_labor_budget_for(*key)
+            budget = labor_budgets[key]
+            if not budget:
+                return None, 0.0
+            if (budget.id, activity.id) not in required_cache:
+                required_cache[(budget.id, activity.id)] = budget._required_productivity(activity)
+            return budget, required_cache[(budget.id, activity.id)]
+
         def add(kind, vals):
+            budget, required = labor_budget(vals)
+            if required:
+                vals['construction_person_days'] = vals['qty_planned'] / required
+                if vals['resource_type'] == 'labor' and budget.daily_wage:
+                    vals['price_unit_planned'] = budget.daily_wage / required
+                    vals['price_basis'] = self.env._(
+                        'Presupuesto de mano de obra: jornal %(wage)s ÷ rendimiento exigido '
+                        '%(required)s', wage=round(budget.daily_wage, 2),
+                        required=round(required, 2))
             if vals['resource_type'] == 'labor':
                 kind = 'labor'
             result['lines'].append(vals)
@@ -531,6 +560,8 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         # Validación de compañía por lotes (todas las relaciones salen de la obra).
         lines = self.env['construction.resource.plan.line'].with_context(
             construction_plan_generating=True).create(vals_list)
+        # M119-01: una actividad nueva en la obra copia el rendimiento inicial.
+        plan.project_id._construction_productivity_ensure(lines.activity_id)
         # Etapa, partida y área de cada línea (v1.5, M15-12).
         lines._apply_analytic_rules()
         # Las barras del cronograma (P-15): una por ambiente y etapa con líneas.

@@ -831,11 +831,14 @@ class ProjectProject(models.Model):
         sheets.append({'id': 'sheet_huella', 'name': TRACE_SHEET, 'colNumber': 4,
                        'rowNumber': max(rows + 100, 2000), 'cells': {}, 'isVisible': False})
         # M117-15: los valores de cálculo de la hoja, leídos por su clave.
+        # M119-01: con la sección «Rendimientos» de la obra.
         sheets.append(self.env['construction.sheet.parameter']._construction_sheet_data(
             'planning', self.company_id or self.env.company, {
                 'head_data': HEAD_DATA_STYLE, 'head_calc': HEAD_CALC_STYLE,
                 'data': CELL_DATA_STYLE, 'calc': CELL_CALC_STYLE, 'border': HEADER_BORDER_ID,
-            }, formats))
+            }, formats, extra_rows=self._construction_productivity_sheet_rows()))
+        # M119-01: días equivalentes por fecha y actividades del presupuesto.
+        sheets.append(self._construction_budget_sheet({'head_calc': HEADER_STYLE}))
 
         # REFERENCIAS: listas vivas de Odoo.
         company = self.company_id or self.env.company
