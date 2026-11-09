@@ -120,7 +120,9 @@ BUDGET_LAYOUT = 2
 # Hoja de planificación: desde el 2, BOM y PIEZAS en el orden del paquete 1.17
 # (M117-02) y _LISTAS con los módulos por tipología.
 # 4: M117-24, MODULOS calcula la clase desde el catálogo de tipos (REFERENCIAS AB:AD).
-FURNITURE_LAYOUT = 4
+# 5: M119-04, actividades en matriz por etapa (ACT …), ACTIVIDADES oculta y
+#    MODULOS con la actividad efectiva; REFERENCIAS con la lista 9 (AG:AI).
+FURNITURE_LAYOUT = 5
 # Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
 FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
                 ('profit', 'Utilidad %'), ('discount', 'Descuento %')]

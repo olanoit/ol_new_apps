@@ -16,6 +16,9 @@ from odoo.addons.al_construction_planner_spreadsheet.models.project_project impo
 )
 from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import KEYS_SHEET
 
+from .activity_matrix import (
+    CODE_ROW, FIRST_ROW, HEADER_ROW, KIND_DATA, MATRIX_PREFIX, SPARE_COLUMNS, merge_matrix,
+)
 from .construction_sheet_parameter import PARAMETERS_SHEET
 from .sale_order import LOCKED_PHASES, SALE_PHASES
 from .sale_sheet import (
@@ -167,6 +170,8 @@ class DocumentsDocument(models.Model):
             if not sheet or name not in layout['sheets']:
                 continue
             self._construction_upgrade_master(sheet, layout['sheets'][name], name, spec)
+        # M119-04, punto 8: las filas de ACTIVIDADES pasan a la matriz.
+        self._construction_upgrade_matrix(by_name, project, master, others)
         # M117-15, punto 10: los parámetros nuevos llegan; los valores y motivos
         # ya escritos se conservan.
         self._construction_upgrade_parameters(by_name.get(PARAMETERS_SHEET),
@@ -192,6 +197,135 @@ class DocumentsDocument(models.Model):
             author_id=self.env.user.partner_id.id, body=self.env._(
                 'Hoja de trabajo actualizada a la plantilla vigente (versión anterior guardada).'))
         return self.action_open_spreadsheet()
+
+    @staticmethod
+    def _construction_upgrade_matrix(by_name, project, master, others=None):
+        """Una hoja que ya tiene la matriz la conserva (por el código de cada
+        columna); una anterior escribe las cantidades de ACTIVIDADES de la hoja anterior en las
+        celdas que se escriben de la matriz: la fila de la tipología (el orden
+        de TIPOLOGIAS) y la columna de la actividad, o una columna libre si la
+        matriz no la tiene. Las actividades por ML y por módulo se calculan."""
+        activities = (master.get('ACTIVIDADES') or {}).get('rows') or []
+        typologies = (master.get('TIPOLOGIAS') or {}).get('rows') or []
+        tabs = project._construction_matrix_tabs()
+        if not tabs:
+            return
+        old_matrices = {name: spec for name, spec in (others or {}).items()
+                        if name in by_name and name.startswith(MATRIX_PREFIX)}
+        if old_matrices:
+            DocumentsDocument._construction_keep_matrix(by_name, tabs, old_matrices)
+            return
+        if len(activities) < 2:
+            return
+
+        def column(spec, key, *texts):
+            keys = {k: int(v) for k, v in (spec.get('keys') or {}).items()
+                    if isinstance(v, (int, float))}
+            if key in keys:
+                return keys[key]
+            header = [norm(text) for text in (spec.get('rows') or [[]])[0]]
+            wanted = [norm(key)] + [norm(text) for text in texts]
+            return next((index for index, text in enumerate(header) if text in wanted), None)
+
+        code_col = column(master['TIPOLOGIAS'], 'code', 'Código')
+        typ_col = column(master['ACTIVIDADES'], 'typology', 'Tipología')
+        act_col = column(master['ACTIVIDADES'], 'activity', 'Actividad')
+        qty_col = column(master['ACTIVIDADES'], 'qty', 'Cantidad por ambiente')
+        if None in (code_col, typ_col, act_col, qty_col):
+            return
+        rows_by_code = {}
+        for index, values in enumerate(typologies[1:], start=1):
+            code = values[code_col] if code_col < len(values) else ''
+            if code not in (None, '', False) and str(code) not in rows_by_code:
+                rows_by_code[str(code)] = FIRST_ROW + index - 1
+        Activity = project.env['construction.labor.activity']
+        # Pestaña y columna de cada actividad; las demás van a la primera
+        # columna libre de la pestaña de su etapa.
+        place = {}
+        spare = {}
+        stage_tab = {}
+        for tab in tabs:
+            sheet = by_name.get(tab['name'])
+            if not sheet:
+                continue
+            for index, activity in enumerate(tab['activities'], start=1):
+                place[activity.code] = (sheet, index, activity._construction_matrix_kind())
+            for stage in tab['stages']:
+                stage_tab[stage.code] = sheet
+            spare[id(sheet)] = [1 + len(tab['activities']), 1 + len(tab['activities'])
+                                + SPARE_COLUMNS]
+        from .activity_matrix import _col
+        for values in activities[1:]:
+            get = lambda col: values[col] if col < len(values) else ''  # noqa: E731
+            typology, code, qty = str(get(typ_col) or ''), str(get(act_col) or ''), get(qty_col)
+            row = rows_by_code.get(typology)
+            if not row or not code or qty in (None, '', False):
+                continue
+            if code not in place:
+                # sudo: solo se lee la etapa de una actividad de otra compañía
+                # para ubicarla en una columna libre.
+                activity_sudo = Activity.sudo().search([('code', '=', code)], limit=1)
+                sheet = stage_tab.get(activity_sudo.stage) if activity_sudo else None
+                if not sheet or spare[id(sheet)][0] >= spare[id(sheet)][1]:
+                    continue
+                index = spare[id(sheet)][0]
+                spare[id(sheet)][0] += 1
+                sheet['cells']['%s%s' % (_col(index), HEADER_ROW)] = code
+                place[code] = (sheet, index, KIND_DATA)
+            sheet, index, kind = place[code]
+            if kind != KIND_DATA:
+                continue
+            sheet['cells']['%s%s' % (_col(index), row)] = str(qty)
+
+    @staticmethod
+    def _construction_keep_matrix(by_name, tabs, old_matrices):
+        """Copia de la matriz anterior las celdas escritas (y las actividades
+        agregadas en las columnas libres) a la nueva, por el código de cada
+        columna."""
+        from .activity_matrix import _col, _letter_index
+        for tab in tabs:
+            old = (old_matrices.get(tab['name']) or {}).get('cells') or {}
+            sheet = by_name.get(tab['name'])
+            if not old or not sheet:
+                continue
+            new_cols = {activity.code: index
+                        for index, activity in enumerate(tab['activities'], start=1)
+                        if activity._construction_matrix_kind() == KIND_DATA}
+            next_spare = 1 + len(tab['activities'])
+            last_spare = next_spare + SPARE_COLUMNS
+            # Columnas de la hoja anterior: código y si se escribe.
+            columns = {}
+            for ref, content in old.items():
+                letters = ''.join(char for char in ref if char.isalpha())
+                row = int(ref[len(letters):] or 0)
+                index = _letter_index(letters)
+                if index and row == CODE_ROW and content and not str(content).startswith('='):
+                    columns.setdefault(index, {})['code'] = str(content)
+                elif index and row == HEADER_ROW and content:
+                    columns.setdefault(index, {})['header'] = str(content)
+            for index, info in sorted(columns.items()):
+                code = info.get('code')
+                if not code:
+                    # Columna libre: el código es lo que se eligió en el encabezado.
+                    header = info.get('header') or ''
+                    if not header or ' · ' in header or header.endswith('(calc.)'):
+                        continue
+                    code = header
+                if code in new_cols:
+                    target = new_cols[code]
+                elif next_spare < last_spare and not info.get('code'):
+                    target = next_spare
+                    next_spare += 1
+                    sheet['cells']['%s%s' % (_col(target), HEADER_ROW)] = code
+                else:
+                    continue
+                for ref, content in old.items():
+                    letters = ''.join(char for char in ref if char.isalpha())
+                    row = int(ref[len(letters):] or 0)
+                    if _letter_index(letters) == index and row >= FIRST_ROW \
+                            and content not in (None, '', False) \
+                            and not str(content).startswith('='):
+                        sheet['cells']['%s%s' % (_col(target), row)] = str(content)
 
     @staticmethod
     def _construction_upgrade_parameters(sheet, old):
@@ -280,11 +414,17 @@ class DocumentsDocument(models.Model):
             return list(SALE_COLUMNS) + [OBRA_SHEET, PARAMETERS_SHEET, SUMMARY_SHEET]
         if self.construction_sheet_kind == 'budget':
             return super()._construction_send_sheet_names()
-        return list(SHEETS) + [KEYS_SHEET, PARAMETERS_SHEET, 'VENDIDO', 'ACABADOS DE OBRA']
+        # M119-04: la matriz de actividades, que el envío convierte en ACTIVIDADES.
+        project = self.sudo().construction_project_id
+        matrix = [tab['name'] for tab in project._construction_matrix_tabs()] if project else []
+        return list(SHEETS) + [KEYS_SHEET, PARAMETERS_SHEET, 'VENDIDO', 'ACABADOS DE OBRA'] \
+            + matrix
 
     def _construction_furniture_workbook(self, sheets):
-        """Libro .xlsx (bytes) con las pestañas del maestro de la hoja."""
+        """Libro .xlsx (bytes) con las pestañas del maestro de la hoja. Con la
+        matriz de actividades (M119-04), ACTIVIDADES sale de ella."""
         from openpyxl import Workbook
+        sheets = merge_matrix(sheets)
         workbook = Workbook()
         workbook.remove(workbook.active)
         for name, rows in (sheets or {}).items():

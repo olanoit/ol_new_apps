@@ -104,7 +104,8 @@ SHEET_DESIGN = {
         'Tipo': (125, None), 'Ancho (mm)': (105, INTEGER), 'Grupo ML': (130, None),
         'Actividad de armado': (125, None), 'Mueble': (135, None), 'Nombre': (170, None),
         'Clase (calc.)': (105, None), 'Método de unión': (120, None),
-        'A armar (calc.)': (105, INTEGER), 'ML (calc.)': (105, MONEY)}},
+        'A armar (calc.)': (105, INTEGER), 'ML (calc.)': (105, MONEY),
+        'Actividad efectiva (calc.)': (125, None)}},
     'ACTIVIDADES': {'freeze': 2, 'columns': {
         'Tipología': (120, None), 'Actividad': (135, None),
         'Cantidad por ambiente': (105, MONEY), 'Tarifa (calc.)': (105, MONEY),

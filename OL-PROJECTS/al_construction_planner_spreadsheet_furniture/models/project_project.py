@@ -36,6 +36,7 @@ from odoo.addons.al_construction_planner_spreadsheet.models.sheet_migration impo
 )
 
 from . import sheet_design as design
+from .activity_matrix import MATRIX_LIST_COUNT, MATRIX_LIST_ID, MATRIX_LIST_START
 
 SPREADSHEET_VERSION = '18.5.10'
 REFERENCE_SHEET = 'REFERENCIAS'
@@ -102,6 +103,13 @@ CALCULATED = {
                             '$AB$3:$AB$102,REFERENCIAS!$AD$3:$AD$102),FALSE),0,1))'),
         ('ML (calc.)', '=IF(OR({c:code}{r}="",{c:width}{r}=""),"",IF(OR(%s),{c:width}{r}/1000,0))'
          % ','.join('{c:ml_group}{r}="%s"' % group for group in _ML_GROUPS_COUNTED)),
+        # M119-04: la escrita o la del catálogo por el método de unión o el tipo
+        # especial (la misma regla de «Generar plan»); la cuenta la matriz.
+        ('Actividad efectiva (calc.)', '=IF({c:code}{r}="","",IF({c:activity}{r}<>"",'
+                                       '{c:activity}{r},IFERROR(XLOOKUP(IF({c:module_class}{r}='
+                                       '"Especial","special:"&{c:type}{r},"join:"&'
+                                       '{c:join_method}{r}),REFERENCIAS!$AH$3:$AH$302,'
+                                       'REFERENCIAS!$AG$3:$AG$302),"")))'),
     ],
     'ARBOL': [
         # Piso con su agrupador («Torre A / Piso 3»), siempre como texto.
@@ -262,10 +270,13 @@ LEEME = [
     'calculan solos con el costo vivo del maestro.',
     '5. PRODUCTOS NUEVOS: los que aún no están en el maestro, con un código provisional; al '
     'enviar se crean con el código de la familia y el provisional se reemplaza.',
-    '6. ACTIVIDADES, TARIFAS, CONTRATOS, HITOS, VENTA y MO PROPIA: contratas, tarifas de la '
-    'obra, contrato con el cliente y mano de obra propia.',
-    '7. RESUMEN: tablas dinámicas sobre la propia hoja.',
-    '8. Aprobado el presupuesto por el cliente: Planificación de obra › Validar y después › '
+    '6. ACT ARMADO y ACT INSTALACIÓN: una fila por tipología y una columna por actividad de la '
+    'etapa. Escriba solo las celdas amarillas (actividades por ambiente); las grises salen de '
+    'MODULOS y MUEBLES. Para otra actividad, elíjala en una columna libre del encabezado.',
+    '7. TARIFAS, CONTRATOS, HITOS, VENTA y MO PROPIA: tarifas de la obra, contrato con el '
+    'cliente y mano de obra propia.',
+    '8. RESUMEN: tablas dinámicas sobre la propia hoja.',
+    '9. Aprobado el presupuesto por el cliente: Planificación de obra › Validar y después › '
     'Enviar al planificador. Un segundo envío no duplica nada.',
 ]
 
@@ -798,6 +809,23 @@ class ProjectProject(models.Model):
             })
 
         sheets.append(self._construction_work_materials_sheet(last_product))
+        # M119-04: la matriz de actividades por etapa reemplaza a ACTIVIDADES,
+        # que queda oculta (el envío la arma desde la matriz).
+        matrix_tabs = self._construction_matrix_tabs()
+        for index, tab in enumerate(matrix_tabs, start=1):
+            sheet = self._construction_matrix_sheet(tab, layout, {
+                'head_data': HEAD_DATA_STYLE, 'head_calc': HEAD_CALC_STYLE,
+                'data': CELL_DATA_STYLE, 'calc': CELL_CALC_STYLE})
+            sheet.pop('construction_matrix', None)
+            sheet['id'] = 'sheet_matrix_%s' % index
+            sheet['formats'] = {ref: formats.setdefault(text, len(formats) + 1)
+                                for ref, text in sheet['formats'].items()}
+            sheet['color'] = design.TAB_PLANNING_DATA
+            sheets.append(sheet)
+        if matrix_tabs:
+            for sheet in sheets:
+                if sheet['name'] == 'ACTIVIDADES':
+                    sheet['isVisible'] = False
         sheets.append(self._construction_finish_sheet(layout, last_product))
         sheets.append(self._construction_sold_sheet())
         sheets.append({'id': 'sheet_huella', 'name': TRACE_SHEET, 'colNumber': 4,
@@ -831,6 +859,10 @@ class ProjectProject(models.Model):
              ['name', 'module_class', 'not_counted'], 27, 100, [['level', '=', 'module']], 'sequence'),
             ('8', 'Tipos de mueble', 'construction.furniture.type', ['name'], 30, 40,
              [['level', '=', 'furniture']], 'sequence'),
+            # M119-04: la clave de armado y la tarifa base, para la matriz.
+            (MATRIX_LIST_ID, 'Actividades de la matriz', 'construction.labor.activity',
+             ['code', 'construction_sheet_key', 'default_price'], MATRIX_LIST_START,
+             MATRIX_LIST_COUNT, [['company_id', 'in', [company.id, False]]], 'sequence'),
         ]
         cells, styles, lists = {}, {}, {}
         for list_id, title, model, columns, start, count, domain, order in reference_lists:
@@ -889,7 +921,7 @@ class ProjectProject(models.Model):
             last_product, last_product)
         styles['V2'] = styles['W2'] = HEADER_STYLE
         sheets.append({
-            'id': 'sheet_ref', 'name': REFERENCE_SHEET, 'colNumber': 34,
+            'id': 'sheet_ref', 'name': REFERENCE_SHEET, 'colNumber': 40,
             'rowNumber': max(last_product, 802) + 2, 'cells': cells, 'styles': styles,
         })
 
@@ -959,6 +991,9 @@ class ProjectProject(models.Model):
         sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))
         # M117-16, punto 8, y M117-23, punto 10: orden y color de las pestañas.
         positions = {name: index for index, name in enumerate(design.SHEET_ORDER)}
+        # La matriz va donde estaba ACTIVIDADES.
+        positions.update({tab['name']: positions['ACTIVIDADES'] + (index / 10.0)
+                          for index, tab in enumerate(matrix_tabs, start=1)})
         sheets.sort(key=lambda sheet: positions.get(sheet['name'], len(positions)))
         for sheet in sheets:
             if sheet['name'] in design.TAB_COLORS:

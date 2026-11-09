@@ -25,7 +25,12 @@ class TestConstructionSpreadsheet(PlannerCommon):
         # Paquete 1.13, M113-07 a 11: la hoja abre en INICIO y suma FICHA,
         # PROGRAMA, CONTROL y ERRORES.
         # Paquete 1.17, M117-16: el orden de trabajo del analista.
-        self.assertEqual(names, [name for name in SHEET_ORDER if name in names])
+        # M119-04: la matriz de actividades va donde estaba ACTIVIDADES.
+        matrix = [name for name in names if name.startswith('ACT ')]
+        self.assertTrue(matrix)
+        self.assertEqual([name for name in names if name not in matrix],
+                         [name for name in SHEET_ORDER if name in names])
+        self.assertEqual(names.index(matrix[0]), names.index('ACTIVIDADES') + 1)
         self.assertLessEqual(set(SHEETS), set(names))
         arbol = next(sheet for sheet in data['sheets'] if sheet['name'] == 'ARBOL')
         self.assertEqual(arbol['cells']['A1'], SHEETS['ARBOL'][1][0][1])

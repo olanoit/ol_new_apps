@@ -82,15 +82,41 @@ fórmulas de PROGRAMA y en el servidor al enviar (ver D10).
 
 ## 5. Entrega 2 · M119-04 Matriz de actividades
 
-- Pestañas por etapa del perfil con actividades por tipología (en mobiliario
-  «ACT ARMADO» y «ACT INSTALACIÓN»), nombres y bloques del catálogo de etapas.
-- Filas calculadas desde TIPOLOGIAS; columnas por actividad de la etapa (TARIFAS
-  y actividades efectivas de MODULOS), con fila oculta de código y fila
-  «Tarifa». Celdas grises calculadas (módulos y ML) y amarillas escritas.
-- El envío convierte la matriz en las filas de ACTIVIDADES de hoy: el
-  importador y «Generar plan» no cambian.
-- «Actualizar plantilla» pasa las filas de ACTIVIDADES de una hoja vieja a la
-  matriz.
+- `activity_matrix.py` (`_spreadsheet_furniture`): una pestaña «ACT …» por
+  etapa padre del perfil de la obra con actividades en sus sub etapas; el
+  nombre es el de la sub etapa si es una sola («ACT ARMADO») o el de la etapa
+  padre («ACT INSTALACIÓN»). Van donde estaba ACTIVIDADES, que queda oculta.
+- Filas: encabezado «nombre · unidad», código (oculta), qué hace la columna
+  (oculta: `data`, `ml`, `module`), sub etapa, tarifa (TARIFAS o la base del
+  catálogo), cantidad en la obra y una fila por tipología de TIPOLOGIAS
+  (150 filas). Al final, 5 columnas libres con lista para agregar otra
+  actividad y «Ambientes», «Costo por ambiente» y «Costo total» (con total).
+- **Columnas:** las actividades del catálogo de cada etapa, no las de
+  TARIFAS. La plantilla la arma el servidor y no conoce TARIFAS, que vive en
+  el navegador; una actividad nueva del catálogo llega con «Actualizar a la
+  plantilla vigente» o se agrega en una columna libre.
+- **Grises:** por módulo, los módulos de la tipología con esa actividad
+  efectiva (columna nueva «Actividad efectiva (calc.)» en MODULOS: la escrita o
+  la del catálogo por método de unión o tipo especial, con la clave
+  `construction_sheet_key` de la actividad); por ML, los ML del grupo según
+  los anchos de MODULOS, si no MUEBLES y si no TIPOLOGIAS.
+- **Envío:** el servidor recibe los valores calculados de la matriz y arma
+  ACTIVIDADES con las celdas escritas y las de ML (`merge_matrix`). Las de
+  módulo **no van**: «Generar plan» ya saca el armado por módulo de MODULOS y
+  se duplicaría. El importador y «Generar plan» no cambian.
+- **Pegado (D1):** un complemento de la hoja rechaza el pegado sobre celdas
+  grises, filas de cabecera y columnas calculadas de la matriz, con aviso.
+- **Hojas existentes:** «Actualizar a la plantilla vigente» (plantilla 5)
+  pasa las filas de ACTIVIDADES a las celdas escritas (las de otra columna, a
+  una libre de su etapa) y, en una hoja que ya tiene la matriz, conserva lo
+  escrito por el código de cada columna.
+- **Pendiente:** «Importar Excel a la hoja» con una pestaña ACTIVIDADES la
+  escribe en la pestaña oculta y no en la matriz; con la matriz, esas filas
+  no llegan al envío. Se resuelve con el mismo paso de «Actualizar a la
+  plantilla vigente» si Vicente lo pide.
+- INICIO: el control «TARIFAS tiene cada actividad» y el indicador
+  «Contratas» leen la matriz (incluye el armado por módulo, que antes no
+  sumaba).
 
 ## 6. Entrega 3 · M119-01 Presupuesto de mano de obra
 

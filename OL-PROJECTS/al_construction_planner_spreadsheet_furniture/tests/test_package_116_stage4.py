@@ -60,7 +60,10 @@ class TestPackage116Stage4Furniture(TestWorksheetV18):
         self.assertIn("=COLUMN('PRODUCTOS NUEVOS'!A1)", keys.values())
         # M113-02: el envío pide solo las pestañas del maestro.
         names = self._document()._get_spreadsheet_metadata()['construction_send_sheets']
-        self.assertEqual(set(names), set(SHEETS) | {KEYS_SHEET, 'PARAMETROS', 'VENDIDO', 'ACABADOS DE OBRA'})
+        # M119-04: y la matriz de actividades por etapa.
+        matrix = {tab['name'] for tab in self.project._construction_matrix_tabs()}
+        self.assertEqual(set(names), set(SHEETS) | {KEYS_SHEET, 'PARAMETROS', 'VENDIDO',
+                                                    'ACABADOS DE OBRA'} | matrix)
 
     def _bad_sheets(self):
         sheets = self._sheets()

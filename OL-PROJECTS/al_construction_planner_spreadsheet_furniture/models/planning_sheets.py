@@ -16,6 +16,9 @@ fijas: ``STATE_CELL``, ``CONTROL_PLANNER_COL`` y ``CONTROL_ORIGIN_COL``.
 """
 from odoo import models
 
+from .activity_matrix import (
+    FIRST_ROW, MATRIX_ROWS, RATE_ROW, TOTAL_ROW, matrix_last_data, matrix_total_col,
+)
 from .construction_sheet_parameter import parameter_formula
 from .project_project import (
     CALC_STYLE, DATA_STYLE, FIXED_LISTS, HEADER_STYLE, REFERENCE_SHEET, TITLE_STYLE, _col,
@@ -108,6 +111,9 @@ class ProjectProject(models.Model):
     def _construction_start_sheet(self, layout, rows, sheet_ids, stage_labels):
         cells, styles = {}, {}
         last = rows + 1
+        # M119-04: con la matriz, las tarifas y el costo de contratas salen de
+        # sus pestañas; sin ella (sin actividades por etapa), de ACTIVIDADES.
+        matrix_tabs = self._construction_matrix_tabs()
 
         def col(sheet, key):
             return full_column(layout, sheet, key)
@@ -157,6 +163,16 @@ class ProjectProject(models.Model):
         in_site = rng('TIPOLOGIAS', '#En la obra (calc.)')
         finish = "'ACABADOS DE OBRA'!$%s$2:$%s$61"
         has_sale = '%s<>""' % obra('Hoja de venta')
+        if matrix_tabs:
+            rates_ok = 'AND(%s)' % ','.join(
+                'COUNTIFS({s}!$B${rate}:${d}${rate},0,{s}!$B${qty}:${d}${qty},">0")=0'.format(
+                    s=sheet_ref(tab['name']), d=matrix_last_data(tab), rate=RATE_ROW,
+                    qty=TOTAL_ROW) for tab in matrix_tabs)
+            contracts = '=' + '+'.join('%s!$%s$%s' % (
+                sheet_ref(tab['name']), matrix_total_col(tab), TOTAL_ROW) for tab in matrix_tabs)
+        else:
+            rates_ok = 'COUNTIF(%s,0)=0' % col('ACTIVIDADES', '#Tarifa (calc.)')
+            contracts = '=SUM(%s)' % col('ACTIVIDADES', '#Costo en la obra (calc.)')
         steps = [
             (self.env._('Traer la venta'), self.env._('Lo vendido llega a la hoja'), 'OBRA',
              'IF(%s,%s<>"",AND(%s<>"",%s<>"",%s<>""))' % (
@@ -180,8 +196,8 @@ class ProjectProject(models.Model):
                  rng('BOM', 'product_name'), rng('BOM', '#Etapa usada (calc.)')),
              False, self.env._('Cada módulo tiene BOM con etapa')),
             (self.env._('Actividades a hitos'), self.env._('Contratas, contrato y precios'), 'TARIFAS',
-             'AND(COUNTA(%s)>1,COUNTIF(%s,0)=0,COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0)' % (
-                 col('TARIFAS', 'activity'), col('ACTIVIDADES', '#Tarifa (calc.)'),
+             'AND(COUNTA(%s)>1,%s,COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0)' % (
+                 col('TARIFAS', 'activity'), rates_ok,
                  col('VENTA', 'price'), in_site, rng('TIPOLOGIAS', '#Precio (calc.)')),
              False, self.env._('TARIFAS tiene cada actividad y VENTA cada tipología')),
             (self.env._('Programa por piso'), self.env._('Fecha de inicio y ritmo'), PROGRAM_SHEET,
@@ -224,8 +240,7 @@ class ProjectProject(models.Model):
             (self.env._('Piezas'), '=SUMPRODUCT(%s,%s)' % (in_site, tip('#Piezas (calc.)'))),
             (self.env._('Costo de materiales (costo vivo)'),
              '=SUM(%s)' % col('BOM', '#Costo en la obra (calc.)')),
-            (self.env._('Contratas'), '=SUM(%s)' % col('ACTIVIDADES',
-                                                       '#Costo en la obra (calc.)')),
+            (self.env._('Contratas'), contracts),
             (self.env._('Venta'), '=SUMPRODUCT(%s,%s)' % (in_site, tip('#Precio (calc.)'))),
             (self.env._('Margen'), '=IF(B28=0,"",B28-B26-B27)'),
         ]
@@ -244,6 +259,14 @@ class ProjectProject(models.Model):
             cells['%s11' % letter] = text
             styles['%s11' % letter] = HEADER_STYLE
         for row, (sheet, key) in enumerate(COUNTED_SHEETS, start=12):
+            if sheet == 'ACTIVIDADES' and matrix_tabs:
+                # M119-04: las celdas con cantidad de la matriz.
+                cells['F%s' % row] = link(matrix_tabs[0]['name'])
+                cells['G%s' % row] = '=' + '+'.join(
+                    'COUNT(%s!$B$%s:$%s$%s)' % (sheet_ref(tab['name']), FIRST_ROW,
+                                               matrix_last_data(tab), FIRST_ROW + MATRIX_ROWS - 1)
+                    for tab in matrix_tabs)
+                continue
             cells['F%s' % row] = link(sheet)
             cells['G%s' % row] = '=MAX(COUNTA(%s)-1,0)' % col(sheet, key)
             cells['H%s' % row] = '=COUNTIFS(ERRORES!$A:$A,"%s",ERRORES!$E:$E,"Error")' % sheet
