@@ -10,3 +10,4 @@ from . import construction_crew_attendance
 from . import construction_amounts
 from . import ir_ui_menu
 from . import labor_weekly_control
+from . import installation_board

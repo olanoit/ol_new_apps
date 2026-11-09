@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="al_construction_attendance.InstallationBoard">
+        <div class="o_action o_cib d-flex flex-column h-100 overflow-auto">
+            <div class="o_cib_top d-flex flex-wrap align-items-center gap-2 p-2 border-bottom">
+                <select class="form-select w-auto" t-on-change="onProject">
+                    <option value="">Elija la obra…</option>
+                    <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                        <option t-att-value="project.id" t-att-selected="project.id === state.projectId" t-esc="project.name"/>
+                    </t>
+                </select>
+                <t t-if="state.data and !state.data.empty">
+                    <h4 class="m-0 me-2" t-esc="state.data.title"/>
+                    <button class="btn btn-sm btn-light" t-on-click="() => this.move(-1)" title="Semana anterior">‹</button>
+                    <label class="small">Desde</label>
+                    <select class="form-select form-select-sm w-auto" t-on-change="onFrom">
+                        <t t-foreach="state.data.weeks" t-as="week" t-key="week.number">
+                            <option t-att-value="week.number" t-att-selected="week.number === state.weekFrom">S<t t-esc="week.number"/> · <t t-esc="week.monday"/></option>
+                        </t>
+                    </select>
+                    <label class="small">Hasta</label>
+                    <select class="form-select form-select-sm w-auto" t-on-change="onTo">
+                        <t t-foreach="state.data.weeks" t-as="week" t-key="week.number">
+                            <option t-att-value="week.number" t-att-selected="week.number === state.weekTo">S<t t-esc="week.number"/> · <t t-esc="week.saturday"/></option>
+                        </t>
+                    </select>
+                    <button class="btn btn-sm btn-light" t-on-click="() => this.move(1)" title="Semana siguiente">›</button>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" t-on-click="() => this.shortcut('one')">Una semana</button>
+                        <button class="btn btn-outline-secondary" t-on-click="() => this.shortcut('four')">Últimas 4</button>
+                        <button class="btn btn-outline-secondary" t-on-click="() => this.shortcut('all')">Desde el inicio</button>
+                    </div>
+                    <div class="btn-group btn-group-sm ms-auto">
+                        <button t-if="state.data.has_production" t-att-class="'btn ' + (state.production ? 'btn-primary' : 'btn-outline-primary')" t-on-click="() => this.toggle('production')">Producción</button>
+                        <button t-att-class="'btn ' + (state.installation ? 'btn-primary' : 'btn-outline-primary')" t-on-click="() => this.toggle('installation')">Instalación</button>
+                    </div>
+                    <div class="w-100 small text-muted" t-esc="state.data.period_label"/>
+                </t>
+            </div>
+            <div t-if="!state.projectId" class="p-4 text-muted">Elija una obra para ver su control semanal.</div>
+            <div t-elif="state.data and state.data.empty" class="p-4 text-muted">La obra no tiene plan vigente ni etapas en el Cronograma.</div>
+            <t t-elif="state.data">
+                <t t-set="ind" t-value="state.data.indicators"/>
+                <div class="o_cib_kpis d-flex flex-wrap gap-2 p-2">
+                    <div class="o_cib_kpi">
+                        <div class="o_cib_kpi_label">Pisos del período</div>
+                        <div class="o_cib_kpi_value"><t t-esc="ind.period.done"/> de <t t-esc="ind.period.total"/></div>
+                        <div class="o_cib_kpi_note">programados que terminaron al cierre</div>
+                    </div>
+                    <div class="o_cib_kpi">
+                        <div class="o_cib_kpi_label">Pisos atrasados</div>
+                        <div t-att-class="'o_cib_kpi_value ' + (ind.late.count ? 'text-danger' : '')" t-esc="ind.late.count"/>
+                        <div class="o_cib_kpi_note">
+                            <t t-foreach="ind.late.items.slice(0, 4)" t-as="item" t-key="item_index">
+                                <span class="me-2"><t t-esc="item.floor"/> · <t t-esc="item.stage"/> (<t t-esc="item.pct"/> %)</span>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="o_cib_kpi">
+                        <div class="o_cib_kpi_label">Pisos terminados</div>
+                        <div class="o_cib_kpi_value"><t t-esc="ind.finished.done"/> de <t t-esc="ind.finished.total"/></div>
+                        <div class="o_cib_kpi_note">
+                            <t t-foreach="ind.finished.per_stage" t-as="item" t-key="item_index">
+                                <span class="me-2"><t t-esc="item.stage.split(' ')[0]"/>: <t t-esc="item.done"/>/<t t-esc="item.total"/></span>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="o_cib_kpi" t-on-click="openControl" role="button" title="Abrir el control semanal de mano de obra">
+                        <t t-set="lab" t-value="labor()"/>
+                        <div class="o_cib_kpi_label">Mano de obra</div>
+                        <div t-att-class="'o_cib_kpi_value ' + (lab.light === 'red' ? 'text-danger' : '')" t-esc="lab.value"/>
+                        <div class="o_cib_kpi_note" t-esc="lab.note"/>
+                    </div>
+                </div>
+                <div class="d-flex flex-grow-1 gap-2 px-2 pb-2 o_cib_body">
+                    <div class="o_cib_building flex-grow-1">
+                        <table class="table table-sm o_cib_table">
+                            <thead>
+                                <tr>
+                                    <th>Piso</th>
+                                    <t t-foreach="state.data.stages" t-as="stage" t-key="stage.code">
+                                        <th t-esc="stage.label"/>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.data.floors" t-as="floor" t-key="floor.id">
+                                    <tr>
+                                        <th class="o_cib_floor" role="button" t-on-click="() => this.selectFloor(floor)" t-esc="floor.name"/>
+                                        <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
+                                            <td role="button" t-on-click="() => this.selectCell(floor, cell)"
+                                                t-att-class="'o_cib_cell o_cib_' + cell.status + (inPeriod(cell) ? ' o_cib_in_period' : '') + (state.selection and state.selection.cell === cell ? ' o_cib_selected' : '')"
+                                                t-att-title="statusLabel(cell.status)">
+                                                <div class="o_cib_bar" t-att-style="'width:' + cell.pct + '%'"/>
+                                                <span class="o_cib_text" t-esc="cellText(cell)"/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <div class="d-flex flex-wrap gap-3 mt-2">
+                            <t t-foreach="state.data.curves" t-as="curve" t-key="curve.stage">
+                                <div class="o_cib_curve">
+                                    <div class="small fw-bold" t-esc="curve.stage"/>
+                                    <svg width="230" height="80" viewBox="-5 -5 230 80">
+                                        <t t-set="mark" t-value="curveMark(curve)"/>
+                                        <rect t-att-x="mark.x" y="0" t-att-width="mark.width" height="70" class="o_cib_curve_mark"/>
+                                        <path t-att-d="curvePath(curve, 'planned')" class="o_cib_curve_planned"/>
+                                        <path t-att-d="curvePath(curve, 'real')" class="o_cib_curve_real"/>
+                                    </svg>
+                                    <div class="small text-muted"><span class="o_cib_dot o_cib_dot_planned"/> programa <span class="o_cib_dot o_cib_dot_real ms-2"/> real</div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="o_cib_side border-start ps-2">
+                        <div t-if="!state.selection" class="text-muted small p-2">Haga clic en un piso o en una de sus celdas para ver su situación al cierre del período.</div>
+                        <t t-elif="state.selection.kind === 'cell'">
+                            <t t-set="cell" t-value="state.selection.cell"/>
+                            <h5><t t-esc="cell.floor"/> · <t t-esc="cell.stage_label"/></h5>
+                            <t t-foreach="[['Plazo', plazo(cell)], ['Presupuesto', presupuesto(cell)], ['Alcance', alcance(cell)]]" t-as="row" t-key="row[0]">
+                                <div class="o_cib_light_row"><span t-att-class="'o_cib_light o_cib_light_' + row[1].light"/><b t-esc="row[0]"/>: <t t-esc="row[1].text"/></div>
+                            </t>
+                            <dl class="small mt-2 mb-1">
+                                <dt>Quién ejecuta</dt><dd t-esc="cell.executor"/>
+                                <dt>Semana programada</dt><dd>S<t t-esc="cell.sched_week"/> · <t t-esc="cell.sched_dates"/></dd>
+                                <dt>Terminó</dt><dd t-esc="cell.finish_week ? 'S' + cell.finish_week : '—'"/>
+                                <dt>Avance</dt><dd><t t-esc="cell.pct"/> %</dd>
+                                <t t-set="prev" t-value="previousCell(state.selection.floor, cell)"/>
+                                <t t-if="prev">
+                                    <dt>Sub etapa anterior</dt>
+                                    <dd><t t-esc="prev.stage_label"/>: <t t-esc="statusLabel(prev.status)"/> <t t-esc="cellText(prev)"/></dd>
+                                </t>
+                                <t t-if="cell.budget and cell.budget.state !== 'none'">
+                                    <dt>Presupuesto del avance y real</dt>
+                                    <dd><t t-esc="cell.budget.base"/> / <t t-esc="cell.budget.real"/> (<t t-esc="cell.budget.unit === 'amount' ? 'soles' : 'persona-días'"/>)</dd>
+                                </t>
+                            </dl>
+                            <table class="table table-sm small">
+                                <thead><tr><th>Dpto.</th><th>Tipología</th><th>Cantidad</th><th>Estado</th></tr></thead>
+                                <tbody>
+                                    <t t-foreach="cell.spaces" t-as="space" t-key="space.id">
+                                        <tr><td t-esc="space.apartment"/><td t-esc="space.typology"/><td t-esc="space.qty"/>
+                                            <td t-esc="space.state === 'done' ? 'Hecho' : (space.state === 'partial' ? 'En curso' : 'Falta')"/></tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <div class="small"><b>Qué falta:</b>
+                                <t t-if="missing(cell).length"><t t-esc="missing(cell).length"/> ambiente(s) (<t t-esc="missing(cell).map((s) => s.apartment).join(', ')"/>)</t>
+                                <t t-else="">nada</t>
+                            </div>
+                            <button class="btn btn-link btn-sm px-0" t-on-click="() => this.openProgress(cell)">Ver los avances del piso</button>
+                        </t>
+                        <t t-else="">
+                            <t t-set="floor" t-value="state.selection.floor"/>
+                            <h5>Piso <t t-esc="floor.name"/></h5>
+                            <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
+                                <div class="o_cib_floor_stage" role="button" t-on-click="() => this.selectCell(floor, cell)">
+                                    <b t-esc="cell.stage_label"/>
+                                    <span t-att-class="'o_cib_light o_cib_light_' + plazo(cell).light" title="Plazo"/>
+                                    <span t-att-class="'o_cib_light o_cib_light_' + presupuesto(cell).light" title="Presupuesto"/>
+                                    <span t-att-class="'o_cib_light o_cib_light_' + alcance(cell).light" title="Alcance"/>
+                                </div>
+                            </t>
+                            <div class="small mt-2"><b>Qué falta:</b>
+                                <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
+                                    <div t-if="cell.status !== 'done'">
+                                        <t t-esc="cell.stage_label"/>:
+                                        <t t-if="cell.status === 'pending'">programada S<t t-esc="cell.sched_week"/></t>
+                                        <t t-else=""><t t-esc="missing(cell).length"/> ambiente(s)<t t-if="cell.status === 'late'">, atrasada</t></t>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

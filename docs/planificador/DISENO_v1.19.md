@@ -189,9 +189,41 @@ fórmulas de PROGRAMA y en el servidor al enviar (ver D10).
 - **Contratas con varias en una sub etapa:** la meta se reparte en partes
   iguales entre las contratas que avanzaron [I].
 
-## 8. Entrega 5 · M119-05 Tablero
+## 8. Entrega 5 · M119-05 Tablero de instalación
 
-Acción de cliente OWL en `al_construction_attendance`, con un método de servidor
-que entrega por obra y período los pisos, sus sub etapas, los cuatro
-indicadores y la radiografía. Acceso: «Ejecuta» o «jefatura de proyectos», solo
-obras con acceso; soles con «Ve montos»; oculto con el control activo apagado.
+Programado desde el texto del requerimiento: el prototipo interactivo no
+llegó (D2). Conviene revisarlo contra él antes de la aceptación.
+
+- Acción de cliente OWL `al_construction_installation_board`
+  (`al_construction_attendance`), con el método de servidor
+  `construction.installation.board.get_data`. Entradas: botón «Control
+  semanal» en la obra y menú Ejecución › «Control semanal de instalación»
+  (con selector de obra).
+- Período «Desde»/«Hasta» con atajos (una semana, últimas 4, desde el
+  inicio) y flechas; por defecto la última semana cerrada; «Desde» mayor que
+  «Hasta» mueve «Hasta». Interruptores «Producción» e «Instalación» (siempre
+  uno prendido); instalación = sub etapas con presupuesto de mano de obra;
+  producción = las demás que no son de control.
+- **Semana programada:** el fin de la sub etapa en los ambientes del piso
+  en el **Cronograma** (`construction.space.stage`), no un dato nuevo del
+  envío de la hoja: el Cronograma ya tiene esas fechas (sección 3 de la
+  arquitectura). Semana en que terminó: la del avance que llevó el piso al
+  100 %.
+- % por piso y sub etapa: cantidad validada ÷ planificada de sus líneas de
+  contrata, personal propio o producción en el plan vigente. **Producción
+  (D11) queda con esa misma regla**: las órdenes de fabricación por piso no se
+  leen todavía.
+- Indicadores: pisos del período, pisos atrasados (con la lista), pisos
+  terminados (total y por sub etapa) y mano de obra (soles con «Ve montos»,
+  persona-días sin él; solo instalación), desde el control semanal.
+- Edificio: estados Terminado (con semana y retraso), Atrasado (% y semana
+  debida), En curso (semana actual) y Pendiente (semana programada); barra de
+  avance y borde en las celdas programadas del período.
+- Radiografía a la derecha: por celda, semáforos de plazo, presupuesto
+  (persona-días en contrata, soles en propio con «Ve montos») y alcance; quién
+  ejecuta, semanas, sub etapa anterior, ambientes y qué falta, con enlace a los
+  avances. Por piso: sus sub etapas con sus semáforos y qué falta.
+- Curvas pequeñas por sub etapa: pisos que debían terminar y los que
+  terminaron, con el período sombreado.
+- Permisos: el menú y el botón dependen de la función «Control»; el servidor
+  exige «Ejecuta» o «jefatura de proyectos» y el acceso a la obra.

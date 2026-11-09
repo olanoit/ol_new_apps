@@ -43,7 +43,7 @@ y 18):
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_attendance/static/description/icon.png',
-    'version': '9.20261109',
+    'version': '10.20261109',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'countries': ['pe'],
@@ -62,6 +62,11 @@ y 18):
         'views/labor_weekly_control_views.xml',
         'views/menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'al_construction_attendance/static/src/installation_board/*',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': True,

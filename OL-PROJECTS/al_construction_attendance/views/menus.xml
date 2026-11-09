@@ -19,6 +19,10 @@
                   action="action_labor_cost_allocation" sequence="50"
                   groups="al_construction_planner.group_planner_manager"/>
     </menuitem>
+    <menuitem id="menu_planner_installation_board" name="Control semanal de instalación"
+              parent="al_construction_planner.menu_planner_execution" sequence="25"
+              action="action_installation_board"
+              groups="al_construction_planner.group_planner_feature_control"/>
     <menuitem id="menu_planner_sites" name="Sedes de obra"
               parent="al_construction_planner.menu_planner_config_plan"
               action="al_hr_pe_construction.action_construction_site" sequence="50"

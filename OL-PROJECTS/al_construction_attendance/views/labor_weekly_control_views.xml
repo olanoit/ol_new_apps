@@ -129,6 +129,26 @@
         </field>
     </record>
 
+    <!-- Paquete 1.19, M119-05: tablero de control semanal de instalación. -->
+    <record id="action_installation_board" model="ir.actions.client">
+        <field name="name">Control semanal de instalación</field>
+        <field name="tag">al_construction_installation_board</field>
+    </record>
+
+    <record id="project_project_view_form_installation_board" model="ir.ui.view">
+        <field name="name">project.project.form.installation.board</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_installation_board" type="object" class="oe_stat_button"
+                        icon="fa-building" string="Control semanal"
+                        invisible="not is_construction_site"
+                        groups="al_construction_planner.group_planner_feature_control"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="ir_cron_refresh_labor_control" model="ir.cron">
         <field name="name">Planificación de obra: control semanal de mano de obra</field>
         <field name="model_id" ref="model_construction_labor_weekly_control"/>

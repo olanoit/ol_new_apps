@@ -1,0 +1,47 @@
+// Control semanal de instalación (M119-05): sin desplazamiento horizontal a 1280 px.
+.o_cib {
+    background: $o-view-background-color;
+    .o_cib_kpi {
+        flex: 1 1 200px;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        padding: 8px 12px;
+        .o_cib_kpi_label { font-size: 0.8rem; color: $text-muted; }
+        .o_cib_kpi_value { font-size: 1.5rem; font-weight: 600; }
+        .o_cib_kpi_note { font-size: 0.75rem; color: $text-muted; }
+    }
+    .o_cib_body { min-height: 0; }
+    .o_cib_building { min-width: 0; }
+    .o_cib_side { width: 340px; flex: 0 0 340px; }
+    .o_cib_table {
+        table-layout: fixed;
+        th, td { text-align: center; vertical-align: middle; }
+        .o_cib_floor { width: 90px; cursor: pointer; }
+    }
+    .o_cib_cell {
+        position: relative;
+        cursor: pointer;
+        font-size: 0.8rem;
+        .o_cib_bar { position: absolute; left: 0; top: 0; bottom: 0; opacity: 0.25; }
+        .o_cib_text { position: relative; }
+        &.o_cib_done { background: #e3f4ec; .o_cib_bar { background: #1d9e75; } }
+        &.o_cib_late { background: #f6e1e4; color: #b23a48; .o_cib_bar { background: #b23a48; } }
+        &.o_cib_current { background: #dbe9f8; .o_cib_bar { background: #2a78d6; } }
+        &.o_cib_pending { background: #f4f2ef; color: #55514f; }
+        &.o_cib_in_period { box-shadow: inset 0 0 0 2px #7b4bb7; }
+        &.o_cib_selected { outline: 2px solid #221f20; }
+    }
+    .o_cib_light { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 4px; }
+    .o_cib_light_green { background: #1d9e75; }
+    .o_cib_light_amber { background: #e0a100; }
+    .o_cib_light_red { background: #b23a48; }
+    .o_cib_light_blue { background: #2a78d6; }
+    .o_cib_light_gray { background: #c9c4be; }
+    .o_cib_floor_stage { padding: 4px 0; cursor: pointer; }
+    .o_cib_curve_planned { fill: none; stroke: #eb6834; stroke-width: 2; stroke-dasharray: 4 3; }
+    .o_cib_curve_real { fill: none; stroke: #2a78d6; stroke-width: 2; }
+    .o_cib_curve_mark { fill: #7b4bb7; opacity: 0.12; }
+    .o_cib_dot { display: inline-block; width: 10px; height: 3px; vertical-align: middle; }
+    .o_cib_dot_planned { background: #eb6834; }
+    .o_cib_dot_real { background: #2a78d6; }
+}
