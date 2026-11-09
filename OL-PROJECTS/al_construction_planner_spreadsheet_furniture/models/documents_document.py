@@ -91,6 +91,10 @@ class DocumentsDocument(models.Model):
             data['construction_parameter_current'] = self.env[
                 'construction.sheet.parameter']._construction_current_values(
                 'planning', document_sudo.construction_project_id.company_id or self.env.company)
+            # M119-03: los días y las horas del horario de obra.
+            data['construction_parameter_forced'] = self.env[
+                'construction.sheet.parameter']._construction_forced_values(
+                'planning', document_sudo.construction_project_id.company_id or self.env.company)
             # M117-22: la hoja nace con la venta.
             source = document_sudo._construction_sale_source()
             data['construction_sale_available'] = bool(source)
@@ -321,6 +325,17 @@ class DocumentsDocument(models.Model):
             'views': [(False, 'form')],
             'target': 'new',
         }
+
+    def action_construction_validate(self, sheets):
+        """M119-03, punto 5: al validar, la hoja recibe los días y las horas
+        del horario de obra."""
+        result = super().action_construction_validate(sheets)
+        if self.construction_sheet_kind == 'furniture':
+            # sudo: solo se leen los parámetros de la compañía de la obra.
+            company = self.sudo().construction_project_id.company_id or self.env.company
+            result['parameter_forced'] = self.env[
+                'construction.sheet.parameter']._construction_forced_values('planning', company)
+        return result
 
     def _construction_validate_furniture(self, sheets):
         """«Validar» del maestro (paquete 1.13, M113-03): el análisis del

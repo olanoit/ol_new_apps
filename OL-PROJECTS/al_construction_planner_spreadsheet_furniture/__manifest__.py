@@ -21,7 +21,7 @@ el plan de construcción.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_spreadsheet_furniture/static/description/icon.png',
-    'version': '13.20261104',
+    'version': '14.20261109',
     'license': 'LGPL-3',
     'countries': ['pe'],
     'depends': ['al_construction_planner_spreadsheet', 'al_construction_planner_furniture'],

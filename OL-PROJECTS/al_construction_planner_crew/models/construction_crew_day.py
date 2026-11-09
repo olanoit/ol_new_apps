@@ -51,9 +51,25 @@ class ResCompany(models.Model):
              'la nómina.')
     construction_crew_round_type = fields.Selection(
         ROUND_TYPES, string='Redondeo de los jornales', default='HALF-UP')
+    # M119-03: con «Horario de obra», la jornada completa del horario (solo
+    # lectura en Ajustes); sin él, la escrita.
     construction_crew_hours_per_day = fields.Float(
         string='Horas por jornal', default=8.0,
-        help='Horas de un jornal completo: convierte las horas marcadas en jornales.')
+        compute='_compute_construction_crew_hours_per_day', store=True, readonly=False,
+        help='Horas de un jornal completo: convierte las horas marcadas en jornales. Con '
+             'horario de obra, las horas de su día más largo.')
+
+    @api.depends('construction_site_calendar_id.attendance_ids.hour_from',
+                 'construction_site_calendar_id.attendance_ids.hour_to',
+                 'construction_site_calendar_id.attendance_ids.day_period',
+                 'construction_site_calendar_id.attendance_ids.dayofweek')
+    def _compute_construction_crew_hours_per_day(self):
+        for company in self:
+            if company.construction_site_calendar_id:
+                company.construction_crew_hours_per_day = company._construction_full_day_hours()
+            else:
+                company.construction_crew_hours_per_day = \
+                    company.construction_crew_hours_per_day or 8.0
 
 
 class ResConfigSettings(models.TransientModel):
@@ -162,7 +178,7 @@ class ConstructionCrewDay(models.Model):
     role_id = fields.Many2one('planning.role', string='Rol', index=True)
     employee_id = fields.Many2one('hr.employee', string='Persona', index=True)
     date = fields.Date(string='Fecha', required=True, index=True)
-    days = fields.Float(string='Jornales', digits=(16, 2), aggregator='sum')
+    days = fields.Float(string='Jornales', digits=(16, 4), aggregator='sum')
     hours = fields.Float(string='Horas', digits=(16, 2), aggregator='sum')
     amount = fields.Monetary(string='Costo', currency_field='currency_id', aggregator='sum')
     slot_id = fields.Many2one('planning.slot', string='Turno', ondelete='cascade', index=True)

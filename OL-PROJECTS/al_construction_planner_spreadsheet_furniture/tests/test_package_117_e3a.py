@@ -39,7 +39,8 @@ class TestPackage117Parameters(TestWorksheetV18):
         self.assertEqual(names.index(PARAMETERS_SHEET), names.index('OBRA') + 1)
         cells = self._sheet(data, PARAMETERS_SHEET)['cells']
         keys = [cells[ref] for ref in cells if re.fullmatch(r'G\d+', ref) and ref != 'G1']
-        self.assertCountEqual(keys, ['piezas_frente', 'dias_semana', 'dias_sub_etapa',
+        self.assertCountEqual(keys, ['piezas_frente', 'dias_semana', 'horas_jornada',
+                                     'jornales_semana', 'dias_sub_etapa',
                                      'tolerancia_ml', 'tolerancia_ml_venta'])
 
     def test_no_business_number_in_the_formulas(self):

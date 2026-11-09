@@ -69,9 +69,24 @@ class ConstructionUomAlias(models.Model):
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
+    # M119-03: con «Horario de obra», la jornada completa del horario (solo
+    # lectura en Ajustes); sin él, la escrita.
     construction_workday_hours = fields.Float(
         string='Horas de la jornada', default=8.0,
-        help='Para «cuadrilla ÷ rendimiento» en horas: personas × horas ÷ rendimiento.')
+        compute='_compute_construction_workday_hours', store=True, readonly=False,
+        help='Para «cuadrilla ÷ rendimiento» en horas: personas × horas ÷ rendimiento. Con '
+             'horario de obra, las horas de su día más largo.')
+
+    @api.depends('construction_site_calendar_id.attendance_ids.hour_from',
+                 'construction_site_calendar_id.attendance_ids.hour_to',
+                 'construction_site_calendar_id.attendance_ids.day_period',
+                 'construction_site_calendar_id.attendance_ids.dayofweek')
+    def _compute_construction_workday_hours(self):
+        for company in self:
+            if company.construction_site_calendar_id:
+                company.construction_workday_hours = company._construction_full_day_hours()
+            else:
+                company.construction_workday_hours = company.construction_workday_hours or 8.0
 
 
 class ProjectProject(models.Model):

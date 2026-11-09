@@ -103,6 +103,33 @@ export function writeCurrentParameters(model, current) {
 }
 
 /**
+ * M119-03, punto 5: los parámetros que salen del horario de obra (días y horas)
+ * se escriben en el valor y en el inicial; la fila queda como la de un dato de
+ * la compañía.
+ */
+export function writeForcedParameters(model, forced) {
+    const getters = model.getters;
+    const sheetId = sheetIdOf(model, "PARAMETROS");
+    if (!sheetId || !forced || !Object.keys(forced).length) {
+        return;
+    }
+    const commands = [];
+    for (let row = 1; row < getters.getNumberRows(sheetId); row++) {
+        const key = getters.getCell({ sheetId, col: 6, row })?.content;
+        const value = key && forced[key];
+        if (value === undefined || !key) {
+            continue;
+        }
+        for (const col of [2, 5, 9]) {
+            if ((getters.getCell({ sheetId, col, row })?.content || "") !== value) {
+                commands.push(["UPDATE_CELL", { sheetId, col, row, content: value }]);
+            }
+        }
+    }
+    dispatchBatch(model, commands);
+}
+
+/**
  * M117-16, punto 3: si la cotización cambió, OBRA se actualiza al abrir la hoja y lo
  * dice; con otro cliente o moneda, el tarifario hay que traerlo de nuevo.
  */
@@ -171,6 +198,7 @@ function writePendingVersion(model, data, env) {
 afterValidateHooks.push((env, result) => {
     if (isFurniture(env)) {
         writeState(env.model, result.state);
+        writeForcedParameters(env.model, result.parameter_forced);
     }
 });
 
@@ -188,6 +216,9 @@ patch(SpreadsheetAction.prototype, {
             }
             writeState(this.model, this.data?.construction_sheet_state);
             writeCurrentParameters(this.model, this.data?.construction_parameter_current);
+            if (!this.data?.isReadonly) {
+                writeForcedParameters(this.model, this.data?.construction_parameter_forced);
+            }
             // Después de un envío, CONTROL compara la hoja con el planificador.
             if (this.data?.construction_control_pending && sheetIdOf(this.model, CONTROL_SHEET)) {
                 // El entorno de la acción no trae el modelo de la hoja (M117-06).

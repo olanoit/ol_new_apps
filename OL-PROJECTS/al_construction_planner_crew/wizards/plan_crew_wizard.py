@@ -10,10 +10,20 @@ import pytz
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
-# Horario de referencia del turno semanal (hora local): las horas asignadas
-# se escriben aparte y son las que cuentan.
+# Horario de referencia del turno semanal (hora local) sin horario de obra:
+# las horas asignadas se escriben aparte y son las que cuentan. Con horario de
+# obra (paquete 1.19, M119-03), un turno por día con las horas del horario.
 SLOT_START = time(8, 0)
 SLOT_END = time(17, 0)
+
+
+def _float_time(value):
+    """8.5 → 08:30."""
+    hours = int(value)
+    minutes = int(round((value - hours) * 60))
+    if minutes == 60:
+        hours, minutes = hours + 1, 0
+    return time(min(hours, 23), minutes)
 
 
 class ConstructionPlanCrewWizard(models.TransientModel):
@@ -43,14 +53,19 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         [('days', 'Jornales (días)'), ('hours', 'Horas')], string='Planificar en',
         default='hours', required=True)
     days_per_week = fields.Float(
-        string='Días por semana', default=5.0,
+        string='Días por semana',
+        default=lambda self: self.env.company.construction_site_week_days
+        if self.env.company.construction_site_calendar_id else 5.0,
         help='Jornales de cada persona por semana; se reparten entre las líneas de la selección '
              'según su monto planificado.')
     hours_per_week = fields.Float(
-        string='Horas por semana', default=48.0, required=True,
+        string='Horas por semana',
+        default=lambda self: self.env.company.construction_site_week_hours
+        if self.env.company.construction_site_calendar_id else 48.0, required=True,
         help='De cada recurso; se reparten entre las líneas de la selección según su monto '
              'planificado.')
-    days_total = fields.Float(string='Jornales', compute='_compute_line_ids', store=True)
+    days_total = fields.Float(string='Jornales', compute='_compute_line_ids', store=True,
+                              digits=(16, 4))
     line_ids = fields.One2many(
         'construction.plan.crew.wizard.line', 'wizard_id', string='Vista previa',
         compute='_compute_line_ids', store=True)
@@ -89,10 +104,28 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         start = project._construction_period(self.date_start)[0] if project else self.date_start
         return [start + timedelta(weeks=week) for week in range(max(self.weeks, 0))]
 
+    def _company(self):
+        self.ensure_one()
+        return self.plan_id.company_id or self.env.company
+
     def _hours_per_day(self):
         self.ensure_one()
-        company = self.plan_id.company_id or self.env.company
-        return company.construction_crew_hours_per_day or 8.0
+        return self._company().construction_crew_hours_per_day or 8.0
+
+    def _week_days(self, week):
+        """[(día, horas del horario de obra)] de la semana que empieza en
+        ``week``; vacía sin horario de obra (un turno semanal)."""
+        self.ensure_one()
+        company = self._company()
+        if not company.construction_site_calendar_id:
+            return []
+        days = []
+        for offset in range(7):
+            day = week + timedelta(days=offset)
+            window = company._construction_day_window(day)
+            if window:
+                days.append((day, window[2]))
+        return days
 
     def _weekly_hours(self):
         """Horas por semana de cada persona: las escritas o, en jornales, los
@@ -136,39 +169,52 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                 total_amount = sum(lines.mapped('amount_planned'))
                 shares = {line: (line.amount_planned / total_amount if total_amount
                                  else 1.0 / len(lines)) for line in lines}
+                # Con horario de obra, las horas de la semana se reparten por
+                # día según las horas del horario (un feriado no recibe).
+                nominal = wizard._company().construction_site_week_hours
                 for resource in [r for r, member_role in members
                                  if member_role == role and r not in no_employee]:
                     for week in wizard._get_weeks():
+                        days = wizard._week_days(week) if nominal else []
                         for line, share in shares.items():
-                            hours = round(weekly_hours * share, 2)
-                            if hours <= 0:
-                                continue
-                            hours_total += hours
-                            commands.append(Command.create({
-                                'resource_id': resource.id,
-                                'role_id': role.id,
-                                'week_start': week,
-                                'plan_line_id': line.id,
-                                'hours': hours,
-                                'days': round(hours / hours_per_day, 4) if hours_per_day else 0.0,
-                            }))
+                            for day, day_hours in days or [(False, 0.0)]:
+                                hours = round(weekly_hours * share * (
+                                    day_hours / nominal if day else 1.0), 2)
+                                if hours <= 0:
+                                    continue
+                                hours_total += hours
+                                commands.append(Command.create({
+                                    'resource_id': resource.id,
+                                    'role_id': role.id,
+                                    'week_start': week,
+                                    'date': day,
+                                    'plan_line_id': line.id,
+                                    'hours': hours,
+                                    'days': round(hours / hours_per_day, 4)
+                                    if hours_per_day else 0.0,
+                                }))
             wizard.line_ids = commands
             wizard.plan_line_count = len(all_lines)
             wizard.hours_total = hours_total
-            wizard.days_total = round(hours_total / hours_per_day, 2) if hours_per_day else 0.0
+            wizard.days_total = round(hours_total / hours_per_day, 4) if hours_per_day else 0.0
             wizard.note = '\n'.join(notes) or False
 
     # ------------------------------------------------------------------
     # Crear los turnos
     # ------------------------------------------------------------------
-    def _slot_datetimes(self, week_start):
-        """Inicio y fin del turno semanal en UTC (hora local del usuario)."""
+    def _slot_datetimes(self, week_start, day=False):
+        """Inicio y fin del turno en UTC (hora local del usuario): el de la
+        semana o, con horario de obra, el del día con sus horas (el sábado de
+        8:00 a 13:00)."""
         tz = pytz.timezone(self.env.user.tz or self.env.context.get('tz') or 'UTC')
 
         def to_utc(day, moment):
             local = tz.localize(datetime.combine(day, moment))
             return local.astimezone(pytz.utc).replace(tzinfo=None)
 
+        window = self._company()._construction_day_window(day) if day else None
+        if window:
+            return to_utc(day, _float_time(window[0])), to_utc(day, _float_time(window[1]))
         return to_utc(week_start, SLOT_START), to_utc(week_start + timedelta(days=6), SLOT_END)
 
     def _check_members(self):
@@ -207,7 +253,7 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                 resource_sudo.write({'role_ids': [Command.link(row.role_id.id)]})
         slot_values = []
         for row in rows:
-            start, end = self._slot_datetimes(row.week_start)
+            start, end = self._slot_datetimes(row.week_start, row.date)
             line = row.plan_line_id
             slot_values.append({
                 'resource_id': row.resource_id.id,
@@ -264,13 +310,14 @@ class ConstructionPlanCrewWizard(models.TransientModel):
 class ConstructionPlanCrewWizardLine(models.TransientModel):
     _name = 'construction.plan.crew.wizard.line'
     _description = 'Turno de la cuadrilla'
-    _order = 'week_start, resource_id, id'
+    _order = 'week_start, date, resource_id, id'
 
     wizard_id = fields.Many2one(
         'construction.plan.crew.wizard', string='Asistente', required=True, ondelete='cascade')
     resource_id = fields.Many2one('resource.resource', string='Recurso', required=True)
     role_id = fields.Many2one('planning.role', string='Rol')
     week_start = fields.Date(string='Semana', required=True)
+    date = fields.Date(string='Día', help='Con horario de obra: el turno es de ese día.')
     plan_line_id = fields.Many2one(
         'construction.resource.plan.line', string='Línea del plan', required=True)
     apartment_task_id = fields.Many2one(

@@ -87,7 +87,17 @@ DEFAULT_PARAMETERS = (
          help_text='Las demás toman el de estructura, en las propuestas de tablero.'),
     dict(sheet='planning', group='Programa', key='dias_semana', name='Días de trabajo por semana',
          value_initial='5', value_type='number', use_range=True, min_value=1, max_value=7,
-         unit='días', help_text='Divide los días de cada sub etapa en PROGRAMA.'),
+         unit='días', help_text='Divide los días de cada sub etapa en PROGRAMA. Con horario de '
+                                'obra, sus días con horario.'),
+    # M119-03: del horario de obra de la compañía (solo lectura en la hoja).
+    dict(sheet='planning', group='Programa', key='horas_jornada',
+         name='Horas de la jornada completa', value_initial='8', value_type='number',
+         unit='h', locked=True,
+         help_text='Una persona-día: el día más largo del horario de obra (Ajustes).'),
+    dict(sheet='planning', group='Programa', key='jornales_semana',
+         name='Jornales por persona y semana', value_initial='5', value_type='number',
+         unit='jornales', locked=True,
+         help_text='Horas por semana del horario de obra ÷ jornada completa (Ajustes).'),
     dict(sheet='planning', group='Programa', key='dias_sub_etapa',
          name='Días por sub etapa, si la celda de PROGRAMA está vacía', value_initial='5',
          value_type='number', use_range=True, min_value=1, max_value=365, unit='días',
@@ -205,11 +215,25 @@ class ConstructionSheetParameter(models.Model):
         return '0.0%' if float(self.value_initial or 0) % 1 else '0%'
 
     @api.model
+    def _construction_schedule_values(self, sheet, company):
+        """Parámetros que salen del horario de obra (M119-03): ``{clave:
+        valor}``. Sin horario, solo la jornada de Ajustes."""
+        if sheet != 'planning' or not company:
+            return {}
+        if not company.construction_site_calendar_id:
+            return {'horas_jornada': _number(company.construction_workday_hours or 8.0)}
+        return {
+            'dias_semana': _number(company.construction_site_work_days),
+            'horas_jornada': _number(company.construction_site_full_day_hours),
+            'jornales_semana': _number(company.construction_site_week_days),
+        }
+
+    @api.model
     def _construction_for_sheet(self, sheet, company, overrides=None):
         """Parámetros de ``sheet``, con el valor inicial de cada uno (``overrides``
         trae los que vienen de la compañía o de la cotización)."""
         self._construction_ensure(company)
-        overrides = overrides or {}
+        overrides = dict(self._construction_schedule_values(sheet, company), **(overrides or {}))
         parameters = self.sudo().search([('company_id', '=', company.id), ('sheet', '=', sheet),
                                          ('in_sheet', '=', True)])
         return [(parameter, overrides.get(parameter.key, parameter.value_initial))
@@ -224,6 +248,7 @@ class ConstructionSheetParameter(models.Model):
         :param formats: diccionario de formatos de la plantilla, que se completa.
         """
         rows = self._construction_for_sheet(sheet, company, overrides)
+        forced = self._construction_forced_values(sheet, company)
         last = len(rows) + 1
         cells = {chr(65 + index) + '1': header for index, header in enumerate(PARAMETER_HEADERS)}
         sheet_styles = {'A1:B1': styles['head_calc'], 'C1': styles['head_data'],
@@ -241,7 +266,8 @@ class ConstructionSheetParameter(models.Model):
             if shown:
                 cells['C%s' % row] = shown
                 cells['F%s' % row] = shown
-            style = styles['calc'] if parameter.locked else styles['data']
+            style = styles['calc'] if parameter.locked or parameter.key in forced \
+                else styles['data']
             sheet_styles['C%s' % row] = style
             sheet_styles['H%s' % row] = styles['data']
             for letter in 'ABDEFG':
@@ -286,6 +312,19 @@ class ConstructionSheetParameter(models.Model):
                         'config': design.table_config(PARAMETERS_SHEET)}],
             'dataValidationRules': rules, 'conditionalFormats': conditional,
         }
+
+    @api.model
+    def _construction_forced_values(self, sheet, company):
+        """{clave: valor de la celda} que la hoja toma del horario de obra al
+        abrirse y al validar (M119-03, punto 5): con horario, sus días y sus
+        horas; sin él, nada."""
+        if not company or not company.construction_site_calendar_id:
+            return {}
+        values = self._construction_schedule_values(sheet, company)
+        parameters = {parameter.key: parameter for parameter, _value in
+                      self._construction_for_sheet(sheet, company)}
+        return {key: parameters[key]._sheet_value(value) for key, value in values.items()
+                if key in parameters}
 
     @api.model
     def _construction_current_values(self, sheet, company, overrides=None):
@@ -378,3 +417,8 @@ class ConstructionVerticalProfile(models.Model):
             else:
                 Parameter.create(dict(vals, company_id=company.id))
         return profile
+
+
+def _number(value):
+    """5.625 → '5.625'; 8.0 → '8'."""
+    return ('%.4f' % (value or 0.0)).rstrip('0').rstrip('.') or '0'

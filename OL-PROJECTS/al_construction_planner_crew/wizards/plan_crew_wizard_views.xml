@@ -44,6 +44,7 @@
                 <field name="line_ids" nolabel="1" readonly="1">
                     <list>
                         <field name="week_start"/>
+                        <field name="date" optional="show"/>
                         <field name="resource_id"/>
                         <field name="role_id"/>
                         <field name="apartment_task_id"/>
@@ -55,8 +56,8 @@
                     </list>
                 </field>
                 <p class="text-muted small">
-                    Un turno por recurso, semana y línea de personal propio, con la tarea del
-                    nivel: las horas por semana de cada recurso se reparten entre las líneas según
+                    Un turno por recurso, semana y línea de personal propio (con horario de obra,
+                    uno por día con las horas del horario), con la tarea del nivel: las horas por semana de cada recurso se reparten entre las líneas según
                     su monto planificado. El capataz registra las horas en la hoja de horas de la
                     tarea; esas horas por el costo hora del empleado son el real de la línea y los
                     turnos aún sin horas, su comprometido.

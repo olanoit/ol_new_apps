@@ -122,7 +122,12 @@ class ConstructionCrewDay(models.Model):
         for (project, employee, day), data in days.items():
             company = project.company_id or self.env.company
             hours_per_day = company.construction_crew_hours_per_day or 8.0
-            worked = project._construction_round_days(data['hours'] / hours_per_day)
+            # M119-03: con horario de obra, un día corto (el sábado de 5 h) no
+            # se redondea: 5 h son 0.625 jornal y cuestan 0.625 del jornal.
+            if company._construction_is_short_day(day):
+                worked = round(data['hours'] / hours_per_day, 4)
+            else:
+                worked = project._construction_round_days(data['hours'] / hours_per_day)
             if not worked:
                 continue
             day_start = datetime.combine(day, time.min)

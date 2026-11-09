@@ -78,6 +78,16 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_plan_cancel_group_id', readonly=False)
     construction_categ_assembly_id = fields.Many2one(
         related='company_id.construction_categ_assembly_id', readonly=False)
+    # Horario de obra (paquete 1.19, M119-03).
+    construction_site_calendar_id = fields.Many2one(
+        related='company_id.construction_site_calendar_id', readonly=False,
+        domain="[('company_id', 'in', (False, company_id))]")
+    construction_workday_hours = fields.Float(
+        related='company_id.construction_workday_hours', readonly=False)
+    construction_site_week_hours = fields.Float(related='company_id.construction_site_week_hours')
+    construction_site_full_day_hours = fields.Float(
+        related='company_id.construction_site_full_day_hours')
+    construction_site_week_days = fields.Float(related='company_id.construction_site_week_days')
     construction_categ_installation_id = fields.Many2one(
         related='company_id.construction_categ_installation_id', readonly=False)
 

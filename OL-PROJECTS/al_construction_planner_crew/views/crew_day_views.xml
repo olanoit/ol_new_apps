@@ -133,7 +133,7 @@
                         </div>
                         <div class="row">
                             <label for="construction_crew_hours_per_day" class="col-lg-5 o_light_label"/>
-                            <field name="construction_crew_hours_per_day"/>
+                            <field name="construction_crew_hours_per_day" readonly="construction_site_calendar_id"/>
                         </div>
                     </div>
                 </setting>

@@ -23,7 +23,7 @@ planificados contra ejecutados por obra, etapa y sub etapa.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_crew/static/description/icon.png',
-    'version': '6.20261101',
+    'version': '7.20261109',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'project_forecast', 'hr_timesheet'],

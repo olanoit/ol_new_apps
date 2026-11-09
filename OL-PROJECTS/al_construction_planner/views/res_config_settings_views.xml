@@ -86,6 +86,31 @@
                                 </div>
                             </div>
                         </setting>
+                        <setting company_dependent="1" id="construction_site_calendar" string="Horario de obra"
+                                 help="Horario de trabajo nativo con los días, las horas y los feriados de la obra. El planificador solo lo lee: no se asigna a contratos ni a la compañía y no cambia la nómina. Vacío: las horas de la jornada y los días hábiles del horario de la compañía.">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="construction_site_calendar_id" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_site_calendar_id" options="{'no_create': True}"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_workday_hours" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_workday_hours" class="oe_inline" readonly="construction_site_calendar_id"/> h
+                                </div>
+                                <div class="row" invisible="not construction_site_calendar_id">
+                                    <label for="construction_site_week_hours" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_site_week_hours" class="oe_inline"/> h
+                                </div>
+                                <div class="row" invisible="not construction_site_calendar_id">
+                                    <label for="construction_site_full_day_hours" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_site_full_day_hours" class="oe_inline"/> h
+                                </div>
+                                <div class="row" invisible="not construction_site_calendar_id">
+                                    <label for="construction_site_week_days" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_site_week_days" class="oe_inline"/>
+                                </div>
+                            </div>
+                        </setting>
                         <setting company_dependent="1" id="construction_name_max_width" string="Ancho máximo de los nombres"
                                  help="Los nombres de partida, recurso y nivel hacen salto de línea con este ancho en las tablas y vistas dinámicas del planificador y en el panel del Cronograma.">
                             <div class="content-group">
