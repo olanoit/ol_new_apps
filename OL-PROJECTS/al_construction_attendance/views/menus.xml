@@ -13,6 +13,8 @@
                   action="action_progress_without_attendance" sequence="30"/>
         <menuitem id="menu_planner_contractor_workers" name="Personal de contratas"
                   action="action_contractor_worker" sequence="40"/>
+        <menuitem id="menu_planner_labor_weekly_control" name="Control semanal de mano de obra"
+                  action="action_construction_labor_weekly_control" sequence="45"/>
         <menuitem id="menu_planner_labor_cost_allocation" name="Cierre de costo de personal"
                   action="action_labor_cost_allocation" sequence="50"
                   groups="al_construction_planner.group_planner_manager"/>

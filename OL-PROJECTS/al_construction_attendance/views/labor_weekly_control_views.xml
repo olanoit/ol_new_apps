@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.19, M119-02: control semanal del presupuesto de mano de obra. -->
+    <record id="construction_labor_weekly_control_view_list" model="ir.ui.view">
+        <field name="name">construction.labor.weekly.control.list</field>
+        <field name="model">construction.labor.weekly.control</field>
+        <field name="arch" type="xml">
+            <list string="Control semanal de mano de obra" create="0" edit="0" delete="0"
+                  decoration-danger="over_budget" decoration-warning="excess_staff or delay"
+                  default_group_by="stage_id">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="stage_id" optional="hide"/>
+                <field name="mode" optional="show"/>
+                <field name="partner_id" optional="show"/>
+                <field name="week_label"/>
+                <field name="in_progress" optional="hide"/>
+                <field name="target" sum="Total"/>
+                <field name="progress" sum="Total"/>
+                <field name="progress_diff" sum="Total"/>
+                <field name="progress_cumulative" optional="show"/>
+                <field name="person_days_budget" sum="Total"/>
+                <field name="person_days_real" sum="Total"/>
+                <field name="persons"/>
+                <field name="required_productivity"/>
+                <field name="real_productivity"/>
+                <field name="productivity_deviation"/>
+                <field name="expected_persons"/>
+                <field name="progress_person_days" sum="Total" optional="show"/>
+                <field name="person_days_real_cumulative" optional="hide"/>
+                <field name="progress_person_days_cumulative" optional="hide"/>
+                <field name="amount_budget" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                <field name="amount_real" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                <field name="progress_amount" sum="Total" optional="hide" groups="al_construction_planner.group_planner_amounts"/>
+                <field name="excess_staff" column_invisible="1"/>
+                <field name="delay" column_invisible="1"/>
+                <field name="over_budget" column_invisible="1"/>
+                <field name="first_over_budget" widget="boolean_toggle" readonly="1" optional="show"/>
+                <field name="warning"/>
+                <field name="single_activity_id" column_invisible="1"/>
+                <button name="action_open_details" type="object" icon="fa-search" title="Avances y marcaciones"/>
+                <button name="action_use_as_measured" type="object" icon="fa-tachometer"
+                        title="Usar como rendimiento medido"
+                        invisible="not single_activity_id or not real_productivity"
+                        groups="al_construction_planner.group_planner_plan_planner"
+                        confirm="¿Usar el rendimiento real de esta semana como rendimiento medido de la obra?"/>
+                <field name="real_productivity" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_labor_weekly_control_view_pivot" model="ir.ui.view">
+        <field name="name">construction.labor.weekly.control.pivot</field>
+        <field name="model">construction.labor.weekly.control</field>
+        <field name="arch" type="xml">
+            <pivot string="Control semanal de mano de obra">
+                <field name="stage_id" type="row"/>
+                <field name="week_start" interval="week" type="col"/>
+                <field name="person_days_budget" type="measure"/>
+                <field name="person_days_real" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_labor_weekly_control_view_graph" model="ir.ui.view">
+        <field name="name">construction.labor.weekly.control.graph</field>
+        <field name="model">construction.labor.weekly.control</field>
+        <field name="arch" type="xml">
+            <graph string="Control semanal de mano de obra" type="line" cumulated="1">
+                <field name="week_start" interval="week"/>
+                <field name="progress_person_days" type="measure"/>
+                <field name="person_days_real" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="construction_labor_weekly_control_view_search" model="ir.ui.view">
+        <field name="name">construction.labor.weekly.control.search</field>
+        <field name="model">construction.labor.weekly.control</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id"/>
+                <field name="stage_id"/>
+                <field name="partner_id"/>
+                <filter name="with_warning" string="Con aviso" domain="[('warning', '!=', False)]"/>
+                <filter name="over" string="Sobre el presupuesto" domain="[('over_budget', '=', True)]"/>
+                <filter name="current" string="Semana en curso" domain="[('in_progress', '=', True)]"/>
+                <group>
+                    <filter name="by_stage" string="Sub etapa" context="{'group_by': 'stage_id'}"/>
+                    <filter name="by_mode" string="Modalidad" context="{'group_by': 'mode'}"/>
+                    <filter name="by_partner" string="Contrata" context="{'group_by': 'partner_id'}"/>
+                    <filter name="by_week" string="Semana" context="{'group_by': 'week_start:week'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_labor_weekly_control" model="ir.actions.act_window">
+        <field name="name">Control semanal de mano de obra</field>
+        <field name="res_model">construction.labor.weekly.control</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="context">{'search_default_with_warning': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin presupuesto de mano de obra</p>
+            <p>La obra recibe su presupuesto al enviar la hoja de planificación; el informe se
+               rehace cada día con la marcación y los avances validados.</p>
+        </field>
+    </record>
+
+    <record id="action_server_refresh_labor_control" model="ir.actions.server">
+        <field name="name">Actualizar el control semanal</field>
+        <field name="model_id" ref="model_construction_labor_weekly_control"/>
+        <field name="binding_model_id" ref="model_construction_labor_weekly_control"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">model._construction_refresh(records.project_id)</field>
+    </record>
+
+    <record id="project_project_view_form_labor_control" model="ir.ui.view">
+        <field name="name">project.project.form.labor.control</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_construction_labor_control" type="object" class="oe_stat_button"
+                        icon="fa-line-chart" string="Control de MO"
+                        invisible="not is_construction_site or not construction_labor_budget_count"
+                        groups="al_construction_planner.group_planner_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ir_cron_refresh_labor_control" model="ir.cron">
+        <field name="name">Planificación de obra: control semanal de mano de obra</field>
+        <field name="model_id" ref="model_construction_labor_weekly_control"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_refresh()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+</odoo>

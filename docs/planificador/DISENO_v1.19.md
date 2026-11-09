@@ -164,10 +164,30 @@ fórmulas de PROGRAMA y en el servidor al enviar (ver D10).
 
 ## 7. Entrega 4 · M119-02 Control semanal
 
-Informe `construction.labor.weekly.control` (vista SQL o modelo recalculado por
-la acción programada de los jornales) por obra, sub etapa, modalidad, contrata
-y semana, con avisos «Exceso de personal», «Atraso» y «Sobre el presupuesto», la
-primera semana sobre el presupuesto y la acción «Usar como rendimiento medido».
+- `construction.labor.weekly.control` (`al_construction_attendance`): una fila
+  por obra, presupuesto (sub etapa y modalidad), contrata y semana de lunes a
+  domingo. Se rehace al abrirlo desde la obra («Control de MO»), con
+  «Actualizar el control semanal» y con una acción programada diaria.
+- Real: avance validado; persona-días del personal propio = jornales
+  ejecutados; de la contrata = horas marcadas ÷ jornada completa del horario
+  de obra, repartidas entre los presupuestos que avanzó la semana por lo que
+  justifica su avance (D5). Soles reales: propio, persona-días × jornal;
+  contrata, avance × tarifa. Semana en curso contra la meta de los días
+  transcurridos.
+- Avisos con la banda del presupuesto (D9): «Exceso de personal» (rendimiento
+  real bajo el exigido − banda), «Atraso» (avance acumulado bajo la meta
+  acumulada) y «Sobre el presupuesto» (reales acumulados sobre el
+  presupuesto del avance + banda), con la primera semana marcada.
+- Sin rendimiento, la fila lo dice y no calcula rendimiento real ni personal
+  esperado. Con una sola actividad, «Usar como rendimiento medido» la lleva a
+  la tabla de la obra con origen «Medido».
+- Vistas: lista con avisos, pivote y gráfico acumulado (presupuesto del
+  avance frente a persona-días reales); menú Ejecución › Asistencia.
+- Los criterios se cumplen con la cuenta exacta; dos difieren por redondeo
+  del requerimiento: la desviación de la segunda semana es −17.24 % (dice
+  −17.3 %) y el presupuesto del avance acumulado es S/ 5,380.20 (dice 5,380).
+- **Contratas con varias en una sub etapa:** la meta se reparte en partes
+  iguales entre las contratas que avanzaron [I].
 
 ## 8. Entrega 5 · M119-05 Tablero
 
