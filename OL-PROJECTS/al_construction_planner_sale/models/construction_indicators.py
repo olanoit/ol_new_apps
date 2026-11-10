@@ -192,8 +192,11 @@ class ProjectProject(models.Model):
             lambda v: first <= v.cutoff_date <= last).mapped('amount_confirmed'))
         valued_pct = valued_amount / sale_total if sale_total else 0.0
         ac = accounting['cost']
-        cpi = ev / ac if ac else False
-        spi = ev / planned_cost if planned_cost else False
+        # Sin partidas (sin orden del contrato) o con el plan sin aprobar no
+        # hay valor ganado que medir: los índices quedan vacíos, no en 0.
+        measurable = bool(physical['lines']) and plan.state not in ('draft', 'to_approve')
+        cpi = ev / ac if ac and measurable else False
+        spi = ev / planned_cost if planned_cost and measurable else False
         eac = ac + (bac - ev) / cpi if cpi else bac
         estimated_end = self._construction_estimated_end(start, end, spi)
         budget = {
@@ -402,6 +405,30 @@ class ConstructionProjectIndicators(models.AbstractModel):
         return dates
 
     @api.model
+    def _construction_progress_points(self, project, plan, dates, refresh=False):
+        """{fecha: (avance físico, valor ganado)} de las fechas pasadas del
+        gráfico. Cada punto cuesta un cálculo del ejecutado a esa fecha, así
+        que se guardan en la obra (``construction_progress_history``): la
+        acción programada diaria los recalcula todos (``refresh``) y la ficha
+        solo calcula los que falten."""
+        history = {} if refresh else dict(project.construction_progress_history or {})
+        if history.get('plan') != plan.id:
+            history = {'plan': plan.id}
+        result, changed = {}, refresh
+        for day in dates:
+            key = fields.Date.to_string(day)
+            if key not in history:
+                values = project._construction_physical_values(day, plan)
+                history[key] = [values['progress'], values['earned_value']]
+                changed = True
+            result[day] = tuple(history[key])
+        if changed:
+            # sudo: es un resumen calculado; quien abre la ficha puede no
+            # tener permiso de escribir la obra.
+            project.sudo().construction_progress_history = history
+        return result
+
+    @api.model
     def _construction_charts(self, project, data, today):
         """«Avance físico contra valorizado» (en % de la venta) y curva S de
         costo (programado, valor ganado y ejecutado)."""
@@ -409,11 +436,9 @@ class ConstructionProjectIndicators(models.AbstractModel):
         sale = data['budget']['close_sale'] or 0.0
         until = min(today, max(filter(None, [end, today])))
         dates = self._construction_chart_dates(start, until)
-        physical, earned = [], []
-        for day in dates[:-1]:
-            values = project._construction_physical_values(day, data['plan'])
-            physical.append(values['progress'])
-            earned.append(values['earned_value'])
+        points = self._construction_progress_points(project, data['plan'], dates[:-1])
+        physical = [points[day][0] for day in dates[:-1]]
+        earned = [points[day][1] for day in dates[:-1]]
         if dates:
             physical.append(data['executed']['physical'])
             earned.append(data['ev'])
@@ -602,6 +627,10 @@ class ConstructionProjectIndicators(models.AbstractModel):
 
 class ProjectProjectSheet(models.Model):
     _inherit = 'project.project'
+
+    construction_progress_history = fields.Json(
+        string='Avance por semana', copy=False, readonly=True,
+        help='Puntos del gráfico «Avance físico contra valorizado» de la ficha (CR-60).')
 
     def action_construction_indicator_sheet(self):
         self.ensure_one()

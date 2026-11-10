@@ -141,3 +141,39 @@ validación por niveles de OCA y los cálculos de AL.
   «Planificación» de la obra usan la misma regla (tipo de cuenta, sin las
   excluidas); antes eran los apuntes positivos y negativos de la analítica,
   con las cuentas de balance mezcladas.
+- CR-59 y CR-60: con una obra sin orden del contrato (sin partidas) o con el
+  plan sin aprobar, el CPI y el SPI quedan vacíos y no cuentan para el
+  semáforo: no hay valor ganado que medir.
+- CR-60: el avance físico del gráfico es semanal (un punto por semana, como
+  mucho 40), no diario. Los puntos pasados se guardan en la obra y los
+  recalcula la acción programada diaria; un avance validado con fecha
+  atrasada aparece en el gráfico al día siguiente.
+
+## 8. Verificación en las bases de desarrollo (10-nov)
+
+Con las obras existentes, sin guardar cambios (consola con `rollback`):
+
+- creval-dev: 7 obras con plan. La cartera abre en 0.8 s con los
+  indicadores guardados (5.7 s la primera vez del día, que hace la acción
+  programada). Pendientes: 19 en el título y 9 en Compras, como el criterio
+  de aceptación de CR-65. La ficha de cada obra revisada da las mismas cifras
+  que su fila de la cartera.
+- newallcenter-dev: 6 obras con plan y 120 sin plan; la cartera abre en 2.5 s.
+  La ficha de la obra más grande (5 393 líneas de plan) tardaba 20 s por el
+  gráfico de avance (17 s): con los puntos guardados queda en el cálculo de
+  los indicadores (unos 2 s).
+- Hallazgo corregido: las obras sin orden del contrato salían en rojo con
+  CPI y SPI en 0.
+
+## 9. Tabla final
+
+| Código | Commit | Versión | Pruebas (`test_creval_package7.py` y otras) | Diferencias |
+|---|---|---|---|---|
+| CR-59 | 27da7cc2 y el de esta corrección | planner 78, sale 26 | `test_portfolio_*`, `test_indicators_are_marked_stale`, recorrido `al_construction_planner_portfolio` | Postventa = plan cerrado; orden en el navegador |
+| CR-60 | ídem | sale 26 | `test_indicators_budget_and_executed`, `test_estimated_end_from_the_schedule_index`, `test_indicator_sheet_*`, `test_progress_points_are_stored`, `test_indices_need_partidas`, recorrido `al_construction_planner_indicator_sheet` | Índice por especialidad contra el costo del plan; avance semanal |
+| CR-61 | 27da7cc2 | sale 25 | `test_physical_progress_uses_the_valuation_rule`, `test_new_sites_default_to_valued_progress` | — |
+| CR-62 | 27da7cc2 | sale 25 | `test_cost_and_income_from_accounting`, `TestPlanningTabV15` | En el puente de ventas; la pestaña «Planificación» usa la misma regla |
+| CR-63 | 27da7cc2 | sale 25 | `test_month_targets_close_on_the_sale`, `test_target_approval_by_the_project_head` | Lista propia, no pestaña del Cronograma |
+| CR-64 | 27da7cc2 | sale 25 | `test_billable_change_goes_to_the_sale`, `test_rework_is_not_billable` | Un cambio aprobado no se anula: se corrige con otro |
+| CR-65 | 27da7cc2 | planner 78 | `test_pending_by_area` | — |
+

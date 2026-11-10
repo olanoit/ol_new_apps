@@ -211,6 +211,30 @@ class TestCrevalPackage7Sources(IncomeCommon):
         self.assertFalse(Sheet.toggle_favorite(self.project.id))
 
 
+    def test_progress_points_are_stored(self):
+        self._indicators_ready()
+        Sheet = self.env['construction.project.indicators']
+        dates = [date(2026, 10, 12), date(2026, 10, 19), date(2026, 10, 26)]
+        points = Sheet._construction_progress_points(self.project, self.plan, dates)
+        history = self.project.construction_progress_history
+        self.assertEqual(history['plan'], self.plan.id)
+        self.assertEqual(list(history['2026-10-26']), list(points[date(2026, 10, 26)]))
+        # La segunda vez lee lo guardado, sin recalcular.
+        with patch.object(type(self.project), '_construction_physical_values',
+                          side_effect=AssertionError('recalculó')):
+            again = Sheet._construction_progress_points(self.project, self.plan, dates)
+        self.assertEqual(again, points)
+
+    def test_indices_need_partidas(self):
+        site = self.env['project.project'].create({
+            'name': 'Obra sin venta (test 7)', 'is_construction_site': True,
+            'date_start': date(2026, 10, 1), 'date': date(2026, 12, 1)})
+        plan = self.env['construction.resource.plan'].create({'project_id': site.id})
+        data = site._construction_indicators(date(2026, 11, 1), date(2026, 11, 10), plan)
+        self.assertIs(data['cpi'], False)
+        self.assertIs(data['spi'], False)
+        self.assertFalse(data['light'])
+
     # ------------------------------------------------------------------
     # Entrega 4: CR-59 cartera de obras y CR-65 pendientes por área
     # ------------------------------------------------------------------

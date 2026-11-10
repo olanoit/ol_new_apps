@@ -87,8 +87,17 @@ class ProjectProject(models.Model):
     @api.model
     def _cron_construction_indicators(self):
         projects = self.search([('is_construction_site', '=', True), ('is_template', '=', False)])
+        Sheet = self.env['construction.project.indicators']
+        today = fields.Date.context_today(self)
         for project in projects:
             project._construction_refresh_indicators()
+            # Puntos del gráfico de la ficha (CR-60), para que abra rápido.
+            plan = project._construction_portfolio_plan()
+            start, end = project._construction_indicator_dates(plan) if plan else (False, False)
+            if start:
+                dates = Sheet._construction_chart_dates(start, min(today, max(
+                    filter(None, [end, today]))))
+                Sheet._construction_progress_points(project, plan, dates[:-1], refresh=True)
             if not self.env.context.get('construction_no_commit'):
                 self.env.cr.commit()
 
