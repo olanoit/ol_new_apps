@@ -30,3 +30,14 @@ de código o reglas que la hoja no puede expresar.
 Las correcciones de datos que pide el documento (P00039 y su intervención,
 líneas del plan 19 sin contrata) se hacen en la base después de desplegar, con
 permiso.
+
+Hecho el 10-nov, con permiso y respaldo previo de la base, por script con el
+ORM (`construction_plan_force` para el plan aprobado):
+
+- P00039: la línea de 4.0306 vuelve a 80 und (80 recibidas).
+- P00039-INT01: 176 contratadas, 80 ejecutadas, 80 valorizadas, saldo 96,
+  S/ 1,120.00 valorizado y S/ 1,344.00 liberado. Lo ejecutado es lo validado
+  hasta la confirmación: AVN/2026/00187 (10 und, reportado después) no cuenta,
+  como manda CR-36; el avance sigue validado en la base.
+- Plan 19: las líneas 1417, 1418, 1424, 1464 y 1467 quedan sin contrata (solo
+  tenían asignaciones de P00038, anulada).
