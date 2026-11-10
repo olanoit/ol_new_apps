@@ -180,3 +180,25 @@ class TestLaborWeeklyControl(PlannerCommon):
         self.assertFalse(row.real_productivity)
         self.assertFalse(row.expected_persons)
         self.assertIn('Sin rendimiento', row.warning)
+
+    def test_excess_band_of_its_own(self):
+        """Corrección 1 del 1.19: con la banda del aviso en 20 %, la segunda
+        semana (−17.24 %) no avisa «Exceso de personal»; el presupuesto no
+        cambia y «Sobre el presupuesto» sigue con la banda del rendimiento."""
+        budget = self._budget('own', 400.0, 4.0)
+        line = self._line('labor')
+        self._progress(line, 88.0, MONDAY)
+        self._own_days(line, 4, MONDAY)
+        second = MONDAY + timedelta(days=7)
+        self._progress(line, 95.0, second)
+        self._own_days(line, 5, second)
+        other = self.Control._construction_refresh(self.project).sorted('week_start')[1]
+        self.assertTrue(other.excess_staff)
+        budget.excess_band = 20.0
+        other = self.Control.search([('project_id', '=', self.project.id)]).sorted(
+            'week_start')[1]
+        self.assertFalse(other.excess_staff)
+        self.assertTrue(other.over_budget)
+        self.assertEqual(budget.persons, 4)
+        self.assertAlmostEqual(budget.person_days_budget, 98.0)
+        self.assertAlmostEqual(budget.amount, 11760.0, places=2)

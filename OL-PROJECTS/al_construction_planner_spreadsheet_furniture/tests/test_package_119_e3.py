@@ -78,6 +78,8 @@ class TestPackage119Budget(TestWorksheetV18):
                        'Valor inicial (calc.)', 'Clave (calc.)', 'Motivo del cambio',
                        'Valor usado (calc.)', 'Vigente (calc.)'],
                       ['Programa', 'Banda', '', '%', '', 0.1, 'banda_rendimiento', '', 0.1, ''],
+                      ['Programa', 'Banda del aviso', 0.2, '%', '', 0.1,
+                       'banda_exceso_personal', 'Obra con accesos', 0.2, ''],
                       ['Rendimientos', 'T19-INS', 4.5, '', '', 4, PRODUCTIVITY_PREFIX + 'T19-INS',
                        'Mueble sencillo', 4.5, '']]
         label = self.install._label()
@@ -97,6 +99,8 @@ class TestPackage119Budget(TestWorksheetV18):
     def test_payload_and_apply(self):
         payload = read_labor_payload(self._payload_sheets())
         self.assertAlmostEqual(payload['band'], 10.0)
+        # Corrección 1: el envío lleva las dos bandas.
+        self.assertAlmostEqual(payload['excess_band'], 20.0)
         self.assertEqual(payload['blocks'][0]['start'], MONDAY)
         self.assertEqual(payload['blocks'][0]['mode'], 'own')
         budgets = self.site._construction_labor_budget_apply(payload)
@@ -111,6 +115,8 @@ class TestPackage119Budget(TestWorksheetV18):
         # 400 ÷ 4.5 = 88.89 persona-días ÷ 24.5 = 3.63 → 4 personas al 91 %.
         self.assertEqual(budgets.persons, 4)
         self.assertAlmostEqual(budgets.amount, 4 * 24.5 * 120, places=2)
+        self.assertAlmostEqual(budgets.excess_band, 20.0)
+        self.assertAlmostEqual(budgets.band, 10.0)
         # Un segundo envío actualiza el mismo presupuesto.
         again = self.site._construction_labor_budget_apply(payload)
         self.assertEqual(again, budgets)
@@ -169,3 +175,23 @@ class TestPackage119Budget(TestWorksheetV18):
             self.assertEqual(wizard.budget_persons, 4)
             self.assertAlmostEqual(wizard.budget_person_days, 22.5, places=2)
             self.assertIn('Presupuesto de mano de obra', wizard.note or '')
+
+    def test_older_sheet_without_excess_band(self):
+        """Corrección 1: una hoja anterior sin la fila nueva deja la banda del
+        aviso en 10 (o la que ya tenía la obra)."""
+        sheets = self._payload_sheets()
+        sheets['PARAMETROS'] = [row for row in sheets['PARAMETROS']
+                                if 'banda_exceso_personal' not in row]
+        payload = read_labor_payload(sheets)
+        self.assertIsNone(payload['excess_band'])
+        budget = self.site._construction_labor_budget_apply(payload)
+        self.assertEqual(budget.excess_band, 10.0)
+        budget.excess_band = 15.0
+        self.site._construction_labor_budget_apply(payload)
+        self.assertEqual(budget.excess_band, 15.0)
+        # «Actualizar a la plantilla vigente» trae la fila nueva con 10.
+        cells = next(sheet for sheet in self.site._construction_spreadsheet_data(10)['sheets']
+                     if sheet['name'] == 'PARAMETROS')['cells']
+        row = next(ref[1:] for ref, value in cells.items()
+                   if value == 'banda_exceso_personal' and ref.startswith('G'))
+        self.assertEqual(cells['F%s' % row], '0.1')

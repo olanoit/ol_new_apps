@@ -15,7 +15,7 @@
                     <label class="small">Desde</label>
                     <select class="form-select form-select-sm w-auto" t-on-change="onFrom">
                         <t t-foreach="state.data.weeks" t-as="week" t-key="week.number">
-                            <option t-att-value="week.number" t-att-selected="week.number === state.weekFrom">S<t t-esc="week.number"/> · <t t-esc="week.monday"/></option>
+                            <option t-att-value="week.number" t-att-selected="week.number === state.weekFrom">S<t t-esc="week.number"/> · <t t-esc="week.monday"/><t t-if="week.state === 'current'"> (en curso)</t></option>
                         </t>
                     </select>
                     <label class="small">Hasta</label>
@@ -34,7 +34,7 @@
                         <button t-if="state.data.has_production" t-att-class="'btn ' + (state.production ? 'btn-primary' : 'btn-outline-primary')" t-on-click="() => this.toggle('production')">Producción</button>
                         <button t-att-class="'btn ' + (state.installation ? 'btn-primary' : 'btn-outline-primary')" t-on-click="() => this.toggle('installation')">Instalación</button>
                     </div>
-                    <div class="w-100 small text-muted" t-esc="state.data.period_label"/>
+                    <div class="w-100 small"><b t-esc="state.data.period_label"/> <span class="text-muted ms-2" t-esc="periodState()"/></div>
                 </t>
             </div>
             <div t-if="!state.projectId" class="p-4 text-muted">Elija una obra para ver su control semanal.</div>
@@ -43,16 +43,17 @@
                 <t t-set="ind" t-value="state.data.indicators"/>
                 <div class="o_cib_kpis d-flex flex-wrap gap-2 p-2">
                     <div class="o_cib_kpi">
-                        <div class="o_cib_kpi_label">Pisos del período</div>
+                        <div class="o_cib_kpi_label" t-esc="state.weekFrom === state.weekTo ? 'Pisos de la semana' : 'Pisos del período'"/>
                         <div class="o_cib_kpi_value"><t t-esc="ind.period.done"/> de <t t-esc="ind.period.total"/></div>
-                        <div class="o_cib_kpi_note">programados que terminaron al cierre</div>
+                        <div class="o_cib_kpi_note" t-esc="state.weekFrom === state.weekTo ? 'Terminados de los programados para la semana.' : 'Terminados de los programados en las ' + (state.weekTo - state.weekFrom + 1) + ' semanas.'"/>
                     </div>
                     <div class="o_cib_kpi">
                         <div class="o_cib_kpi_label">Pisos atrasados</div>
                         <div t-att-class="'o_cib_kpi_value ' + (ind.late.count ? 'text-danger' : '')" t-esc="ind.late.count"/>
                         <div class="o_cib_kpi_note">
-                            <t t-foreach="ind.late.items.slice(0, 4)" t-as="item" t-key="item_index">
-                                <span class="me-2"><t t-esc="item.floor"/> · <t t-esc="item.stage"/> (<t t-esc="item.pct"/> %)</span>
+                            <t t-if="!ind.late.count">Ningún piso atrasado.</t>
+                            <t t-foreach="ind.late.items.slice(0, 6)" t-as="item" t-key="item_index">
+                                <span class="me-2">Piso <t t-esc="item.floor"/> · <t t-esc="item.stage.split(' ')[0]"/> (<t t-esc="item.pct"/> %)</span>
                             </t>
                         </div>
                     </div>
@@ -63,11 +64,12 @@
                             <t t-foreach="ind.finished.per_stage" t-as="item" t-key="item_index">
                                 <span class="me-2"><t t-esc="item.stage.split(' ')[0]"/>: <t t-esc="item.done"/>/<t t-esc="item.total"/></span>
                             </t>
+                            (programados a la fecha)
                         </div>
                     </div>
                     <div class="o_cib_kpi" t-on-click="openControl" role="button" title="Abrir el control semanal de mano de obra">
                         <t t-set="lab" t-value="labor()"/>
-                        <div class="o_cib_kpi_label">Mano de obra</div>
+                        <div class="o_cib_kpi_label" t-esc="lab.label"/>
                         <div t-att-class="'o_cib_kpi_value ' + (lab.light === 'red' ? 'text-danger' : '')" t-esc="lab.value"/>
                         <div class="o_cib_kpi_note" t-esc="lab.note"/>
                     </div>
@@ -92,13 +94,21 @@
                                                 t-att-class="'o_cib_cell o_cib_' + cell.status + (inPeriod(cell) ? ' o_cib_in_period' : '') + (state.selection and state.selection.cell === cell ? ' o_cib_selected' : '')"
                                                 t-att-title="statusLabel(cell.status)">
                                                 <div class="o_cib_bar" t-att-style="'width:' + cell.pct + '%'"/>
-                                                <span class="o_cib_text" t-esc="cellText(cell)"/>
+                                                <span class="o_cib_text"><b t-esc="cellMain(cell)"/> <small t-esc="cellNote(cell)"/></span>
                                             </td>
                                         </t>
                                     </tr>
                                 </t>
                             </tbody>
                         </table>
+                        <div class="d-flex flex-wrap gap-3 small o_cib_legend">
+                            <span><span class="o_cib_swatch o_cib_done"/>Terminado</span>
+                            <span><span class="o_cib_swatch o_cib_late"/>Atrasado</span>
+                            <span><span class="o_cib_swatch o_cib_current"/>En curso</span>
+                            <span><span class="o_cib_swatch o_cib_pending"/>Pendiente</span>
+                            <span><span class="o_cib_swatch o_cib_in_period"/>Programado en el período</span>
+                        </div>
+                        <div class="small fw-bold mt-3">Pisos terminados por semana</div>
                         <div class="d-flex flex-wrap gap-3 mt-2">
                             <t t-foreach="state.data.curves" t-as="curve" t-key="curve.stage">
                                 <div class="o_cib_curve">
@@ -118,23 +128,26 @@
                         <div t-if="!state.selection" class="text-muted small p-2">Haga clic en un piso o en una de sus celdas para ver su situación al cierre del período.</div>
                         <t t-elif="state.selection.kind === 'cell'">
                             <t t-set="cell" t-value="state.selection.cell"/>
-                            <h5><t t-esc="cell.floor"/> · <t t-esc="cell.stage_label"/></h5>
-                            <t t-foreach="[['Plazo', plazo(cell)], ['Presupuesto', presupuesto(cell)], ['Alcance', alcance(cell)]]" t-as="row" t-key="row[0]">
-                                <div class="o_cib_light_row"><span t-att-class="'o_cib_light o_cib_light_' + row[1].light"/><b t-esc="row[0]"/>: <t t-esc="row[1].text"/></div>
-                            </t>
-                            <dl class="small mt-2 mb-1">
-                                <dt>Quién ejecuta</dt><dd t-esc="cell.executor"/>
-                                <dt>Semana programada</dt><dd>S<t t-esc="cell.sched_week"/> · <t t-esc="cell.sched_dates"/></dd>
-                                <dt>Terminó</dt><dd t-esc="cell.finish_week ? 'S' + cell.finish_week : '—'"/>
-                                <dt>Avance</dt><dd><t t-esc="cell.pct"/> %</dd>
-                                <t t-set="prev" t-value="previousCell(state.selection.floor, cell)"/>
-                                <t t-if="prev">
-                                    <dt>Sub etapa anterior</dt>
-                                    <dd><t t-esc="prev.stage_label"/>: <t t-esc="statusLabel(prev.status)"/> <t t-esc="cellText(prev)"/></dd>
+                            <h5>Piso <t t-esc="cell.floor"/> · <t t-esc="cell.stage_label"/></h5>
+                            <div class="small text-muted mb-2">Estado al cierre de la semana <t t-esc="state.weekTo"/>.</div>
+                            <div class="o_cib_chips">
+                                <t t-foreach="[['Plazo', plazo(cell)], ['Presupuesto', presupuesto(cell)], ['Alcance', alcance(cell)]]" t-as="row" t-key="row[0]">
+                                    <div t-att-class="'o_cib_chip o_cib_chip_' + row[1].light">
+                                        <div class="o_cib_chip_label" t-esc="row[0]"/>
+                                        <div class="o_cib_chip_value" t-esc="row[1].value"/>
+                                        <div class="o_cib_chip_note" t-esc="row[1].note"/>
+                                    </div>
                                 </t>
+                            </div>
+                            <dl class="small mt-2 mb-1 o_cib_facts">
+                                <dt>Ejecuta</dt><dd t-esc="cell.executor"/>
+                                <dt>Programado</dt><dd t-esc="cell.sched_week ? 'Semana ' + cell.sched_week + ' (' + cell.sched_dates + ')' : '—'"/>
+                                <dt>Terminado</dt><dd t-esc="cell.finish_week ? 'Semana ' + cell.finish_week : '—'"/>
+                                <dt>Avance</dt><dd t-esc="cell.status === 'no_order' ? 'Sin orden de fabricación' : cell.pct + ' %'"/>
+                                <dt>Etapa anterior</dt><dd t-esc="previousText(state.selection.floor, cell)"/>
                                 <t t-if="cell.budget and cell.budget.state !== 'none'">
-                                    <dt>Presupuesto del avance y real</dt>
-                                    <dd><t t-esc="cell.budget.base"/> / <t t-esc="cell.budget.real"/> (<t t-esc="cell.budget.unit === 'amount' ? 'soles' : 'persona-días'"/>)</dd>
+                                    <dt t-esc="cell.budget.unit === 'amount' ? 'Del avance / real (S/)' : 'Persona-días'"/>
+                                    <dd><t t-esc="cell.budget.base"/> del avance / <t t-esc="cell.budget.real"/> reales</dd>
                                 </t>
                             </dl>
                             <table class="table table-sm small">
@@ -147,22 +160,66 @@
                                 </tbody>
                             </table>
                             <div class="small"><b>Qué falta:</b>
-                                <t t-if="missing(cell).length"><t t-esc="missing(cell).length"/> ambiente(s) (<t t-esc="missing(cell).map((s) => s.apartment).join(', ')"/>)</t>
-                                <t t-else="">nada</t>
+                                <t t-if="missing(cell).length"><t t-esc="missing(cell).length"/> cocina(s) (<t t-esc="missing(cell).map((s) => s.apartment).join(', ')"/>).</t>
+                                <t t-else="">Nada: el piso está completo en esta sub etapa.</t>
                             </div>
-                            <button class="btn btn-link btn-sm px-0" t-on-click="() => this.openProgress(cell)">Ver los avances del piso</button>
+                            <div class="small" t-if="cell.productions and cell.productions.length">
+                                <b>Órdenes de fabricación:</b>
+                                <t t-foreach="cell.productions" t-as="production" t-key="production.id">
+                                    <button class="btn btn-link btn-sm px-1 py-0" t-on-click="() => this.openProduction(production)" t-esc="production.name"/>
+                                </t>
+                            </div>
+                            <button t-if="cell.line_ids.length" class="btn btn-link btn-sm px-0" t-on-click="() => this.openProgress(cell)">Ver los avances del piso</button>
                         </t>
                         <t t-else="">
                             <t t-set="floor" t-value="state.selection.floor"/>
-                            <h5>Piso <t t-esc="floor.name"/></h5>
+                            <h5 t-esc="floorTitle(floor)"/>
+                            <div class="small text-muted mb-2">Todas las sub etapas visibles, al cierre de la semana <t t-esc="state.weekTo"/>. Plazo · Presupuesto · Alcance; clic en una sub etapa para su detalle.</div>
                             <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
                                 <div class="o_cib_floor_stage" role="button" t-on-click="() => this.selectCell(floor, cell)">
                                     <b t-esc="cell.stage_label"/>
-                                    <span t-att-class="'o_cib_light o_cib_light_' + plazo(cell).light" title="Plazo"/>
-                                    <span t-att-class="'o_cib_light o_cib_light_' + presupuesto(cell).light" title="Presupuesto"/>
-                                    <span t-att-class="'o_cib_light o_cib_light_' + alcance(cell).light" title="Alcance"/>
+                                    <span t-att-class="'o_cib_mini o_cib_chip_' + plazo(cell).light" t-esc="plazo(cell).value"/>
+                                    <span t-att-class="'o_cib_mini o_cib_chip_' + presupuesto(cell).light" t-esc="presupuesto(cell).value"/>
+                                    <span t-att-class="'o_cib_mini o_cib_chip_' + alcance(cell).light" t-esc="alcance(cell).value"/>
                                 </div>
                             </t>
+                            <t t-set="ftable" t-value="floorTable(floor)"/>
+                            <div class="o_cib_units mt-2" t-if="ftable.rows.length">
+                                <div class="small fw-bold mb-1">Departamentos y muebles del piso</div>
+                                <table class="table table-sm small mb-1">
+                                    <thead>
+                                        <tr>
+                                            <th>Dpto.</th><th>Tipología</th><th>Cantidad</th>
+                                            <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
+                                                <th class="text-center" t-esc="col.label"/>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="ftable.rows" t-as="row" t-key="row.id">
+                                            <tr>
+                                                <td t-esc="row.apartment"/>
+                                                <td t-esc="row.typology"/>
+                                                <td t-esc="row.qty"/>
+                                                <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
+                                                    <td role="button" t-on-click="() => this.selectCell(floor, col.cell)"
+                                                        t-att-class="'text-center o_cib_mark o_cib_mark_' + (row.marks[col.cell.stage] || 'pending')"
+                                                        t-esc="mark(row.marks[col.cell.stage])"/>
+                                                </t>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3">Hechos</td>
+                                            <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
+                                                <td class="text-center"><t t-esc="col.done"/>/<t t-esc="ftable.total"/></td>
+                                            </t>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="text-muted small">✓ hecho · ◐ en curso · · pendiente</div>
+                            </div>
                             <div class="small mt-2"><b>Qué falta:</b>
                                 <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
                                     <div t-if="cell.status !== 'done'">

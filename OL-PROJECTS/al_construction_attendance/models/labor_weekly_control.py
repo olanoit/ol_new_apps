@@ -15,9 +15,9 @@ semana de lunes a domingo, contra el presupuesto de M119-01:
   avance × tarifa) y el presupuesto del avance (lo que el presupuesto asigna al
   trabajo hecho), con sus acumulados.
 
-Avisos con la banda del presupuesto: «Exceso de personal», «Atraso» y «Sobre el
-presupuesto», que se compara con el avance y no con el calendario; se marca la
-primera semana en que ocurre.
+Avisos: «Exceso de personal», con su propia banda (corrección 1 del 1.19);
+«Atraso»; y «Sobre el presupuesto», con la banda del rendimiento, que se compara
+con el avance y no con el calendario; se marca la primera semana en que ocurre.
 
 Las filas se rehacen con «Actualizar» y con la acción programada de los
 jornales ejecutados: el informe no se escribe a mano.
@@ -208,6 +208,8 @@ class ConstructionLaborWeeklyControl(models.Model):
         lines = budget.line_ids
         activity_ids = lines.activity_id.ids
         band = (budget.band or 0.0) / 100.0
+        # Corrección 1 del 1.19: «Exceso de personal» con su propia banda.
+        excess_band = (budget.excess_band or 0.0) / 100.0
         company = project.company_id or self.env.company
         single = lines.activity_id if len(lines) == 1 else self.env['construction.labor.activity']
         missing = any(not required.get(activity_id) for activity_id in activity_ids)
@@ -280,7 +282,7 @@ class ConstructionLaborWeeklyControl(models.Model):
                 expected = (done_qty / exigido / week_days) if exigido and week_days \
                     and not missing else 0.0
                 excess = bool(real) and float_compare(
-                    real, exigido * (1 - band), precision_digits=4) < 0
+                    real, exigido * (1 - excess_band), precision_digits=4) < 0
                 delay = float_compare(cumulative['progress'], cumulative['target'],
                                       precision_digits=2) < 0
                 over = float_compare(cumulative['real_pd'],

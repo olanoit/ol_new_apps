@@ -104,6 +104,11 @@ DEFAULT_PARAMETERS = (
          name='Banda del rendimiento', value_initial='10',
          help_text='Las personas del presupuesto de mano de obra se ajustan dentro de esta banda '
                    'alrededor del rendimiento.', **_PERCENT),
+    # Corrección 1 del 1.19: el aviso «Exceso de personal» tiene su propia banda.
+    dict(sheet='planning', group='Programa', key='banda_exceso_personal',
+         name='Banda del aviso de exceso de personal', value_initial='10',
+         help_text='El control semanal avisa «Exceso de personal» cuando el rendimiento real queda '
+                   'bajo el exigido menos esta banda. No cambia el presupuesto.', **_PERCENT),
     dict(sheet='planning', group='Programa', key='dias_sub_etapa',
          name='Días por sub etapa, si la celda de PROGRAMA está vacía', value_initial='5',
          value_type='number', use_range=True, min_value=1, max_value=365, unit='días',

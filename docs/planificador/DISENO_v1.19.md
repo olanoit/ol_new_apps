@@ -227,3 +227,54 @@ llegó (D2). Conviene revisarlo contra él antes de la aceptación.
   terminaron, con el período sombreado.
 - Permisos: el menú y el botón dependen de la función «Control»; el servidor
   exige «Ejecuta» o «jefatura de proyectos» y el acceso a la obra.
+
+## 9. Correcciones después de la entrega (09-nov)
+
+Vicente aceptó las cinco entregas y ratificó las decisiones de programación
+(D3 a D6, D8, columnas de la matriz, armado por módulo, `labor_budget`,
+presupuesto por modalidad, meta repartida entre contratas, semana programada
+desde el Cronograma). Las diferencias de redondeo de M119-02 son del
+documento. Pidió cuatro correcciones antes del paquete 1.18 y envió el
+prototipo del tablero.
+
+| # | Corrección | Requerimiento | Estimación |
+|---|---|---|---|
+| C1 | Banda propia del aviso «Exceso de personal» (parámetro `banda_exceso_personal`, 10 %); reemplaza D9. La banda del rendimiento sigue para las personas, la capacidad ociosa y «Sobre el presupuesto» | M119-01 p. 3; M119-02 p. 2 | 0.5 a 1 día |
+| C2 | Tabla de departamentos y muebles en la radiografía del piso, con una columna por sub etapa visible y su pie | M119-05 p. 6 | 0.5 a 1 día |
+| C3 | Avance de producción por piso desde las órdenes de fabricación (lo producido repartido entre los ambientes de la orden en su orden; «Sin orden» en gris); reemplaza D11 | M119-05 p. 8 | 1.5 a 2 días |
+| C4 | «Importar Excel a la hoja» con ACTIVIDADES llena la matriz, con aviso en ERRORES si no queda columna libre | M119-04 p. 8 | 1 a 1.5 días |
+| R5 | Revisión de la entrega 5 contra el prototipo (textos de las celdas, chips de la radiografía, datos de la celda, rótulo del indicador de mano de obra, semanas futuras) | M119-05 | 1 día |
+
+Total: 4.5 a 6.5 días.
+
+Notas de diseño:
+
+- C1: la banda del aviso viaja en el envío y se guarda en el presupuesto
+  (`excess_band`); cambiarla en la obra rehace solo los avisos.
+- C3: el tablero vive en `al_construction_attendance`, que no depende de
+  Fabricación; la lectura de las órdenes se activa si el puente de
+  Fabricación está instalado. La planta es el almacén del tipo de operación
+  de la orden.
+- C4: la importación ocurre en el navegador; el servidor devuelve las celdas
+  de la matriz con la misma regla de «Actualizar a la plantilla vigente».
+
+### Hecho (09-nov)
+
+- C1: `construction.labor.budget.excess_band` y el parámetro
+  `banda_exceso_personal` de PARAMETROS; el envío escribe las dos bandas (sin
+  la fila, la de la obra o 10); cambiarla en la obra rehace el control semanal.
+- C2: tabla «Departamentos y muebles del piso» en la radiografía del piso, con
+  el pie de hechos por sub etapa; un clic en una marca abre esa sub etapa.
+- C3: `_production_progress` lee las órdenes de fabricación de la obra (sus
+  ambientes y las etapas de su lista); lo producido (movimientos terminados
+  del producto hasta el cierre del período) se reparte entre los ambientes en
+  el orden de «Producir»; «Sin orden» no cuenta en los indicadores ni en las
+  curvas; la radiografía muestra la planta y enlaza las órdenes.
+- C4: el asistente manda la pestaña de la matriz de cada actividad y la hoja
+  escribe ACTIVIDADES en la matriz después de TIPOLOGIAS; lo que no ubica va a
+  ERRORES como aviso.
+- R5: celdas con texto y nota («Terminado · S6 · +1 sem.», «70 % · debía
+  S8»), semáforos con valor y nota, datos de la celda y del piso, rótulos de
+  los indicadores, estado del período, leyenda y semana en curso, como el
+  prototipo. Quedan fuera del prototipo los montos de materiales de
+  producción en la radiografía (el presupuesto de mano de obra no los cubre).

@@ -42,7 +42,8 @@ class TestPackage117Parameters(TestWorksheetV18):
         # M119-01: más la sección «Rendimientos» de la obra (rend:<código>).
         keys = [key for key in keys if not key.startswith('rend:')]
         self.assertCountEqual(keys, ['piezas_frente', 'dias_semana', 'horas_jornada',
-                                     'jornales_semana', 'banda_rendimiento', 'dias_sub_etapa',
+                                     'jornales_semana', 'banda_rendimiento', 'banda_exceso_personal',
+                                     'dias_sub_etapa',
                                      'tolerancia_ml', 'tolerancia_ml_venta'])
 
     def test_no_business_number_in_the_formulas(self):

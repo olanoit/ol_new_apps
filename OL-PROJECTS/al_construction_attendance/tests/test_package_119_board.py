@@ -97,3 +97,61 @@ class TestInstallationBoard(PlannerCommon):
                    'al_construction_planner.group_planner_feature_control')
         data = self.Board.with_user(supervisor).get_data(self.project.id)
         self.assertFalse(data['show_amounts'])
+
+    def _production_board(self):
+        floor_04 = self.task('Piso 04', 'floor')
+        apt = self.task('Dpto 401', 'apartment', floor_04)
+        space_401 = self.task('Cocina', 'space', apt)
+        for space in (space_401, self.space_501):
+            self.env['construction.space.stage'].create({
+                'space_task_id': space.id, 'stage': 'assembly',
+                'date_start': self.origin, 'date_end': self.origin + timedelta(days=4)})
+        product = self.env['product.product'].create({'name': 'Cocina armada (test 1.19)',
+                                                      'type': 'consu'})
+        production = self.env['mrp.production'].create({
+            'product_id': product.id, 'product_qty': 132.0,
+            'product_uom_id': product.uom_id.id, 'construction_plan_id': self.plan.id,
+            'construction_space_task_ids': [(6, 0, (space_401 | self.space_501).ids)]})
+        return floor_04, production
+
+    def test_production_from_manufacturing_orders(self):
+        """Corrección 3 del 1.19: una orden que junta dos pisos con 132
+        unidades y 100 producidas deja el primero de la orden en 100 % y el
+        segundo en 52 % (34 de 66). Aquí el piso 05 va primero (se creó antes y
+        «Producir» ordena por piso)."""
+        if 'construction_space_task_ids' not in self.env['mrp.production']._fields:
+            self.skipTest('Sin el puente de Fabricación')
+        floor_04, production = self._production_board()
+        self.assertIn('assembly', production._construction_order_stages())
+        move = production.move_finished_ids.filtered(
+            lambda m: m.product_id == production.product_id)[:1]
+        self.assertTrue(move)
+        move.sudo().write({'quantity': 100.0, 'state': 'done',
+                           'date': fields.Datetime.now() - timedelta(days=12)})
+        data = self.Board.get_data(self.project.id, None, None, True, True)
+        cells = {(f['name'], c['stage']): c for f in data['floors'] for c in f['cells']}
+        self.assertEqual(cells[('Piso 05', 'assembly')]['pct'], 100)
+        self.assertEqual(cells[('Piso 05', 'assembly')]['status'], 'done')
+        self.assertEqual(cells[('Piso 04', 'assembly')]['pct'], 52)
+        self.assertNotEqual(cells[('Piso 04', 'assembly')]['status'], 'done')
+        self.assertEqual(cells[('Piso 05', 'assembly')]['productions'][0]['id'], production.id)
+        # Sin orden en 1.1 Producción de piezas, si la orden no la fabrica: el
+        # piso 05 en «Producción» depende de las etapas de la orden.
+        production_cell = cells.get(('Piso 05', 'production'))
+        if production_cell and not production_cell['productions']:
+            self.assertEqual(production_cell['status'], 'no_order')
+        late = [(item['floor'], item['stage']) for item in data['indicators']['late']['items']]
+        self.assertNotIn(('Piso 05', production_cell and production_cell['stage_label']), late)
+
+    def test_floor_without_order_is_not_late(self):
+        if 'construction_space_task_ids' not in self.env['mrp.production']._fields:
+            self.skipTest('Sin el puente de Fabricación')
+        self.env['construction.space.stage'].create({
+            'space_task_id': self.space_501.id, 'stage': 'assembly',
+            'date_start': self.origin, 'date_end': self.origin + timedelta(days=4)})
+        data = self.Board.get_data(self.project.id, None, None, True, True)
+        cell = next(c for f in data['floors'] for c in f['cells']
+                    if f['id'] == self.floor.id and c['stage'] == 'assembly')
+        self.assertEqual(cell['status'], 'no_order')
+        self.assertNotIn(cell['stage_label'], [item['stage'] for item in
+                                               data['indicators']['late']['items']])

@@ -74,6 +74,7 @@
                         </group>
                         <group string="Personas y presupuesto">
                             <field name="band" readonly="1"/>
+                            <field name="excess_band"/>
                             <field name="daily_wage" readonly="1" invisible="mode != 'own'"
                                    groups="al_construction_planner.group_planner_amounts"/>
                             <field name="person_days_needed"/>

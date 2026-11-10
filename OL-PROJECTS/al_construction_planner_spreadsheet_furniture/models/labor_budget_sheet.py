@@ -348,12 +348,14 @@ class ProjectProject(models.Model):
 def read_labor_payload(sheets):
     """Datos del presupuesto de mano de obra que lee el envío de los valores
     calculados de la hoja: rendimientos, banda, actividades y bloques."""
-    payload = {'productivity': [], 'band': None, 'activities': [], 'blocks': []}
+    payload = {'productivity': [], 'band': None, 'excess_band': None, 'activities': [],
+               'blocks': []}
     for row in (sheets.get(PARAMETERS_SHEET) or [])[1:]:
         key = row[6] if len(row) > 6 else ''
-        if key == 'banda_rendimiento':
+        if key in ('banda_rendimiento', 'banda_exceso_personal'):
             used = row[8] if len(row) > 8 else ''
-            payload['band'] = _number(used) * 100 if used not in ('', None) else None
+            payload['band' if key == 'banda_rendimiento' else 'excess_band'] = \
+                _number(used) * 100 if used not in ('', None) else None
         elif isinstance(key, str) and key.startswith(PRODUCTIVITY_PREFIX):
             payload['productivity'].append({
                 'code': key[len(PRODUCTIVITY_PREFIX):],

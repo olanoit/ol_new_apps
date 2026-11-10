@@ -452,5 +452,15 @@ class ConstructionSpreadsheetImportWizard(models.TransientModel):
             'keep_extra': self.keep_extra,
             'added_products': data['added_products'],
         }
+        # Corrección 4 del 1.19: con la matriz, las filas de ACTIVIDADES se
+        # escriben en ella (la hoja las ubica; aquí, la pestaña de cada etapa).
+        project = self.document_id.construction_project_id
+        activities = data['sheets'].get('ACTIVIDADES')
+        if activities and project and project._construction_matrix_tabs():
+            position = activities['keys'].index('activity') \
+                if 'activity' in activities['keys'] else None
+            codes = {str(row[position]) for row in activities['rows']
+                     if position is not None and len(row) > position and row[position]}
+            payload['matrix'] = {'stage_tab': project._construction_matrix_stage_tabs(codes)}
         return {'type': 'ir.actions.act_window_close',
                 'infos': {'construction_sheet_import': payload}}

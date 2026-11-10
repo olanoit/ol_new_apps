@@ -15,6 +15,7 @@ import {
     writeRows,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
 import { TREE_SHEET, clearFloorGroups, groupTreeByFloor } from "./floor_groups";
+import { writeActivitiesToMatrix } from "./activity_matrix";
 import { CancelledError, openProgress } from "./sheet_progress";
 
 const { topbarMenuRegistry } = registries;
@@ -424,6 +425,11 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         clearFloorGroups(model);
     }
     const keys = keyColumns(model);
+    // Corrección 4 del 1.19: con la matriz, ACTIVIDADES se escribe en ella.
+    const activitySpec = payload.matrix && payload.sheets.ACTIVIDADES;
+    if (activitySpec) {
+        delete payload.sheets.ACTIVIDADES;
+    }
     // Filas que necesita cada pestaña (M113-05).
     let needed = 0;
     for (const [name, spec] of Object.entries(payload.sheets)) {
@@ -461,6 +467,18 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         ensureRows(model, sheetId, rows.length + 1);
         writeRows(model, sheetId, rows, 0);
     }
+    let matrixWarnings = [];
+    if (activitySpec) {
+        // TIPOLOGIAS ya está escrita: la matriz sabe en qué fila va cada una.
+        const { commands, warnings } = writeActivitiesToMatrix(
+            model,
+            activitySpec,
+            payload.matrix.stage_tab || {}
+        );
+        dispatchBatch(model, commands);
+        matrixWarnings = warnings;
+        payload.sheets.ACTIVIDADES = activitySpec;
+    }
     writeParameters(model, payload.parameters);
     writeObra(model, payload.obra);
     if (tree) {
@@ -469,6 +487,10 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
     const sheetCount =
         Object.keys(payload.sheets).length + Object.keys(payload.other || {}).length;
     const result = await validate(env, { quiet: true });
+    if (matrixWarnings.length) {
+        appendErrors(model, matrixWarnings);
+        result.warnings += matrixWarnings.length;
+    }
     if (logImport) {
         await env.constructionCall(
             "construction_sheet_import_done",
@@ -480,6 +502,18 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
     }
     notifySummary(env, payload, result);
     return result;
+}
+
+/** Agrega avisos al final de ERRORES (hoja, fila, columna, mensaje, «Aviso»). */
+function appendErrors(model, rows) {
+    const sheetId = ensureSheet(model, ERRORS_SHEET);
+    const start = Math.max(2, lastDataRow(model.getters, sheetId) + 1);
+    writeRows(
+        model,
+        sheetId,
+        rows.map(([sheet, row, column, message]) => [sheet, row, column, message, _t("Aviso")]),
+        start
+    );
 }
 
 export async function importExcel(env) {

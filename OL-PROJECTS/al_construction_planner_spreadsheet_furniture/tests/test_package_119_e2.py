@@ -206,3 +206,24 @@ class TestPackage119Matrix(TestWorksheetV18):
             'activity_class': 'assembly_method', 'join_method': 'screw'})
         self.assertEqual(screw.construction_sheet_key, 'join:Tornillo')
         self.assertFalse(self.push.construction_sheet_key)
+
+    def test_import_excel_sends_activities_to_the_matrix(self):
+        """Corrección 4 del 1.19: con la matriz, «Importar Excel a la hoja»
+        entrega la pestaña de la matriz de cada actividad de ACTIVIDADES; la
+        hoja las escribe en sus celdas."""
+        from .test_package_116_stage4b import _book
+        self.site.action_construction_open_spreadsheet()
+        document = self.env['documents.document'].search(
+            [('construction_project_id', '=', self.site.id),
+             ('construction_source_id', '=', False)])
+        wizard = self.env['construction.spreadsheet.import.wizard'].create({
+            'document_id': document.id, 'filename': 'carga.xlsx',
+            'file': _book({
+                'TIPOLOGIAS': [['Código', 'Nombre'], ['C01', 'Cocina 1']],
+                'ACTIVIDADES': [['Tipología', 'Actividad', 'Cantidad por ambiente'],
+                                ['C01', 'T19-PUSH', 2], ['C01', 'T19-ARM', 1]]})})
+        payload = wizard.action_import()['infos']['construction_sheet_import']
+        install, assembly = self._tab_of('T19-PUSH'), self._tab_of('T19-ARM')
+        self.assertEqual(payload['matrix']['stage_tab'], {'T19-PUSH': install['name'],
+                                                         'T19-ARM': assembly['name']})
+        self.assertIn('ACTIVIDADES', payload['sheets'])

@@ -184,6 +184,13 @@ class ConstructionLaborBudget(models.Model):
     date_from = fields.Date(string='Desde', compute='_compute_budget', store=True)
     date_to = fields.Date(string='Hasta', compute='_compute_budget', store=True)
     band = fields.Float(string='Banda del rendimiento (%)', default=DEFAULT_BAND)
+    # Corrección 1 del 1.19 (decisión del 09-nov): el aviso «Exceso de personal»
+    # del control semanal tiene su propia banda; no cambia el presupuesto.
+    excess_band = fields.Float(
+        string='Banda del aviso de exceso de personal (%)', default=DEFAULT_BAND,
+        help='El control semanal avisa «Exceso de personal» cuando el rendimiento real queda '
+             'bajo el rendimiento exigido × (1 − esta banda). No cambia las personas, las metas '
+             'ni el presupuesto.')
     daily_wage = fields.Monetary(string='Jornal', currency_field='currency_id',
                                  help='Del rol de la sub etapa en MO PROPIA.')
     line_ids = fields.One2many('construction.labor.budget.line', 'budget_id',
@@ -302,6 +309,10 @@ class ConstructionLaborBudget(models.Model):
         result = super().write(vals)
         if {'date_start', 'date_end', 'date_start_adjusted', 'date_end_adjusted'} & set(vals):
             self._construction_rebuild_weeks()
+        # Cambiar la banda del aviso rehace los avisos del control semanal (si
+        # el puente de asistencia está instalado).
+        if 'excess_band' in vals and 'construction.labor.weekly.control' in self.env:
+            self.env['construction.labor.weekly.control']._construction_refresh(self.project_id)
         return result
 
     def _target(self, line, week):
@@ -520,6 +531,11 @@ class ProjectProject(models.Model):
                     'adjust_reason': block.get('reason') or self.env._('Hoja de planificación'),
                 })
             budget = self._construction_labor_budget_for(stage.code, mode)
+            # Hojas anteriores sin la banda del aviso: la de la obra o 10.
+            if payload.get('excess_band') is not None:
+                values['excess_band'] = payload['excess_band']
+            elif not budget:
+                values['excess_band'] = DEFAULT_BAND
             if budget:
                 budget.write(values)
             else:

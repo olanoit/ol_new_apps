@@ -27,6 +27,9 @@ from odoo import api, fields, models
 from odoo.exceptions import AccessError
 
 STATUS_DONE, STATUS_LATE, STATUS_CURRENT, STATUS_PENDING = 'done', 'late', 'current', 'pending'
+# Corrección 3 del 1.19: un piso sin orden de fabricación en una sub etapa de
+# producción no cuenta como atrasado.
+STATUS_NO_ORDER = 'no_order'
 COMPLETE = 0.9999
 
 
@@ -130,20 +133,27 @@ class ConstructionInstallationBoard(models.AbstractModel):
         controls = self.env['construction.labor.weekly.control'].sudo().search(
             [('project_id', '=', project.id)])
 
+        # Corrección 3 del 1.19: la producción avanza con las órdenes de
+        # fabricación (si el puente de Fabricación está instalado).
+        production = self._production_progress(project, shown & production_stages,
+                                               period_end)
         cells = {}
         for floor in floors:
             for stage in shown:
                 key = (floor.id, stage.code)
+                source = production.get(key, {}) if production is not None \
+                    and stage in production_stages else None
                 cells[key] = self._cell(
                     floor, stage, lines_by_cell[key], done_by_line, sched_by_cell.get(key),
                     week_of, monday_of, today, week_to, current_week, budgets.get(stage.code),
-                    show_amounts)
+                    show_amounts, source)
         self._budget_status(cells, controls, week_from, week_to, monday_of, show_amounts,
                             budgets)
         # Indicadores.
-        in_period = [c for c in cells.values() if c['sched_week']
+        counted = [c for c in cells.values() if c['status'] != STATUS_NO_ORDER]
+        in_period = [c for c in counted if c['sched_week']
                      and week_from <= c['sched_week'] <= week_to]
-        to_date = [c for c in cells.values() if c['sched_week'] and c['sched_week'] <= week_to]
+        to_date = [c for c in counted if c['sched_week'] and c['sched_week'] <= week_to]
         late = [c for c in cells.values() if c['status'] == STATUS_LATE]
         install_codes = set(install_stages.mapped('code'))
         labor = self._labor_indicator(controls, week_from, week_to, monday_of, show_amounts,
@@ -156,7 +166,7 @@ class ConstructionInstallationBoard(models.AbstractModel):
                               'total': len(stage_cells)})
         curves = []
         for stage in shown:
-            stage_cells = [c for c in cells.values() if c['stage'] == stage.code]
+            stage_cells = [c for c in counted if c['stage'] == stage.code]
             points = []
             for number in range(1, last_week + 1):
                 points.append({
@@ -209,8 +219,61 @@ class ConstructionInstallationBoard(models.AbstractModel):
                  else self.env._('Semanas %(a)s a %(b)s', a=week_from, b=week_to))
         return '%s · %s al %s' % (weeks, start.strftime('%d/%m'), end.strftime('%d/%m'))
 
+    @api.model
+    def _production_progress(self, project, stages, period_end):
+        """Avance de las sub etapas de producción por piso desde las órdenes de
+        fabricación (corrección 3 del 1.19): ``{(piso, sub etapa): {'planned',
+        'done', 'spaces': {ambiente: (cantidad, hecho)}, 'finish',
+        'productions', 'plants'}}``. Lo producido se reparte entre los
+        ambientes de la orden en su orden (por piso). ``None`` sin el puente de
+        Fabricación."""
+        if not stages or 'mrp.production' not in self.env \
+                or 'construction_space_task_ids' not in self.env['mrp.production']._fields:
+            return None
+        codes = set(stages.mapped('code'))
+        # sudo: el tablero suma órdenes de una obra que el usuario puede leer.
+        productions_sudo = self.env['mrp.production'].sudo().search([
+            ('construction_plan_id.project_id', '=', project.id), ('state', '!=', 'cancel')])
+        result = {}
+        for production in productions_sudo:
+            order_codes = set(production._construction_order_stages()) & codes
+            # El orden de la orden: el de «Producir» (piso y ambiente).
+            spaces = production.construction_space_task_ids.sorted(
+                lambda t: (t.construction_floor_task_id.id, t.id))
+            if not order_codes or not spaces or not production.product_qty:
+                continue
+            moves = production.move_finished_ids.filtered(
+                lambda m: m.state == 'done' and m.product_id == production.product_id
+                and m.date and m.date.date() <= period_end)
+            produced = sum(moves.mapped('quantity'))
+            last = max(moves.mapped('date')).date() if moves else None
+            per_space = production.product_qty / len(spaces)
+            remaining = produced
+            plant = production.picking_type_id.warehouse_id.name or production.company_id.name
+            for space in spaces:
+                take = min(per_space, max(remaining, 0.0))
+                remaining -= take
+                for code in order_codes:
+                    entry = result.setdefault((space.construction_floor_task_id.id, code), {
+                        'planned': 0.0, 'done': 0.0, 'spaces': {}, 'finish': None,
+                        'productions': [], 'plants': []})
+                    entry['planned'] += per_space
+                    entry['done'] += take
+                    entry['spaces'][space] = (per_space, take)
+                    if production.id not in [p['id'] for p in entry['productions']]:
+                        entry['productions'].append({'id': production.id,
+                                                     'name': production.name})
+                    if plant and plant not in entry['plants']:
+                        entry['plants'].append(plant)
+                    if last and take >= per_space * COMPLETE:
+                        entry['finish'] = max(entry['finish'] or last, last)
+        return result
+
     def _cell(self, floor, stage, lines, done_by_line, sched_dates, week_of, monday_of, today,
-              week_to, current_week, budget, show_amounts):
+              week_to, current_week, budget, show_amounts, production=None):
+        if production is not None:
+            return self._production_cell(floor, stage, production, sched_dates, week_of,
+                                         monday_of, week_to, current_week)
         planned = sum(lines.mapped('qty_planned'))
         events = sorted((day, qty) for line in lines for day, qty in done_by_line[line.id])
         done, finish = 0.0, None
@@ -266,6 +329,54 @@ class ConstructionInstallationBoard(models.AbstractModel):
             'spaces': spaces, 'spaces_done': sum(1 for s in spaces if s['state'] == 'done'),
             'line_ids': lines.ids, 'has_budget': bool(budget),
             'budget': {'state': 'none'},
+        }
+
+    def _production_cell(self, floor, stage, source, sched_dates, week_of, monday_of, week_to,
+                         current_week):
+        """Celda de producción: lo producido de las órdenes del piso; sin
+        orden, «Sin orden» (no cuenta como atrasada)."""
+        planned, done = source.get('planned', 0.0), source.get('done', 0.0)
+        pct = min(done / planned, 1.0) if planned else 0.0
+        sched = max(sched_dates) if sched_dates else None
+        sched_week = week_of(sched) if sched else 0
+        complete = bool(planned) and done >= planned * COMPLETE
+        finish = source.get('finish') if complete else None
+        finish_week = week_of(finish) if finish else 0
+        if not source:
+            status = STATUS_NO_ORDER
+        elif complete:
+            status = STATUS_DONE
+        elif sched_week and sched_week < week_to:
+            status = STATUS_LATE
+        elif sched_week and sched_week == week_to:
+            status = STATUS_CURRENT if week_to >= current_week else STATUS_LATE
+        else:
+            status = STATUS_PENDING
+        spaces = []
+        for space, (space_planned, space_done) in sorted(
+                (source.get('spaces') or {}).items(),
+                key=lambda item: item[0].construction_apartment_task_id.name or ''):
+            state = 'done' if space_done >= space_planned * COMPLETE else (
+                'partial' if space_done else 'pending')
+            spaces.append({
+                'id': space.id, 'apartment': space.construction_apartment_task_id.name or '',
+                'name': space.name, 'typology': space.construction_typology_id.code or '',
+                'qty': round(space_planned, 2), 'state': state})
+        return {
+            'floor': floor.name, 'floor_id': floor.id, 'stage': stage.code,
+            'stage_label': stage._label(), 'pct': round(pct * 100),
+            'planned': round(planned, 2), 'done': round(done, 2), 'sched_week': sched_week,
+            'sched_dates': ('%s al %s' % (monday_of(sched_week).strftime('%d/%m'),
+                                          (monday_of(sched_week) + timedelta(days=5))
+                                          .strftime('%d/%m')) if sched_week else ''),
+            'finish_week': finish_week,
+            'delay_weeks': max(finish_week - sched_week, 0) if finish_week and sched_week
+            else (max(week_to - sched_week, 0) if status == STATUS_LATE else 0),
+            'status': status,
+            'executor': ', '.join(source.get('plants') or []) or self.env._('Planta'),
+            'productions': source.get('productions') or [],
+            'spaces': spaces, 'spaces_done': sum(1 for s in spaces if s['state'] == 'done'),
+            'line_ids': [], 'has_budget': False, 'budget': {'state': 'none'},
         }
 
     def _budget_status(self, cells, controls, week_from, week_to, monday_of, show_amounts,

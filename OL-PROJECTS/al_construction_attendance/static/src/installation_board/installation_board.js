@@ -14,6 +14,7 @@ const STATUS_LABELS = {
     late: _t("Atrasado"),
     current: _t("En curso"),
     pending: _t("Pendiente"),
+    no_order: _t("Sin orden"),
 };
 
 export class InstallationBoard extends Component {
@@ -128,6 +129,44 @@ export class InstallationBoard extends Component {
     statusLabel(status) {
         return STATUS_LABELS[status] || status;
     }
+    cellMain(cell) {
+        if (cell.status === "done") {
+            return _t("Terminado");
+        }
+        if (cell.status === "late" || (cell.status === "current" && cell.pct)) {
+            return `${cell.pct} %`;
+        }
+        if (cell.status === "current") {
+            return _t("En curso");
+        }
+        if (cell.status === "no_order") {
+            return _t("Sin orden");
+        }
+        return cell.sched_week ? `S${cell.sched_week}` : "—";
+    }
+    cellNote(cell) {
+        if (cell.status === "done") {
+            return `S${cell.finish_week}` + (cell.delay_weeks ? ` · +${cell.delay_weeks} sem.` : "");
+        }
+        if (cell.status === "late") {
+            return _t("debía S%s", cell.sched_week);
+        }
+        if (cell.status === "current") {
+            return `S${cell.sched_week}`;
+        }
+        return "";
+    }
+    periodState() {
+        const data = this.state.data;
+        const closed = data.current_week - 1;
+        if (this.state.weekTo <= closed) {
+            return this.state.weekFrom === this.state.weekTo ? _t("Cerrada") : _t("Cerradas");
+        }
+        if (this.state.weekFrom > closed) {
+            return _t("Sin avances validados: solo programa");
+        }
+        return _t("Hasta la semana %s cerrada; el resto, solo programa", closed);
+    }
     cellText(cell) {
         if (cell.status === "done") {
             return `S${cell.finish_week}` + (cell.delay_weeks ? ` · +${cell.delay_weeks} sem.` : "");
@@ -137,6 +176,9 @@ export class InstallationBoard extends Component {
         }
         if (cell.status === "current") {
             return `${cell.pct} %`;
+        }
+        if (cell.status === "no_order") {
+            return _t("Sin orden");
         }
         return cell.sched_week ? `S${cell.sched_week}` : "—";
     }
@@ -158,42 +200,67 @@ export class InstallationBoard extends Component {
         return index > 0 ? floor.cells[index - 1] : null;
     }
 
-    // Radiografía -----------------------------------------------------------
+    // Radiografía (como el prototipo: valor y nota en cada semáforo) -----------
     plazo(cell) {
         if (cell.status === "done") {
             return cell.delay_weeks
-                ? { light: "amber", text: _t("Terminado con retraso (+%s sem. sobre S%s)", cell.delay_weeks, cell.sched_week) }
-                : { light: "green", text: _t("A tiempo") };
+                ? { light: "amber", value: _t("Terminado S%s", cell.finish_week), note: _t("+%s sem. sobre S%s", cell.delay_weeks, cell.sched_week) }
+                : { light: "green", value: _t("A tiempo"), note: _t("Terminado S%s", cell.finish_week) };
         }
         if (cell.status === "late") {
-            return { light: "red", text: _t("Atrasado (debía terminar S%s)", cell.sched_week) };
+            return { light: "red", value: _t("Atrasado"), note: _t("Debía terminar S%s", cell.sched_week) };
         }
         if (cell.status === "current") {
-            return { light: "blue", text: _t("En curso") };
+            return { light: "blue", value: _t("En curso"), note: _t("Programado S%s", cell.sched_week) };
         }
-        return { light: "gray", text: _t("Pendiente (S%s)", cell.sched_week || "—") };
+        if (cell.status === "no_order") {
+            return { light: "gray", value: _t("Sin orden"), note: _t("No cuenta como atrasada") };
+        }
+        return { light: "gray", value: _t("Pendiente"), note: _t("Programado S%s", cell.sched_week || "—") };
     }
     presupuesto(cell) {
         const budget = cell.budget || {};
-        const labels = { inside: _t("Dentro"), band: _t("En la banda"), outside: _t("Fuera") };
+        const values = { inside: _t("Dentro"), band: _t("En la banda"), outside: _t("Fuera") };
         const lights = { inside: "green", band: "amber", outside: "red" };
         if (!budget.state || budget.state === "none") {
-            return { light: "gray", text: _t("Sin presupuesto del avance") };
+            return { light: "gray", value: _t("Sin ejecución"), note: _t("Sin presupuesto del avance") };
         }
-        const unit = budget.unit === "amount" ? _t("soles") : _t("persona-días");
         const sign = budget.deviation > 0 ? "+" : "";
-        return {
-            light: lights[budget.state],
-            text: `${labels[budget.state]} (${sign}${budget.deviation} % ${unit} sobre el avance)`,
-        };
+        const note =
+            budget.unit === "amount"
+                ? _t("%s%s % sobre el avance", sign, budget.deviation)
+                : _t("Persona-días %s%s % sobre el avance", sign, budget.deviation);
+        return { light: lights[budget.state], value: values[budget.state], note };
     }
     alcance(cell) {
         const total = cell.spaces.length;
-        const light = cell.status === "done" ? "green" : cell.spaces_done ? "amber" : "gray";
+        const light =
+            cell.status === "done" ? "green" : cell.status === "late" ? "red" : cell.spaces_done ? "blue" : "gray";
         return {
             light,
-            text: _t("%s de %s ambientes (%s de %s)", cell.spaces_done, total, cell.done, cell.planned),
+            value: _t("%s de %s cocinas", cell.spaces_done, total),
+            note: _t("%s de %s", cell.done, cell.planned),
         };
+    }
+    weekDates(number) {
+        const week = this.state.data.weeks.find((w) => w.number === number);
+        return week ? `${week.monday} al ${week.saturday}` : "";
+    }
+    previousText(floor, cell) {
+        const prev = this.previousCell(floor, cell);
+        if (!prev) {
+            return "—";
+        }
+        if (prev.status === "done") {
+            return _t("%(stage)s: terminado S%(week)s", { stage: prev.stage_label, week: prev.finish_week }) +
+                (prev.delay_weeks ? _t(" (+%s sem.)", prev.delay_weeks) : "");
+        }
+        return `${prev.stage_label}: ${this.statusLabel(prev.status).toLowerCase()}` + (prev.pct ? ` ${prev.pct} %` : "");
+    }
+    floorTitle(floor) {
+        const spaces = new Set();
+        floor.cells.forEach((cell) => cell.spaces.forEach((space) => spaces.add(space.id)));
+        return _t("Piso %(floor)s · %(count)s cocinas", { floor: floor.name, count: spaces.size });
     }
     missing(cell) {
         return cell.spaces.filter((space) => space.state !== "done");
@@ -205,6 +272,14 @@ export class InstallationBoard extends Component {
             res_model: "construction.task.progress",
             views: [[false, "list"], [false, "form"]],
             domain: [["plan_line_id", "in", cell.line_ids]],
+        });
+    }
+    openProduction(production) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "mrp.production",
+            res_id: production.id,
+            views: [[false, "form"]],
         });
     }
     openControl() {
@@ -236,13 +311,17 @@ export class InstallationBoard extends Component {
     labor() {
         const labor = this.state.data.indicators.labor;
         if (labor.empty) {
-            return { value: "—", note: _t("Sin presupuesto de mano de obra") };
+            return { label: _t("Mano de obra"), value: "—", note: _t("Sin presupuesto de mano de obra") };
         }
         const sign = labor.deviation > 0 ? "+" : "";
-        const unit = labor.unit === "amount" ? _t("en soles") : _t("en persona-días");
+        const fmt = (n) => Number(n).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 1 });
         return {
+            label: labor.unit === "amount" ? _t("Mano de obra: soles") : _t("Mano de obra: persona-días"),
             value: `${sign}${labor.deviation} %`,
-            note: `${unit} · ${labor.real} / ${labor.base} · ${_t("solo instalación")}`,
+            note:
+                labor.unit === "amount"
+                    ? _t("S/ %s reales frente a S/ %s del presupuesto del avance, en el período. Solo etapa de instalación.", fmt(labor.real), fmt(labor.base))
+                    : _t("%s reales frente a %s del presupuesto del avance, en el período. Los soles requieren «Ve montos». Solo etapa de instalación.", fmt(labor.real), fmt(labor.base)),
             light: labor.deviation <= 0 ? "green" : "red",
         };
     }

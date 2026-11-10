@@ -197,6 +197,19 @@ class ProjectProject(models.Model):
                            'activities': tab['activities']})
         return result
 
+    def _construction_matrix_stage_tabs(self, codes):
+        """{código de actividad: pestaña de la matriz de su etapa}, para ubicar
+        en una columna libre las actividades sin columna (corrección 4 del
+        1.19: «Importar Excel a la hoja» con ACTIVIDADES)."""
+        self.ensure_one()
+        tab_of_stage = {stage.code: tab['name'] for tab in self._construction_matrix_tabs()
+                        for stage in tab['stages']}
+        # sudo: solo se lee la etapa de las actividades del archivo.
+        activities_sudo = self.env['construction.labor.activity'].sudo().search(
+            [('code', 'in', list(codes))])
+        return {activity.code: tab_of_stage[activity.stage] for activity in activities_sudo
+                if activity.stage in tab_of_stage}
+
     def _construction_matrix_sheet(self, tab, layout, styles):
         """La pestaña de la matriz ``tab``.
 
