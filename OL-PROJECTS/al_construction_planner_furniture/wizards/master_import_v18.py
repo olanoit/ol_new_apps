@@ -143,10 +143,51 @@ class ConstructionMasterImportWizard(models.TransientModel):
     # ------------------------------------------------------------------
     # Análisis
     # ------------------------------------------------------------------
+    def _boards_from_pieces(self, pieces, module_bom, warn):
+        company = self._company()
+        codes = {piece['_code'] for rows in pieces.values() for piece in rows if piece['_code']}
+        products = {product.default_code: product for product in self.env[
+            'product.product'].with_context(active_test=False).search([
+                ('default_code', 'in', list(codes)),
+                ('company_id', 'in', (company.id, False))])}
+        for key, rows in pieces.items():
+            area = defaultdict(float)
+            for piece in rows:
+                if piece['_code']:
+                    area[piece['_code']] += piece['qty'] * piece['length_mm'] \
+                        * piece['width_mm'] / 1000000.0
+            written = {line['code'] for line in module_bom.get(key, [])}
+            for code, m2 in area.items():
+                product = products.get(code)
+                if code in written:
+                    # La fila escrita manda; se avisa para no contar dos veces.
+                    warn['board_written'].append('%s · %s · %s' % (key[0], key[1], code))
+                    continue
+                if not product or not product.construction_board_m2:
+                    warn['board_no_m2'].append(code)
+                    continue
+                stage = product.categ_id._construction_default_stage().code \
+                    if product.categ_id else False
+                module_bom[key].append({
+                    'code': code, 'qty': round(m2 / product.construction_board_m2, 4),
+                    'stage': stage or False, 'from_pieces': True})
+        # Punto 3: un tablero escrito en BOM sin piezas de ese tablero.
+        for key, lines in module_bom.items():
+            piece_codes = {piece['_code'] for piece in pieces.get(key, [])}
+            for line in lines:
+                product = products.get(line['code'])
+                if not line.get('from_pieces') and product and product.construction_board_m2 \
+                        and line['code'] not in piece_codes:
+                    warn['board_without_pieces'].append('%s · %s · %s' % (
+                        key[0], key[1], line['code']))
+
     def _module_extra_values(self, row):
         values = super()._module_extra_values(row)
         if _text(row.get('name')):
             values['name'] = _text(row['name'])
+        # M118-09: vacío, el módulo conserva su rótulo.
+        if _text(row.get('eto_label')):
+            values['eto_label'] = _text(row['eto_label'])
         module_class = _choice(MODULE_CLASSES, row.get('module_class'))
         if module_class:
             values['module_class'] = module_class
@@ -169,6 +210,15 @@ class ConstructionMasterImportWizard(models.TransientModel):
             return result
         sheets, _errors = self._read_workbook()
         warn = result['warnings']
+        # M118-09, punto 3: dos módulos de la misma tipología con el mismo
+        # rótulo del plano.
+        seen = defaultdict(set)
+        for row in sheets.get('MODULOS', []):
+            label = _text(row.get('eto_label'))
+            key = (_text(row.get('typology')), label.upper())
+            if label and key in seen:
+                warn['eto_label_repeated'].append('%s · %s' % (key[0], label))
+            seen[key].add(row.get('_row'))
         typologies = set(result['typologies']) | set(
             self.env['construction.typology'].search(
                 [('project_id', '=', self.project_id.id)]).mapped('code'))
@@ -272,6 +322,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'piece_type': _text(row.get('piece_type')), 'color': _text(row.get('color')),
                 'edges': _text(row.get('edges')), '_code': _text(row.get('product_code')),
             })
+        # M118-11: el tablero de cada módulo sale de sus piezas (m² de las
+        # piezas ÷ m² útiles por unidad del producto, D3); la persona escribe
+        # en BOM solo herrajes, accesorios y consumibles.
+        self._boards_from_pieces(pieces, module_bom, warn)
         result['module_bom'] = dict(module_bom)
         result['pieces'] = dict(pieces)
         rows = sheets.get('PIEZAS', [])
@@ -289,6 +343,12 @@ class ConstructionMasterImportWizard(models.TransientModel):
                     'warning'))
         # Parecidos de los productos nuevos (lógica de P-17).
         creator = self.env.get('construction.product.create.wizard')
+        # M118-15, punto 8: el código provisional y el producto con que se
+        # asoció, para no leer en los avisos solo el código del otro.
+        for provisional, (code, values, existing) in result['new_products'].items():
+            if existing and code != provisional:
+                warn['new_product_linked'].append('%s → %s (%s)' % (
+                    provisional, code, existing.name))
         if creator is not None:
             for _provisional, (code, values, existing) in result['new_products'].items():
                 if existing:
@@ -340,6 +400,15 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'Hojas de contratos y venta sin el puente de Ventas instalado (se omiten)'),
             'contract_no_partner': self.env._(
                 'Contratos sin cliente (ni en la hoja ni en la obra): no se crean'),
+            'board_no_m2': self.env._(
+                'Tableros de PIEZAS sin «m² útiles por unidad» en el producto: no entran a la BOM'),
+            'board_written': self.env._(
+                'Tableros escritos en BOM que también salen de PIEZAS: vale el escrito'),
+            'board_without_pieces': self.env._('Tableros escritos en BOM sin piezas del módulo'),
+            'new_product_linked': self.env._(
+                'Productos nuevos que ya existían en el maestro (código provisional → producto)'),
+            'eto_label_repeated': self.env._(
+                'Rótulos del ETO repetidos en una tipología (MODULOS)'),
             'contract_no_milestones': self.env._(
                 'Contrato sin plantilla de hitos: el ingreso contratado se toma de la orden de '
                 'venta (elija la plantilla en CONTRATOS)'),

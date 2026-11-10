@@ -508,8 +508,13 @@ export function collectSummary(model) {
         sold.push(...Object.values(groups));
     }
     const resumen = sheets["RESUMEN VENTA"] || [];
+    // Paquete 1.18, M118-14: los totales arriba (filas 11-15) y las partidas
+    // desde la fila 18; las hojas anteriores, totales en 32-36 y partidas en 12-31.
+    const totalsOnTop = (resumen[10] || [])[0] === "Suma de partidas";
+    const [firstPartida, lastPartida] = totalsOnTop ? [17, 37] : [11, 31];
+    const [subtotalRow, taxRow, totalRow] = totalsOnTop ? [13, 14, 15] : [34, 35, 36];
     const partidas = [];
-    for (let index = 11; index < 31; index++) {
+    for (let index = firstPartida; index < lastPartida; index++) {
         const row = resumen[index] || [];
         if (row[0]) {
             const name = row[0];
@@ -534,7 +539,8 @@ export function collectSummary(model) {
         dpto_factor: Number(parameters.dpto_factor) || 100, pisos_nombre: parameters.pisos_nombre || "",
         departments_total: Number((sheets.EDIFICIO || [[]])[0]?.[19]) || 0,
         discount: Number(obra["Descuento comercial"]) || 0,
-        subtotal: cell(34), tax: cell(35), total: cell(36), order_subtotal: cell(34),
+        subtotal: cell(subtotalRow), tax: cell(taxRow), total: cell(totalRow),
+        order_subtotal: cell(subtotalRow),
     };
 }
 

@@ -270,6 +270,21 @@ class ConstructionTypology(models.Model):
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
+    # Paquete 1.18, M118-15, punto 7: el botón se ve solo si hace falta.
+    construction_boms_without_operations = fields.Boolean(
+        string='Listas por etapa sin operaciones',
+        compute='_compute_construction_boms_without_operations')
+
+    def _compute_construction_boms_without_operations(self):
+        # sudo: solo se cuenta si la obra tiene listas por etapa sin
+        # operaciones, para mostrar el botón.
+        Bom_sudo = self.env['mrp.bom'].sudo()
+        for project in self:
+            project.construction_boms_without_operations = bool(project.id) and bool(
+                Bom_sudo.search_count([
+                    ('project_id', '=', project.id), ('sequence', '=', PRODUCTION_SEQUENCE),
+                    ('operation_ids', '=', False)], limit=1))
+
     def action_construction_complete_operations(self):
         """Pone la operación de su etapa en las listas por etapa de la obra que
         no tienen operaciones (M111-03), para obras importadas antes."""

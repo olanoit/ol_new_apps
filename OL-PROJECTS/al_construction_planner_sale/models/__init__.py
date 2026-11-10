@@ -17,3 +17,7 @@ from . import account_move
 from . import construction_planner_home
 from . import construction_board
 from . import construction_quote_recipe
+from . import construction_accounting
+from . import construction_valuation_target
+from . import construction_indicators
+from . import construction_portfolio

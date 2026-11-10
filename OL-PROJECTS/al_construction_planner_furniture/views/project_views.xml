@@ -12,9 +12,11 @@
                         invisible="not is_construction_site"
                         groups="al_construction_planner.group_planner_plan_planner"/>
                 <!-- Listas importadas sin operación de su estación (M111-03). -->
+                <field name="construction_boms_without_operations" invisible="1"/>
                 <button name="action_construction_complete_operations" type="object"
                         string="Completar operaciones"
-                        invisible="not is_construction_site"
+                        title="Listas por etapa de obras importadas antes del 1.11 que no tienen operaciones"
+                        invisible="not is_construction_site or not construction_boms_without_operations"
                         groups="al_construction_planner.group_planner_plan_planner"/>
             </xpath>
             <!-- Paquete 4 de CREVAL, CR-37: «Tipologías» se ve siempre con el
@@ -36,6 +38,7 @@
             </group>
             <field name="construction_unit_state" position="before">
                 <field name="construction_module_code"/>
+                <field name="construction_eto_label"/>
                 <field name="construction_furniture_type_id" options="{'no_open': True}"/>
                 <field name="construction_module_type" invisible="1"/>
                 <field name="construction_width_mm"/>
@@ -51,6 +54,7 @@
         <field name="arch" type="xml">
             <field name="construction_typology_id" position="after">
                 <field name="construction_module_code" optional="hide"/>
+                <field name="construction_eto_label" optional="show"/>
             </field>
         </field>
     </record>

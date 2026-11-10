@@ -16,6 +16,15 @@ from .common import can_see_amounts
 GROUP = 'al_construction_planner.group_planner_'
 #: Días hacia adelante para las etapas sin contrata (P-01).
 STAGE_HORIZON_DAYS = 14
+#: Áreas de los pendientes (paquete 7 de CREVAL, CR-65), en orden.
+PENDING_AREAS = [
+    ('site', 'Obra'),
+    ('planning', 'Planificación'),
+    ('purchase', 'Compras'),
+    ('contracts', 'Contratas'),
+    ('revenue', 'Ingresos'),
+    ('other', 'Otros'),
+]
 
 
 class ConstructionPlannerHome(models.AbstractModel):
@@ -32,14 +41,18 @@ class ConstructionPlannerHome(models.AbstractModel):
         states = dict(Plan._fields['state']._description_selection(self.env))
         works = []
         show_amounts = can_see_amounts(self.env)
+        mine = self._my_project_ids()
         for project in plans.project_id.sorted('name'):
-            plan = project._construction_current_plan()
+            # CR-59: una obra con el plan cerrado sigue en la cartera
+            # (Postventa).
+            plan = project._construction_portfolio_plan()
             if not plan:
                 continue
             approved = plan.state not in ('draft', 'to_approve')
             amounts = Plan._progress_amounts([('plan_id', '=', plan.id)])
             milestone = self._next_milestone(project, plan, today)
             works.append({
+                **self._work_portfolio_values(project, plan, mine),
                 'project_id': project.id,
                 'project_name': project.display_name,
                 'plan_id': plan.id,
@@ -58,6 +71,39 @@ class ConstructionPlannerHome(models.AbstractModel):
             })
         return works
 
+    @api.model
+    def _my_project_ids(self):
+        """Ids de «Mis obras» (CR-59): las que el usuario supervisa
+        (``_construction_supervised_domain``)."""
+        Project = self.env['project.project']
+        return set(Project.search(Project._construction_supervised_domain(self.env.user)).ids)
+
+    @api.model
+    def _work_portfolio_values(self, project, plan, mine):
+        """Datos de la obra en la cartera (paquete 7 de CREVAL, CR-59): etapa,
+        favorita, cliente, fechas y los indicadores que aporte el puente de
+        ventas (``_work_indicators``)."""
+        start = project.date_start or (plan and plan.date_start)
+        end = project.date or (plan and plan.date_end)
+        return {
+            'stage': project._construction_portfolio_stage(plan),
+            'is_favorite': project.is_favorite,
+            'mine': project.id in mine,
+            'partner': project.partner_id.display_name or '',
+            'date_start': fields.Date.to_string(start) if start else False,
+            'date_end': fields.Date.to_string(end) if end else False,
+            'dates': '%s → %s' % (format_date(self.env, start, date_format='dd/MM/yy'),
+                                  format_date(self.env, end, date_format='dd/MM/yy'))
+            if start and end else '',
+            'indicators': self._work_indicators(project, plan),
+        }
+
+    @api.model
+    def _work_indicators(self, project, plan):
+        """Indicadores de la obra en la cartera; los aporta el puente de
+        ventas. Sin él, ``False`` y el Inicio muestra la tabla de planes."""
+        return False
+
     def _get_unplanned_works(self):
         """Paquete 1.17, M117-09: las obras todavía sin plan, la más antigua
         primero. Lo que aporta cada puente sale del gancho de la obra."""
@@ -66,8 +112,11 @@ class ConstructionPlannerHome(models.AbstractModel):
         projects = self.env['project.project'].search([
             ('is_construction_site', '=', True), ('id', 'not in', planned.ids),
             ('is_template', '=', False)], order='create_date, id')
+        mine = self._my_project_ids()
         return [dict(project._construction_home_extra(), project_id=project.id,
-                     project_name=project.display_name) for project in projects]
+                     project_name=project.display_name, stage='planning',
+                     is_favorite=project.is_favorite, mine=project.id in mine)
+                for project in projects]
 
     @api.model
     def _next_milestone(self, project, plan, today):
@@ -157,10 +206,23 @@ class ConstructionPlannerHome(models.AbstractModel):
                 and not resources[(stage.space_task_id.id, stage.stage)].get('role')]
 
     @api.model
+    def _pending_areas(self):
+        """Área de cada pendiente (CR-65), por su clave. Los puentes agregan
+        las de sus pendientes; uno sin área cae en «Otros»."""
+        return {
+            'progress_to_validate': 'site',
+            'stages_without_contract': 'planning',
+            'lines_without_cost': 'planning',
+        }
+
+    @api.model
     def _get_pending(self, today):
         user = self.env.user
         cache = {}
         result = []
+        areas = self._pending_areas()
+        area_labels = dict(PENDING_AREAS)
+        roles = {}
         for key, group, label, where, model, domain, action_ref in \
                 self._pending_definitions(today):
             if not user.has_group(GROUP + group):
@@ -169,8 +231,13 @@ class ConstructionPlannerHome(models.AbstractModel):
             if entry is None:
                 continue
             count, action = entry
+            if group not in roles:
+                roles[group] = self.env.ref(GROUP + group, raise_if_not_found=False).name or ''
+            area = areas.get(key, 'other')
             result.append({'key': key, 'label': label, 'where': where, 'count': count,
-                           'action': action})
+                           'action': action, 'area': area,
+                           'area_label': area_labels.get(area, area_labels['other']),
+                           'role': roles[group]})
         return result
 
     @api.model
@@ -202,12 +269,15 @@ class ConstructionPlannerHome(models.AbstractModel):
         return dict(context)
 
     @api.model
-    def get_home_data(self):
+    def get_home_data(self, month=False):
         today = fields.Date.context_today(self)
+        home = self.with_context(construction_portfolio_month=month or False)
         return {
+            'areas': [list(area) for area in PENDING_AREAS],
+            'month': (fields.Date.to_date(month) if month else today.replace(day=1)).isoformat(),
             'today': fields.Date.to_string(today),
             'today_label': format_date(self.env, today, date_format='EEEE dd/MM/yyyy'),
-            'works': self._get_works(today),
+            'works': home._get_works(today),
             'unplanned': self._get_unplanned_works(),
             'pending': self._get_pending(today),
             'can_plan': self.env.user.has_group(GROUP + 'planner'),
@@ -215,6 +285,18 @@ class ConstructionPlannerHome(models.AbstractModel):
             'has_schedule_report': 'construction.schedule.report' in self.env,
             'show_amounts': can_see_amounts(self.env),
         }
+
+    @api.model
+    def toggle_favorite(self, project_id):
+        """CR-59: la estrella es el favorito nativo del proyecto, por usuario."""
+        project = self.env['project.project'].browse(project_id).exists()
+        if not project:
+            raise UserError(self.env._('La obra ya no existe.'))
+        project.check_access('read')
+        # El método nativo escribe con sudo: quien lee la obra la marca.
+        project._set_favorite_user_ids(not project.is_favorite)
+        project.invalidate_recordset(['is_favorite'])
+        return project.is_favorite
 
     @api.model
     def action_open_plan(self, plan_id):

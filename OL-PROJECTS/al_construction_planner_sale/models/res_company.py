@@ -9,6 +9,39 @@ from odoo.addons.al_construction_planner.models.common import GUARANTEE_RELEASES
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
+    # Paquete 7 de CREVAL, CR-64, punto 5: sin seguimiento de servicio, para
+    # no crear tareas ni proyectos al agregarlo a la orden confirmada.
+    construction_change_product_id = fields.Many2one(
+        'product.product', string='Producto «Adicional de obra»',
+        domain=[('type', '=', 'service')],
+        help='La línea que el cambio cobrable agrega a la orden de venta del contrato.')
+    # Paquete 7 de CREVAL, CR-61, punto 4 (decisión del 10-nov).
+    construction_default_progress_source = fields.Selection(
+        [('qty', 'Cantidad validada'), ('valued', 'Avance valorizado')],
+        string='Avance de la partida en obras nuevas', default='valued',
+        help='«Avance valorizado» pondera todos los recursos de la partida (contrata, personal '
+             'propio y material); las obras existentes conservan el suyo.')
+    # CREVAL, paquete 5, CR-40 (decisión del 05-nov): parámetros de la hoja de
+    # presupuesto; los valores los define cada compañía.
+    construction_budget_overhead_pct = fields.Float(
+        string='Gastos generales por defecto (%)', default=0.0,
+        help='OBRA de una hoja de presupuesto nueva, si la cotización no los trae.')
+    construction_budget_contingency_pct = fields.Float(
+        string='Imprevistos por defecto (%)', default=0.0,
+        help='OBRA de una hoja de presupuesto nueva, si la cotización no los trae.')
+    construction_budget_profit_pct = fields.Float(
+        string='Utilidad por defecto (%)', default=0.0,
+        help='OBRA de una hoja de presupuesto nueva, si la cotización no la trae.')
+    construction_budget_margin_pct = fields.Float(
+        string='Margen por defecto (%)', default=0.0,
+        help='Margen de las partidas que no escriben el suyo (hoja de presupuesto de venta).')
+    construction_budget_price_days = fields.Integer(
+        string='Días de un precio antiguo', default=90,
+        help='INSUMOS avisa del precio de más de estos días.')
+    construction_budget_control_pct = fields.Float(
+        string='Umbral de CONTROL (%)', default=5.0,
+        help='CONTROL marca en rojo la partida planificada que supera lo vendido en más de este porcentaje.')
+
     # Ruta del ingreso (P-21): valores por defecto del calendario de
     # valorización, facturación y cobranza de las obras nuevas.
     construction_valuation_every = fields.Integer(

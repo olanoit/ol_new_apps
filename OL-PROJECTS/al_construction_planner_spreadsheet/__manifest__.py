@@ -31,12 +31,14 @@ planificador y Documentos.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_spreadsheet/static/description/icon.png',
-    'version': '21.20261110',
+    'version': '23.20261110',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'countries': ['pe'],
     'depends': ['al_construction_planner_sale', 'documents_spreadsheet'],
     'data': [
+        'security/budget_groups.xml',
+        'security/ir.model.access.csv',
         'views/project_views.xml',
         'views/construction_vertical_profile_views.xml',
     ],

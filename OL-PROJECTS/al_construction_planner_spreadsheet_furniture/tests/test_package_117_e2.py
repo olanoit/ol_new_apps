@@ -71,7 +71,8 @@ class TestPackage117Delivery2(TestWorksheetV18):
         data = self._data()
         self.assertIn(design.TABLE_STYLE_ID, data['customTableStyles'])
         bom = self._sheet(data, 'BOM')['tables'][0]
-        self.assertEqual(bom['range'], 'A1:O11')
+        # Paquete 1.18, M118-08: código y nombre del módulo al final.
+        self.assertEqual(bom['range'], 'A1:Q11')
         self.assertTrue(bom['config']['hasFilters'])
         self.assertFalse(bom['config']['bandedRows'])
         self.assertFalse(self._sheet(data, 'ARBOL')['tables'][0]['config']['hasFilters'])

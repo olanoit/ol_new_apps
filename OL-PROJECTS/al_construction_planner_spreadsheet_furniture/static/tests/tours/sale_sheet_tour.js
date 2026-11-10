@@ -191,10 +191,10 @@ registry.category("web_tour.tours").add("al_construction_sale_sheet", {
                 const subtotal = 16 * (4.33 * 625 + 4.24 * 635);
                 const net = subtotal - 10000;
                 await expectValues([
-                    ["RESUMEN VENTA", "A12", "Cocina"],
-                    ["RESUMEN VENTA", "C34", net],
-                    ["RESUMEN VENTA", "C35", net * 0.18],
-                    ["RESUMEN VENTA", "C36", net * 1.18],
+                    ["RESUMEN VENTA", "A18", "Cocina"],
+                    ["RESUMEN VENTA", "C13", net],
+                    ["RESUMEN VENTA", "C14", net * 0.18],
+                    ["RESUMEN VENTA", "C15", net * 1.18],
                     ["METRADO", "V3", 4.33 * 625 + 4.24 * 635],
                 ]);
             },

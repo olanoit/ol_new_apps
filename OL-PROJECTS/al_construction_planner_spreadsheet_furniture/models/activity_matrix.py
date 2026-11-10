@@ -43,6 +43,8 @@ _REF_CODES = 'REFERENCIAS!$AG$3:$AG$%s' % (MATRIX_LIST_COUNT + 2)
 _REF_KEYS = 'REFERENCIAS!$AH$3:$AH$%s' % (MATRIX_LIST_COUNT + 2)
 _REF_PRICES = 'REFERENCIAS!$AI$3:$AI$%s' % (MATRIX_LIST_COUNT + 2)
 _ACTIVITY_CODES = 'REFERENCIAS!$A$3:$A$302'
+# Paquete 1.18, M118-08: la lista de las columnas libres, «código · nombre».
+ACTIVITY_PICK = 'REFERENCIAS!$E$3:$E$302'
 # Grupo ML de la actividad → (en MODULOS, en MUEBLES, columna de TIPOLOGIAS).
 ML_GROUP_LABELS = {
     'low': ('Mueble bajo', 'Bajo', 'ml_low'),
@@ -247,7 +249,7 @@ class ProjectProject(models.Model):
         def rate_formula(letter):
             return ('=IF({l}${c}="","",IFERROR(XLOOKUP({l}${c},{ta},{tp}),'
                     'IFERROR(XLOOKUP({l}${c},{rc},{rp}),0)))').format(
-                l=letter, c=CODE_ROW, ta=col_range('TARIFAS', 'activity'),
+                l=letter, c=CODE_ROW, ta=col_range('TARIFAS', '#Código de la actividad (calc.)'),
                 tp=col_range('TARIFAS', 'price'), rc=_REF_CODES, rp=_REF_PRICES)
 
         def column_common(letter):
@@ -281,8 +283,10 @@ class ProjectProject(models.Model):
                     layout, activity, kind, row)
         for offset in range(SPARE_COLUMNS):
             letter = _col(first_spare + offset)
-            cells['%s%s' % (letter, CODE_ROW)] = '=IF({l}${h}="","",{l}${h}&"")'.format(
-                l=letter, h=HEADER_ROW)
+            # M118-08: la lista guarda «código · nombre»; el código va antes.
+            cells['%s%s' % (letter, CODE_ROW)] = (
+                '=IF({l}${h}="","",IFERROR(LEFT({l}${h},FIND(" · ",{l}${h})-1),{l}${h}&""))'
+            ).format(l=letter, h=HEADER_ROW)
             cells['%s%s' % (letter, KIND_ROW)] = '=IF({l}${c}="","","{k}")'.format(
                 l=letter, c=CODE_ROW, k=KIND_DATA)
             cells['%s%s' % (letter, STAGE_ROW)] = (
@@ -295,7 +299,7 @@ class ProjectProject(models.Model):
                 'id': 'matrix_spare_%s' % letter, 'isBlocking': False,
                 'ranges': ['%s%s' % (letter, HEADER_ROW)],
                 'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
-                              'values': [_ACTIVITY_CODES]}})
+                              'values': [ACTIVITY_PICK]}})
         # Calculadas: ambientes, costo por ambiente y costo total.
         last_data = _col(first_calc - 1)
         for offset, header in enumerate(CALC_HEADERS):
@@ -365,10 +369,14 @@ class ProjectProject(models.Model):
             ml=col_range('MODULOS', '#ML (calc.)'), t=col_range('MODULOS', 'typology'),
             ty=typology, g=col_range('MODULOS', 'ml_group'), grp=module_group)
         furniture = 'SUMIFS({ml},{t},{ty},{g},"{grp}")'.format(
-            ml=col_range('MUEBLES', 'ml'), t=col_range('MUEBLES', 'typology'), ty=typology,
+            ml=col_range('MUEBLES', '#ML usados (calc.)'), t=col_range('MUEBLES', 'typology'),
+            ty=typology,
             g=col_range('MUEBLES', 'ml_group'), grp=furniture_group)
         typology_ml = 'IFERROR(VALUE(XLOOKUP({ty},{codes},{ml})),0)'.format(
             ty=typology, codes=col_range('TIPOLOGIAS', 'code'),
             ml=col_range('TIPOLOGIAS', typology_key)) if typology_key else '0'
-        value = 'IF({m}>0,{m},IF({f}>0,{f},{t}))'.format(m=modules, f=furniture, t=typology_ml)
+        # M118-10: los ML usados de MUEBLES (los escritos o la suma de los
+        # anchos de sus módulos) primero; sin muebles, los módulos y después
+        # los de TIPOLOGIAS.
+        value = 'IF({f}>0,{f},IF({m}>0,{m},{t}))'.format(m=modules, f=furniture, t=typology_ml)
         return '=IF({ty}="","",IF({v}=0,"",ROUND({v},4)))'.format(ty=typology, v=value)

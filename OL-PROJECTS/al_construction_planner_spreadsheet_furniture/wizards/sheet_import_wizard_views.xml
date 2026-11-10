@@ -38,4 +38,36 @@
             </form>
         </field>
     </record>
+    <!-- Paquete 1.18, M118-15, punto 2: desde la hoja, el asistente se
+         llama «Enviar la hoja al planificador» y no habla de un libro Excel. -->
+    <record id="construction_master_import_wizard_view_form_sheet" model="ir.ui.view">
+        <field name="name">construction.master.import.wizard.form.sheet</field>
+        <field name="model">construction.master.import.wizard</field>
+        <field name="inherit_id" ref="al_construction_planner_furniture.construction_master_import_wizard_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('alert-info')]" position="attributes">
+                <attribute name="invisible">spreadsheet_id</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('alert-info')]" position="after">
+                <field name="spreadsheet_id" invisible="1"/>
+                <div class="alert alert-info mb-3" role="status" invisible="not spreadsheet_id">
+                    Revise la vista previa y las advertencias de la hoja. «Importar» lleva la hoja
+                    al planificador: tipologías, módulos, piezas, BOM, actividades y árbol de la
+                    obra. Volver a enviar no duplica nada.
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='file']" position="attributes">
+                <attribute name="invisible">spreadsheet_id</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_download_template']" position="attributes">
+                <attribute name="invisible">spreadsheet_id</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_download_example']" position="attributes">
+                <attribute name="invisible">spreadsheet_id</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_download_eto_example']" position="attributes">
+                <attribute name="invisible">spreadsheet_id</attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>

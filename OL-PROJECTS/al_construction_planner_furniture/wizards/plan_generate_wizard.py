@@ -5,6 +5,7 @@ from markupsafe import Markup, escape
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.modules import module as odoo_module
 
 from ..models.construction_furniture_model import rate_family_for
 
@@ -25,6 +26,15 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         'project.task', string='Ambientes', check_company=True,
         domain="[('project_id', '=', project_id), ('construction_level', '=', 'space')]",
         help='Vacío: todos los ambientes de la obra.')
+    # M118-05, punto 1: los pisos llenan los ambientes.
+    floor_task_ids = fields.Many2many(
+        'project.task', 'construction_plan_generate_wizard_floor_rel', 'wizard_id', 'task_id',
+        string='Pisos', check_company=True,
+        domain="[('project_id', '=', project_id), ('construction_level', '=', 'floor')]",
+        help='Elegir pisos llena los ambientes de esos pisos.')
+    preview_token = fields.Integer(default=0)
+    preview_lines = fields.Integer(string='Líneas de la vista previa',
+                                   compute='_compute_preview', store=True)
     create_modules = fields.Boolean(
         string='Crear módulos faltantes desde la tipología', default=True,
         help='Crea bajo cada ambiente sin módulos una tarea por módulo de la plantilla de '
@@ -69,8 +79,22 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
     days_assembly = fields.Integer(string='Días de armado', default=5)
     days_installation = fields.Integer(string='Días de instalación', default=5)
     days_finishing = fields.Integer(string='Días de acabado y entrega', default=5)
-    preview_html = fields.Html(string='Se creará', compute='_compute_preview', sanitize=False)
-    warning_html = fields.Html(string='Advertencias', compute='_compute_preview', sanitize=False)
+    # Paquete 1.18, M118-06: días por cada sub etapa del perfil (con 2.3
+    # Limpieza) y el programa de la hoja como propuesta.
+    stage_day_ids = fields.One2many(
+        'construction.plan.generate.stage.day', 'wizard_id', string='Días por sub etapa',
+        compute='_compute_stage_day_ids', store=True, readonly=False)
+    program_note = fields.Char(string='Programa', compute='_compute_program_note')
+    program_changed = fields.Boolean(string='Cambiado respecto del PROGRAMA',
+                                     compute='_compute_program_changed')
+    schedule_reason = fields.Char(
+        string='Motivo del cambio',
+        help='Con el ritmo o los días cambiados respecto del PROGRAMA, el motivo queda como plazo '
+             'ajustado del presupuesto de mano de obra de cada sub etapa.')
+    preview_html = fields.Html(string='Se creará', compute='_compute_preview', sanitize=False,
+                               store=True)
+    warning_html = fields.Html(string='Advertencias', compute='_compute_preview', sanitize=False,
+                               store=True)
 
     # ------------------------------------------------------------------
     # Selección y recolección
@@ -82,6 +106,95 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         return self.env['project.task'].search([
             ('project_id', '=', self.plan_id.project_id.id),
             ('construction_level', '=', 'space')], order='construction_floor_task_id, id')
+
+    @api.model
+    def default_get(self, fields_list):
+        """M118-06, punto 1: con el PROGRAMA de la hoja guardado en la obra,
+        el ritmo propuesto es el suyo."""
+        res = super().default_get(fields_list)
+        plan = self.env['construction.resource.plan'].browse(
+            res.get('plan_id') or self.env.context.get('default_plan_id'))
+        project = plan.project_id
+        if project and project.construction_program_start and project.construction_program_pace:
+            res.update({
+                'schedule_mode': 'floors_per_week',
+                'schedule_pace': project.construction_program_pace,
+                'schedule_date_start': project.construction_program_start,
+                'schedule_order': project.construction_program_order or 'asc',
+            })
+        return res
+
+    def _program_days(self):
+        self.ensure_one()
+        return self.plan_id.project_id.construction_program_days or 0
+
+    @api.depends('plan_id')
+    def _compute_stage_day_ids(self):
+        legacy = {'production': 'days_production', 'assembly': 'days_assembly',
+                  'installation': 'days_installation', 'finishing': 'days_finishing'}
+        Stage = self.env['construction.stage']
+        for wizard in self:
+            program = wizard._program_days()
+            stages = Stage._offered_stages(wizard.plan_id.project_id)._leaf_stages() \
+                if wizard.plan_id else Stage
+            wizard.stage_day_ids = [(5, 0, 0)] + [(0, 0, {
+                'stage_id': stage.id,
+                'days': program or (wizard[legacy[stage.code]] if stage.code in legacy else 5),
+            }) for stage in stages.sorted(lambda st: st._tree_key())]
+
+    @api.depends('plan_id')
+    def _compute_program_note(self):
+        for wizard in self:
+            project = wizard.plan_id.project_id
+            wizard.program_note = self.env._(
+                'Del PROGRAMA de la hoja «%(sheet)s», enviado el %(date)s',
+                sheet=project.construction_program_source or '—',
+                date=fields.Date.to_string(fields.Datetime.to_datetime(
+                    project.construction_program_date).date())) \
+                if project.construction_program_start else False
+
+    @api.depends('schedule_mode', 'schedule_pace', 'schedule_date_start', 'schedule_order',
+                 'stage_day_ids.days')
+    def _compute_program_changed(self):
+        for wizard in self:
+            project = wizard.plan_id.project_id
+            if not project.construction_program_start or wizard.schedule_mode == 'none':
+                wizard.program_changed = False
+                continue
+            days = project.construction_program_days
+            wizard.program_changed = (
+                wizard.schedule_mode != 'floors_per_week'
+                or abs(wizard.schedule_pace - project.construction_program_pace) > 1e-6
+                or wizard.schedule_date_start != project.construction_program_start
+                or wizard.schedule_order != (project.construction_program_order or 'asc')
+                or bool(days and any(line.days != days for line in wizard.stage_day_ids)))
+
+    def _stage_days(self):
+        self.ensure_one()
+        days = {line.stage_id.code: line.days for line in self.stage_day_ids if line.days}
+        # Las de siempre, si el asistente se creó sin líneas.
+        for code, field in (('production', 'days_production'), ('assembly', 'days_assembly'),
+                            ('installation', 'days_installation'),
+                            ('finishing', 'days_finishing')):
+            days.setdefault(code, self[field])
+        return days
+
+    @api.onchange('floor_task_ids')
+    def _onchange_floor_task_ids(self):
+        if self.floor_task_ids:
+            self.space_task_ids = self.env['project.task'].search([
+                ('project_id', '=', self.plan_id.project_id.id),
+                ('construction_level', '=', 'space'),
+                ('construction_floor_task_id', 'in', self.floor_task_ids.ids)],
+                order='construction_floor_task_id, id')
+
+    def action_preview(self):
+        """M118-05, punto 5: la vista previa se calcula al pedirla."""
+        self.ensure_one()
+        self.preview_token += 1
+        return {'type': 'ir.actions.act_window', 'res_model': self._name, 'res_id': self.id,
+                'view_mode': 'form', 'views': [(False, 'form')], 'target': 'new',
+                'name': self.env._('Generar plan')}
 
     @api.depends('plan_id')
     def _compute_available_stage_ids(self):
@@ -429,8 +542,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
     # ------------------------------------------------------------------
     # Vista previa
     # ------------------------------------------------------------------
-    @api.depends('plan_id', 'space_task_ids', 'create_modules', 'include_material',
-                 'include_contract', 'stage_ids', 'mode')
+    @api.depends('plan_id', 'space_task_ids', 'preview_token')
     def _compute_preview(self):
         labels = [
             ('assembly_module', self.env._('Líneas de armado por módulo'), self.env._('Módulo')),
@@ -450,8 +562,19 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         for wizard in self:
             if not wizard.plan_id:
                 wizard.preview_html = wizard.warning_html = False
+                wizard.preview_lines = 0
+                continue
+            # M118-05, punto 5: al abrir una obra grande (toda la obra) no se
+            # calcula; se pide con «Ver vista previa» o al elegir el alcance.
+            if not wizard.preview_token and not wizard.space_task_ids \
+                    and len(wizard._get_spaces()) > 30:
+                wizard.preview_html = Markup('<p class="text-muted">%s</p>') % self.env._(
+                    'Elija pisos o ambientes, o pulse «Ver vista previa» para toda la obra.')
+                wizard.warning_html = False
+                wizard.preview_lines = 0
                 continue
             data = wizard._collect()
+            wizard.preview_lines = len(data['lines'])
             currency = wizard.currency_id
             fmt = lambda amount: '{:,.2f}'.format(currency.round(amount) if currency else amount)
             rows = [Markup('<tr><td>%s</td><td>%s</td><td class="text-end">%s</td>'
@@ -553,12 +676,102 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                     template.ml_group, template.module_type)
         return result
 
+    def _background_threshold(self):
+        """Líneas desde las que «Generar» va en segundo plano (D 09-nov:
+        2,000); se cambia con el parámetro del sistema."""
+        return int(self.env['ir.config_parameter'].sudo().get_param(
+            'al_construction_planner_furniture.generate_background_lines', 2000))
+
+    def _background_params(self, spaces):
+        self.ensure_one()
+        return {
+            'space_ids': spaces.ids, 'create_modules': self.create_modules,
+            'include_material': self.include_material, 'include_contract': self.include_contract,
+            'stage_ids': [(6, 0, self.stage_ids.ids)], 'mode': self.mode,
+            'schedule_mode': self.schedule_mode, 'schedule_pace': self.schedule_pace,
+            'schedule_date_start': fields.Date.to_string(self.schedule_date_start)
+            if self.schedule_date_start else False,
+            'schedule_order': self.schedule_order,
+            'days_production': self.days_production, 'days_assembly': self.days_assembly,
+            'days_installation': self.days_installation, 'days_finishing': self.days_finishing,
+            'stage_day_ids': [(0, 0, {'stage_id': line.stage_id.id, 'days': line.days})
+                              for line in self.stage_day_ids],
+            'schedule_reason': self.schedule_reason or False,
+        }
+
     def action_generate(self):
+        """M118-05: con más líneas que el umbral (o sin vista previa y una
+        obra grande), la generación va en segundo plano y el asistente se
+        cierra; si no, como siempre."""
         self.ensure_one()
         plan = self.plan_id
         plan._check_draft()
+        plan._construction_check_not_generating()
         if not self._selected_stages():
             raise UserError(self.env._('Elija al menos una etapa.'))
+        if self.program_changed and not (self.schedule_reason or '').strip():
+            raise UserError(self.env._(
+                'El ritmo o los días cambiaron respecto del PROGRAMA de la hoja: escriba el motivo '
+                '(queda como plazo ajustado del presupuesto de mano de obra).'))
+        spaces = self._get_spaces()
+        computed = self.preview_token or self.space_task_ids or len(spaces) <= 30
+        estimate = self.preview_lines if computed else self._background_threshold() + 1
+        # En las pruebas, en primer plano salvo que lo pidan (las que ya
+        # existían generan obras de demostración grandes).
+        background = self.env.context.get('construction_generate_background')
+        if background is None:
+            background = not odoo_module.current_test and estimate > self._background_threshold()
+        if background:
+            plan._construction_enqueue_generate(self._background_params(spaces), len(spaces))
+            return {
+                'type': 'ir.actions.client', 'tag': 'display_notification',
+                'params': {
+                    'type': 'info', 'sticky': False,
+                    'message': self.env._(
+                        'Generación en segundo plano de %s ambientes: el plan muestra el avance '
+                        'y le avisa al terminar.', len(spaces)),
+                    'next': {'type': 'ir.actions.act_window_close'},
+                },
+            }
+        self._construction_generate_now()
+        return plan.action_view_lines()
+
+    def _construction_schedule(self, spaces):
+        self.ensure_one()
+        if self.schedule_mode == 'none':
+            return
+        self.env['construction.space.stage']._schedule_by_pace(
+            self.plan_id, spaces, self.schedule_date_start, self.schedule_mode,
+            self.schedule_pace, self.schedule_order, self._stage_days())
+        if self.program_changed and self.schedule_reason:
+            self._adjust_labor_budget()
+
+    def _adjust_labor_budget(self):
+        """M118-06, punto 5: el ritmo cambiado respecto del PROGRAMA pasa como
+        plazo ajustado del presupuesto de mano de obra de cada sub etapa, con
+        su motivo; así presupuesto, Cronograma y tablero tienen las mismas
+        fechas."""
+        project = self.plan_id.project_id
+        budgets = self.env['construction.labor.budget'].search([('project_id', '=', project.id)])
+        if not budgets:
+            return
+        groups = self.env['construction.space.stage']._read_group(
+            [('project_id', '=', project.id), ('stage', 'in', budgets.mapped('stage'))],
+            ['stage'], ['date_start:min', 'date_end:max'])
+        dates = {stage: (start, end) for stage, start, end in groups}
+        for budget in budgets:
+            if budget.stage in dates and all(dates[budget.stage]):
+                budget.write({'date_start_adjusted': dates[budget.stage][0],
+                              'date_end_adjusted': dates[budget.stage][1],
+                              'adjust_reason': self.schedule_reason})
+
+    def _construction_generate_now(self, post=True):
+        """Lo que «Generar» hacía siempre, para los ambientes del asistente.
+
+        :return: ``{'modules': n, 'lines': n}``
+        """
+        self.ensure_one()
+        plan = self.plan_id
         spaces = self._get_spaces()
         if self.mode == 'replace':
             # Los costos escritos se leen antes de borrar (ver _existing_prices).
@@ -586,6 +799,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                 construction_join_method=template.join_method,
                 construction_width_mm=template.width_mm,
                 construction_ml_group=template.ml_group,
+                construction_eto_label=template.eto_label or False,
                 construction_unit_state='planned',
                 user_ids=False,
             ) for space, template in data['modules_to_create']])
@@ -611,19 +825,26 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         lines._apply_analytic_rules()
         # Las barras del cronograma (P-15): una por ambiente y etapa con líneas.
         stages = self.env['construction.space.stage']._sync_from_plan(plan)
-        if self.schedule_mode != 'none':
-            self.env['construction.space.stage']._schedule_by_pace(
-                plan, spaces, self.schedule_date_start, self.schedule_mode, self.schedule_pace,
-                self.schedule_order, {
-                    'production': self.days_production, 'assembly': self.days_assembly,
-                    'installation': self.days_installation, 'finishing': self.days_finishing,
-                })
-        plan.message_post(body=self.env._(
-            'Plan generado: %(modules)s tareas de módulo, %(lines)s líneas y %(stages)s etapas '
-            'en el cronograma.', modules=len(module_map), lines=len(lines), stages=len(stages)))
-        return plan.action_view_lines()
+        self._construction_schedule(spaces)
+        if post:
+            plan.message_post(body=self.env._(
+                'Plan generado: %(modules)s tareas de módulo, %(lines)s líneas y %(stages)s '
+                'etapas en el cronograma.', modules=len(module_map), lines=len(lines),
+                stages=len(stages)))
+        return {'modules': len(module_map), 'lines': len(lines)}
 
     @api.model
     def _get_stage_label(self, stage):
         return dict(self.env['construction.stage']._get_selection()).get(
             stage, self.env._('Sin etapa'))
+
+
+class ConstructionPlanGenerateStageDay(models.TransientModel):
+    """Días de una sub etapa en «Generar plan» (paquete 1.18, M118-06)."""
+    _name = 'construction.plan.generate.stage.day'
+    _description = 'Días por sub etapa al generar el plan'
+
+    wizard_id = fields.Many2one('construction.plan.generate.wizard', required=True,
+                                ondelete='cascade')
+    stage_id = fields.Many2one('construction.stage', string='Sub etapa', required=True)
+    days = fields.Integer(string='Días', default=5)

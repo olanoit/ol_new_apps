@@ -261,6 +261,12 @@ class SaleSheetBuilder:
                 self._error_mark('obra_plan', [plan], '=AND({p}<>"",{p}<>{b}!$T$1)'.format(
                     p=plan.replace('B', '$B$'), b=BUILDING_SHEET)),
                 self._error_mark('obra_required', ['B2', 'B3', 'B6'], '=B2=""'),
+            ] + [
+                # Paquete 1.18, M118-14, punto 3: una fecha escrita como texto
+                # (no se lee como fecha) en rojo claro.
+                self._error_mark('obra_date_%s' % OBRA_ROW[name], ['B%s' % OBRA_ROW[name]],
+                                 '=AND(B{r}<>"",ISTEXT(B{r}))'.format(r=OBRA_ROW[name]))
+                for name in ('Inicio', 'Fin', 'Fecha de cotización')
             ],
         }
 
@@ -539,32 +545,34 @@ class SaleSheetBuilder:
                  'B6': '=%s&""' % obra('Código de cotización'),
                  'B7': '=%s&""' % obra('Versión de la cotización'),
                  'B8': '=%s' % obra('Fecha de cotización'), 'B9': '=%s&""' % param('moneda'),
-                 'A11': 'Producto', 'B11': 'Ambientes', 'C11': 'Subtotal',
-                 'A12': '=IFERROR(UNIQUE(FILTER({p},{p}<>"")),"")'.format(p=partida)}
+                 # Paquete 1.18, M118-14, punto 2: los totales arriba,
+                 # debajo de la cabecera; las partidas debajo (filas 18-37).
+                 'A17': 'Producto', 'B17': 'Ambientes', 'C17': 'Subtotal',
+                 'A18': '=IFERROR(UNIQUE(FILTER({p},{p}<>"")),"")'.format(p=partida)}
         styles = {'A1': self.TITLE, 'A2:A9': self.LABEL, 'B2:B9': self.CELL_CALC,
-                  'A11:C11': self.HEAD_CALC, 'A12:C31': self.CELL_CALC}
-        formats = {'C12:C36': money}
-        for row in range(12, 32):
+                  'A17:C17': self.HEAD_CALC, 'A18:C37': self.CELL_CALC}
+        formats = {'C11:C15': money, 'C18:C37': money}
+        for row in range(18, 38):
             cells['B%s' % row] = '=IF($A{r}="","",SUMIF({p},$A{r},{s}))'.format(
                 r=row, p=partida, s=spaces)
             cells['C%s' % row] = '=IF($A{r}="","",SUMIF({p},$A{r},{t}))'.format(
                 r=row, p=partida, t=totals)
-        total = 'SUM($C$12:$C$31)'
+        total = 'SUM($C$18:$C$37)'
         discount = 'IF(%s="",0,%s)' % (obra('Descuento comercial'), obra('Descuento comercial'))
         without = '%s="Sí"' % param('precio_sin_igv')
         igv = param('igv')
         net = '(%s-%s)' % (total, discount)
         rows = (
-            (32, 'Suma de partidas', '=%s' % total),
-            (33, 'Descuento comercial', '=IF(%s=0,"",-%s)' % (discount, discount)),
-            (34, 'Subtotal', '=IF(%s,%s,%s/(1+%s))' % (without, net, net, igv)),
-            (35, 'IGV', '=IF(%s,%s*%s,%s-%s/(1+%s))' % (without, net, igv, net, net, igv)),
-            (36, 'Total', '=$C$34+$C$35'),
+            (11, 'Suma de partidas', '=%s' % total),
+            (12, 'Descuento comercial', '=IF(%s=0,"",-%s)' % (discount, discount)),
+            (13, 'Subtotal', '=IF(%s,%s,%s/(1+%s))' % (without, net, net, igv)),
+            (14, 'IGV', '=IF(%s,%s*%s,%s-%s/(1+%s))' % (without, net, igv, net, net, igv)),
+            (15, 'Total', '=$C$13+$C$14'),
         )
         for row, label, formula in rows:
             cells['A%s' % row] = label
             cells['C%s' % row] = formula
-            styles['A%s:C%s' % (row, row)] = self.TOTAL if row == 36 else self.LABEL
+            styles['A%s:C%s' % (row, row)] = self.TOTAL if row == 15 else self.LABEL
         for row, label, name in ((38, 'Condiciones generales', 'Condiciones generales'),
                                  (39, 'Forma de pago', 'Forma de pago'),
                                  (40, 'Garantía', 'Garantía'),

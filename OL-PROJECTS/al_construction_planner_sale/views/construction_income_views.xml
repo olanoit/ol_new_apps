@@ -440,6 +440,16 @@
                         <button name="action_construction_prepare_valuation" type="object"
                                 string="Preparar valorización" class="btn-secondary btn-sm"
                                 icon="fa-plus" invisible="not construction_sale_order_id"/>
+                        <!-- Paquete 7 de CREVAL, CR-63. -->
+                        <button name="action_construction_valuation_targets" type="object"
+                                string="Metas de valorización" class="btn-secondary btn-sm"
+                                icon="fa-bullseye" invisible="not construction_sale_order_id"/>
+                        <!-- Paquete 7 de CREVAL, CR-60. -->
+                        <button name="action_construction_indicator_sheet" type="object"
+                                string="Ficha de indicadores" class="btn-secondary btn-sm"
+                                icon="fa-tachometer" invisible="not construction_sale_order_id"/>
+                        <field name="construction_target_due_days" class="oe_inline ms-3"
+                               string="Vencimiento de la meta (días tras fin de mes)"/>
                     </div>
                     <field name="construction_valuation_forecast_html" nolabel="1" readonly="1"/>
                 </page>

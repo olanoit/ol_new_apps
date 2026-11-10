@@ -85,6 +85,13 @@ def _decimals(value):
     return len(text.split('.')[1]) if '.' in text else 0
 
 
+# Paquete 1.18, M118-08: columnas que la hoja llena desde una lista «código ·
+# nombre».
+PICKED_KEYS = {
+    'MODULOS': ('activity',), 'TARIFAS': ('activity',), 'MO PROPIA': ('activity',),
+    'ACTIVIDADES': ('activity',), 'BOM': ('module',), 'PIEZAS': ('module',),
+}
+
 class ConstructionMasterImportWizard(models.TransientModel):
     _name = 'construction.master.import.wizard'
     _description = 'Importar maestro y ETO'
@@ -151,6 +158,11 @@ class ConstructionMasterImportWizard(models.TransientModel):
                        for key, index in positions.items()}
                 if all(value in (None, '') for value in row.values()):
                     continue
+                # Paquete 1.18, M118-08: Módulo y Actividad se eligen como
+                # «código · nombre»; vale el código solo o el texto completo.
+                for key in PICKED_KEYS.get(name, ()):
+                    if isinstance(row.get(key), str) and ' · ' in row[key]:
+                        row[key] = row[key].split(' · ', 1)[0].strip()
                 row['_row'] = row_number
                 data.append(row)
             sheets[name] = data
@@ -549,7 +561,9 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 warn['qty_precision'].append('%s · %s %s' % (typology, code, qty))
             # Un producto en dos etapas queda en dos líneas, como lo trae
             # Oficina Técnica (paquete 1.10, M110-02).
-            key = (typology, code, stage or False)
+            # M118-15, punto 5: repetir un producto en módulos distintos es
+            # normal; la clave lleva el módulo.
+            key = (typology, _text(row.get('module')), code, stage or False)
             seen[key] += 1
             lines = result['bom'].setdefault(typology, {})
             line_key = (code, stage or False)
@@ -559,11 +573,12 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 lines[line_key] = {'qty': qty, 'stage': stage or False, 'uom': product_uom,
                                    'cost': cost if cost is not None else product_cost}
             count += 1
-        for (typology, code, _stage), times in seen.items():
+        for (typology, module, code, _stage), times in seen.items():
             if times > 1:
                 warn['bom_duplicate'].append(self.env._(
                     '%(typology)s · %(code)s (%(times)s filas)',
-                    typology=typology, code=code, times=times))
+                    typology=' · '.join(filter(None, [typology, module])), code=code,
+                    times=times))
         unstaged_amount = 0.0
         for typology, lines in result['bom'].items():
             for (code, _stage), line in lines.items():
@@ -648,7 +663,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 continue
             result['eto'][path].append({
                 'code': code, 'width_mm': int(round(width)), 'module_type': module_type,
-                'ml_group': ml_group})
+                'ml_group': ml_group, 'eto_label': _text(row.get('eto_label'))})
             count += 1
         stats['ETO'] = (len(rows), count, 0)
         return result
@@ -773,15 +788,21 @@ class ConstructionMasterImportWizard(models.TransientModel):
         # sudo: el planificador puede no tener escritura en la obra; la
         # importación queda en su historial con él como autor.
         project_sudo = self.project_id.sudo()
-        project_sudo.message_post(author_id=self.env.user.partner_id.id, body=self.env._(
-            'Maestro importado (%(file)s): %(typologies)s tipologías, %(modules)s módulos de '
-            'plantilla, %(spaces)s ambientes nuevos y %(eto)s módulos del ETO.',
-            file=self.filename or '—', typologies=summary['typologies'],
-            modules=summary['modules'], spaces=summary['spaces'], eto=summary['eto']))
+        project_sudo.message_post(author_id=self.env.user.partner_id.id,
+                                  body=self._construction_import_message(summary))
         # M118-03, punto 3: el contrato sin plantilla de hitos.
         for warning in summary.get('contract_warnings') or []:
             project_sudo.message_post(author_id=self.env.user.partner_id.id, body=warning)
         return self.project_id.action_view_construction_typologies()
+
+    def _construction_import_message(self, summary):
+        """Mensaje de la importación en la obra (el puente de la hoja nombra
+        la hoja y su versión, M118-15)."""
+        return self.env._(
+            'Maestro importado (%(file)s): %(typologies)s tipologías, %(modules)s módulos de '
+            'plantilla, %(spaces)s ambientes nuevos y %(eto)s módulos del ETO.',
+            file=self.filename or '—', typologies=summary['typologies'],
+            modules=summary['modules'], spaces=summary['spaces'], eto=summary['eto'])
 
     def _module_extra_values(self, row):
         """Columnas del módulo que agrega la v1.8 (las lee el puente)."""
@@ -975,6 +996,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
                     'construction_ml_group': vals['ml_group'] or (
                         template.ml_group if template else 'none'),
                 }
+                # M118-09: el rótulo del ETO o el de la plantilla.
+                label = vals.get('eto_label') or (template.eto_label if template else False)
+                if label:
+                    task_vals['construction_eto_label'] = label
                 task = current.get(vals['code'])
                 if task:
                     task.write(task_vals)

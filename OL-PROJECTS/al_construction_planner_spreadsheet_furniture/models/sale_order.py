@@ -117,6 +117,16 @@ class SaleOrder(models.Model):
         return self.env['construction.sale.rate'].sudo()._construction_rates_for(
             self.company_id, self.currency_id, self.partner_id, date)
 
+    def action_construction_open_budget_sheet(self):
+        """CREVAL, paquete 5, CR-47: con un perfil de mobiliario, «Hoja de
+        presupuesto» abre la hoja de venta de mobiliario."""
+        self.ensure_one()
+        # sudo: el presupuestador no lee los productos ni las plantillas de
+        # proyecto; solo se pregunta qué hoja abre la cotización.
+        if self.sudo()._construction_quote_sheet_kind() == 'furniture':
+            return self.action_construction_open_spreadsheet()
+        return super().action_construction_open_budget_sheet()
+
     def action_construction_open_spreadsheet(self):
         """Con un perfil de mobiliario, la hoja de venta; con otro, la de
         presupuesto, como hasta hoy."""
@@ -311,6 +321,11 @@ class SaleOrder(models.Model):
                 lambda line: line.construction_partida and line not in kept)
             gone.unlink()
         self.construction_sale_summary = json.dumps(summary)
+        # Paquete 1.18, M118-15, punto 1: el proyecto escrito en OBRA de la
+        # hoja vuelve a la cotización.
+        project_name = str((summary.get('obra') or {}).get('Proyecto') or '').strip()
+        if project_name and project_name != (self.client_order_ref or ''):
+            self.client_order_ref = project_name
         if additional:
             document_sudo.construction_sale_phase = 'awarded'
             self._construction_notify_planning(self.env._('Adicional adjudicado: traer la venta'))

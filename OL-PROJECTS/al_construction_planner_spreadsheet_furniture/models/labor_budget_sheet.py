@@ -205,6 +205,15 @@ class ProjectProject(models.Model):
     # ------------------------------------------------------------------
     # PROGRAMA
     # ------------------------------------------------------------------
+    def _construction_program_amount_refs(self, last_floor, mode):
+        """Celdas de «Presupuesto» de los bloques de PROGRAMA de ``mode``
+        (paquete 1.18, M118-07: el personal propio de INICIO)."""
+        self.ensure_one()
+        first_block = last_floor + 3
+        return ['PROGRAMA!$B$%s' % (first_block + number * BLOCK_HEIGHT + BLOCK_ROWS['amount'])
+                for number, (_stage, block_mode) in enumerate(self._construction_budget_blocks())
+                if block_mode == mode]
+
     def _construction_program_budget(self, sheet, layout, stage_labels, first_floor, last_floor,
                                      week_row, date_row, week_letters, styles):
         """Agrega a PROGRAMA, debajo de la grilla de pisos, un bloque por sub

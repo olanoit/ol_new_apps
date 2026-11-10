@@ -32,7 +32,10 @@ class ConstructionFurnitureType(models.Model):
                            'construction.furniture.type') or 'tipo',
                        help='El que guardan reglas, actividades y tareas.')
     sequence = fields.Integer(string='Secuencia', default=100)
-    level = fields.Selection([('furniture', 'Mueble'), ('module', 'Módulo')], string='Nivel',
+    # Paquete 1.18, M118-15, punto 6: también los tipos de pieza (la lista
+    # de PIEZAS), con su zona.
+    level = fields.Selection([('furniture', 'Mueble'), ('module', 'Módulo'), ('piece', 'Pieza')],
+                             string='Nivel',
                              required=True, default='module')
     ml_group = fields.Selection(
         [('low', 'Mueble bajo'), ('high', 'Mueble alto'), ('full', 'Mueble completo'),
@@ -48,6 +51,9 @@ class ConstructionFurnitureType(models.Model):
                                   help='Para los especiales.')
     not_counted = fields.Boolean(string='No cuenta como módulo a armar')
     active = fields.Boolean(string='Activo', default=True)
+    piece_zone = fields.Selection(
+        [('front', 'Frente'), ('structure', 'Estructura')], string='Zona de la pieza',
+        help='Para las propuestas de tablero: frente o estructura.')
 
     _code_unique = models.Constraint('unique(level, code)',
                                      'Ya hay un tipo con ese código en ese nivel.')

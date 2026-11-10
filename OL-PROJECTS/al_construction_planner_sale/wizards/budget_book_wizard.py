@@ -118,6 +118,8 @@ OBRA_FIELDS = {
     'utilidad %': 'profit_pct', 'utilidad': 'profit_pct',
     'descuento %': 'discount_pct', 'descuento': 'discount_pct',
     'igv %': 'tax_pct', 'igv': 'tax_pct', 'fecha': 'date', 'version': 'version',
+    # CREVAL, paquete 5, CR-40: el margen de las partidas que no escriben el suyo.
+    'margen por defecto %': 'margin_default_pct', 'margen por defecto': 'margin_default_pct',
 }
 # Tipo de insumo → comportamiento del recurso («equipment_pct»: herramientas
 # en % de la mano de obra).
@@ -376,7 +378,17 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 else self.env['uom.uom'],
                 'price': _number(row.get('price')) or 0.0, 'currency': currency,
                 'row': row['_row']}
-        for row in self._sheet_rows(sheets['APU'], 'APU', errors, broken):
+        apu_rows = self._sheet_rows(sheets['APU'], 'APU', errors, broken)
+        # CREVAL, paquete 5, CR-42: el APU escrito solo con su nombre recibe el
+        # código siguiente («R» y el siguiente número libre), como la hoja.
+        numbers = [int(_text(row.get('code'))[1:]) for row in apu_rows
+                   if _text(row.get('code'))[:1] == 'R' and _text(row.get('code'))[1:].isdigit()]
+        next_number = max(numbers or [0])
+        for row in apu_rows:
+            if not _text(row.get('code')) and _text(row.get('name')):
+                next_number += 1
+                row['code'] = 'R%02d' % next_number
+        for row in apu_rows:
             code = _text(row.get('code'))
             if code in book['apus']:
                 errors.append(('APU', row['_row'], 'code', self.env._(
@@ -456,7 +468,11 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 'qty_slack': _number(row.get('qty_slack')) or 0.0,
                 'cost_slack_pct': _number(row.get('cost_slack_pct')) or 0.0,
                 'cost_slack': _number(row.get('cost_slack')) or 0.0,
-                'margin_pct': _number(row.get('margin_pct')) or 0.0,
+                # CREVAL, paquete 5, CR-40: sin margen escrito, el margen
+                # por defecto de OBRA.
+                'margin_pct': _number(row.get('margin_pct')) if _number(
+                    row.get('margin_pct')) is not None else (
+                    _number(book['obra'].get('margin_default_pct')) or 0.0),
                 'margin': _number(row.get('margin')) or 0.0,
                 'cost_real': cost_real, 'row': row['_row']})
         for item, count in items.items():
@@ -470,7 +486,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             names = [norm(_text(cell)) for cell in plan_rows[0]]
             index = {key: names.index(norm(header)) for key, header in (
                 ('item', 'Ítem'), ('mode', 'Modalidad final'), ('start', 'Inicio'),
-                ('end', 'Fin')) if norm(header) in names}
+                ('end', 'Fin'), ('qty_site', 'Metrado de obra')) if norm(header) in names}
             for number, row in enumerate(plan_rows[1:], start=2):
                 item = _text(row[index['item']]) if 'item' in index and \
                     index['item'] < len(row) else ''
@@ -487,6 +503,10 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                     index['start'] < len(row) else False,
                     'end': _date(row[index['end']]) if 'end' in index and
                     index['end'] < len(row) else False,
+                    # CREVAL, paquete 5, CR-45: el metrado de obra del
+                    # planificador; vacío, el vendido.
+                    'qty_site': _number(row[index['qty_site']]) if 'qty_site' in index and
+                    index['qty_site'] < len(row) else None,
                 }
         # CR-30: el nombre de cada nivel de la ruta, de la fila que lo da (el
         # título o las columnas Especialidad y Sub-especialidad de cualquier
@@ -1209,7 +1229,11 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 # cambio de obra (6.7).
                 blocked.append(task.display_name)
                 continue
-            values = {'construction_qty': line.construction_qty_real or line.product_uom_qty}
+            planned_site = (book.get('plan', {}).get(line.construction_budget_item) or {}).get(
+                'qty_site')
+            # CR-45: el plan toma el metrado de obra; la cotización no cambia.
+            values = {'construction_qty': planned_site if planned_site else (
+                line.construction_qty_real or line.product_uom_qty)}
             if recipe:
                 values['construction_execution_template_id'] = recipe.id
             task.with_context(construction_plan_force=True).write(values)

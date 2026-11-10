@@ -244,6 +244,13 @@ patch(SpreadsheetAction.prototype, {
 const isBudget = (env) => env.constructionSheetKind && env.constructionSheetKind() === "budget";
 const isFurniture = (env) =>
     env.constructionSheetKind && env.constructionSheetKind() === "furniture";
+// CREVAL, paquete 5, CR-38: la hoja de presupuesto de construcción tiene dos
+// usos; sin uso, la «Presupuesto y plan» de antes, con su menú de siempre.
+const budgetRole = (env) =>
+    (env.constructionMetadata && env.constructionMetadata("construction_budget_role")) || false;
+const isBudgetLegacy = (env) => isBudget(env) && !budgetRole(env);
+const isBudgetSale = (env) => isBudget(env) && budgetRole(env) === "sale";
+const isBudgetPlan = (env) => isBudget(env) && budgetRole(env) === "plan";
 
 /** Las pestañas que lee el envío (M113-02). */
 function collectForSend(env) {
@@ -547,7 +554,40 @@ const furnitureItems = [
     }],
 ];
 for (const [id, item] of budgetItems) {
-    topbarMenuRegistry.addChild(id, ["construction_planner"], { ...item, isVisible: isBudget });
+    topbarMenuRegistry.addChild(id, ["construction_planner"], { ...item, isVisible: isBudgetLegacy });
+}
+// CR-38: hoja de presupuesto de venta y hoja de planificación de obra.
+const offerLocked = (env) => env.constructionOfferLocked && env.constructionOfferLocked();
+const roleItems = [
+    [isBudgetSale, "construction_budget_sale_validate", _t("Validar"), 10, (env) => validate(env)],
+    [isBudgetSale, "construction_budget_sale_pass", _t("Pasar a la cotización"), 20, async (env) => {
+        if (offerLocked(env)) {
+            env.constructionNotify(
+                _t("La cotización ya está confirmada: los cambios de precio o metrado van por cambio de obra."),
+                "warning"
+            );
+            return;
+        }
+        const result = await validate(env, { quiet: true });
+        if (!result.errors) {
+            await send(env, "budget");
+        }
+    }],
+    [isBudgetSale, "construction_budget_sale_costs", _t("Actualizar insumos"), 40, (env) => updateCosts(env)],
+    [isBudgetSale, "construction_budget_sale_bring", _t("Traer de Odoo"), 50, (env) => bringFromOdoo(env)],
+    [isBudgetSale, "construction_budget_sale_version", _t("Nueva versión"), 60, (env) => newVersion(env)],
+    [isBudgetPlan, "construction_budget_plan_bring", _t("Traer la venta"), 10, (env) => bringFromOdoo(env)],
+    [isBudgetPlan, "construction_budget_plan_validate", _t("Validar"), 20, (env) => validate(env)],
+    [isBudgetPlan, "construction_budget_plan_send", _t("Enviar al planificador: plan"), 30, async (env) => {
+        const result = await validate(env, { quiet: true });
+        if (!result.errors) {
+            await send(env, "plan");
+        }
+    }],
+    [isBudgetPlan, "construction_budget_plan_version", _t("Nueva versión"), 60, (env) => newVersion(env)],
+];
+for (const [isVisible, id, name, sequence, execute] of roleItems) {
+    topbarMenuRegistry.addChild(id, ["construction_planner"], { name, sequence, isVisible, execute });
 }
 for (const [id, item] of furnitureItems) {
     topbarMenuRegistry.addChild(id, ["construction_planner"], { ...item, isVisible: isFurniture });

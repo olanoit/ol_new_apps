@@ -15,7 +15,7 @@
                     <button class="btn o_cp_sr_plan" t-att-class="state.scenario === 'plan' ? 'btn-primary' : 'btn-secondary'"
                             t-on-click="() => this.setScenario('plan')">Previsto</button>
                     <button class="btn o_cp_sr_real" t-att-class="state.scenario === 'real' ? 'btn-primary' : 'btn-secondary'"
-                            t-on-click="() => this.setScenario('real')">Real</button>
+                            t-on-click="() => this.setScenario('real')">Avance valorizado al costo del plan</button>
                 </div>
                 <span t-if="state.data?.plan_name" class="small text-muted">
                     Plan de recursos <t t-esc="state.data.plan_name"/>
@@ -146,7 +146,8 @@
                     <p class="text-muted small">
                         Plan: cada línea del plan repartida en los días hábiles de su etapa; ingreso = precio de la
                         partida × su avance previsto, con material; valorización, factura y cobro según el calendario
-                        de la obra. Real: lo ejecutado valorizado (avances validados, horas y consumos), entregas
+                        de la obra. Avance valorizado al costo del plan: avances validados, horas y consumos al
+                        costo del plan (el costo ejecutado contable está en la ficha de la obra), entregas
                         confirmadas, valorizaciones confirmadas, facturas publicadas y cobros conciliados, sin IGV.
                         La última semana del plan absorbe el redondeo.
                     </p>

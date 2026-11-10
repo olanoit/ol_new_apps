@@ -45,6 +45,8 @@ CONTROL_ORIGIN_COL = 'S'
 READY, MISSING = 'Listo', 'Falta'
 MATCH, MISMATCH = 'Coincide', 'No coincide'
 GREEN_FILL, RED_FILL = '#E3F4EC', '#F6E1E4'
+# Paquete 1.18: aviso (sheet_design.WARNING_FILL).
+AMBER_FILL = '#FCE5CD'
 # Colores de las sub etapas en PROGRAMA (se repiten si hay más).
 STAGE_FILLS = ('#CFE2F3', '#FFF2CC', '#D9EAD3', '#FCE5CD', '#EAD1DC', '#D9D2E9')
 # Pestañas que cuenta INICIO, con la clave de una columna obligatoria.
@@ -57,6 +59,8 @@ COUNTED_SHEETS = (
 CARD_MODULE_ROWS = 60
 PROGRAM_WEEKS = 30
 PROGRAM_FLOORS = 200
+# Primera fila de pisos de PROGRAMA.
+PROGRAM_FIRST_FLOOR = 18
 SUMMARY_ROWS = 300
 
 
@@ -341,7 +345,27 @@ class ProjectProject(models.Model):
             cells['A%s' % row] = label
             cells['B%s' % row] = formula
             cells['C%s' % row] = source
+        # M118-07: los módulos como la vista previa de «Generar plan» (todos,
+        # con los zócalos aparte) y el personal propio del presupuesto de mano
+        # de obra de PROGRAMA (D21:E26).
+        own = self._construction_program_amount_refs(
+            PROGRAM_FIRST_FLOOR + PROGRAM_FLOORS - 1, 'own')
+        extra = [
+            ('D21', self.env._('Mano de obra y módulos'), None),
+            ('D22', self.env._('Módulos (todos)'),
+             '=SUMPRODUCT(%s,%s)' % (in_site, tip('#Módulos (calc.)'))),
+            ('D23', self.env._('de ellos, zócalos (no se arman)'), '=MAX(E22-B23,0)'),
+            ('D24', self.env._('Contratas (matriz × tarifa)'), '=B27'),
+            ('D25', self.env._('Personal propio (presupuesto de MO de PROGRAMA)'),
+             '=%s' % ('+'.join(own) if own else '0')),
+        ]
+        for ref, label, formula in extra:
+            cells[ref] = label
+            if formula:
+                cells['E%s' % ref[1:]] = formula
+        styles['D21'] = TITLE_STYLE
         formats = {'B24': '#,##0.00', 'B26': '#,##0.00', 'B27': '#,##0.00', 'B28': '#,##0.00',
+                   'E24': '#,##0.00', 'E25': '#,##0.00',
                    'B29': '#,##0.00', 'B30': '#,##0.00', 'B31': '#,##0.00', 'B32': '0.0%'}
         # M118-01, punto 4: margen negativo en rojo claro.
         conditional.append(_rule('start_negative_margin', ['B31:B32'],
@@ -513,6 +537,12 @@ class ProjectProject(models.Model):
         styles['A23'] = HEADER_STYLE
         formats['B23'] = '#,##0.00'
         cells['C22'] = self.env._('Menú Planificación de obra › Escribir el precio en VENTA')
+        # M118-10, punto 3: ML vendidos frente a los de los módulos, fuera de
+        # la tolerancia de la venta, en ámbar.
+        cells['C23'] = '=IF(OR(B23=0,B15=""),"",TEXT(B15-B23,"+0.00;-0.00")&" ML")'
+        card_conditional = [_rule('card_sold_ml', ['B23:C23'], (
+            '=AND(ISNUMBER(B23),B23>0,ISNUMBER(B15),ABS(B15-B23)>%s*MAX(B15,B23))'
+            % parameter_formula('tolerancia_ml_venta')), AMBER_FILL)]
 
         # Costo por sub etapa.
         cells['D4'] = self.env._('Costo por sub etapa (una unidad)')
@@ -546,7 +576,7 @@ class ProjectProject(models.Model):
         piece_width = ','.join(
             'MAXIFS(%s,%s,%s,%s,$A{r},%s,"%s")' % (
                 col('PIEZAS', 'length'), col('PIEZAS', 'typology'), typology,
-                col('PIEZAS', 'module'), col('PIEZAS', 'piece_type'), kind)
+                col('PIEZAS', '#Código del módulo (calc.)'), col('PIEZAS', 'piece_type'), kind)
             for kind in ('BASE', 'TAPA', 'TECHO'))
         for row in range(first, first + CARD_MODULE_ROWS):
             cells['B%s' % row] = '=IF($A%s="","",%s)' % (row, module_value('name', row))
@@ -556,7 +586,7 @@ class ProjectProject(models.Model):
                 r=row, w=piece_width.replace('{r}', str(row)))
             cells['F%s' % row] = '=IF($A%s="","",SUMIFS(%s,%s,%s,%s,$A%s))' % (
                 row, col('PIEZAS', 'qty'), col('PIEZAS', 'typology'), typology,
-                col('PIEZAS', 'module'), row)
+                col('PIEZAS', '#Código del módulo (calc.)'), row)
             cells['G%s' % row] = (
                 '=IF($A{r}="","",IF(D{r}="","{no_ot}",IF(AND(E{r}>0,E{r}<>D{r}),"{dispute}",'
                 '"")))').format(r=row, no_ot=self.env._('Sin medida de OT'),
@@ -564,6 +594,7 @@ class ProjectProject(models.Model):
         last_module = first + CARD_MODULE_ROWS - 1
         conditional = [_rule('card_dispute', ['G%s:G%s' % (first, last_module)],
                              '=AND(G%s<>"",G%s<>"")' % (first, first), RED_FILL)]
+        conditional += card_conditional
         rules = [{
             'id': 'card_typology', 'isBlocking': False, 'ranges': [CARD_TYPOLOGY_CELL],
             'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
@@ -610,6 +641,8 @@ class ProjectProject(models.Model):
             cells['B%s' % row] = value
             styles['B%s' % row] = DATA_STYLE
         formats['B3'] = 'dd/mm/yyyy'
+        # Paquete 1.18, M118-14, punto 3: el inicio escrito como texto, en rojo.
+        program_marks = [_rule('program_date_text', ['B3'], '=AND(B3<>"",ISTEXT(B3))', RED_FILL)]
         # Calculados: semanas por sub etapa, sub etapas, pisos, semanas, inicio
         # y fin (lunes a viernes).
         floors = full_column(layout, 'ARBOL', '#Piso (calc.)')
@@ -630,11 +663,15 @@ class ProjectProject(models.Model):
             cells['B%s' % row] = formula
             styles['B%s' % row] = CALC_STYLE
         formats.update({PROGRAM_START_CELL: 'dd/mm/yyyy', PROGRAM_END_CELL: 'dd/mm/yyyy'})
-        cells['C%s' % PROGRAM_END_CELL[1:]] = self.env._('Menú Planificación de obra › Escribir fechas en OBRA')
+        # M118-06, punto 4: el plan toma el programa al enviar la hoja.
+        cells['C%s' % PROGRAM_END_CELL[1:]] = self.env._(
+            'Al enviar la hoja, «Generar plan» propone este programa (inicio, pisos por semana, '
+            'días y orden). «Escribir fechas en OBRA» (menú Planificación de obra) solo copia el '
+            'inicio y el fin a OBRA; el plan no lo necesita.')
 
         # Matriz piso × semana.
         week_row, date_row, ml_row = 15, 16, 17
-        first = 18
+        first = PROGRAM_FIRST_FLOOR
         cells['A%s' % week_row] = self.env._('Semana')
         cells['A%s' % date_row] = self.env._('Lunes')
         cells['A%s' % ml_row] = self.env._('ML en instalación')
@@ -684,7 +721,7 @@ class ProjectProject(models.Model):
         sheet = {
             'name': PROGRAM_SHEET, 'colNumber': PROGRAM_WEEKS + 4,
             'rowNumber': last_floor + 10, 'cells': cells, 'styles': styles, 'formats': formats,
-            'conditionalFormats': conditional, 'dataValidationRules': rules, 'cols': cols,
+            'conditionalFormats': conditional + program_marks, 'dataValidationRules': rules, 'cols': cols,
             'panes': {'xSplit': 2, 'ySplit': first - 1},
         }
         # M119-01: presupuesto de mano de obra y metas por semana por sub etapa.

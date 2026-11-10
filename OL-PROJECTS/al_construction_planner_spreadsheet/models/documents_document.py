@@ -57,6 +57,12 @@ class DocumentsDocument(models.Model):
         ondelete='set null', readonly=True, copy=False)
     construction_sheet_kind = fields.Selection(
         SHEET_KINDS, string='Hoja de trabajo', readonly=True, copy=False)
+    # CREVAL, paquete 5, CR-38: la hoja de presupuesto de construcción se
+    # parte en venta (con la cotización) y planificación de obra (con la
+    # obra). Vacío: la hoja «Presupuesto y plan» de antes, que sigue igual.
+    construction_budget_role = fields.Selection(
+        [('sale', 'Presupuesto de venta'), ('plan', 'Planificación de obra')],
+        string='Uso de la hoja', readonly=True, copy=True)
     construction_version = fields.Integer(string='Versión de la hoja', default=1, copy=False,
                                           readonly=True)
     # Paquete 1.13, M113-04/05: filas con listas y fórmulas con que nació la
@@ -108,8 +114,13 @@ class DocumentsDocument(models.Model):
         if self.construction_sheet_state == 'sent' and self.construction_send_version:
             label = '%s v%s' % (label, self.construction_send_version)
         if self.construction_state_date:
+            # Paquete 1.18, M118-14, punto 4: en la zona horaria del usuario
+            # (sin ella, la de la compañía y, si no, la de Lima).
+            tz = self.env.context.get('tz') or self.env.user.tz or \
+                self.env.company.partner_id.tz or 'America/Lima'
             label = '%s · %s' % (label, fields.Datetime.context_timestamp(
-                self, self.construction_state_date).strftime('%d/%m/%Y %H:%M'))
+                self.with_context(tz=tz), self.construction_state_date).strftime(
+                '%d/%m/%Y %H:%M'))
         return label
 
     def _construction_set_state(self, state, **values):
@@ -130,6 +141,7 @@ class DocumentsDocument(models.Model):
         # para mostrar el menú de la vertical.
         document_sudo = self.sudo()
         data['construction_project_id'] = document_sudo.construction_project_id.id or False
+        data['construction_budget_role'] = document_sudo.construction_budget_role or False
         data['construction_sheet_kind'] = document_sudo.construction_sheet_kind or (
             'furniture' if document_sudo.construction_project_id else False)
         order = document_sudo.construction_sale_order_id or \
@@ -182,8 +194,18 @@ class DocumentsDocument(models.Model):
         workbook.save(output)
         return output.getvalue()
 
+    def _construction_budgeter_only(self):
+        """CR-47: presupuestador sin el grupo de planificador."""
+        user = self.env.user
+        return user.has_group('al_construction_planner_spreadsheet.group_construction_budgeter') \
+            and not user.has_group('al_construction_planner.group_planner_plan_planner')
+
     def _construction_book_wizard(self, sheets, target='budget'):
         self.ensure_one()
+        if target == 'budget' and self._construction_budgeter_only() and not self.env.su:
+            # sudo: el presupuestador revisa y pasa su presupuesto; la
+            # revisión lee recetas, etapas y cuentas que él no administra.
+            return self.sudo()._construction_book_wizard(sheets, target)
         order = self._construction_order()
         return self.env['construction.budget.book.wizard'].create({
             'sale_order_id': order.id,
@@ -206,6 +228,13 @@ class DocumentsDocument(models.Model):
         self.ensure_one()
         if not self.construction_project_id and not self.construction_sale_order_id:
             raise UserError(self.env._('Esta hoja no es una hoja de trabajo del planificador.'))
+        # CR-38: la hoja de venta solo pasa a la cotización; la de
+        # planificación solo envía el plan.
+        if self.construction_budget_role == 'sale' and target != 'budget':
+            raise UserError(self.env._('La hoja de venta pasa el presupuesto a la cotización; '
+                                       'el plan se envía desde la hoja de planificación.'))
+        if self.construction_budget_role == 'plan' and target != 'plan':
+            raise UserError(self.env._('La hoja de planificación envía el plan.'))
         # Las columnas se leen por su clave interna (M116-09, CR-22 d).
         sheets = apply_keys(sheets)
         if self.construction_sheet_kind != 'budget':
@@ -420,3 +449,21 @@ class ConstructionBudgetBookWizard(models.TransientModel):
 
 def spreadsheet_json(data):
     return base64.b64encode(json.dumps(data).encode())
+
+
+class ConstructionBudgetBookWizard(models.TransientModel):
+    _inherit = 'construction.budget.book.wizard'
+
+    def action_import(self):
+        """CREVAL, paquete 5, CR-47: «Pasar a la cotización» del presupuestador.
+        El envío crea los insumos, los APU y las líneas de la cotización con
+        las reglas del libro; el presupuestador no administra recetas ni
+        productos, así que, solo para el destino Presupuesto, corre como el
+        sistema (no crea plan ni niveles)."""
+        user = self.env.user
+        if self.target == 'budget' and \
+                user.has_group('al_construction_planner_spreadsheet.group_construction_budgeter') \
+                and not user.has_group('al_construction_planner.group_planner_plan_planner'):
+            # sudo: ver el docstring; el destino Presupuesto no toca el plan.
+            return super(ConstructionBudgetBookWizard, self.sudo()).action_import()
+        return super().action_import()

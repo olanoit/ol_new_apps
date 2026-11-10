@@ -75,3 +75,8 @@ from . import test_package_117_invoice
 from . import test_package_117_types
 from . import test_package4_creval
 from . import test_package_118_e1
+from . import test_package_118_e2
+from . import test_package_118_e3
+from . import test_package_118_e4
+from . import test_package_118_e5
+from . import test_creval_package7

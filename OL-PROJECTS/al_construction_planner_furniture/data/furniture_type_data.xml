@@ -154,4 +154,68 @@
         <field name="padding">3</field>
         <field name="company_id" eval="False"/>
     </record>
+    <!-- Paquete 1.18, M118-15, punto 6: los tipos de pieza de hoy, en el catálogo. -->
+    <record id="furniture_type_piece_costado" model="construction.furniture.type">
+        <field name="name">COSTADO</field>
+        <field name="code">piece_costado</field>
+        <field name="level">piece</field>
+        <field name="sequence">10</field>
+        <field name="piece_zone">structure</field>
+    </record>
+    <record id="furniture_type_piece_base" model="construction.furniture.type">
+        <field name="name">BASE</field>
+        <field name="code">piece_base</field>
+        <field name="level">piece</field>
+        <field name="sequence">20</field>
+        <field name="piece_zone">structure</field>
+    </record>
+    <record id="furniture_type_piece_techo" model="construction.furniture.type">
+        <field name="name">TECHO</field>
+        <field name="code">piece_techo</field>
+        <field name="level">piece</field>
+        <field name="sequence">30</field>
+        <field name="piece_zone">structure</field>
+    </record>
+    <record id="furniture_type_piece_fondo" model="construction.furniture.type">
+        <field name="name">FONDO</field>
+        <field name="code">piece_fondo</field>
+        <field name="level">piece</field>
+        <field name="sequence">40</field>
+        <field name="piece_zone">structure</field>
+    </record>
+    <record id="furniture_type_piece_puerta" model="construction.furniture.type">
+        <field name="name">PUERTA</field>
+        <field name="code">piece_puerta</field>
+        <field name="level">piece</field>
+        <field name="sequence">50</field>
+        <field name="piece_zone">front</field>
+    </record>
+    <record id="furniture_type_piece_frente" model="construction.furniture.type">
+        <field name="name">FRENTE</field>
+        <field name="code">piece_frente</field>
+        <field name="level">piece</field>
+        <field name="sequence">60</field>
+        <field name="piece_zone">front</field>
+    </record>
+    <record id="furniture_type_piece_tapa" model="construction.furniture.type">
+        <field name="name">TAPA</field>
+        <field name="code">piece_tapa</field>
+        <field name="level">piece</field>
+        <field name="sequence">70</field>
+        <field name="piece_zone">front</field>
+    </record>
+    <record id="furniture_type_piece_repisa" model="construction.furniture.type">
+        <field name="name">REPISA</field>
+        <field name="code">piece_repisa</field>
+        <field name="level">piece</field>
+        <field name="sequence">80</field>
+        <field name="piece_zone">structure</field>
+    </record>
+    <record id="furniture_type_piece_otro" model="construction.furniture.type">
+        <field name="name">OTRO</field>
+        <field name="code">piece_otro</field>
+        <field name="level">piece</field>
+        <field name="sequence">90</field>
+        <field name="piece_zone">structure</field>
+    </record>
 </odoo>

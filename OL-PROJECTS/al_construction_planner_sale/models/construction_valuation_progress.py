@@ -74,16 +74,74 @@ class ProjectProject(models.Model):
              'Avance validado de la partida: el avance validado de cada línea de la venta al '
              'corte (o el porcentaje que se escriba con motivo).')
 
+    # Paquete 7 de CREVAL, CR-61, punto 4: las obras nuevas toman el valor de
+    # la compañía («Avance valorizado» por defecto); las existentes conservan
+    # el suyo.
     construction_progress_source = fields.Selection(
-        PROGRESS_SOURCES, string='Avance de la partida', default='qty', required=True,
+        PROGRESS_SOURCES, string='Avance de la partida', required=True,
+        default=lambda self: self.env.company.construction_default_progress_source or 'valued',
         help='Cantidad validada: lo validado de la partida al corte ÷ lo presupuestado (sin '
-             're-trabajos). Avance valorizado: lo ejecutado valorizado al costo del plan ÷ lo '
-             'planificado, que pondera contrata, personal propio y material.')
+             're-trabajos); p. ej., con la contrata validada al 100 % la partida queda al 100 % '
+             'aunque falte el material. Avance valorizado: lo ejecutado valorizado al costo del '
+             'plan ÷ lo planificado, que pondera contrata, personal propio y material; la misma '
+             'partida queda debajo del 100 % mientras falte el material.')
+    construction_physical_progress = fields.Float(
+        string='Avance físico', compute='_compute_construction_physical_progress',
+        digits=(16, 4),
+        help='Σ (avance de cada partida × su precio de venta) ÷ Σ precio de las partidas, con la '
+             'regla de «Avance de la partida» de la obra, la misma de la valorización, a hoy. '
+             'Gastos generales, imprevistos, utilidad y descuento no son partidas.')
+    construction_earned_value = fields.Monetary(
+        string='Valor ganado', compute='_compute_construction_physical_progress',
+        currency_field='construction_accounting_currency_id',
+        help='Σ (avance de cada partida × su costo meta).')
     construction_proportional_scope = fields.Selection(
         PROPORTIONAL_SCOPES, string='Prorrateo de gastos generales', default='order',
         required=True,
         help='Costo directo sobre el que se valorizan los gastos generales, la utilidad y el '
              'descuento: el de toda la venta o el de las partidas de su sección.')
+
+    def _construction_physical_values(self, date=None, plan=None):
+        """CR-61: avance de cada partida con la regla de la valorización a la
+        fecha (hoy por defecto) y, con él, el avance físico y el valor ganado
+        de la obra.
+
+        :return: ``{'progress': ratio, 'earned_value': monto,
+            'lines': {línea de venta: (avance, precio, costo meta)}}``
+        """
+        self.ensure_one()
+        date = date or fields.Date.context_today(self)
+        empty = {'progress': 0.0, 'earned_value': 0.0, 'lines': {}}
+        plan = plan or self._construction_current_plan()
+        if not plan or not self.construction_sale_order_id:
+            return empty
+        Valuation = self.env['construction.valuation']
+        lines_by_partida = self._construction_lines_by_partida(plan)
+        if not lines_by_partida:
+            return empty
+        all_lines = self.env['construction.resource.plan.line'].union(*lines_by_partida.values())
+        execution = all_lines._construction_valued_execution(date)
+        validated = Valuation._construction_validated_qty(all_lines, date) \
+            if self.construction_progress_source == 'qty' else {}
+        result, weighted, total, earned = {}, 0.0, 0.0, 0.0
+        for sale_line, plan_lines in lines_by_partida.items():
+            progress = Valuation._construction_partida_progress(
+                self, plan_lines, execution, validated)
+            price = sale_line._construction_price(date)
+            target = sum(line.amount_budgeted or line.amount_planned for line in plan_lines)
+            result[sale_line] = (progress, price, target)
+            weighted += progress * price
+            total += price
+            earned += progress * target
+        return {'progress': weighted / total if total else 0.0, 'earned_value': earned,
+                'lines': result}
+
+    def _compute_construction_physical_progress(self):
+        for project in self:
+            values = project._construction_physical_values() if project.id and \
+                project.is_construction_site else {'progress': 0.0, 'earned_value': 0.0}
+            project.construction_physical_progress = values['progress']
+            project.construction_earned_value = values['earned_value']
 
     def _construction_partida_lines(self):
         return super()._construction_partida_lines().filtered(

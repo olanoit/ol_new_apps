@@ -80,6 +80,10 @@ COLUMN_ORDER = {
             'cost', 'product_code'),
     'PIEZAS': ('typology', 'module', 'categ_group', 'categ', 'product_name', 'qty', 'length',
                'width', 'piece_type', 'color', 'edges', 'product_code'),
+    # Paquete 1.18, M118-12, punto 3: la clase calculada después de las
+    # columnas que se llenan, para pegar un bloque sin pisarla.
+    'MODULOS': ('typology', 'sequence', 'code', 'eto_label', 'type', 'width', 'ml_group', 'activity',
+                'furniture', 'name', 'join_method', 'module_class'),
 }
 
 # Pestaña → columnas fijas, si lleva filtro, y {encabezado: (ancho, formato)}.
@@ -98,7 +102,8 @@ SHEET_DESIGN = {
         'Precio (calc.)': (105, MONEY)}},
     'MUEBLES': {'freeze': 2, 'columns': {
         'Tipología': (120, None), 'Mueble': (195, None), 'Grupo': (120, None),
-        'Metros lineales': (105, MONEY)}},
+        'ML escritos': (105, MONEY), 'Metros lineales (calc.)': (120, MONEY),
+        'ML usados (calc.)': (120, MONEY)}},
     'MODULOS': {'freeze': 3, 'columns': {
         'Tipología': (120, None), 'Orden': (105, INTEGER), 'Código del módulo': (105, None),
         'Tipo': (125, None), 'Ancho (mm)': (105, INTEGER), 'Grupo ML': (130, None),

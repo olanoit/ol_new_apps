@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CREVAL, paquete 5, CR-47 (decisión del 05-nov): quien presupuesta abre
+         la hoja de presupuesto de venta de la cotización sin ser planificador. -->
+    <record id="group_construction_budgeter" model="res.groups">
+        <field name="name">Presupuestador</field>
+        <field name="implied_ids" eval="[Command.link(ref('sales_team.group_sale_salesman')), Command.link(ref('documents.group_documents_user'))]"/>
+        <field name="comment">Abre la hoja de presupuesto de venta desde la cotización y pasa el presupuesto a la cotización. No ve el plan, las contratas ni las aprobaciones.</field>
+    </record>
+</odoo>

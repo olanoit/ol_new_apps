@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
+from odoo.fields import Domain
 
 from odoo.addons.al_construction_planner.models.common import ML_GROUPS, MODULE_TYPES
 
@@ -14,6 +15,35 @@ class ProjectTask(models.Model):
     construction_module_type = fields.Selection(MODULE_TYPES, string='Tipo de módulo')
     construction_width_mm = fields.Integer(string='Ancho (mm)')
     construction_ml_group = fields.Selection(ML_GROUPS, string='Grupo ML')
+    # Paquete 1.18, M118-09.
+    construction_eto_label = fields.Char(string='Rótulo en el ETO',
+                                         help='Como en el plano: MB-1, MA-3.')
+
+    # Paquete 1.18, M118-05, punto 2: en «Generar plan» el ambiente se ve con
+    # su ruta («Piso 02 / Dpto 201 / Cocina · C01») y se busca por piso,
+    # departamento o tipología.
+    @api.depends_context('construction_space_path')
+    @api.depends('name', 'construction_level', 'construction_floor_task_id.name',
+                 'construction_apartment_task_id.name', 'construction_typology_id.code')
+    def _compute_display_name(self):
+        super()._compute_display_name()
+        if not self.env.context.get('construction_space_path'):
+            return
+        for task in self.filtered(lambda t: t.construction_level == 'space'):
+            path = ' / '.join(filter(None, [task.construction_floor_task_id.name,
+                                            task.construction_apartment_task_id.name, task.name]))
+            code = task.construction_typology_id.code
+            task.display_name = '%s · %s' % (path, code) if code else path
+
+    @api.model
+    def _search_display_name(self, operator, value):
+        domain = super()._search_display_name(operator, value)
+        if self.env.context.get('construction_space_path') and value and \
+                operator in ('ilike', 'like', '=ilike', '=like', '='):
+            domain = Domain.OR([domain, [('construction_floor_task_id.name', operator, value)],
+                                [('construction_apartment_task_id.name', operator, value)],
+                                [('construction_typology_id.code', operator, value)]])
+        return domain
 
     def _construction_furniture_for(self, ml_group, module_type=False):
         """Mueble del ambiente donde va un módulo sin mueble en su plantilla:

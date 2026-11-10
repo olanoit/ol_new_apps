@@ -118,3 +118,115 @@ planificación» y el nombre de un producto en el maestro. Más el dato de D3.
 
 Pendiente de la entrega 1: «De ellos, zócalos» y el desglose de mano de obra
 por modalidad van en M118-07 (entrega 5).
+
+## 7. Hecho · entrega 2 (10-nov)
+
+- M118-05: «Generar plan» tiene «Pisos», que llenan los ambientes; los
+  ambientes se ven y se buscan por su ruta («Piso / Departamento / Ambiente ·
+  tipología») y «Buscar más…» usa una lista con piso, departamento y
+  tipología. La vista previa se calcula al elegir el alcance o con «Ver vista
+  previa» (al abrir, solo si la obra tiene hasta 30 ambientes). Con más de
+  2,000 líneas (parámetro `al_construction_planner_furniture.generate_background_lines`)
+  o sin vista previa en una obra grande, «Generar» encola el trabajo (D1:
+  acción programada con `_trigger`) y cierra el asistente; el proceso genera
+  por tandas de 10 ambientes, guarda el avance después de cada una, aplica el
+  ritmo una vez al final y avisa con un mensaje en el plan a quien lo pidió
+  (o dice en qué ambiente falló). Mientras genera, el plan muestra el avance
+  y «Generar plan» queda deshabilitado. Escape con el calendario abierto ya no
+  cierra el diálogo. Falta la medición con la obra grande de dev1 (meta: 30,000
+  líneas en menos de 5 minutos).
+- M118-12: complemento común de la hoja (`paste_blocks.js`): el pegado desde
+  el portapapeles en las pestañas de datos de las hojas del planificador se
+  escribe en un solo paso (un Ctrl+Z), cruza las columnas fijas, salta las
+  columnas calculadas (encabezado gris o «(calc.)») corriendo el resto de la
+  fila y escribe solo el contenido, así que conserva el amarillo. La matriz
+  conserva su rechazo. En MODULOS, «Clase (calc.)» va detrás de «Método de
+  unión» (`FURNITURE_LAYOUT` 8). El pegado interno (copiar de la misma hoja)
+  sigue la regla nativa. Sin prueba automática del navegador: se prueba a
+  mano en dev1.
+
+## 8. Hecho · entrega 3 (10-nov)
+
+- M118-08: las listas de Actividad (MODULOS, TARIFAS, MO PROPIA, ACTIVIDADES y
+  las columnas libres de la matriz) muestran «código · nombre» desde
+  REFERENCIAS E; la de Módulo de BOM y PIEZAS, «código · nombre» desde la
+  columna calculada «Para elegir (calc.)» de MODULOS. Queda el «0» al final
+  de la lista de Módulo: quitarlo con un FILTER por fila multiplica las
+  fórmulas de _LISTAS con las filas de la hoja (la prueba de rendimiento lo
+  impide); se resuelve con otra forma de la lista auxiliar. La
+  celda guarda el texto completo (D5) y las fórmulas toman el código: TARIFAS
+  y BOM y PIEZAS tienen el código calculado («Código de la actividad (calc.)»,
+  «Código del módulo (calc.)»), que usan la matriz, ACTIVIDADES y FICHA;
+  «Actividad efectiva» y la fila de código de la matriz lo extraen. Nombre al
+  lado: «Nombre del módulo (calc.)» en BOM y PIEZAS y «Nombre de la actividad
+  (calc.)» en TARIFAS, MODULOS y MO PROPIA (al final de las calculadas). La
+  importación y el envío aceptan el código solo o «código · nombre». Un
+  código escrito solo (hojas anteriores, «Traer de Odoo») no está en la lista
+  y la hoja lo marca como aviso; se envía igual. Falta el punto 5 (ancho del
+  tablero en ACABADOS DE OBRA).
+- M118-09: «Rótulo en el ETO» en MODULOS y ETO (después del código), en el
+  módulo de plantilla (`eto_label`) y en la tarea del módulo
+  (`construction_eto_label`); «Generar plan» y la importación del ETO lo
+  pasan a la tarea, y el vale lo muestra en la ruta («Cocina / MB01 (MB-1)»).
+  La validación avisa de rótulos repetidos en una tipología. No hay una
+  etiqueta de fabricación aparte: la ruta del vale es la que se imprime.
+- M118-13: «Copiar tipología…» en el menú de la hoja de planificación:
+  origen y destino de TIPOLOGIAS, casillas por pestaña (MUEBLES, MODULOS,
+  PIEZAS, BOM y las pestañas ACT), reemplazar o agregar si el destino ya
+  tiene filas; guarda una versión antes y copia solo las celdas escritas
+  (con el rótulo). Sin prueba automática del navegador.
+
+## 9. Hecho · entrega 4 (10-nov)
+
+- M118-06 (D2): el envío guarda en la obra el PROGRAMA de la hoja (inicio,
+  pisos por semana, días por sub etapa, orden, hoja y fecha). «Generar plan»
+  lo propone y dice de dónde sale; los días van por cada sub etapa del perfil
+  (con 2.3 Limpieza) en lugar de cuatro campos fijos. Si la persona cambia el
+  ritmo, el inicio, el orden o los días, el asistente marca «Cambiado
+  respecto del PROGRAMA» y pide el motivo; al generar, el plazo de cada sub
+  etapa del Cronograma pasa como plazo ajustado del presupuesto de mano de
+  obra con ese motivo. Sin hoja enviada, los valores de siempre. PROGRAMA
+  explica que «Escribir fechas en OBRA» no hace falta para el plan.
+- M118-10: MUEBLES calcula «Metros lineales (calc.)» (suma de los anchos de
+  sus módulos) y «ML usados (calc.)»; la columna de dato pasa a «ML escritos»
+  y, escrita, se marca en ámbar. La matriz lee los ML usados de MUEBLES (sin
+  muebles, los módulos y luego TIPOLOGIAS). FICHA muestra la diferencia entre
+  los ML vendidos y los de los módulos y la marca en ámbar fuera de
+  `tolerancia_ml_venta`.
+- M118-11 (D3): «m² útiles por unidad» en el producto (`construction_board_m2`).
+  La importación agrega a la BOM de cada módulo el tablero de sus piezas (m² ÷
+  m² útiles); un tablero escrito en BOM manda y se avisa, y se avisa del
+  tablero sin m² útiles y del escrito sin piezas. Los libros de ejemplo se
+  regeneraron.
+  Devolución: los cantos necesitan el producto de canto de cada tablero y el
+  formato de la columna «Cantos» (por ejemplo «2L 1A»); hoy es texto libre y
+  no se convierte a metros. Tampoco se muestran todavía en gris dentro de BOM
+  los tableros calculados: se ven en el análisis y en la BOM del módulo.
+
+## 10. Hecho · entrega 5 (10-nov)
+
+- M118-07 (parcial): INICIO muestra «Módulos (todos)» y «de ellos, zócalos»
+  (como cuenta «Generar plan»), las contratas de la matriz y el personal
+  propio del presupuesto de mano de obra de PROGRAMA (D21:E25). Devolución: el
+  total de mano de obra igual al de la vista previa necesita separar en la
+  hoja qué actividades de la matriz hace el personal propio (la modalidad de
+  cada actividad la decide el plan, M112-04); la propuesta es una fila de
+  modalidad en la matriz que lea el catálogo de etapas. El vínculo de «No
+  coincide» de la obra a la fila de CONTROL queda para entonces.
+- M118-14: RESUMEN VENTA lleva los totales arriba (filas 11-15) y las
+  partidas desde la fila 18 (el resumen de «Pasar a la cotización» lee las dos
+  formas); las fechas de OBRA (venta y planificación) y el inicio de PROGRAMA
+  escritas como texto se marcan en rojo claro; la hora de la validación sale
+  en la zona horaria del usuario (o la de la compañía, o la de Lima).
+  Pendiente: el precio final de PRECIOS dentro de las columnas fijas cambia las
+  letras de las fórmulas de la pestaña; va con la siguiente versión de la
+  hoja de venta.
+- M118-15: 1) el proyecto de OBRA vuelve a la «Referencia del cliente» de la
+  cotización al pasar el resumen; 2) desde la hoja, el asistente se llama
+  «Enviar la hoja al planificador» y no habla de Excel; 3) al terminar vuelve
+  a la hoja con el resumen; 4) el mensaje de la obra nombra la hoja y su
+  versión; 5) el aviso de productos repetidos lleva el módulo; 6) los tipos de
+  pieza están en el catálogo (nivel Pieza, con zona frente o estructura) y la
+  lista de PIEZAS los lee de REFERENCIAS (AK); 7) «Completar operaciones» se
+  ve solo si la obra tiene listas por etapa sin operaciones; 8) el aviso
+  «código provisional → producto» de los productos nuevos que ya existían.

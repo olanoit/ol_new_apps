@@ -23,8 +23,16 @@
                 </button>
             </xpath>
             <button name="action_construction_open_schedule" position="after">
+                <field name="construction_budget_site" invisible="1"/>
                 <button name="action_construction_open_spreadsheet" type="object"
                         string="Hoja de trabajo" icon="fa-table" class="btn-secondary"
+                        invisible="construction_budget_site"
+                        groups="al_construction_planner.group_planner_plan_planner"/>
+                <!-- CREVAL, paquete 5, CR-38 y CR-47: la obra por partidas
+                     planifica en su propia hoja. -->
+                <button name="action_construction_open_plan_sheet" type="object"
+                        string="Hoja de planificación" icon="fa-table" class="btn-secondary"
+                        invisible="not construction_budget_site"
                         groups="al_construction_planner.group_planner_plan_planner"/>
             </button>
             <!-- Paquete 1.13, M113-05: las filas de la hoja, a la vista. -->
@@ -73,9 +81,11 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                <button name="action_construction_open_spreadsheet" type="object"
-                        string="Hoja de trabajo" invisible="state == 'cancel'"
-                        groups="al_construction_planner.group_planner_plan_planner"/>
+                <!-- CREVAL, paquete 5, CR-47: una sola entrada, para quien
+                     presupuesta (o planifica). -->
+                <button name="action_construction_open_budget_sheet" type="object"
+                        string="Hoja de presupuesto" invisible="state == 'cancel'"
+                        groups="al_construction_planner_spreadsheet.group_construction_budgeter,al_construction_planner.group_planner_plan_planner"/>
             </xpath>
         </field>
     </record>

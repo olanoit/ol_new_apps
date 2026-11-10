@@ -14,5 +14,17 @@
         <field name="active" eval="True"/>
     </record>
 
+    <!-- Paquete 7 de CREVAL, CR-59: indicadores de la cartera de obras. -->
+    <record id="ir_cron_construction_indicators" model="ir.cron">
+        <field name="name">Planificación de obra: indicadores de la cartera</field>
+        <field name="model_id" ref="project.model_project_project"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_construction_indicators()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 10:45:00')"/>
+        <field name="active" eval="True"/>
+    </record>
+
     </data>
 </odoo>

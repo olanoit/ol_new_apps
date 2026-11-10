@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Paquete 1.18, M118-05: «Generar plan» en segundo plano. La dispara
+         el asistente con _trigger(); la ejecución diaria solo recoge lo que
+         haya quedado en cola. -->
+    <record id="ir_cron_construction_generate" model="ir.cron">
+        <field name="name">Planificador: generar plan en segundo plano</field>
+        <field name="model_id" ref="al_construction_planner.model_construction_resource_plan"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_construction_generate()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

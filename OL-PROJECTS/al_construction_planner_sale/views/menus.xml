@@ -8,6 +8,7 @@
         <menuitem id="menu_planner_deliveries" name="Entregas semanales" action="action_construction_weekly_delivery" sequence="10"/>
         <menuitem id="menu_planner_valuation_prepare" name="Preparar valorización" action="action_construction_valuation_prepare_wizard" sequence="20"/>
         <menuitem id="menu_planner_valuations" name="Valorizaciones" action="action_construction_valuation" sequence="30"/>
+        <menuitem id="menu_planner_valuation_targets" name="Metas de valorización" action="action_construction_valuation_target" sequence="35"/>
         <menuitem id="menu_planner_collections" name="Cobranza de la obra" action="action_construction_collections" sequence="40" groups="account.group_account_invoice"/>
     </menuitem>
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.18, M118-11: m² útiles por unidad del tablero. -->
+    <record id="product_template_form_view_construction_board" model="ir.ui.view">
+        <field name="name">product.template.form.construction.board</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='uom_id']" position="after">
+                <field name="construction_board_m2"
+                       groups="al_construction_planner.group_planner_plan_planner"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

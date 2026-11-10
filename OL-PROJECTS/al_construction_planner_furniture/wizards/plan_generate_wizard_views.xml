@@ -13,9 +13,12 @@
                 <field name="currency_id" invisible="1"/>
                 <group>
                     <group string="Alcance">
+                        <field name="floor_task_ids" widget="many2many_tags"
+                               placeholder="Todos los pisos" options="{'no_create': True}"/>
                         <field name="space_task_ids" widget="many2many_tags"
                                placeholder="Todos los ambientes de la obra"
-                               options="{'no_create': True}"/>
+                               options="{'no_create': True}"
+                               context="{'construction_space_path': True, 'list_view_ref': 'al_construction_planner_furniture.project_task_view_list_generate_space'}"/>
                         <field name="create_modules"/>
                         <field name="mode" widget="radio"/>
                     </group>
@@ -37,21 +40,53 @@
                         <field name="schedule_order" invisible="schedule_mode == 'none'"/>
                     </group>
                     <group invisible="schedule_mode == 'none'">
-                        <field name="days_production"/>
-                        <field name="days_assembly"/>
-                        <field name="days_installation"/>
-                        <field name="days_finishing"/>
+                        <!-- Paquete 1.18, M118-06: los días de cada sub etapa del perfil. -->
+                        <field name="stage_day_ids" nolabel="1" colspan="2">
+                            <list editable="bottom" create="0" delete="0">
+                                <field name="stage_id" readonly="1" force_save="1"/>
+                                <field name="days"/>
+                            </list>
+                        </field>
                     </group>
                 </group>
+                <div class="text-muted small mb-1" invisible="not program_note or schedule_mode == 'none'">
+                    <i class="fa fa-table me-1"/><field name="program_note" readonly="1" class="d-inline"/>
+                </div>
+                <div invisible="not program_changed" class="alert alert-warning py-1 mb-2">
+                    Cambiado respecto del PROGRAMA:
+                    <field name="schedule_reason" class="d-inline" placeholder="Motivo del cambio"
+                           required="program_changed"/>
+                </div>
+                <field name="program_changed" invisible="1"/>
                 <separator string="Vista previa"/>
+                <field name="preview_token" invisible="1"/>
+                <button name="action_preview" type="object" string="Ver vista previa"
+                        icon="fa-refresh" class="btn-secondary mb-2"/>
                 <field name="preview_html" readonly="1" nolabel="1"/>
                 <field name="warning_html" readonly="1" nolabel="1" invisible="not warning_html"/>
                 <footer>
                     <button name="action_generate" type="object" string="Generar" class="btn-primary"
-                            data-hotkey="q"/>
+                            data-hotkey="q"
+                            title="Con más de 2,000 líneas, la generación sigue en segundo plano y el plan muestra el avance."/>
                     <button string="Descartar" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>
+        </field>
+    </record>
+
+    <!-- M118-05, punto 2: ambientes con su piso, departamento y tipología
+         («Buscar más…» de «Generar plan»). -->
+    <record id="project_task_view_list_generate_space" model="ir.ui.view">
+        <field name="name">project.task.list.generate.space</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Ambientes" create="0">
+                <field name="construction_floor_task_id" string="Piso"/>
+                <field name="construction_apartment_task_id" string="Departamento"/>
+                <field name="name" string="Ambiente"/>
+                <field name="construction_typology_id" string="Tipología"/>
+            </list>
         </field>
     </record>
 

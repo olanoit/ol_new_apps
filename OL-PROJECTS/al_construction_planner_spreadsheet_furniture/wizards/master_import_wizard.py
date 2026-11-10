@@ -19,7 +19,29 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 _dates(self.construction_labor_payload))
         if self.spreadsheet_id:
             self.spreadsheet_id._construction_sent(self.env._('Hoja enviada al planificador'))
+            # M118-15, punto 3: al terminar, de vuelta a la hoja con el resumen.
+            return {
+                'type': 'ir.actions.client', 'tag': 'display_notification',
+                'params': {
+                    'type': 'success', 'sticky': False,
+                    'message': self.env._('Hoja enviada al planificador (v%s).',
+                                          self.spreadsheet_id.construction_send_version or 1),
+                    'next': self.spreadsheet_id.action_open_spreadsheet(),
+                },
+            }
         return res
+
+    def _construction_import_message(self, summary):
+        """M118-15, punto 4: el mensaje nombra la hoja y su versión."""
+        if not self.spreadsheet_id:
+            return super()._construction_import_message(summary)
+        return self.env._(
+            'Hoja de planificación «%(sheet)s» enviada (v%(version)s): %(typologies)s tipologías, '
+            '%(modules)s módulos de plantilla, %(spaces)s ambientes nuevos y %(eto)s módulos del '
+            'ETO.', sheet=self.spreadsheet_id.name,
+            version=(self.spreadsheet_id.construction_send_version or 0) + 1,
+            typologies=summary['typologies'], modules=summary['modules'],
+            spaces=summary['spaces'], eto=summary['eto'])
 
 
 def _dates(payload):

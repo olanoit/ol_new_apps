@@ -39,3 +39,13 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_advance_account_id', readonly=False)
     construction_sheet_change_pct = fields.Float(
         related='company_id.construction_sheet_change_pct', readonly=False)
+    construction_budget_overhead_pct = fields.Float(related='company_id.construction_budget_overhead_pct', readonly=False)
+    construction_budget_contingency_pct = fields.Float(related='company_id.construction_budget_contingency_pct', readonly=False)
+    construction_budget_profit_pct = fields.Float(related='company_id.construction_budget_profit_pct', readonly=False)
+    construction_budget_margin_pct = fields.Float(related='company_id.construction_budget_margin_pct', readonly=False)
+    construction_budget_price_days = fields.Integer(related='company_id.construction_budget_price_days', readonly=False)
+    construction_budget_control_pct = fields.Float(related='company_id.construction_budget_control_pct', readonly=False)
+    construction_default_progress_source = fields.Selection(
+        related='company_id.construction_default_progress_source', readonly=False)
+    construction_change_product_id = fields.Many2one(
+        related='company_id.construction_change_product_id', readonly=False)

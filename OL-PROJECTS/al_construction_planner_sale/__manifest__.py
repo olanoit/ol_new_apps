@@ -17,7 +17,7 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaci√
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_sale/static/description/icon.png',
-    'version': '23.20261110',
+    'version': '25.20261110',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'sale_project', 'al_report_base'],
@@ -34,6 +34,7 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaci√
         'views/construction_schedule_report_views.xml',
         'views/construction_contract_views.xml',
         'views/construction_change_views.xml',
+        'views/construction_valuation_target_views.xml',
         'views/sale_order_views.xml',
         'views/project_views.xml',
         'views/res_config_settings_views.xml',
@@ -45,10 +46,14 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaci√
     'assets': {
         'web.assets_backend': [
             'al_construction_planner_sale/static/src/schedule_report/*',
+            'al_construction_planner_sale/static/src/indicator_sheet/*',
             ('remove', 'al_construction_planner_sale/static/src/**/*.dark.scss'),
         ],
         'web.assets_web_dark': [
             'al_construction_planner_sale/static/src/**/*.dark.scss',
+        ],
+        'web.assets_tests': [
+            'al_construction_planner_sale/static/tests/tours/*',
         ],
     },
     'installable': True,

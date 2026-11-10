@@ -48,12 +48,31 @@ CALCULATED = {
         # CR-22 g: para elegir el insumo por nombre en APU_DETALLE.
         ('Para elegir', '=IF({c:code}{r}="","",{c:kind}{r}&" · "&{c:name}{r}&" · "&{c:uom}{r}'
                         '&" · "&{c:code}{r})'),
+        # CREVAL, paquete 5, CR-43: en cuántos APU se usa y el aviso del precio
+        # ({pd} = días de un precio antiguo de la compañía).
+        ('Usado en (calc.)', '=IF({c:code}{r}="","",COUNTIF(APU_DETALLE!{d:code}$2:{d:code}${n},'
+                             '{c:code}{r}))'),
+        ('Estado (calc.)', '=IF({c:code}{r}="","",IF(IFERROR(VALUE({c:price}{r}),0)=0,'
+                           '"Producto nuevo sin precio",IF(AND({c:date}{r}<>"",IFERROR(TODAY()-'
+                           'DATEVALUE({c:date}{r}&""),IFERROR(TODAY()-{c:date}{r},0))>{pd}),'
+                           '"Precio de más de {pd} días","OK")))'),
     ],
     'APU': [
         ('Costo unitario', '=IF({c:code}{r}="","",SUMIF(APU_DETALLE!{d:apu}$2:{d:apu}${n},'
                            '{c:code}{r},APU_DETALLE!{d:parcial}$2:{d:parcial}${n}))'),
         # CR-22 g: la receta se elige por nombre en APU_DETALLE.
         ('Para elegir', '=IF({c:code}{r}="","",{c:name}{r}&" · "&{c:code}{r})'),
+        # CREVAL, paquete 5, CR-42: en cuántas partidas se usa ({pa} = letra
+        # del APU en PRESUPUESTO), su estado y el código siguiente.
+        ('Usado en (calc.)', '=IF({c:code}{r}="","",COUNTIF(PRESUPUESTO!${pa}$2:${pa}${n},'
+                             '{c:code}{r}))'),
+        ('Estado (calc.)', '=IF({c:code}{r}="",IF({c:name}{r}<>"","Sin código",""),IF(COUNTIF('
+                           'APU_DETALLE!{d:apu}$2:{d:apu}${n},{c:code}{r})=0,"Sin detalle",'
+                           'IF({x:Usado en (calc.)}{r}=0,"Sin uso","OK")))'),
+        ('Código propuesto (calc.)', '=IF(OR({c:name}{r}="",{c:code}{r}<>""),"","R"&TEXT(MAX('
+                                     'IFERROR(VALUE(SUBSTITUTE({c:code}$2:{c:code}${n},"R","")),'
+                                     '0))+COUNTIFS({c:name}$2:{c:name}{r},"<>",{c:code}$2:'
+                                     '{c:code}{r},""),"00"))'),
     ],
     'APU_DETALLE': [
         # CR-22 g: los códigos salen de «nombre · código» de la receta y de
@@ -85,6 +104,11 @@ CALCULATED = {
         # sobre el número de la receta en APU).
         ('Receta n.º (calc.)', '=IF({c:apu}{r}="","",IFERROR(MATCH({c:apu}{r},APU!{a:code}$2:'
                                '{a:code}${n},0),""))'),
+        # CREVAL, paquete 5, CR-42: el total del APU en su primera fila.
+        ('Total del APU (calc.)', '=IF({c:apu}{r}="","",IF(COUNTIF({c:apu}$2:{c:apu}{r},'
+                                  '{c:apu}{r})=1,IFERROR(XLOOKUP({c:apu}{r},APU!{a:code}$2:'
+                                  '{a:code}${n},APU!{a:Costo unitario}$2:{a:Costo unitario}${n}),'
+                                  '""),""))'),
     ],
 }
 BAND_FILL = '#EAF1FB'
@@ -92,6 +116,9 @@ BAND_FILL = '#EAF1FB'
 # fórmulas usan la letra de cada clave ({clave}) y los porcentajes van en %.
 PRESUPUESTO_KEYS = [key for key, _aliases, _required in COLUMNS['PRESUPUESTO']]
 PRESUPUESTO_HEADERS = [aliases[0] for _key, aliases, _required in COLUMNS['PRESUPUESTO']]
+# Fila de OBRA del margen por defecto (CREVAL, paquete 5, CR-40): la lee el
+# precio de PRESUPUESTO.
+OBRA_MARGIN_ROW = 13
 PRESUPUESTO_FORMULA_TEXT = {
     'qty_offered': '=IF({qty_real}{r}="","",{qty_real}{r}*(1+IFERROR(VALUE({qty_slack_pct}{r}),0)/100)'
                    '+IFERROR(VALUE({qty_slack}{r}),0))',
@@ -100,8 +127,9 @@ PRESUPUESTO_FORMULA_TEXT = {
                  '${apu_unit}),0))',
     'cost_offered': '=IF({unit_cost}{r}="","",{unit_cost}{r}*(1+IFERROR(VALUE({cost_slack_pct}{r}),0)/100)'
                     '+IFERROR(VALUE({cost_slack}{r}),0))',
-    'price_unit': '=IF({cost_offered}{r}="","",{cost_offered}{r}*(1+IFERROR(VALUE({margin_pct}{r}),0)/100)'
-                  '+IFERROR(VALUE({margin}{r}),0))',
+    'price_unit': '=IF({cost_offered}{r}="","",{cost_offered}{r}*(1+IF({margin_pct}{r}="",'
+                  'IFERROR(VALUE(OBRA!$B$%s),0),IFERROR(VALUE({margin_pct}{r}),0))/100)'
+                  '+IFERROR(VALUE({margin}{r}),0))' % OBRA_MARGIN_ROW,
     # CR-27 (paquete 4 de CREVAL): un solo redondeo, como la línea de la
     # cotización: el costo unitario a la precisión «Product Price» y el
     # importe a la moneda.
@@ -131,7 +159,8 @@ BUDGET_LAYOUT = 2
 # 7: M118-01/02, venta neta en VENTA y TIPOLOGIAS (factor del contrato); INICIO
 #    con venta antes y después del descuento, «Lo que falta» con nombres y
 #    «Rendimientos» antes de «Programa por piso».
-FURNITURE_LAYOUT = 7
+# 8: M118-12, «Clase (calc.)» de MODULOS detrás de «Método de unión».
+FURNITURE_LAYOUT = 8
 # Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
 FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
                 ('profit', 'Utilidad %'), ('discount', 'Descuento %')]
@@ -146,9 +175,17 @@ LISTS = {
 }
 # Columnas de sí o no (CR-31: suministro del cliente).
 YES_NO = ['Sí', 'No']
+# CREVAL, paquete 5, CR-39: orden de las pestañas de la hoja de presupuesto y
+# las que van ocultas.
+BUDGET_SHEET_ORDER = ('INICIO', 'OBRA', 'PRESUPUESTO', 'APU', 'APU_DETALLE', 'INSUMOS',
+                      'PIE DE PRESUPUESTO', 'PLAN', 'CONTROL', 'ERRORES', 'LISTAS', 'REFERENCIAS', '_CLAVES', 'INSTRUCCIONES')
+BUDGET_HIDDEN_SHEETS = ('LISTAS', 'REFERENCIAS', '_CLAVES', 'INSTRUCCIONES')
 OBRA_LABELS = ['Obra', 'Cliente', 'Moneda', 'Tipo de contrato', 'Formato de impresión',
                'Gastos generales %', 'Imprevistos %', 'Utilidad %', 'Descuento %', 'IGV %',
-               'Fecha', 'Versión']
+               'Fecha', 'Versión',
+               # CREVAL, paquete 5, CR-40: margen de las partidas sin el suyo.
+               'Margen por defecto %']
+assert OBRA_LABELS.index('Margen por defecto %') + 1 == OBRA_MARGIN_ROW
 
 
 def _col(index):
@@ -405,6 +442,49 @@ class ProjectProject(models.Model):
             'method': 'action_construction_open_spreadsheet'}]
         return result
 
+    construction_budget_site = fields.Boolean(
+        string='Obra por partidas', compute='_compute_construction_budget_site',
+        help='Su hoja es la de presupuesto (construcción por partidas), no el maestro de '
+             'mobiliario.')
+
+    def _compute_construction_budget_site(self):
+        for project in self:
+            project.construction_budget_site = bool(project.id) and \
+                project._construction_spreadsheet_kind() == 'budget'
+
+    def action_construction_open_plan_sheet(self):
+        """CREVAL, paquete 5, CR-38 y CR-47: «Hoja de planificación» de la
+        obra (construcción por partidas): una hoja aparte de la de venta, con
+        lo vendido de la cotización de la obra; sin venta, vacía con la
+        biblioteca. Pulsar dos veces abre la misma."""
+        self.ensure_one()
+        Document = self.env['documents.document']
+        document = Document.search([('construction_project_id', '=', self.id),
+                                    ('construction_budget_role', '=', 'plan'),
+                                    ('construction_source_id', '=', False),
+                                    ('handler', '=', 'spreadsheet')], limit=1)
+        if not document:
+            order = self.construction_sale_order_id
+            data = self._construction_budget_spreadsheet_data(order, self)
+            vals = {
+                'name': self.env._('Planificación de obra · %s', self.name),
+                'mimetype': 'application/o-spreadsheet', 'handler': 'spreadsheet',
+                'datas': base64.b64encode(json.dumps(data).encode()),
+                'construction_project_id': self.id,
+                'construction_sale_order_id': order.id or False,
+                'construction_sheet_kind': 'budget',
+                'construction_budget_role': 'plan',
+                'construction_sheet_layout': BUDGET_LAYOUT,
+            }
+            folder = self['documents_folder_id'] if 'documents_folder_id' in self._fields \
+                else False
+            if folder:
+                vals['folder_id'] = folder.id
+            elif order:
+                vals['folder_id'] = order._construction_spreadsheet_folder().id
+            document = Document.create(vals)
+        return document.action_open_spreadsheet()
+
     def action_construction_open_spreadsheet(self):
         """Abre la hoja de trabajo de la obra; la crea la primera vez. Si la
         obra viene de una cotización con hoja, es la misma."""
@@ -444,6 +524,33 @@ class ProjectProject(models.Model):
     # Plantilla de presupuesto y plan
     # ------------------------------------------------------------------
     @api.model
+    @api.model
+    def _construction_budget_obra_defaults(self, order, project, obra_rows):
+        """CREVAL, paquete 5, CR-40 (M2): OBRA llega completa al crear la
+        hoja: el nombre de la obra (o el proyecto de la cotización), los
+        porcentajes de la compañía que la cotización no trae, el IGV de venta
+        de la compañía, la fecha, la versión y el margen por defecto."""
+        company = order.company_id
+        given = {label: value for label, value in obra_rows}
+        if not given.get('Obra'):
+            given['Obra'] = order.client_order_ref or order.construction_site_name or order.name
+        defaults = {
+            'Gastos generales %': company.construction_budget_overhead_pct,
+            'Imprevistos %': company.construction_budget_contingency_pct,
+            'Utilidad %': company.construction_budget_profit_pct,
+            'Margen por defecto %': company.construction_budget_margin_pct,
+        }
+        for label, value in defaults.items():
+            if given.get(label) in (None, '', 0, 0.0) and value:
+                given[label] = value
+        tax = company.account_sale_tax_id
+        if given.get('IGV %') in (None, '') and tax:
+            given['IGV %'] = tax.amount
+        given.setdefault('Fecha', fields.Date.to_string(fields.Date.context_today(self)))
+        given.setdefault('Versión', '1')
+        return [[label, given[label]] for label in OBRA_LABELS if given.get(label) not in (
+            None, '')]
+
     def _construction_budget_rows(self, order, project):
         """Filas de datos de cada pestaña con lo que hay en Odoo: la
         cotización (OBRA y PRESUPUESTO) y las recetas de la obra (INSUMOS, APU
@@ -466,6 +573,7 @@ class ProjectProject(models.Model):
             ]
         if order:
             rows['OBRA'] += self._construction_footer_pcts(order)
+            rows['OBRA'] = self._construction_budget_obra_defaults(order, project, rows['OBRA'])
         Template = self.env['construction.execution.template']
         if project:
             recipes = Template.search([('project_id', '=', project.id)])
@@ -567,12 +675,242 @@ class ProjectProject(models.Model):
                     'specialty_catalog': (line.construction_budget_catalog or ['', ''])[0] or '',
                     'subspecialty_catalog': ((line.construction_budget_catalog or ['', ''])
                                              + [''])[1] or ''})
-                if task:
+                # CREVAL, paquete 5, CR-45: lo vendido llega a PLAN aunque la
+                # obra aún no tenga su partida.
+                if task or item:
                     rows['PLAN'].append([item, name, modes.get(task.construction_execution_mode,
-                                                               ''), '', '', '', ''])
+                                                               '') if task else '', '', '', '',
+                                         ''])
         return rows
 
     @api.model
+    @api.model
+    def _construction_budget_order_sheets(self, sheets, last):
+        """CREVAL, paquete 5, CR-39: INICIO primero y las pestañas en el orden
+        de trabajo; LISTAS, REFERENCIAS, _CLAVES e INSTRUCCIONES ocultas."""
+        sheets = [self._construction_budget_start_sheet(last)] + sheets + [
+            self._construction_budget_footer_sheet(last),
+            self._construction_budget_control_sheet(last, self.env.company)]
+        order = {name: index for index, name in enumerate(BUDGET_SHEET_ORDER)}
+        sheets.sort(key=lambda sheet: order.get(sheet['name'], len(order)))
+        for sheet in sheets:
+            if sheet['name'] in BUDGET_HIDDEN_SHEETS:
+                sheet['isVisible'] = False
+        return sheets
+
+    @api.model
+    def _construction_plan_columns(self, cells, styles, last, company):
+        """CREVAL, paquete 5, CR-45: en PLAN, lo vendido en gris (unidad,
+        metrado vendido y APU de PRESUPUESTO, por el ítem), el metrado de obra
+        que decide el planificador y el estado de la partida. Las columnas se
+        leen por su encabezado."""
+        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        base = len(PLAN_COLUMNS)
+        sold = lambda key: ('IF($A{r}="","",IFERROR(XLOOKUP($A{r}&"",PRESUPUESTO!$%s$2:$%s$%s,'
+                            'PRESUPUESTO!$%s$2:$%s$%s),""))' % (p['item'], p['item'], last,
+                                                              p[key], p[key], last))
+        columns = [
+            ('Unidad (calc.)', '=' + sold('uom'), CALC_STYLE),
+            ('Metrado vendido (calc.)', '=' + sold('qty_real'), CALC_STYLE),
+            ('APU vendido (calc.)', '=' + sold('apu'), CALC_STYLE),
+            ('Metrado de obra', None, DATA_STYLE),
+            ('Estado (calc.)', None, CALC_STYLE),
+        ]
+        letters = {header: _col(base + index) for index, (header, _f, _s) in
+                   enumerate(columns)}
+        sold_qty, site_qty = letters['Metrado vendido (calc.)'], letters['Metrado de obra']
+        state = (
+            '=IF($A{r}="","",IF($C{r}="","Falta modalidad",IF(AND({s}{r}<>"",{q}{r}<>"",'
+            'IFERROR(VALUE({q}{r}),0)<>IFERROR(VALUE({s}{r}),0)),"Metrado "&TEXT(IFERROR('
+            'VALUE({q}{r})/VALUE({s}{r})-1,0),"+0.0%;-0.0%"),IF(AND($E{r}<>"",$F{r}<>"",'
+            '$F{r}<$E{r}),"Fecha fuera de orden","OK"))))'
+        ).replace('{s}', sold_qty).replace('{q}', site_qty)
+        for index, (header, formula, style) in enumerate(columns):
+            letter = _col(base + index)
+            cells['%s1' % letter] = header
+            styles['%s1' % letter] = style
+            text = state if header == 'Estado (calc.)' else formula
+            if not text:
+                continue
+            for row in range(2, last + 1):
+                cells['%s%s' % (letter, row)] = text.replace('{r}', str(row))
+        state_letter = letters['Estado (calc.)']
+        return [{'id': 'plan_state', 'ranges': ['%s2:%s%s' % (state_letter, state_letter, last)],
+                 'stopIfTrue': False,
+                 'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                          'values': ['=AND(%s2<>"",%s2<>"OK")' % (state_letter, state_letter)],
+                          'style': {'fillColor': '#FCE5CD'}}}]
+
+    @api.model
+    def _construction_budget_control_sheet(self, last, company):
+        """CREVAL, paquete 5, CR-46: CONTROL vendido frente a planificado,
+        partida por partida de PLAN: costo vendido (sin margen, el «Costo
+        real» de PRESUPUESTO), costo planificado (metrado de obra × costo
+        unitario), diferencia, % y semáforo con el umbral de la compañía."""
+        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        site = _col(len(PLAN_COLUMNS) + 3)
+        sold_qty = _col(len(PLAN_COLUMNS) + 1)
+        look = lambda key: 'IFERROR(VALUE(XLOOKUP(PLAN!$A{r}&"",PRESUPUESTO!$%s$2:$%s$%s,' \
+            'PRESUPUESTO!$%s$2:$%s$%s)),0)' % (p['item'], p['item'], last, p[key], p[key], last)
+        threshold = (company.construction_budget_control_pct or 5.0) / 100.0
+        cells = {'A1': 'Vendido frente a planificado', 'A2': 'Ítem', 'B2': 'Partida',
+                 'C2': 'Costo vendido (sin margen)', 'D2': 'Costo planificado',
+                 'E2': 'Diferencia', 'F2': '%', 'G2': 'Estado',
+                 'I2': 'Umbral', 'J2': str(threshold)}
+        styles = {'A1': TITLE_STYLE}
+        styles.update({'%s2' % c: HEADER_STYLE for c in 'ABCDEFGI'})
+        for row in range(3, last + 2):
+            r = row - 1  # fila de PLAN
+            cells.update({
+                'A%s' % row: '=IF(PLAN!$A%s="","",PLAN!$A%s&"")' % (r, r),
+                'B%s' % row: '=IF($A%s="","",PLAN!$B%s&"")' % (row, r),
+                'C%s' % row: ('=IF($A{w}="","",%s)' % look('cost_real')).replace(
+                    '{w}', str(row)).replace('{r}', str(r)),
+                'D%s' % row: ('=IF($A{w}="","",IF(PLAN!${s}{r}="",C{w},IFERROR(VALUE(PLAN!${s}{r}),'
+                              '0)*%s))' % look('unit_cost')).replace('{w}', str(row)).replace(
+                    '{r}', str(r)).replace('{s}', site),
+                'E%s' % row: '=IF($A%s="","",D%s-C%s)' % (row, row, row),
+                'F%s' % row: '=IF(OR($A%s="",C%s=0),"",E%s/C%s)' % (row, row, row, row),
+                'G%s' % row: ('=IF($A{w}="","",IF(ABS(IFERROR(F{w},0))<0.005,"Igual",IF(F{w}<=$J$2,'
+                              '"Más de lo vendido","Supera el umbral")))').replace('{w}', str(row)),
+            })
+        del sold_qty
+        return {
+            'id': 'sheet_control_budget', 'name': 'CONTROL', 'colNumber': 12,
+            'rowNumber': last + 10, 'cells': cells, 'styles': styles,
+            'formats': {'C3:E%s' % (last + 1): '#,##0.00', 'F3:F%s' % (last + 1): '0.0%',
+                        'J2': '0%'},
+            'cols': {'1': {'size': 320}, '2': {'size': 140}, '3': {'size': 140},
+                     '6': {'size': 150}},
+            'conditionalFormats': [{
+                'id': 'control_over', 'ranges': ['G3:G%s' % (last + 1)], 'stopIfTrue': False,
+                'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                         'values': ['=G3="Supera el umbral"'], 'style': {'fillColor': '#F6E1E4'}}}],
+        }
+
+    @api.model
+    def _construction_budget_footer_sheet(self, last):
+        """CREVAL, paquete 5, CR-44, punto 1: el pie que verá el cliente,
+        todo calculado salvo los porcentajes, que vienen de OBRA; debajo, el
+        parcial de cada especialidad con su peso. Mismas reglas que el pie de
+        la cotización: gastos generales, imprevistos y utilidad sobre las
+        partidas; el descuento sobre su suma."""
+        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        rng = lambda key: 'PRESUPUESTO!$%s$2:$%s$%s' % (p[key], p[key], last)  # noqa: E731
+        pct = lambda label: 'IFERROR(VALUE(OBRA!$B$%s),0)/100' % (  # noqa: E731
+            OBRA_LABELS.index(label) + 1)
+        rows = [
+            ('Costo directo (suma de parciales)', '=SUM(%s)' % rng('subtotal')),
+            ('Gastos generales', '=ROUND(B3*%s,2)' % pct('Gastos generales %')),
+            ('Imprevistos', '=ROUND(B3*%s,2)' % pct('Imprevistos %')),
+            ('Utilidad', '=ROUND(B3*%s,2)' % pct('Utilidad %')),
+            ('Subtotal', '=B3+B4+B5+B6'),
+            ('Descuento', '=-ROUND(B7*%s,2)' % pct('Descuento %')),
+            ('Valor de venta', '=B7+B8'),
+            ('IGV', '=ROUND(B9*%s,2)' % pct('IGV %')),
+            ('Total', '=B9+B10'),
+        ]
+        cells = {'A1': 'Pie de presupuesto', 'C2': 'De OBRA'}
+        styles = {'A1': TITLE_STYLE}
+        for row, (label, formula) in enumerate(rows, start=3):
+            cells['A%s' % row] = label
+            cells['B%s' % row] = formula
+            styles['A%s' % row] = HEADER_STYLE
+            styles['B%s' % row] = CALC_STYLE
+        for row, label in ((4, 'Gastos generales %'), (5, 'Imprevistos %'), (6, 'Utilidad %'),
+                           (8, 'Descuento %'), (10, 'IGV %')):
+            cells['C%s' % row] = '=IFERROR(VALUE(OBRA!$B$%s),0)&" %%"' % (
+                OBRA_LABELS.index(label) + 1)
+        cells.update({'A14': 'Peso por especialidad', 'A15': 'Especialidad', 'B15': 'Parcial',
+                      'C15': 'Peso',
+                      'A16': '=IFERROR(UNIQUE(FILTER({s},{s}<>"")),"")'.format(
+                          s=rng('specialty'))})
+        styles.update({'A14': TITLE_STYLE, 'A15': HEADER_STYLE, 'B15': HEADER_STYLE,
+                       'C15': HEADER_STYLE})
+        formats = {'B3:B11': '#,##0.00', 'B16:B65': '#,##0.00', 'C16:C65': '0.0%'}
+        for row in range(16, 66):
+            cells['B%s' % row] = '=IF($A{r}="","",SUMIF({s},$A{r},{t}))'.format(
+                r=row, s=rng('specialty'), t=rng('subtotal'))
+            cells['C%s' % row] = '=IF(OR($A{r}="",$B$3=0),"",B{r}/$B$3)'.format(r=row)
+        return {
+            'id': 'sheet_pie', 'name': 'PIE DE PRESUPUESTO', 'colNumber': 6, 'rowNumber': 70,
+            'cells': cells, 'styles': styles, 'formats': formats,
+            'cols': {'0': {'size': 260}, '1': {'size': 140}, '2': {'size': 100}},
+        }
+
+    @api.model
+    def _construction_budget_start_sheet(self, last):
+        """INICIO de la hoja de presupuesto (CR-39): cabecera, ruta con su
+        estado calculado por la hoja, «◀ Siguiente» y cuatro indicadores."""
+        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        state = _col(len(PRESUPUESTO_KEYS))
+        rng = lambda key: 'PRESUPUESTO!$%s$2:$%s$%s' % (p[key], p[key], last)  # noqa: E731
+        states = 'PRESUPUESTO!$%s$2:$%s$%s' % (state, state, last)
+        apu = template_letters('APU')
+        obra = lambda label: 'OBRA!$B$%s' % (OBRA_LABELS.index(label) + 1)  # noqa: E731
+        cells = {
+            'A1': 'Hoja de presupuesto', 'A3': 'Obra', 'B3': '=%s&""' % obra('Obra'),
+            'A4': 'Cliente', 'B4': '=%s&""' % obra('Cliente'),
+            'A5': 'Última validación', 'B5': '=IF(ERRORES!$A$1="","Sin validar",ERRORES!$A$1)',
+            'A7': 'Ruta', 'A8': 'Paso', 'B8': 'Qué se hace', 'C8': 'Ir', 'D8': 'Estado',
+            'E8': 'Qué falta',
+        }
+        partidas = 'COUNTIFS(%s,"<>",%s,"<>Título")' % (states, states)
+        to_fix = 'COUNTIFS(%s,"<>",%s,"<>OK",%s,"<>Título")' % (states, states, states)
+        steps = [
+            ('1 · OBRA', 'Moneda, tipo de contrato y porcentajes', 'OBRA',
+             'AND(%s<>"",%s<>"")' % (obra('Moneda'), obra('Tipo de contrato')),
+             '"Falta la moneda o el tipo de contrato"'),
+            ('2 · PRESUPUESTO', 'Títulos, partidas, metrado y APU', 'PRESUPUESTO',
+             'AND(%s>0,%s=0)' % (partidas, to_fix),
+             'IF(%s=0,"Escriba las partidas",%s&" partidas por corregir (columna Estado)")'
+             % (partidas, to_fix)),
+            ('3 · APU', 'Cada APU con su detalle', 'APU',
+             'COUNTIFS(APU!$%s$2:$%s$%s,0,APU!$%s$2:$%s$%s,"<>")=0' % (
+                 apu['Costo unitario'], apu['Costo unitario'], last, apu['code'], apu['code'],
+                 last),
+             '"Hay APU sin costo: arme su detalle en APU_DETALLE"'),
+            ('4 · INSUMOS', 'Precio de cada insumo', 'INSUMOS',
+             'TRUE', '""'),
+            ('5 · Validar', 'Última validación sin errores', 'ERRORES',
+             'AND(LEFT(ERRORES!$A$1,7)="Validad",ISNUMBER(SEARCH("· 0 errores",ERRORES!$A$1)))',
+             '"Menú Planificación de obra › Validar"'),
+        ]
+        for index, (name, what, sheet, condition, missing) in enumerate(steps):
+            row = 9 + index
+            previous = 'COUNTIF($D$9:D%s,"Falta")=0' % (row - 1) if index else 'TRUE'
+            cells.update({
+                'A%s' % row: name, 'B%s' % row: what, 'C%s' % row: sheet,
+                'D%s' % row: '=IFERROR(IF(%s,"Listo","Falta"),"Falta")' % condition,
+                'E%s' % row: '=IF(D{r}<>"Falta","",IF({p},"◀ Siguiente · ","")&{m})'.format(
+                    r=row, p=previous, m=missing),
+            })
+        cells.update({
+            'A16': 'Indicadores', 'A17': 'Partidas', 'B17': '=%s' % partidas,
+            'A18': 'Por corregir', 'B18': '=%s' % to_fix,
+            'A19': 'Costo directo', 'B19': '=SUM(%s)' % rng('cost_real'),
+            'A20': 'Total con IGV',
+            'B20': '=SUM(%s)*(1+IFERROR(VALUE(%s),0)/100)' % (rng('subtotal'), obra('IGV %')),
+        })
+        styles = {ref: HEADER_STYLE for ref in ('A3', 'A4', 'A5', 'A8', 'B8', 'C8', 'D8', 'E8',
+                                                'A17', 'A18', 'A19', 'A20')}
+        styles.update({'A1': TITLE_STYLE, 'A7': TITLE_STYLE, 'A16': TITLE_STYLE})
+        return {
+            'id': 'sheet_inicio', 'name': 'INICIO', 'colNumber': 8, 'rowNumber': 40,
+            'cells': cells, 'styles': styles,
+            'formats': {'B19': '#,##0.00', 'B20': '#,##0.00'},
+            'cols': {'0': {'size': 200}, '1': {'size': 260}, '2': {'size': 120},
+                     '3': {'size': 80}, '4': {'size': 380}},
+            'conditionalFormats': [
+                {'id': 'inicio_ready', 'ranges': ['D9:D13'], 'stopIfTrue': False,
+                 'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                          'values': ['=D9="Listo"'], 'style': {'fillColor': '#E3F4EC'}}},
+                {'id': 'inicio_missing', 'ranges': ['D9:D13'], 'stopIfTrue': False,
+                 'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                          'values': ['=D9="Falta"'], 'style': {'fillColor': '#F6E1E4'}}},
+            ],
+        }
+
     def _construction_presupuesto_sheet(self, partidas, rows, last):
         """Pestaña PRESUPUESTO (CR-18, c): columnas A a W; amarillo los
         datos, gris las fórmulas, que llegan hasta la última fila."""
@@ -588,12 +926,47 @@ class ProjectProject(models.Model):
                 if content:
                     cells['%s%s' % (_col(i), number)] = content
         mode = _col(PRESUPUESTO_KEYS.index('mode'))
+        # CREVAL, paquete 5, CR-41: estado de cada partida antes de validar
+        # (no se envía), filas de título pintadas, ítem como texto y la
+        # partida ancha y fija con el ítem.
+        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        state = _col(len(PRESUPUESTO_KEYS))
+        apu = template_letters('APU')
+        cells['%s1' % state] = 'Estado'
+        styles['%s1' % state] = CALC_STYLE
+        for number in range(2, rows + 2):
+            cells['%s%s' % (state, number)] = (
+                '=IF(AND({i}{r}="",{n}{r}=""),"",IF(AND({q}{r}="",{a}{r}="",{c}{r}=""),"Título",'
+                'IF(AND({a}{r}="",{c}{r}=""),"Falta APU o costo",IF(AND({a}{r}<>"",COUNTIF(APU!${k}:${k},'
+                '{a}{r})=0),"APU no existe",IF(AND({a}{r}<>"",IFERROR(VALUE({u}{r}),0)=0),'
+                '"APU sin costo",IF({m}{r}="","Falta unidad","OK"))))))').format(
+                i=p['item'], n=p['name'], q=p['qty_real'], a=p['apu'], c=p['cost_no_apu'],
+                k=apu['code'], u=p['unit_cost'], m=p['uom'], r=number)
+        cols = {str(i): {'size': max(110, 8 * len(header))}
+                for i, header in enumerate(PRESUPUESTO_HEADERS)}
+        cols[str(PRESUPUESTO_KEYS.index('name'))] = {'size': 360}
+        cols[str(len(PRESUPUESTO_KEYS))] = {'size': 140}
+        item, name = p['item'], p['name']
         return {
             'id': 'sheet_presupuesto', 'name': 'PRESUPUESTO',
-            'colNumber': max(26, len(PRESUPUESTO_KEYS)), 'rowNumber': rows + 50,
-            'cells': cells, 'styles': styles, 'panes': {'xSplit': 0, 'ySplit': 1},
-            'cols': {str(i): {'size': max(110, 8 * len(header))}
-                     for i, header in enumerate(PRESUPUESTO_HEADERS)},
+            'colNumber': max(26, len(PRESUPUESTO_KEYS) + 1), 'rowNumber': rows + 50,
+            'cells': cells, 'styles': styles,
+            'panes': {'xSplit': PRESUPUESTO_KEYS.index('name') + 1, 'ySplit': 1},
+            'formats': {'%s2:%s%s' % (item, item, last): '@'},
+            'conditionalFormats': [
+                {'id': 'PRESUPUESTO_title', 'ranges': ['A2:%s%s' % (state, last)],
+                 'stopIfTrue': False,
+                 'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                          'values': ['=$%s2="Título"' % state],
+                          'style': {'bold': True, 'fillColor': '#EEEEEE'}}},
+                {'id': 'PRESUPUESTO_state', 'ranges': ['%s2:%s%s' % (state, state, last)],
+                 'stopIfTrue': False,
+                 'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
+                          'values': ['=AND(%s2<>"",%s2<>"OK",%s2<>"Título")' % (
+                              state, state, state)],
+                          'style': {'fillColor': '#F6E1E4'}}},
+            ],
+            'cols': cols,
             'dataValidationRules': [{
                 'id': 'PRESUPUESTO_mode', 'isBlocking': True,
                 'ranges': ['%s2:%s%s' % (mode, mode, last)],
@@ -630,6 +1003,10 @@ class ProjectProject(models.Model):
     def _construction_budget_spreadsheet_data(self, order=None, project=None):
         """Datos de la hoja de presupuesto y plan, con lo que ya hay en Odoo."""
         values = self._construction_budget_rows(order, project)
+        company = (project.company_id if project else False) or \
+            (order.company_id if order else False) or self.env.company
+        # CREVAL, paquete 5, CR-43: días de un precio antiguo en INSUMOS.
+        price_days = company.construction_budget_price_days or 90
         rows = max((project.construction_spreadsheet_rows if project else 0) or DEFAULT_ROWS,
                    max(len(v) for v in values.values()) + 100)
         last = rows + 1
@@ -686,7 +1063,8 @@ class ProjectProject(models.Model):
                         cells['%s%s' % (data_letters[key], number)] = cell_text(value)
             for header, formula in CALCULATED.get(name, []):
                 column = calc_letters[header]
-                template = formula.replace('{n}', str(last))
+                template = formula.replace('{n}', str(last)).replace(
+                    '{pd}', str(price_days)).replace('{pa}', _col(PRESUPUESTO_KEYS.index('apu')))
                 for key, letter in letters.items():
                     template = template.replace('{c:%s}' % key, letter)
                 for calc_header, letter in calc_letters.items():
@@ -751,9 +1129,11 @@ class ProjectProject(models.Model):
             for i, value in enumerate(row):
                 if value not in (None, '', False):
                     plan_cells['%s%s' % (_col(i), number)] = cell_text(value)
-        sheets.append({'id': 'sheet_plan', 'name': 'PLAN', 'colNumber': 10,
+        plan_styles = {'%s1' % _col(i): DATA_STYLE for i in range(len(PLAN_COLUMNS))}
+        plan_conditional = self._construction_plan_columns(plan_cells, plan_styles, last, company)
+        sheets.append({'id': 'sheet_plan', 'name': 'PLAN', 'colNumber': 14,
                        'rowNumber': rows + 50, 'cells': plan_cells,
-                       'styles': {'%s1' % _col(i): DATA_STYLE for i in range(len(PLAN_COLUMNS))},
+                       'styles': plan_styles, 'conditionalFormats': plan_conditional,
                        'panes': {'xSplit': 0, 'ySplit': 1},
                        'dataValidationRules': [{
                            'id': 'plan_mode', 'isBlocking': True,
@@ -820,6 +1200,7 @@ class ProjectProject(models.Model):
                        'cols': {'3': {'size': 700}}})
         # Clave interna de cada columna (paquete 1.16, M116-09 y CR-22 d).
         sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))
+        sheets = self._construction_budget_order_sheets(sheets, last)
         settings = self.env['documents.document']._empty_spreadsheet_data().get('settings', {})
         return {
             'version': SPREADSHEET_VERSION, 'sheets': sheets,
@@ -868,4 +1249,39 @@ class SaleOrder(models.Model):
                 'construction_sheet_kind': 'budget',
                 'construction_sheet_layout': BUDGET_LAYOUT,
             })
+        return document.action_open_spreadsheet()
+
+    def action_construction_open_budget_sheet(self):
+        """CREVAL, paquete 5, CR-47 y CR-38: «Hoja de presupuesto» de la
+        cotización: la hoja de presupuesto de venta (o la «Presupuesto y plan»
+        de antes, si la cotización ya tiene una). Pulsar dos veces abre la
+        misma."""
+        self.ensure_one()
+        Document = self.env['documents.document']
+        document = Document.search([('construction_sale_order_id', '=', self.id),
+                                    ('construction_source_id', '=', False),
+                                    ('construction_budget_role', 'in', ('sale', False)),
+                                    ('handler', '=', 'spreadsheet')], limit=1)
+        if not document:
+            project = self.project_id
+            # sudo: el presupuestador no administra recetas; la hoja nace con
+            # la biblioteca y las recetas de la cotización (solo lectura).
+            data = self.env['project.project'].sudo()._construction_budget_spreadsheet_data(
+                self.sudo(), project.sudo())
+            # sudo: el presupuestador no administra Documentos; la hoja se crea
+            # en Presupuestos › <cotización> y queda a su nombre.
+            document = Document.sudo().create({
+                'name': self.env._('Presupuesto de venta · %(order)s · %(partner)s',
+                                   order=self.name,
+                                   partner=self.partner_id.commercial_partner_id.name or ''),
+                'mimetype': 'application/o-spreadsheet', 'handler': 'spreadsheet',
+                'datas': base64.b64encode(json.dumps(data).encode()),
+                'folder_id': self.sudo()._construction_spreadsheet_folder().id,
+                'owner_id': self.env.uid,
+                'construction_sale_order_id': self.id,
+                'construction_project_id': project.id,
+                'construction_sheet_kind': 'budget',
+                'construction_budget_role': 'sale',
+                'construction_sheet_layout': BUDGET_LAYOUT,
+            }).sudo(False)
         return document.action_open_spreadsheet()

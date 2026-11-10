@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 7 de CREVAL, CR-63: meta de valorización del mes. -->
+    <record id="view_construction_valuation_target_list" model="ir.ui.view">
+        <field name="name">construction.valuation.target.list</field>
+        <field name="model">construction.valuation.target</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="expired" decoration-muted="state == 'rejected'">
+                <field name="month" widget="date" options="{'format': 'MM/yyyy'}"/>
+                <field name="project_id" optional="show"/>
+                <field name="amount_computed" sum="Calculado"/>
+                <field name="amount_proposed" sum="Propuesto"/>
+                <field name="amount_approved" sum="Aprobado"/>
+                <field name="deadline"/>
+                <field name="expired" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-success="state == 'approved'"
+                       decoration-info="state == 'proposed'"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_construction_valuation_target_form" model="ir.ui.view">
+        <field name="name">construction.valuation.target.form</field>
+        <field name="model">construction.valuation.target</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_propose" type="object" string="Proponer meta del mes"
+                            class="btn-primary" invisible="state == 'proposed'"
+                            groups="al_construction_planner.group_planner_plan_planner"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,proposed,approved"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-danger" role="alert" invisible="not expired">
+                        Vencida sin aprobar.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" readonly="id"/>
+                            <field name="month" readonly="id"/>
+                            <field name="deadline"/>
+                        </group>
+                        <group>
+                            <field name="amount_computed"/>
+                            <field name="amount_proposed" readonly="state == 'proposed'"/>
+                            <field name="amount_approved"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="proposed_by_id"/>
+                            <field name="date_proposed"/>
+                        </group>
+                        <group>
+                            <field name="approved_by_id"/>
+                            <field name="date_approved"/>
+                        </group>
+                    </group>
+                    <field name="expired" invisible="1"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_valuation_target" model="ir.actions.act_window">
+        <field name="name">Metas de valorización</field>
+        <field name="res_model">construction.valuation.target</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin metas de valorización</p>
+            <p>Desde la obra, «Metas de valorización» crea una por mes de las valorizaciones
+               previstas. El planificador la propone y la jefatura de proyectos la aprueba.</p>
+        </field>
+    </record>
+
+    <data noupdate="1">
+        <!-- Regla por defecto: un nivel, la jefatura de proyectos; la compañía
+             agrega niveles en Configuración sin programar. -->
+        <record id="tier_valuation_target_head" model="tier.definition">
+            <field name="name">Meta de valorización: jefatura de proyectos</field>
+            <field name="model_id" ref="model_construction_valuation_target"/>
+            <field name="review_type">group</field>
+            <field name="reviewer_group_id" ref="al_construction_planner.group_planner_project_head"/>
+            <field name="definition_domain">[]</field>
+            <field name="sequence">10</field>
+            <field name="approve_sequence" eval="True"/>
+        </record>
+        <record id="ir_cron_construction_target_expiry" model="ir.cron">
+            <field name="name">Planificador: metas de valorización vencidas</field>
+            <field name="model_id" ref="model_construction_valuation_target"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_construction_target_expiry()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+    </data>
+</odoo>

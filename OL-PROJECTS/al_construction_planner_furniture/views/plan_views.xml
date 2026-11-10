@@ -7,8 +7,28 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_open_recipe_wizard']" position="before">
                 <button name="action_open_generate_wizard" type="object" string="Generar plan"
-                        class="btn-primary" invisible="state != 'draft'"
+                        class="btn-primary"
+                        invisible="state != 'draft' or construction_generate_state in ('queued', 'running')"
                         groups="al_construction_planner.group_planner_plan_planner"/>
+                <!-- Paquete 1.18, M118-05, punto 4: un solo proceso. -->
+                <button name="action_open_generate_wizard" type="object" string="Generar plan"
+                        class="btn-secondary disabled" title="Generación en curso"
+                        invisible="state != 'draft' or construction_generate_state not in ('queued', 'running')"
+                        groups="al_construction_planner.group_planner_plan_planner"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <field name="construction_generate_state" invisible="1"/>
+                <div class="alert alert-info mb-0 o_cp_generate_progress" role="status"
+                     invisible="construction_generate_state not in ('queued', 'running')">
+                    <i class="fa fa-cog fa-spin me-1"/>
+                    <field name="construction_generate_info" readonly="1" class="d-inline"/>
+                    · desde <field name="construction_generate_started" readonly="1" class="d-inline"
+                                   widget="datetime" options="{'show_date': false}"/>
+                </div>
+                <div class="alert alert-danger mb-0" role="alert"
+                     invisible="construction_generate_state != 'failed'">
+                    <field name="construction_generate_info" readonly="1" class="d-inline"/>
+                </div>
             </xpath>
             <xpath expr="//header" position="inside">
                 <button name="%(action_construction_module_dispatch_wizard)d" type="action"

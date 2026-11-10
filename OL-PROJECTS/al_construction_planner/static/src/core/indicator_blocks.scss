@@ -1,0 +1,56 @@
+// Paquete 7 de CREVAL: bloques de indicadores (cartera y ficha). Cada bloque
+// tiene su color; el ejecutado lleva el color del semáforo.
+$o-cp-ind-today: #2f6fb3;
+$o-cp-ind-progress: #2e8b57;
+$o-cp-ind-month: #8a5cc2;
+$o-cp-ind-close: #c27c0e;
+
+.o_cp_ind_block {
+    border: 1px solid $o-gray-200;
+    border-left-width: 4px;
+    border-radius: 0.375rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 14rem;
+}
+.o_cp_ind_block_today { border-left-color: $o-cp-ind-today; }
+.o_cp_ind_block_progress { border-left-color: $o-cp-ind-progress; }
+.o_cp_ind_block_month { border-left-color: $o-cp-ind-month; }
+.o_cp_ind_block_close { border-left-color: $o-cp-ind-close; }
+.o_cp_ind_block_title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $o-gray-600;
+    margin-bottom: 0.25rem;
+}
+.o_cp_ind_card {
+    min-width: 6.5rem;
+    text-align: right;
+}
+.o_cp_ind_card_label {
+    font-size: 0.75rem;
+    color: $o-gray-600;
+}
+.o_cp_ind_card_value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+.o_cp_ind_card_budget {
+    font-size: 0.75rem;
+    color: $o-gray-500;
+    font-variant-numeric: tabular-nums;
+}
+.o_cp_light_green { color: #1e7b34; }
+.o_cp_light_amber { color: #b26a00; }
+.o_cp_light_red { color: #c0392b; }
+.o_cp_dot {
+    display: inline-block;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background-color: $o-gray-300;
+    &.o_cp_dot_green { background-color: #2e9e4f; }
+    &.o_cp_dot_amber { background-color: #e0a100; }
+    &.o_cp_dot_red { background-color: #d9443a; }
+}

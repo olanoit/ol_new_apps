@@ -21,7 +21,7 @@ const SERIES = [
     { scenario: "plan", key: "cost_cum", css: "o_cp_s_cost", dashed: true, label: "Costo previsto" },
     { scenario: "plan", key: "revenue_cum", css: "o_cp_s_revenue", dashed: true, label: "Ingreso previsto" },
     { scenario: "plan", key: "collection_cum", css: "o_cp_s_collection", dashed: true, label: "Cobrado previsto" },
-    { scenario: "real", key: "cost_cum", css: "o_cp_s_cost", label: "Costo real" },
+    { scenario: "real", key: "cost_cum", css: "o_cp_s_cost", label: "Avance valorizado al costo del plan" },
     { scenario: "real", key: "revenue_cum", css: "o_cp_s_revenue", label: "Ingreso real" },
     { scenario: "real", key: "collection_cum", css: "o_cp_s_collection", label: "Cobrado real" },
 ];

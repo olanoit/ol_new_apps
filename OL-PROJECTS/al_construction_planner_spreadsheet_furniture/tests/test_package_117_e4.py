@@ -19,8 +19,11 @@ class TestPackage117TypesInSheet(TestWorksheetV18):
         data = self._data()
         modules = self._sheet(data, 'MODULOS')
         cells = modules['cells']
-        self.assertEqual(cells['J1'], 'Clase (calc.)')
-        self.assertIn('REFERENCIAS!$AC$3', cells['J2'])
+        # Paquete 1.18, M118-12: la clase va detrás de «Método de unión».
+        letter = self.site._construction_sheet_layout()['sheets']['MODULOS']['letters'][
+            'module_class']
+        self.assertEqual(cells['%s1' % letter], 'Clase (calc.)')
+        self.assertIn('REFERENCIAS!$AC$3', cells['%s2' % letter])
         armar = next(ref for ref, value in cells.items() if value == 'A armar (calc.)')
         formula = cells[armar.replace('1', '2')]
         self.assertIn('REFERENCIAS!$AD$3', formula)

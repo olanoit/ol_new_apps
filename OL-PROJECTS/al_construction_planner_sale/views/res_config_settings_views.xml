@@ -6,6 +6,49 @@
         <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
         <field name="arch" type="xml">
             <block name="construction_planner_contracts" position="after">
+                    <!-- Paquete 7 de CREVAL, CR-61 y CR-62. -->
+                    <block title="Indicadores de obra" name="construction_planner_indicators">
+                        <setting company_dependent="1" id="construction_default_progress" string="Avance de la partida"
+                                 help="Regla de las obras nuevas para el avance físico y la valorización. «Avance valorizado» pondera contrata, personal propio y material.">
+                            <field name="construction_default_progress_source"/>
+                        </setting>
+                        <setting company_dependent="1" id="construction_change_product" string="Adicional de obra"
+                                 help="Producto de servicio, sin seguimiento que cree tareas, de la línea que el cambio cobrable agrega a la orden de venta del contrato.">
+                            <field name="construction_change_product_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting company_dependent="1" id="construction_excluded_accounts" string="Cuentas fuera del costo de obra"
+                                 help="Prefijos de cuentas, separados por coma, que no suman al costo ejecutado ni al ingreso de la obra (en Perú, 9 y 79: destinos y cargas imputables).">
+                            <field name="construction_excluded_account_prefixes"/>
+                        </setting>
+                        <setting company_dependent="1" id="construction_indicator_lights" string="Semáforo de la cartera"
+                                 help="Índices de costo y de plazo, y margen previsto al cierre: verde desde el primer valor, ámbar desde el segundo, rojo por debajo.">
+                            <div class="content-group">
+                                <div class="row"><label class="col-lg-5" for="construction_index_green"/><field name="construction_index_green" class="oe_inline"/></div>
+                                <div class="row"><label class="col-lg-5" for="construction_index_amber"/><field name="construction_index_amber" class="oe_inline"/></div>
+                                <div class="row"><label class="col-lg-5" for="construction_margin_green"/><field name="construction_margin_green" class="oe_inline"/> %</div>
+                                <div class="row"><label class="col-lg-5" for="construction_margin_amber"/><field name="construction_margin_amber" class="oe_inline"/> %</div>
+                            </div>
+                        </setting>
+                    </block>
+                    <!-- CREVAL, paquete 5, CR-40. -->
+                    <block title="Hoja de presupuesto" name="construction_planner_budget_sheet">
+                        <setting company_dependent="1" id="construction_budget_footer" string="Pie por defecto"
+                                 help="Lo que OBRA de una hoja de presupuesto nueva toma si la cotización no lo trae.">
+                            <div class="content-group">
+                                <div class="row"><label class="col-lg-5" for="construction_budget_overhead_pct"/><field name="construction_budget_overhead_pct" class="oe_inline"/> %</div>
+                                <div class="row"><label class="col-lg-5" for="construction_budget_contingency_pct"/><field name="construction_budget_contingency_pct" class="oe_inline"/> %</div>
+                                <div class="row"><label class="col-lg-5" for="construction_budget_profit_pct"/><field name="construction_budget_profit_pct" class="oe_inline"/> %</div>
+                                <div class="row"><label class="col-lg-5" for="construction_budget_margin_pct"/><field name="construction_budget_margin_pct" class="oe_inline"/> %</div>
+                            </div>
+                        </setting>
+                        <setting company_dependent="1" id="construction_budget_controls" string="Avisos de la hoja"
+                                 help="Precio antiguo en INSUMOS y umbral de CONTROL (vendido frente a planificado).">
+                            <div class="content-group">
+                                <div class="row"><label class="col-lg-5" for="construction_budget_price_days"/><field name="construction_budget_price_days" class="oe_inline"/></div>
+                                <div class="row"><label class="col-lg-5" for="construction_budget_control_pct"/><field name="construction_budget_control_pct" class="oe_inline"/> %</div>
+                            </div>
+                        </setting>
+                    </block>
                     <block title="Ingresos" name="construction_planner_income">
                         <setting company_dependent="1" id="construction_valuation_calendar" string="Calendario de valorización"
                                  help="Valores por defecto de las obras nuevas (pestaña «Calendario e ingresos»). Una fecha que cae en día no hábil pasa al siguiente día hábil.">

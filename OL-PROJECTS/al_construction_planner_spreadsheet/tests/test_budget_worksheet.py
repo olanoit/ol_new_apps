@@ -38,9 +38,10 @@ class TestBudgetWorksheet(TestBudgetBook):
         self.assertEqual(document.folder_id.folder_id.name, 'Presupuestos')
         data = json.loads(document.spreadsheet_data)
         names = [sheet['name'] for sheet in data['sheets']]
-        self.assertEqual(names, ['INSTRUCCIONES', 'OBRA', 'INSUMOS', 'APU', 'APU_DETALLE',
-                                 'PRESUPUESTO', 'PLAN', 'LISTAS', 'REFERENCIAS', 'ERRORES',
-                                 '_CLAVES'])
+        # CREVAL, paquete 5, CR-39: INICIO primero y el orden de trabajo.
+        self.assertEqual(names, ['INICIO', 'OBRA', 'PRESUPUESTO', 'APU', 'APU_DETALLE',
+                                 'INSUMOS', 'PIE DE PRESUPUESTO', 'PLAN', 'CONTROL', 'ERRORES',
+                                 'LISTAS', 'REFERENCIAS', '_CLAVES', 'INSTRUCCIONES'])
         budget = next(sheet for sheet in data['sheets'] if sheet['name'] == 'PRESUPUESTO')
         self.assertEqual(budget['cells']['A1'], 'Ítem')
         # CR-18, c: columnas A a W del libro 6.6; M es el costo unitario.

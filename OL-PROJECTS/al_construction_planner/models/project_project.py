@@ -224,6 +224,29 @@ class ProjectProject(models.Model):
                 or Plan.search([('project_id', '=', self.id), ('state', 'in', DRAFT_STATES)],
                                limit=1))
 
+    def _construction_portfolio_plan(self):
+        """Plan de la obra en la cartera (CR-59): el vigente, el que está en
+        preparación o, con la obra terminada, el último cerrado."""
+        self.ensure_one()
+        return self._construction_current_plan() or self.env['construction.resource.plan'].search(
+            [('project_id', '=', self.id), ('state', '=', 'closed')], order='id desc', limit=1)
+
+    def _construction_portfolio_stage(self, plan):
+        """Etapa de la obra en la cartera del Inicio (paquete 7 de CREVAL,
+        CR-59): «planning» (sin plan o plan en borrador o por aprobar),
+        «execution» (aprobado o en ejecución) o «postsale» (plan cerrado o lo
+        que agreguen los puentes con ``_construction_in_postsale``)."""
+        self.ensure_one()
+        if not plan or plan.state in ('draft', 'to_approve'):
+            return 'planning'
+        if plan.state == 'closed' or self._construction_in_postsale():
+            return 'postsale'
+        return 'execution'
+
+    def _construction_in_postsale(self):
+        """Gancho de los puentes: obra entregada con postventa abierta."""
+        return False
+
     def _construction_supervised_domain(self, user=None):
         """Obras del supervisor: las que tiene como responsable o como
         supervisor de obra."""

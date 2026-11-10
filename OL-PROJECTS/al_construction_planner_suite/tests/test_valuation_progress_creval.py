@@ -96,7 +96,10 @@ class TestValuationProgressQty(TestValuationProgress):
         """La prueba heredada, con dos partidas: ya cubierta arriba."""
 
     def test_qty_progress_by_task_sale_line(self):
-        self.assertEqual(self.project.construction_progress_source, 'qty')
+        # Paquete 7 de CREVAL, CR-61: las obras nuevas nacen con «Avance
+        # valorizado»; esta prueba usa la cantidad validada.
+        self.assertEqual(self.project.construction_progress_source, 'valued')
+        self.project.construction_progress_source = 'qty'
         self.assertEqual(self.project._construction_partida_lines(),
                          self.partida | self.partida_2)
         self._progress(4502.23, date(2026, 10, 22))
@@ -172,6 +175,8 @@ class TestValuationProgressQty(TestValuationProgress):
         antes, y la valorización siguiente se factura sin error."""
         if not isinstance(self, TestValuationProgressQty):
             return
+        # CR-61: las obras nuevas nacen con «Avance valorizado».
+        self.project.construction_progress_source = 'qty'
         self.partida.qty_delivered = 0.2
         direct = self.order._create_invoices()
         direct.invoice_line_ids.filtered(lambda l: l.sale_line_ids != self.partida).unlink()

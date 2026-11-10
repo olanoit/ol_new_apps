@@ -446,7 +446,10 @@ class ConstructionMaterialRequestLine(models.Model):
         start_key = (start.sequence, start.id)
         names, node = [], task
         while node and node.construction_level_line_id:
-            names.append(node.name)
+            # Paquete 1.18, M118-09: el módulo con el rótulo del plano.
+            label = node.construction_eto_label \
+                if 'construction_eto_label' in node._fields else False
+            names.append('%s (%s)' % (node.name, label) if label else node.name)
             level_line = node.construction_level_line_id
             if (level_line.sequence, level_line.id) <= start_key:
                 break

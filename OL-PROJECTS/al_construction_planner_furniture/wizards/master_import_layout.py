@@ -50,12 +50,15 @@ SHEETS = {
         ('typology', 'Tipología', True, 'Código de la tipología.'),
         ('name', 'Mueble', True, 'Mueble bajo, mueble alto, torre de horno…'),
         ('ml_group', 'Grupo', False, 'Bajo, Alto, Completo u Otro.'),
-        ('ml', 'Metros lineales', False, 'Sin anchos en los módulos, los ML del mueble.'),
+        # Paquete 1.18, M118-10: los ML salen de los anchos de los módulos;
+        # escritos, mandan (se marcan en la hoja).
+        ('ml', 'ML escritos', False, 'Vacío: la suma de los anchos de sus módulos.'),
     ]),
     'MODULOS': ('Plantilla de módulos de cada tipología.', [
         ('typology', 'Tipología', True, 'Código de la tipología.'),
         ('sequence', 'Orden', False, 'Orden del módulo en la tipología.'),
         ('code', 'Código del módulo', True, 'MB01, MA01, CAMPANA… (el mismo del ETO).'),
+        ('eto_label', 'Rótulo en el ETO', False, 'Como en el plano: MB-1, MA-3 (M118-09).'),
         ('type', 'Tipo', True, 'Bajo, Alto, Cajonera, Campana, Repisero u Otro.'),
         ('width', 'Ancho (mm)', False, 'Con ancho, las actividades por ML bajan al módulo.'),
         ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto, Mueble completo (closets, baños, lavanderías, ductos) o Sin ML.'),
@@ -178,6 +181,7 @@ SHEETS = {
         ('apartment', 'Departamento', True, 'Departamento del ambiente.'),
         ('space', 'Ambiente', True, 'Ambiente.'),
         ('code', 'Código del módulo', True, 'El mismo código de la plantilla de la tipología.'),
+        ('eto_label', 'Rótulo en el ETO', False, 'Como en el plano: MB-1, MA-3 (M118-09).'),
         ('type', 'Tipo', False, 'Bajo, Alto, Cajonera, Campana, Repisero u Otro.'),
         ('width', 'Ancho (mm)', True, 'Ancho real del módulo.'),
         ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto, Mueble completo (closets, baños, lavanderías, ductos) o Sin ML.'),

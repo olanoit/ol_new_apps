@@ -25,9 +25,15 @@ class TestPlanningTabV15(PlannerCommon):
         project.construction_sale_order_id = order
         if not project.account_id:
             project._create_analytic_account()
+        # Paquete 7 de CREVAL, CR-62: cuenta por el tipo de la cuenta contable.
+        Account = self.env['account.account']
+        income = Account.create({'name': 'Ventas (test)', 'code': '7099111', 'account_type': 'income'})
+        expense = Account.create({'name': 'Costo (test)', 'code': '6399111', 'account_type': 'expense'})
         self.env['account.analytic.line'].create([
-            {'name': 'Factura (test)', 'account_id': project.account_id.id, 'amount': 3000.0},
-            {'name': 'Consumo (test)', 'account_id': project.account_id.id, 'amount': -1200.0},
+            {'name': 'Factura (test)', 'account_id': project.account_id.id, 'amount': 3000.0,
+             'general_account_id': income.id},
+            {'name': 'Consumo (test)', 'account_id': project.account_id.id, 'amount': -1200.0,
+             'general_account_id': expense.id},
         ])
         project.invalidate_recordset()
         cost = sum(self.plan.line_ids.mapped('amount_planned'))

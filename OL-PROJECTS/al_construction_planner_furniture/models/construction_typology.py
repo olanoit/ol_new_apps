@@ -110,6 +110,8 @@ class ConstructionTypologyModule(models.Model):
     code = fields.Char(
         string='Código del módulo', required=True,
         help='Del ETO (MB01, MA01, CAMPANA). Sin ETO, generado por tipo («Tarugo 2»).')
+    # Paquete 1.18, M118-09: el rótulo del plano que aprueba el cliente.
+    eto_label = fields.Char(string='Rótulo en el ETO', help='Como en el plano: MB-1, MA-3.')
     module_type = fields.Selection(MODULE_TYPES, string='Tipo', required=True, default='low')
     width_mm = fields.Integer(
         string='Ancho (mm)', help='Con ancho, las actividades por ML cuelgan del módulo.')

@@ -97,3 +97,75 @@ class TestPackage118Sheet(BringCommon, TransactionCase):
         self.assertEqual(self.site.construction_income_planned,
                          self.order.amount_untaxed)
         self.assertTrue(typology)
+
+
+@tagged('post_install', '-at_install')
+class TestPackage118Lists(BringCommon, TransactionCase):
+    """Paquete 1.18, entregas 2 y 3: MODULOS (M118-12) y listas «código ·
+    nombre» (M118-08)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._setup_bring()
+
+    def test_modules_columns_and_lists(self):
+        layout = self.site._construction_sheet_layout()
+        modules = layout['sheets']['MODULOS']
+        keys = [key for key, _header in modules['columns']]
+        self.assertEqual(keys.index('eto_label'), keys.index('code') + 1)
+        self.assertGreater(keys.index('module_class'), keys.index('join_method'))
+        self.assertIn('Para elegir (calc.)', modules['calc_letters'])
+        self.assertIn('Código de la actividad (calc.)',
+                      layout['sheets']['TARIFAS']['calc_letters'])
+        self.assertIn('Código del módulo (calc.)', layout['sheets']['BOM']['calc_letters'])
+        data = self.site._construction_spreadsheet_data(10)
+        sheets = {sheet['name']: sheet for sheet in data['sheets']}
+        self.assertEqual(sheets['REFERENCIAS']['cells']['E3'], '=IF(A3="","",A3&" · "&B3)')
+        rules = [rule for rule in sheets['MODULOS'].get('dataValidationRules', [])
+                 if 'REFERENCIAS!$E$3' in str(rule['criterion'].get('values'))]
+        self.assertTrue(rules)
+
+    def test_furniture_ml_from_modules(self):
+        """M118-10: MUEBLES suma los anchos de sus módulos; los escritos
+        mandan, y la matriz lee los ML usados."""
+        layout = self.site._construction_sheet_layout()
+        calc = layout['sheets']['MUEBLES']['calc_letters']
+        self.assertIn('Metros lineales (calc.)', calc)
+        self.assertIn('ML usados (calc.)', calc)
+        data = self.site._construction_spreadsheet_data(10)
+        sheets = {sheet['name']: sheet for sheet in data['sheets']}
+        used = 'MUEBLES!$%s:$%s' % (calc['ML usados (calc.)'], calc['ML usados (calc.)'])
+        matrix = [sheet for name, sheet in sheets.items() if name.startswith('ACT ')]
+        formulas = [cell for sheet in matrix for cell in sheet['cells'].values()
+                    if isinstance(cell, str) and 'SUMIFS(' in cell and 'MUEBLES' in cell]
+        if formulas:
+            self.assertTrue(all(used in cell for cell in formulas))
+        self.assertIn('B15-B23', sheets['FICHA']['cells']['C23'])
+
+    def test_delivery5_start_summary_and_dates(self):
+        """M118-07: módulos y personal propio en INICIO; M118-14: totales
+        arriba en RESUMEN VENTA y fechas escritas como texto marcadas;
+        M118-15: tipos de pieza del catálogo."""
+        data = self.site._construction_spreadsheet_data(10)
+        sheets = {sheet['name']: sheet for sheet in data['sheets']}
+        start = sheets['INICIO']['cells']
+        self.assertEqual(start['D22'], 'Módulos (todos)')
+        self.assertIn('SUMPRODUCT(', start['E22'])
+        self.assertEqual(start['E23'], '=MAX(E22-B23,0)')
+        self.assertIn('PROGRAMA', start['D25'])
+        self.assertIn('program_date_text', [
+            rule['id'] for rule in sheets['PROGRAMA']['conditionalFormats']])
+        rules = [rule for rule in sheets['PIEZAS'].get('dataValidationRules', [])
+                 if 'REFERENCIAS!$AK$3' in str(rule['criterion'].get('values'))]
+        self.assertTrue(rules)
+        self.assertTrue(self.env['construction.furniture.type'].search_count(
+            [('level', '=', 'piece')]) >= 9)
+        summary = self.order._construction_sale_sheet_data()
+        resumen = next(sheet for sheet in summary['sheets'] if sheet['name'] == 'RESUMEN VENTA')
+        self.assertEqual(resumen['cells']['A11'], 'Suma de partidas')
+        self.assertEqual(resumen['cells']['A15'], 'Total')
+        self.assertEqual(resumen['cells']['A17'], 'Producto')
+        obra = next(sheet for sheet in summary['sheets'] if sheet['name'] == 'OBRA')
+        self.assertTrue(any(mark['id'].startswith('obra_date_')
+                            for mark in obra['conditionalFormats']))

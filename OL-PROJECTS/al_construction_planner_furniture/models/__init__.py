@@ -4,6 +4,7 @@ from . import project_task
 from . import construction_plan_tree
 from . import construction_measurement
 from . import construction_resource_plan
+from . import project_program
 from . import construction_furniture_type
 from . import construction_furniture_model
 from . import construction_module_product
@@ -13,3 +14,4 @@ from . import project_task_measured
 from . import construction_stage_bom
 from . import construction_site_dispatch
 from . import construction_rubro
+from . import product_board

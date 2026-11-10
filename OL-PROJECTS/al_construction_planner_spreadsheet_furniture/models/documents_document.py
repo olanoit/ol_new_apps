@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import json
+from datetime import date, datetime, timedelta
 from io import BytesIO
 
 from markupsafe import Markup, escape
@@ -52,6 +53,13 @@ SALE_BRING_HEADERS = {
 TEMPLATE_ONLY_SHEETS = ('INICIO', 'LEEME', 'RESUMEN', 'REFERENCIAS', '_LISTAS', 'FICHA',
                         'PROGRAMA', 'CONTROL', 'ERRORES', KEYS_SHEET)
 
+
+
+def _parse_date(text, fmt):
+    try:
+        return datetime.strptime(text, fmt).date()
+    except ValueError:
+        return False
 
 class DocumentsDocument(models.Model):
     _inherit = 'documents.document'
@@ -462,14 +470,51 @@ class DocumentsDocument(models.Model):
             if send else False,
         })
 
+    def _construction_program_values(self, sheets):
+        """M118-06 (D2): inicio, pisos por semana, días por sub etapa y orden
+        de PROGRAMA (B3 a B6), como los ve la hoja."""
+        rows = sheets.get('PROGRAMA') or []
+
+        def cell(row):
+            return rows[row - 1][1] if len(rows) >= row and len(rows[row - 1]) > 1 else None
+
+        def number(value):
+            try:
+                return float(str(value).replace(',', '.'))
+            except (TypeError, ValueError):
+                return 0.0
+
+        start = cell(3)
+        if isinstance(start, (int, float)) and start:
+            start = date(1899, 12, 30) + timedelta(days=int(start))
+        elif start:
+            start = next((d for d in (
+                _parse_date(str(start).strip(), fmt) for fmt in ('%d/%m/%Y', '%Y-%m-%d'))
+                if d), False)
+        order = 'desc' if str(cell(6) or '').strip().lower().startswith(
+            self.env._('Inverso').lower()) else 'asc'
+        return {
+            'construction_program_start': start or False,
+            'construction_program_pace': number(cell(4)),
+            'construction_program_days': int(number(cell(5))),
+            'construction_program_order': order,
+            'construction_program_source': self.name,
+            'construction_program_date': fields.Datetime.now(),
+        }
+
     def _construction_send_furniture(self, sheets):
         """Lleva las pestañas del maestro al asistente «Importar maestro y
         ETO» de la obra de la hoja (v1.5, M15-15)."""
         self.ensure_one()
+        if 'PROGRAMA' in sheets and self.construction_project_id:
+            # sudo: quien planifica puede no tener escritura en la obra; solo
+            # se guarda el programa de la hoja que envía (M118-06, D2).
+            self.construction_project_id.sudo().write(self._construction_program_values(sheets))
         wizard = self._construction_furniture_wizard(sheets, send=True)
         return {
             'type': 'ir.actions.act_window',
-            'name': self.env._('Importar maestro y ETO'),
+            # M118-15, punto 2: el diálogo desde la hoja no habla de Excel.
+            'name': self.env._('Enviar la hoja al planificador'),
             'res_model': wizard._name,
             'res_id': wizard.id,
             'view_mode': 'form',

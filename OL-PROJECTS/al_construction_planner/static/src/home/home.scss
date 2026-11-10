@@ -1,4 +1,4 @@
-// Inicio de la aplicación (P-01).
+// Inicio de la aplicación (P-01) y cartera de obras (paquete 7, CR-59/65).
 .o_cp_home {
     background-color: $o-view-background-color;
 
@@ -9,4 +9,31 @@
     .o_cp_home_works th {
         white-space: nowrap;
     }
+    .o_cp_home_portfolio {
+        font-size: 0.82rem;
+        font-variant-numeric: tabular-nums;
+        td, th { border-color: $o-gray-200; }
+        .o_cp_home_row_budget td:not(.o_cp_home_work_cell) { color: $o-gray-500; border-bottom: 0; }
+        .o_cp_home_row_executed td { border-bottom-width: 1px; }
+        .o_cp_home_work_cell { min-width: 15rem; }
+        .o_cp_home_bh { font-size: 0.72rem; text-transform: uppercase; border-bottom: 3px solid $o-gray-300; }
+        .o_cp_home_bh_today { border-bottom-color: #2f6fb3; }
+        .o_cp_home_bh_progress { border-bottom-color: #2e8b57; }
+        .o_cp_home_bh_month { border-bottom-color: #8a5cc2; }
+        .o_cp_home_bh_close { border-bottom-color: #c27c0e; }
+        .o_cp_home_bh_index { border-bottom-color: $o-gray-600; }
+        .o_cp_home_c_today { background-color: rgba(#2f6fb3, 0.04); }
+        .o_cp_home_c_progress { background-color: rgba(#2e8b57, 0.04); }
+        .o_cp_home_c_month { background-color: rgba(#8a5cc2, 0.04); }
+        .o_cp_home_c_close { background-color: rgba(#c27c0e, 0.04); }
+    }
+    .o_cp_home_area {
+        border-left: 4px solid $o-gray-300;
+        margin-bottom: 0.25rem;
+    }
+    .o_cp_home_area_site { border-left-color: #2e8b57; }
+    .o_cp_home_area_planning { border-left-color: #8a5cc2; }
+    .o_cp_home_area_purchase { border-left-color: #2f6fb3; }
+    .o_cp_home_area_contracts { border-left-color: #c27c0e; }
+    .o_cp_home_area_revenue { border-left-color: #1e7b34; }
 }

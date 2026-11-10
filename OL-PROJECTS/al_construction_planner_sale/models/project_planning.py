@@ -49,11 +49,13 @@ class ProjectProject(models.Model):
     construction_income_accounting = fields.Monetary(
         string='Ingreso contable', compute='_compute_construction_margins',
         currency_field='construction_margin_currency_id', compute_sudo=True,
-        help='Apuntes analíticos positivos de la cuenta de la obra.')
+        help='Apuntes analíticos de la obra en cuentas de ingreso, sin las cuentas excluidas '
+             '(Ajustes).')
     construction_cost_accounting = fields.Monetary(
         string='Costo contable', compute='_compute_construction_margins',
         currency_field='construction_margin_currency_id', compute_sudo=True,
-        help='Apuntes analíticos negativos de la cuenta de la obra.')
+        help='Apuntes analíticos de la obra en cuentas de gasto, sin las cuentas excluidas '
+             '(Ajustes); es el costo ejecutado.')
     construction_margin_accounting = fields.Monetary(
         string='Margen contable', compute='_compute_construction_margins',
         currency_field='construction_margin_currency_id', compute_sudo=True)
@@ -70,7 +72,6 @@ class ProjectProject(models.Model):
     @api.depends_context('company')
     def _compute_construction_margins(self):
         Valuation = self.env['construction.valuation']
-        AnalyticLine = self.env['account.analytic.line']
         for project in self:
             company = project.company_id or self.env.company
             currency = company.currency_id
@@ -97,15 +98,11 @@ class ProjectProject(models.Model):
                 ('state', 'in', EARNED_VALUATION_STATES)]).mapped('amount_confirmed')) \
                 if project.id else 0.0
             accrued = sum(lines.mapped('amount_actual'))
-            acc_income = acc_cost = 0.0
-            if project.account_id:
-                positive = AnalyticLine._read_group(
-                    [('account_id', '=', project.account_id.id), ('amount', '>', 0)],
-                    aggregates=['amount:sum'])[0][0]
-                negative = AnalyticLine._read_group(
-                    [('account_id', '=', project.account_id.id), ('amount', '<', 0)],
-                    aggregates=['amount:sum'])[0][0]
-                acc_income, acc_cost = positive or 0.0, -(negative or 0.0)
+            # Paquete 7 de CREVAL, CR-62: gasto e ingreso por el tipo de la
+            # cuenta contable, sin las cuentas de balance ni las excluidas.
+            accounting = project._construction_accounting_amounts() if project.id \
+                else {'cost': 0.0, 'income': 0.0}
+            acc_income, acc_cost = accounting['income'], accounting['cost']
             project.update({
                 'construction_margin_currency_id': currency,
                 'construction_income_planned': income,

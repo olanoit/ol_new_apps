@@ -73,6 +73,22 @@ EXCLUDED_CATEGORIES = ('Deliveries', 'Expenses')
 # empieza con «#» es el encabezado de una columna calculada.
 _ML_GROUPS_COUNTED = ('Mueble bajo', 'Bajo', 'Mueble alto', 'Alto', 'Mueble completo',
                       'Completo')
+# M118-08: las listas de Módulo y Actividad guardan «código · nombre»; las
+# fórmulas toman el código (lo de antes del « · »; un código solo, igual).
+def pick_code(ref):
+    return 'IFERROR(LEFT({x},FIND(" · ",{x})-1),{x}&"")'.format(x=ref)
+
+
+# M118-08: el nombre de la actividad de la fila (REFERENCIAS A:B).
+_ACTIVITY_NAME = ('=IF({c:activity}{r}="","",IFERROR(XLOOKUP(%s,'
+                  'REFERENCIAS!$A$3:$A$302,REFERENCIAS!$B$3:$B$302),""))'
+                  % pick_code('{c:activity}{r}'))
+_ACTIVITY_CODE = '=IF({c:activity}{r}="","",%s)' % pick_code('{c:activity}{r}')
+_MODULE_CODE = '=IF({c:module}{r}="","",%s)' % pick_code('{c:module}{r}')
+# M118-08: el nombre del módulo de la fila (su tipología y su código en MODULOS).
+_MODULE_NAME = ('=IF({c:module}{r}="","",IFERROR(INDEX(FILTER({x:MODULOS:name},'
+                '{x:MODULOS:typology}={c:typology}{r},{x:MODULOS:code}=%s),1),""))'
+                % pick_code('{c:module}{r}'))
 # Ambientes de la obra con la tipología de la fila.
 _IN_SITE = ('IFERROR(XLOOKUP({c:typology}{r},{x:TIPOLOGIAS:code},'
             '{x:TIPOLOGIAS:#En la obra (calc.)}),0)')
@@ -119,10 +135,14 @@ CALCULATED = {
                             '$AB$3:$AB$102,REFERENCIAS!$AD$3:$AD$102),FALSE),0,1))'),
         ('ML (calc.)', '=IF(OR({c:code}{r}="",{c:width}{r}=""),"",IF(OR(%s),{c:width}{r}/1000,0))'
          % ','.join('{c:ml_group}{r}="%s"' % group for group in _ML_GROUPS_COUNTED)),
+        # M118-08: «código · nombre» para la lista de Módulo de BOM y PIEZAS.
+        ('Para elegir (calc.)', '=IF({c:code}{r}="","",{c:code}{r}&IF({c:name}{r}="",""," · "&'
+                                '{c:name}{r}))'),
+        ('Nombre de la actividad (calc.)', _ACTIVITY_NAME),
         # M119-04: la escrita o la del catálogo por el método de unión o el tipo
         # especial (la misma regla de «Generar plan»); la cuenta la matriz.
         ('Actividad efectiva (calc.)', '=IF({c:code}{r}="","",IF({c:activity}{r}<>"",'
-                                       '{c:activity}{r},IFERROR(XLOOKUP(IF({c:module_class}{r}='
+                                       '' + pick_code('{c:activity}{r}') + ',IFERROR(XLOOKUP(IF({c:module_class}{r}='
                                        '"Especial","special:"&{c:type}{r},"join:"&'
                                        '{c:join_method}{r}),REFERENCIAS!$AH$3:$AH$302,'
                                        'REFERENCIAS!$AG$3:$AG$302),"")))'),
@@ -140,15 +160,30 @@ CALCULATED = {
         ('ML (calc.)', '=IF({c:typology}{r}="","",IFERROR(XLOOKUP({c:typology}{r},'
                        '{x:TIPOLOGIAS:code},{x:TIPOLOGIAS:#ML (calc.)}),0))'),
     ],
+    # Paquete 1.18, M118-10: los ML del mueble, de los anchos de sus módulos;
+    # los escritos mandan.
+    'MUEBLES': [
+        ('Metros lineales (calc.)', '=IF({c:name}{r}="","",SUMIFS({x:MODULOS:#ML (calc.)},'
+                                    '{x:MODULOS:typology},{c:typology}{r},'
+                                    '{x:MODULOS:furniture},{c:name}{r}))'),
+        ('ML usados (calc.)', '=IF({c:name}{r}="","",IF({c:ml}{r}<>"",IFERROR(VALUE({c:ml}{r}),0),'
+                              '{c:#Metros lineales (calc.)}{r}))'),
+    ],
+    'TARIFAS': [('Código de la actividad (calc.)', _ACTIVITY_CODE),
+                ('Nombre de la actividad (calc.)', _ACTIVITY_NAME)],
+    'MO PROPIA': [('Nombre de la actividad (calc.)', _ACTIVITY_NAME)],
     'ACTIVIDADES': [
         ('Tarifa (calc.)', '=IF({c:activity}{r}="","",IFERROR(XLOOKUP({c:activity}{r},'
-                           '{x:TARIFAS:activity},{x:TARIFAS:price}),0))'),
+                           '{x:TARIFAS:#Código de la actividad (calc.)},{x:TARIFAS:price}),0))'),
         ('Costo en la obra (calc.)', '=IF({c:activity}{r}="","",IFERROR(VALUE({c:qty}{r}),0)*'
                                      '{c:#Tarifa (calc.)}{r}*%s)' % _IN_SITE),
     ],
     'PIEZAS': [
         ('m² (calc.)', '=IF(OR({c:qty}{r}="",{c:length}{r}="",{c:width}{r}=""),"",'
                        '{c:qty}{r}*{c:length}{r}*{c:width}{r}/1000000)'),
+        # M118-08: el código y el nombre del módulo de la fila.
+        ('Código del módulo (calc.)', _MODULE_CODE),
+        ('Nombre del módulo (calc.)', _MODULE_NAME),
     ],
     'BOM': [
         # Paquete 1.13, M113-06: unidad y costo del maestro, a la vista.
@@ -169,6 +204,9 @@ CALCULATED = {
         ('Etapa usada (calc.)', '=IF({c:stage}{r}<>"",{c:stage}{r},IF({c:product_code}{r}="","",'
                                 'IFERROR(VLOOKUP({c:product_code}{r},REFERENCIAS!$K$3:$X${p},14,0)'
                                 ',"")))'),
+        # M118-08: el código y el nombre del módulo de la fila.
+        ('Código del módulo (calc.)', _MODULE_CODE),
+        ('Nombre del módulo (calc.)', _MODULE_NAME),
     ],
 }
 # Columna «Producto» (lista dependiente) y código calculado desde ella.
@@ -233,8 +271,6 @@ FIXED_LISTS = {
     ('TARIFAS', 'family'): ['Cocina y baño', 'Closet y cajones'],
     ('CONTRATOS', 'invoice_form'): ['Por partida', 'Una línea por valorización'],
     # Paquete 1.17, Anexo A: los valores que aceptan la importación y el envío.
-    ('PIEZAS', 'piece_type'): ['COSTADO', 'BASE', 'TECHO', 'FONDO', 'PUERTA', 'FRENTE', 'TAPA',
-                               'REPISA', 'OTRO'],
     ('ARBOL', 'unit_type'): ['Departamento', 'Nivel de dúplex', 'Ducto', 'Estacionamiento',
                              'Área común', 'Depósito', 'Local', 'Piloto'],
     ('VARIANTES', 'kind'): ['Color', 'Excluir', 'Metrado'],
@@ -247,14 +283,17 @@ FIXED_LISTS = {
 # escribir un valor que todavía no está en ella. {t} es la última fila de TIPOLOGIAS.
 _TYPOLOGY_LIST = "TIPOLOGIAS!$A$2:$A$501"
 _ACTIVITY_LIST = "REFERENCIAS!$A$3:$A$302"
+# Paquete 1.18, M118-08: la lista muestra «código · nombre» (REFERENCIAS E); al
+# elegir, la hoja guarda el código (pick_code.js) y el nombre se ve al lado.
+ACTIVITY_PICK = "REFERENCIAS!$E$3:$E$302"
 RANGE_LISTS = {
     ('TIPOLOGIAS', 'variant_of'): _TYPOLOGY_LIST,
     ('MUEBLES', 'typology'): _TYPOLOGY_LIST, ('MODULOS', 'typology'): _TYPOLOGY_LIST,
     ('ACTIVIDADES', 'typology'): _TYPOLOGY_LIST, ('BOM', 'typology'): _TYPOLOGY_LIST,
     ('PIEZAS', 'typology'): _TYPOLOGY_LIST, ('ARBOL', 'typology'): _TYPOLOGY_LIST,
     ('VENTA', 'typology'): _TYPOLOGY_LIST,
-    ('MODULOS', 'activity'): _ACTIVITY_LIST, ('ACTIVIDADES', 'activity'): _ACTIVITY_LIST,
-    ('TARIFAS', 'activity'): _ACTIVITY_LIST, ('MO PROPIA', 'activity'): _ACTIVITY_LIST,
+    ('MODULOS', 'activity'): ACTIVITY_PICK, ('ACTIVIDADES', 'activity'): ACTIVITY_PICK,
+    ('TARIFAS', 'activity'): ACTIVITY_PICK, ('MO PROPIA', 'activity'): ACTIVITY_PICK,
     ('MODULOS', 'furniture'): 'MUEBLES!$B$2:$B$5000',
     ('VENTA', 'contract'): 'CONTRATOS!$A$2:$A$500',
     ('CONTRATOS', 'milestone_template'): 'HITOS!$A$2:$A$500',
@@ -262,6 +301,8 @@ RANGE_LISTS = {
     ('MODULOS', 'type'): 'REFERENCIAS!$AB$3:$AB$102',
     ('ETO', 'type'): 'REFERENCIAS!$AB$3:$AB$102',
     ('MUEBLES', 'name'): 'REFERENCIAS!$AE$3:$AE$42',
+    # Paquete 1.18, M118-15, punto 6: los tipos de pieza del catálogo.
+    ('PIEZAS', 'piece_type'): 'REFERENCIAS!$AK$3:$AK$52',
     # Paquete 1.17, Anexo A: listas de Odoo en REFERENCIAS (Y a AA).
     ('PRODUCTOS NUEVOS', 'uom'): 'REFERENCIAS!$Y$3:$Y$102',
     ('PRODUCTOS NUEVOS', 'categ'): 'REFERENCIAS!$W$3:$W$500',
@@ -649,6 +690,11 @@ class ProjectProject(models.Model):
             marks.append(mark('code', [column(code)], (
                 '=AND({c}{f}<>"",OR(COUNTIF(${c}:${c},{c}{f})>1,COUNTIF(MODULOS!$A:$A,{c}{f})=0))'
             ).format(c=code, f=first), UNKNOWN_STYLE))
+        elif name == 'MUEBLES':
+            # M118-10: los ML escritos reemplazan la suma de los anchos.
+            ml = letters['ml']
+            marks.append(mark('ml_written', [column(ml)], '=AND({n}{f}<>"",{c}{f}<>"")'.format(
+                n=letters['name'], c=ml, f=first), NO_COST_STYLE))
         elif name == 'CONTRATOS':
             marks.append(mark('empty', [column(letters['advance']), column(letters['guarantee'])],
                               '=AND(${n}{f}<>"",{c}{f}="")'.format(
@@ -667,6 +713,10 @@ class ProjectProject(models.Model):
             ).format(p=price, t=typology, f=first), NO_COST_STYLE))
         elif name == 'OBRA':
             key, value = letters['key'], letters['value']
+            # Paquete 1.18, M118-14, punto 3: fecha escrita como texto.
+            marks.append(mark('date_text', [column(value)], (
+                '=AND(OR(${k}{f}="Inicio",${k}{f}="Fin"),{v}{f}<>"",ISTEXT({v}{f}))'
+            ).format(k=key, v=value, f=first), UNKNOWN_STYLE))
             marks.append(mark('dates', [column(value)], (
                 '=OR(AND(${k}{f}="Inicio",{v}{f}<>XLOOKUP("Inicio de la venta",${k}:${k},${v}:${v},'
                 '{v}{f})),AND(${k}{f}="Fin",{v}{f}<>XLOOKUP("Fin de la venta",${k}:${k},${v}:${v},'
@@ -888,6 +938,9 @@ class ProjectProject(models.Model):
             (MATRIX_LIST_ID, 'Actividades de la matriz', 'construction.labor.activity',
              ['code', 'construction_sheet_key', 'default_price'], MATRIX_LIST_START,
              MATRIX_LIST_COUNT, [['company_id', 'in', [company.id, False]]], 'sequence'),
+            # Paquete 1.18, M118-15, punto 6.
+            ('10', 'Tipos de pieza', 'construction.furniture.type', ['name', 'piece_zone'], 36,
+             50, [['level', '=', 'piece']], 'sequence'),
         ]
         cells, styles, lists = {}, {}, {}
         for list_id, title, model, columns, start, count, domain, order in reference_lists:
@@ -905,6 +958,11 @@ class ProjectProject(models.Model):
                 'domain': domain, 'context': {}, 'orderBy': [{'name': order, 'asc': True}],
                 'fieldMatching': {},
             }
+        # M118-08: «código · nombre» de cada actividad, para las listas.
+        cells['E2'] = 'Para elegir'
+        styles['E2'] = HEADER_STYLE
+        for row in range(3, 303):
+            cells['E%s' % row] = '=IF(A{r}="","",A{r}&" · "&B{r})'.format(r=row)
         # Etapa por defecto de la categoría de cada producto (X, M117-02).
         lists['3']['columns'] = lists['3']['columns'] + ['construction_default_stage_label']
         cells['X2'] = 'Etapa de la categoría'
@@ -983,9 +1041,11 @@ class ProjectProject(models.Model):
             row = n_groups + n_shorts + index
             list_cells['A%s' % row] = '=IF(TIPOLOGIAS!$A{t}="","",TIPOLOGIAS!$A{t})'.format(
                 t=index + 1)
+            # M118-08: «código · nombre» de cada módulo de la tipología.
+            pick = layout['sheets']['MODULOS']['calc_letters']['Para elegir (calc.)']
             list_cells['B%s' % row] = (
-                '=IF(A{i}="","",IFERROR(TRANSPOSE(FILTER(MODULOS!${c}:${c},MODULOS!${t}:${t}=A{i}'
-                ')),""))').format(i=row, c=modules['code'], t=modules['typology'])
+                '=IF(A{i}="","",IFERROR(TRANSPOSE(FILTER(MODULOS!${p}:${p},MODULOS!${t}:${t}=A{i},'
+                'MODULOS!${p}:${p}<>"")),""))').format(i=row, p=pick, t=modules['typology'])
         # M117-22: las listas de ACABADOS DE OBRA, las mismas tres de BOM.
         for row in range(2, FINISH_ROWS + 2):
             base = layout['finish_base'] + (row - 2) * 2

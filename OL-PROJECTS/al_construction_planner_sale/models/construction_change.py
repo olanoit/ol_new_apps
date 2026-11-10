@@ -101,6 +101,18 @@ class ConstructionChangeOrder(models.Model):
     amount_sale = fields.Monetary(
         string='Precio al cliente', compute='_compute_amounts', store=True,
         help='Lo que se cobra (o se descuenta) al cliente. Rehacer no se cobra.')
+    # Paquete 7 de CREVAL, CR-64: el cambio cobrable sube la venta.
+    billing = fields.Selection(
+        [('billable', 'Cobrable'), ('not_billable', 'No cobrable'), ('pending', 'En trámite')],
+        string='Cobro', compute='_compute_billing', store=True,
+        help='Cobrable: aprobado y con precio al cliente; entra a la orden de venta del contrato. '
+             'No cobrable: rehacer o sin precio al cliente; es margen que se pierde. En trámite: '
+             'en borrador.')
+    sale_line_id = fields.Many2one('sale.order.line', string='Línea de venta', readonly=True,
+                                   copy=False, index='btree_not_null')
+    amount_margin = fields.Monetary(string='Efecto en el margen', compute='_compute_billing',
+                                    store=True, currency_field='currency_id',
+                                    help='Precio al cliente − costo.')
     approved_by_id = fields.Many2one('res.users', string='Aprobado por', readonly=True,
                                      copy=False)
     date_approved = fields.Datetime(string='Aprobado el', readonly=True, copy=False)
@@ -130,6 +142,54 @@ class ConstructionChangeOrder(models.Model):
             change.amount_cost = sum(change.line_ids.mapped('amount_cost'))
             change.amount_sale = 0.0 if change.kind == 'rework' else sum(
                 change.line_ids.mapped('amount_sale'))
+
+    @api.depends('state', 'kind', 'amount_sale', 'amount_cost')
+    def _compute_billing(self):
+        for change in self:
+            change.amount_margin = change.amount_sale - change.amount_cost
+            if change.state == 'cancel':
+                change.billing = False
+            elif change.kind == 'rework' or change.currency_id.is_zero(change.amount_sale):
+                change.billing = 'not_billable'
+            elif change.state == 'draft':
+                change.billing = 'pending'
+            else:
+                change.billing = 'billable'
+
+    def _construction_add_sale_line(self):
+        """CR-64, punto 2: el cambio cobrable aprobado agrega una línea a la
+        orden de venta del contrato con su precio (negativo si es deductivo),
+        ligada al cambio."""
+        self.ensure_one()
+        if self.kind == 'rework' or self.currency_id.is_zero(self.amount_sale) or \
+                self.sale_line_id:
+            return False
+        project = self.project_id
+        order = self.contract_id.sale_order_id or project.construction_sale_order_id
+        if not order:
+            self.message_post(body=self.env._(
+                'Cambio cobrable sin orden de venta del contrato: el precio no llegó a la venta.'))
+            return False
+        if order.locked or order.state == 'cancel':
+            self.message_post(body=self.env._(
+                'La orden %s está bloqueada: el precio del cambio no llegó a la venta.',
+                order.name))
+            return False
+        product = self.company_id.construction_change_product_id
+        if not product:
+            raise UserError(self.env._(
+                'Indique el producto «Adicional de obra» en Ajustes › Planificación de obra '
+                '(Indicadores de obra) para llevar los cambios cobrables a la venta.'))
+        # sudo: la jefatura aprueba el cambio aunque no administre Ventas; la
+        # línea la agrega el sistema a la orden del contrato.
+        line_sudo = self.env['sale.order.line'].sudo().create({
+            'order_id': order.id, 'product_id': product.id, 'product_uom_qty': 1.0,
+            'price_unit': self.amount_sale,
+            'name': '%s · %s' % (self.name, (self.reason or '').splitlines()[0]),
+            'construction_budget_item': self.name,
+        })
+        self.sale_line_id = line_sudo.id
+        return line_sudo
 
     @api.constrains('kind', 'line_ids')
     def _check_signs(self):
@@ -171,6 +231,12 @@ class ConstructionChangeOrder(models.Model):
             plan._construction_lines_added(lines)
             change.write({'state': 'approved', 'approved_by_id': self.env.user.id,
                           'date_approved': fields.Datetime.now()})
+            sale_line = change._construction_add_sale_line()
+            if sale_line:
+                change.message_post(body=self.env._(
+                    'Cambio cobrable: %(amount)s agregados a la orden %(order)s.',
+                    amount=change.currency_id.format(change.amount_sale),
+                    order=sale_line.order_id.name))
             change.message_post(body=self.env._(
                 '%(count)s líneas entraron al plan %(plan)s (costo %(amount)s).',
                 count=len(lines), plan=plan.display_name,
