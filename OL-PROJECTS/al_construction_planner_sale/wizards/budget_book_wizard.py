@@ -75,16 +75,18 @@ COLUMNS = {
     ],
     # Columnas A a W del libro 6.6 con «Costo unitario sin APU» (CR-18, c y
     # D1), en el orden de la hoja; las de PRESUPUESTO_FORMULAS son fórmulas.
+    # Los encabezados cortos son los de la hoja de venta (CREVAL, paquete 5,
+    # CR-41).
     'PRESUPUESTO': [
         ('item', ('Ítem', 'Item'), False),
         ('specialty', ('Especialidad',), False),
         ('subspecialty', ('Sub-especialidad', 'Subespecialidad'), False),
         ('name', ('Partida',), True),
-        ('apu', ('Código del APU', 'Codigo del APU', 'APU'), False),
-        ('cost_no_apu', ('Costo unitario sin APU',), False),
-        ('uom', ('Unidad',), False),
+        ('apu', ('Código del APU', 'Codigo del APU', 'APU', 'Código del APU (calc.)'), False),
+        ('cost_no_apu', ('Costo unitario sin APU', 'Costo sin APU'), False),
+        ('uom', ('Unidad', 'Und'), False),
         ('mode', ('Modalidad de ejecución', 'Modalidad'), False),
-        ('qty_real', ('Metrado real',), True),
+        ('qty_real', ('Metrado real', 'Metrado'), True),
         ('qty_slack_pct', ('Holgura de metrado (%)', 'Holgura de metrado %'), False),
         ('qty_slack', ('Holgura de metrado (cantidad)', 'Holgura de metrado'), False),
         ('qty_offered', ('Metrado ofertado',), False),
@@ -97,7 +99,7 @@ COLUMNS = {
         ('price_unit', ('Precio unitario',), False),
         ('cost_real', ('Costo real',), False),
         ('amount_offered', ('Costo ofertado',), False),
-        ('subtotal', ('Parcial de venta',), False),
+        ('subtotal', ('Parcial de venta', 'Parcial'), False),
         ('reserve', ('Reserva por holguras',), False),
         # Paquete 1.16, M116-05: cuenta analítica compartida de los dos
         # primeros niveles (catálogo), al final para no mover las fórmulas.

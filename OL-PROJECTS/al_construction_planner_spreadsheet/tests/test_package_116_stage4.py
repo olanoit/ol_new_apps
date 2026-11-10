@@ -60,7 +60,7 @@ class TestPackage116Stage4Budget(TestBudgetBook):
         self.assertFalse(keys.get('isVisible', True))
         rows = {(keys['cells'].get('A%s' % n), keys['cells'].get('B%s' % n)):
                 keys['cells'].get('C%s' % n) for n in range(2, 200)}
-        self.assertEqual(rows[('PRESUPUESTO', 'qty_real')], '=COLUMN(PRESUPUESTO!I1)')
+        self.assertEqual(rows[('PRESUPUESTO', 'qty_real')], '=COLUMN(PRESUPUESTO!D1)')
         # APU_DETALLE: el insumo se elige por nombre; el código es fórmula y
         # se lee con su clave.
         detail = sheets['APU_DETALLE']['cells']
@@ -74,7 +74,7 @@ class TestPackage116Stage4Budget(TestBudgetBook):
         # Encabezados de fórmula en gris, de datos en amarillo.
         styles = data['styles']
         presupuesto = sheets['PRESUPUESTO']
-        self.assertEqual(styles[str(presupuesto['styles']['M1'])]['fillColor'], '#D9D9D9')
+        self.assertEqual(styles[str(presupuesto['styles']['G1'])]['fillColor'], '#D9D9D9')
         self.assertEqual(styles[str(presupuesto['styles']['A1'])]['fillColor'], '#FFF2CC')
 
     def test_budget_layout_name_first_code_last(self):
@@ -83,7 +83,7 @@ class TestPackage116Stage4Budget(TestBudgetBook):
         una banda de color por receta. Las hojas anteriores conservan su
         orden al traer de Odoo."""
         document = self._document()
-        self.assertEqual(document.construction_sheet_layout, 2)
+        self.assertEqual(document.construction_sheet_layout, 3)
         data = json.loads(document.spreadsheet_data)
         sheets = {sheet['name']: sheet for sheet in data['sheets']}
         keys = sheets[KEYS_SHEET]

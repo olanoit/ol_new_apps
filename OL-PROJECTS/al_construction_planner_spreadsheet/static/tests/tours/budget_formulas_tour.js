@@ -3,7 +3,8 @@ import { registry } from "@web/core/registry";
 /**
  * Paquete 1.16, CR-22 g: en la hoja de presupuesto con el código al final y
  * la receta por nombre, las fórmulas dan el costo de la receta y ninguna
- * celda da error.
+ * celda da error. CREVAL, paquete 5, CR-41: en PRESUPUESTO el APU se elige
+ * por nombre y la especialidad sale del título de encima.
  */
 function findModel(node) {
     if (node.component?.model?.getters?.getSheetIdByName) {
@@ -121,26 +122,47 @@ registry.category("web_tour.tours").add("al_construction_budget_formulas", {
                     }
                     return [...wrong, ...formulaErrors()].join(" | ");
                 });
-                // Una partida con la receta: el costo unitario sale del APU.
+                // CREVAL, paquete 5, CR-41: dos títulos y una partida con el
+                // APU elegido por nombre; el código, el costo, la especialidad
+                // y la sub-especialidad los calcula la hoja.
                 const model = sheetModel();
                 const sheetId = model.getters.getSheetIdByName("PRESUPUESTO");
-                model.dispatch("UPDATE_CELL", {
-                    sheetId,
-                    col: column(model, sheetId, "Código del APU"),
-                    row: 1,
-                    content: "CR22G-R01",
-                });
-                model.dispatch("UPDATE_CELL", {
-                    sheetId,
-                    col: column(model, sheetId, "Metrado real"),
-                    row: 1,
-                    content: "10",
-                });
+                const write = (header, row, content) =>
+                    model.dispatch("UPDATE_CELL", {
+                        sheetId,
+                        col: column(model, sheetId, header),
+                        row,
+                        content,
+                    });
+                write("Ítem", 1, "01");
+                write("Partida", 1, "ARQUITECTURA");
+                write("Ítem", 2, "01.01");
+                write("Partida", 2, "MUROS");
+                write("Ítem", 3, "01.0101");
+                write("Partida", 3, "Muro de soga");
+                write("Und", 3, "m2");
+                write("Metrado", 3, "10");
+                write("APU (escriba el nombre)", 3, "Muro CR-22 g (test) · CR22G-R01");
                 await waitFor(() => {
-                    const cost = value("PRESUPUESTO", "Costo unitario", 1);
-                    return near(cost, 43.7838)
-                        ? formulaErrors().join(" | ")
-                        : `PRESUPUESTO: costo ${cost}`;
+                    const checks = [
+                        ["Código del APU (calc.)", 3, "CR22G-R01"],
+                        ["Especialidad", 3, "ARQUITECTURA"],
+                        ["Sub-especialidad", 3, "MUROS"],
+                        ["Especialidad", 2, "ARQUITECTURA"],
+                        ["Sub-especialidad", 2, ""],
+                        ["Estado", 1, "Título"],
+                        ["Estado", 3, "OK"],
+                    ];
+                    const wrong = checks
+                        .filter(([header, row, expected]) => value("PRESUPUESTO", header, row) !== expected)
+                        .map(([header, row, expected]) =>
+                            `PRESUPUESTO ${header} ${row}: ${expected} ≠ ${value("PRESUPUESTO", header, row)}`
+                        );
+                    const cost = value("PRESUPUESTO", "Costo unitario", 3);
+                    if (!near(cost, 43.7838)) {
+                        wrong.push(`PRESUPUESTO: costo ${cost}`);
+                    }
+                    return [...wrong, ...formulaErrors()].join(" | ");
                 });
             },
         },

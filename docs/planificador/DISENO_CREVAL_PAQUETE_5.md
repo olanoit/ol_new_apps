@@ -117,3 +117,71 @@ Pendiente: la vista previa y la huella de «Traer la venta» (hoy es «Traer de
 Odoo», que reescribe PLAN con lo vendido), los APU de obra como copia de los
 vendidos, la comparación con el plan de Odoo después del envío y el día de
 fuera de la obra contra el inicio y el fin de la obra.
+
+## 7. Hecho · pendientes de las entregas (10-nov)
+
+- CR-38, punto 4 (pendiente de la entrega 1): «Actualizar a la plantilla
+  vigente…» en la hoja «Presupuesto y plan» guarda una versión y la rehace
+  como hoja de presupuesto de venta con la plantilla de hoy y lo escrito en
+  ella: OBRA, INSUMOS, APU, APU_DETALLE, PRESUPUESTO y PLAN, leídos por su
+  clave o encabezado como el envío. El APU y el insumo pasan a elegirse por
+  nombre; la Especialidad y la Sub-especialidad escritas en las filas pasan a
+  filas de título donde el ítem tiene ese nivel. La hoja queda ligada a la
+  cotización con el nombre «Presupuesto de venta · …».
+- CR-41 (pendiente de la entrega 2), plantilla 3 de PRESUPUESTO: Ítem,
+  Partida, Und, Metrado, «APU (escriba el nombre)» con lista de APU por
+  nombre, Costo sin APU, Costo unitario, Precio unitario, Parcial, Estado y
+  Especialidad a la vista; Sub-especialidad, modalidad, holguras, margen,
+  costos ofertados, reserva, catálogos y «Código del APU (calc.)» en el grupo
+  plegado «Holguras y margen». Especialidad y Sub-especialidad se calculan del
+  título de encima por el ítem, con la regla de `budget_code_levels`. Las
+  claves no cambian: `apu` se lee de la columna calculada y el envío acepta
+  también los encabezados cortos. Las hojas anteriores (plantillas 0 a 2)
+  siguen con su orden al traer de Odoo.
+- Formatos de la hoja de presupuesto: las zonas guardaban el formato como
+  texto y la hoja lo ignoraba; ahora se registran en `formats` del libro, como
+  mobiliario. El ítem «01» ya no se vuelve 1, y los importes de INICIO, PIE y
+  CONTROL salen con dos decimales. El ítem de PLAN también es texto: antes
+  «01.01» se guardaba como 1.01 y PLAN no encontraba la partida en
+  PRESUPUESTO (unidad, metrado y APU vendidos vacíos).
+- CR-43 (pendiente de la entrega 3): «Traer de Odoo» dice cuántos APU,
+  insumos y partidas trajo.
+- CR-45, punto 2 (pendiente de la entrega 4): «Traer la venta…» de la hoja de
+  planificación abre la vista previa de mobiliario (M117-22), ahora común en
+  `bring_preview.js` de la hoja base. PLAN compara por ítem solo ítem y
+  partida; lo que escribe el planificador no se trae. Los APU de obra (INSUMOS,
+  APU y APU_DETALLE) se comparan por su código: lo cambiado en la hoja desde
+  la última vez va desmarcado (huella en `_HUELLA`). OBRA y PRESUPUESTO son la
+  copia de lo vendido y se reescriben.
+- CR-45, punto 3 (pendiente de la entrega 4): OBRA lleva «Inicio de la obra»
+  y «Fin de la obra» (de la obra; el envío no los lee) y el estado de PLAN dice
+  «Fecha fuera de la obra» si el inicio o el fin de la partida caen fuera.
+
+Pruebas en `test_creval_package5.py`: plantilla 3, envío con los encabezados
+cortos, conversión de la hoja anterior, «Traer la venta» del servidor, fecha
+fuera de la obra, y un recorrido del navegador para la vista previa con
+huella. El recorrido de fórmulas (`budget_formulas_tour.js`) calcula en el
+navegador el código del APU elegido por nombre, la especialidad, la
+sub-especialidad, el costo y el estado.
+
+## 8. Diferencias frente al requerimiento
+
+- Fila de TOTAL fija arriba (CR-41, punto 3): no se hace. Toda la hoja (envío,
+  PLAN, CONTROL, PIE e INICIO) lee PRESUPUESTO desde la fila 2; una fila de
+  total ahí se leería como partida o sumaría dos veces. El número de
+  partidas, las que hay por corregir, el costo directo y el total con IGV
+  están en INICIO.
+- Modalidad por defecto la del APU (CR-41, punto 4): la columna queda en el
+  grupo plegable; el envío ya toma la del APU si la partida no la escribe.
+- Una hoja anterior con ítems de dos niveles y la Sub-especialidad escrita en
+  las filas pierde esa sub-especialidad al actualizarse: la plantilla 3 la
+  calcula de un título de segundo nivel que el ítem no tiene.
+- Vista previa de «Traer la venta»: por pestaña (Nuevo, Cambia, Igual, Sobra)
+  con las filas que cambian, como mobiliario, no una tabla por partida con
+  metrado vendido y APU.
+
+Siguen pendientes: elegir el insumo de INSUMOS por nombre de un producto del
+maestro (CR-43; necesita pasar tipo, unidad, código y precio a columnas
+calculadas), los APU de obra como recetas propias de la obra al enviar el plan
+(CR-45, punto 4) y la comparación de CONTROL con el plan de Odoo después del
+envío (CR-46, punto 3).

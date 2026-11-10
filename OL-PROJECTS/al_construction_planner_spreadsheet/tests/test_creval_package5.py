@@ -4,7 +4,10 @@ planificación de obra (CR-38), «Pasar a la cotización» y contrato de obra en
 borrador al confirmar (CR-44), grupo «Presupuestador» y entradas (CR-47).
 Datos ficticios."""
 from odoo.exceptions import UserError
-from odoo.tests import new_test_user, tagged
+from odoo.addons.al_construction_planner_spreadsheet.models.sheet_migration import (
+    col_index as _col_index,
+)
+from odoo.tests import HttpCase, new_test_user, tagged
 
 from odoo.addons.al_construction_planner_suite.tests.test_budget_book_creval import (
     TestBudgetBook,
@@ -112,13 +115,170 @@ class TestCrevalPackage5(TestBudgetBook):
         _data, sheets = self._sheets()
         presupuesto = sheets['PRESUPUESTO']
         from odoo.addons.al_construction_planner_spreadsheet.models.project_project import (
-            PRESUPUESTO_KEYS, _col,
+            presupuesto_letters,
         )
-        state = _col(len(PRESUPUESTO_KEYS))
+        state = presupuesto_letters()['state']
         self.assertEqual(presupuesto['cells']['%s1' % state], 'Estado')
         self.assertIn('Falta APU o costo', presupuesto['cells']['%s2' % state])
         self.assertIn('PRESUPUESTO_title', [cf['id'] for cf in presupuesto['conditionalFormats']])
-        self.assertEqual(presupuesto['panes']['xSplit'], PRESUPUESTO_KEYS.index('name') + 1)
+        self.assertEqual(presupuesto['panes']['xSplit'], 2)
+
+    def test_presupuesto_in_the_budgeter_order(self):
+        """Pendiente de la entrega 2 (CR-41): plantilla 3, con el APU por
+        nombre, Especialidad y Sub-especialidad calculadas y las holguras en
+        un grupo plegado."""
+        from odoo.addons.al_construction_planner_spreadsheet.models.project_project import (
+            BUDGET_LAYOUT, presupuesto_letters,
+        )
+        from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import KEYS_SHEET
+        self.assertEqual(BUDGET_LAYOUT, 3)
+        self._send(self._book()).action_import()
+        _data, sheets = self._sheets()
+        presupuesto = sheets['PRESUPUESTO']
+        cells = presupuesto['cells']
+        self.assertEqual([cells['%s1' % c] for c in 'ABCDEFGHIJK'], [
+            'Ítem', 'Partida', 'Und', 'Metrado', 'APU (escriba el nombre)', 'Costo sin APU',
+            'Costo unitario', 'Precio unitario', 'Parcial', 'Estado', 'Especialidad'])
+        p = presupuesto_letters()
+        # Lo que trae la cotización: el APU por nombre y su código calculado.
+        self.assertTrue(cells['%s2' % p['apu_pick']].endswith(' · BK-R01'))
+        self.assertIn(p['apu_pick'] + '2', cells['%s2' % p['apu']])
+        self.assertIn('XLOOKUP', cells['%s2' % p['specialty']])
+        self.assertIn('XLOOKUP', cells['%s2' % p['subspecialty']])
+        group = presupuesto['headerGroups']['COL'][0]
+        self.assertTrue(group['isFolded'])
+        self.assertEqual(_col_index(p['subspecialty']), group['start'])
+        self.assertIn('PRESUPUESTO_apu_pick', [
+            rule['id'] for rule in presupuesto['dataValidationRules']])
+        # _CLAVES: el código del APU se lee de su columna calculada; Estado y
+        # el nombre del APU no se envían.
+        keys = sheets[KEYS_SHEET]['cells']
+        refs = {keys.get('B%s' % n): keys.get('C%s' % n) for n in range(2, 200)
+                if keys.get('A%s' % n) == 'PRESUPUESTO'}
+        self.assertEqual(refs['apu'], '=COLUMN(PRESUPUESTO!%s1)' % p['apu'])
+        self.assertNotIn('apu_pick', refs)
+        self.assertNotIn('state', refs)
+
+    def test_sheet_in_the_budgeter_order_passes(self):
+        """La hoja de venta con los encabezados cortos y la especialidad
+        calculada llega a la cotización como el libro de siempre."""
+        def budgeter_order(book):
+            sheet = book['PRESUPUESTO']
+            sheet.delete_rows(1, sheet.max_row)
+            sheet.append(['Ítem', 'Partida', 'Und', 'Metrado', 'APU (escriba el nombre)',
+                          'Costo sin APU', 'Costo unitario', 'Precio unitario', 'Parcial',
+                          'Estado', 'Especialidad', 'Sub-especialidad',
+                          'Código del APU (calc.)'])
+            sheet.append(['01', 'Arquitectura', None, None, None, None, None, None, None,
+                          'Título', None, None, None])
+            sheet.append(['01.01', 'Muros', None, None, None, None, None, None, None,
+                          'Título', 'Arquitectura', None, None])
+            for item, name, qty in (('01.0101', 'Muro del eje A', 100),
+                                    ('01.0102', 'Muro del eje B', 50)):
+                sheet.append([item, name, 'm2', qty, 'Muro (test) · BK-R01', None, None, None,
+                              None, 'OK', 'Arquitectura', 'Muros', 'BK-R01'])
+        self._send(self._edited_book(budgeter_order)).action_import()
+        lines = self.order.order_line.filtered(
+            lambda l: not l.display_type and l.construction_line_role == 'partida')
+        self.assertEqual(sorted(lines.mapped('construction_budget_item')),
+                         ['01.0101', '01.0102'])
+        self.assertEqual(set(lines.mapped('construction_execution_template_id.code')),
+                         {'BK-R01'})
+        self.assertEqual(lines.mapped('construction_qty_real'), [100.0, 50.0])
+        sections = self.order.order_line.filtered(lambda l: l.display_type == 'line_section')
+        self.assertIn('Arquitectura', sections.mapped('name'))
+
+    def test_old_sheet_is_upgraded_to_the_sale_sheet(self):
+        """Pendiente de la entrega 1 (CR-38, punto 4): «Actualizar a la
+        plantilla vigente» rehace la hoja «Presupuesto y plan» como hoja de
+        venta, con lo escrito en ella; la Especialidad escrita en cada fila
+        pasa a filas de título."""
+        import base64
+        import json
+        from io import BytesIO
+
+        from openpyxl import load_workbook
+
+        book = load_workbook(BytesIO(base64.b64decode(self._book())))
+        sheets = {name: [['' if value is None else value for value in row]
+                         for row in book[name].iter_rows(values_only=True)]
+                  for name in book.sheetnames}
+        data = self.env['project.project']._construction_budget_spreadsheet_data(
+            self.order, self.project)
+        old = self.env['documents.document'].create({
+            'name': 'Presupuesto y plan (test)', 'mimetype': 'application/o-spreadsheet',
+            'handler': 'spreadsheet', 'datas': base64.b64encode(json.dumps(data).encode()),
+            'construction_sale_order_id': self.order.id,
+            'construction_project_id': self.project.id, 'construction_sheet_kind': 'budget',
+            'construction_sheet_layout': 0})
+        old.construction_budget_upgrade(sheets)
+        self.assertEqual(old.construction_budget_role, 'sale')
+        self.assertEqual(old.construction_sheet_layout, 3)
+        self.assertTrue(old.name.startswith('Presupuesto de venta · %s' % self.order.name))
+        self.assertEqual(self.env['documents.document'].search_count(
+            [('construction_source_id', '=', old.id)]), 1, 'versión anterior guardada')
+        sheets = {sheet['name']: sheet for sheet in json.loads(old.spreadsheet_data)['sheets']}
+        cells = sheets['PRESUPUESTO']['cells']
+        column = lambda letter: [cells.get('%s%s' % (letter, n)) for n in range(2, 7)]  # noqa
+        self.assertEqual(column('A'), ['01', '01.01', '01.02', None, None])
+        self.assertEqual(column('B')[:2], ['Arquitectura', 'Muro del eje A'])
+        self.assertEqual(column('E')[1], 'Muro de ladrillo KK (test) · BK-R01')
+        # «01.01» ya es la partida: su Sub-especialidad no tiene título propio
+        # (el ítem solo tiene dos niveles), así que no se inventa una fila.
+        detail = sheets['APU_DETALLE']['cells']
+        self.assertEqual(detail['A2'], 'Muro de ladrillo KK (test) · BK-R01')
+        self.assertTrue(detail['B2'].endswith(' · BK-OPE'))
+        self.assertEqual(sheets['OBRA']['cells']['B1'], 'OBR-03')
+        with self.assertRaises(UserError):
+            old.construction_budget_upgrade(sheets)
+
+    def _plan_sheet(self):
+        self._send(self._book()).action_import()
+        self.project.construction_sale_order_id = self.order
+        self.project.action_construction_open_plan_sheet()
+        return self.env['documents.document'].search(
+            [('construction_project_id', '=', self.project.id),
+             ('construction_budget_role', '=', 'plan')])
+
+    def test_plan_bring_compares_only_the_sold_columns(self):
+        """Pendiente de la entrega 4 (CR-45, punto 2): «Traer la venta» con
+        vista previa: PLAN compara por ítem solo ítem y partida; los APU de
+        obra se comparan por su código y lo vendido llega a PRESUPUESTO."""
+        plan = self._plan_sheet()
+        data = plan.construction_plan_bring()
+        self.assertEqual(data['tabs']['PLAN']['keys'], ['item', 'name'])
+        self.assertEqual(data['tabs']['PLAN']['rows'],
+                         [['01.01', 'Muro del eje A'], ['01.02', 'Muro del eje B']])
+        self.assertFalse(data['tabs']['PLAN']['keep_extra'])
+        self.assertEqual(data['tabs']['APU']['match'], ['code'])
+        self.assertIn(['BK-R01'], [[row[data['tabs']['APU']['keys'].index('code')]]
+                                   for row in data['tabs']['APU']['rows']])
+        self.assertEqual(data['tabs']['APU_DETALLE']['keys'][0], 'apu_pick')
+        self.assertTrue(data['tabs']['APU_DETALLE']['keep_extra'])
+        self.assertEqual(data['from_top']['PRESUPUESTO'][0][4], 'APU (escriba el nombre)')
+        # La hoja de venta no trae la venta (la tiene).
+        sale = self.env['documents.document'].search(
+            [('construction_sale_order_id', '=', self.order.id),
+             ('construction_budget_role', '=', 'sale')])
+        if sale:
+            with self.assertRaises(UserError):
+                sale.construction_plan_bring()
+
+    def test_plan_date_outside_the_obra(self):
+        """Pendiente de la entrega 4 (CR-45, punto 3): OBRA lleva el plazo de
+        la obra y PLAN avisa «Fecha fuera de la obra»."""
+        self.project.write({'date_start': '2026-11-01', 'date': '2026-12-31'})
+        _data, sheets = self._sheets()
+        obra = sheets['OBRA']['cells']
+        self.assertEqual((obra['A14'], obra['B14']), ('Inicio de la obra', '2026-11-01'))
+        self.assertEqual((obra['A15'], obra['B15']), ('Fin de la obra', '2026-12-31'))
+        plan = sheets['PLAN']['cells']
+        state = next(letter for letter in 'HIJKLMN' if plan.get('%s1' % letter) == 'Estado (calc.)')
+        formula = plan['%s2' % state]
+        self.assertIn('"Fecha fuera de la obra"', formula)
+        self.assertIn('OBRA!$B$14', formula)
+        self.assertIn('OBRA!$B$15', formula)
+        self.assertEqual(formula.count('('), formula.replace('"+0.0%;-0.0%"', '').count(')'))
 
     def test_default_margin_when_the_row_has_none(self):
         def margin(book):
@@ -194,3 +354,23 @@ class TestCrevalPackage5(TestBudgetBook):
         self.assertEqual(control['G2'], 'Estado')
         self.assertIn('Supera el umbral', control['G3'])
         self.assertEqual(control['J2'], '0.05')
+
+
+@tagged('post_install', '-at_install')
+class TestCrevalPackage5PlanBringTour(TestBudgetBook, HttpCase):
+
+    def test_plan_bring_keeps_what_the_planner_wrote(self):
+        """CR-45, punto 2, en el navegador: vista previa, huella y la partida
+        editada a mano desmarcada."""
+        self._send(self._book()).action_import()
+        self.project.construction_sale_order_id = self.order
+        self.project.action_construction_open_plan_sheet()
+        plan = self.env['documents.document'].search(
+            [('construction_project_id', '=', self.project.id),
+             ('construction_budget_role', '=', 'plan')])
+        plan.name = 'Planificación de obra (traer la venta, test)'
+        # El admin de la base de pruebas trabaja en otra compañía.
+        admin = self.env.ref('base.user_admin')
+        admin.write({'company_ids': [(4, self.order.company_id.id)],
+                     'company_id': self.order.company_id.id})
+        self.start_tour('/odoo', 'al_construction_plan_bring', login='admin')

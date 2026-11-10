@@ -468,11 +468,24 @@ async function bringFromOdoo(env) {
         }
         writeRows(env.model, sheetId, rows, fromTop.includes(name) ? 0 : 1);
     }
-    env.constructionNotify(_t("Datos de Odoo traídos a la hoja."));
+    // CREVAL, paquete 5, CR-43: cuántos APU, insumos y partidas trajo.
+    const count = (name) => (data._keyed?.[name]?.rows || data[name]?.slice?.(1) || []).length;
+    env.constructionNotify(
+        _t("Datos de Odoo traídos a la hoja: %(apu)s APU, %(insumos)s insumos y %(partidas)s partidas.", {
+            apu: count("APU"),
+            insumos: count("INSUMOS"),
+            partidas: count("PRESUPUESTO"),
+        })
+    );
 }
 
 async function newVersion(env) {
     const action = await env.constructionCall("action_construction_new_version");
+    await env.constructionDoAction(action);
+}
+
+async function upgradeBudget(env) {
+    const action = await env.constructionCall("construction_budget_upgrade", collectForSend(env));
     await env.constructionDoAction(action);
 }
 
@@ -525,6 +538,20 @@ const budgetItems = [
         sequence: 60,
         execute: (env) => newVersion(env),
     }],
+    // CREVAL, paquete 5, CR-38, punto 4: la hoja anterior pasa a ser la hoja
+    // de presupuesto de venta, con la plantilla de hoy y lo que tenía escrito.
+    ["construction_budget_upgrade", {
+        name: _t("Actualizar a la plantilla vigente…"),
+        sequence: 70,
+        separator: true,
+        execute: (env) =>
+            env.askConfirmation(
+                _t(
+                    "La hoja se rehace como hoja de presupuesto de venta, con la plantilla de hoy y los datos que escribió (las fórmulas propias pasan como su valor). Antes se guarda una versión. La hoja de planificación de obra se crea desde la obra. ¿Continuar?"
+                ),
+                () => upgradeBudget(env)
+            ),
+    }],
 ];
 // Maestro de mobiliario: Importar Excel, Control de alcance y Traer de Odoo
 // llegan con los bloques 4b y 4c.
@@ -576,7 +603,7 @@ const roleItems = [
     [isBudgetSale, "construction_budget_sale_costs", _t("Actualizar insumos"), 40, (env) => updateCosts(env)],
     [isBudgetSale, "construction_budget_sale_bring", _t("Traer de Odoo"), 50, (env) => bringFromOdoo(env)],
     [isBudgetSale, "construction_budget_sale_version", _t("Nueva versión"), 60, (env) => newVersion(env)],
-    [isBudgetPlan, "construction_budget_plan_bring", _t("Traer la venta"), 10, (env) => bringFromOdoo(env)],
+    // «Traer la venta» (con vista previa y huella) vive en plan_bring.js.
     [isBudgetPlan, "construction_budget_plan_validate", _t("Validar"), 20, (env) => validate(env)],
     [isBudgetPlan, "construction_budget_plan_send", _t("Enviar al planificador: plan"), 30, async (env) => {
         const result = await validate(env, { quiet: true });

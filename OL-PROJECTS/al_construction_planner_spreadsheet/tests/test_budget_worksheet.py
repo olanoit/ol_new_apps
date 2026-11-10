@@ -44,11 +44,16 @@ class TestBudgetWorksheet(TestBudgetBook):
                                  'LISTAS', 'REFERENCIAS', '_CLAVES', 'INSTRUCCIONES'])
         budget = next(sheet for sheet in data['sheets'] if sheet['name'] == 'PRESUPUESTO')
         self.assertEqual(budget['cells']['A1'], 'Ítem')
-        # CR-18, c: columnas A a W del libro 6.6; M es el costo unitario.
-        self.assertEqual(budget['cells']['F1'], 'Costo unitario sin APU')
-        self.assertEqual(budget['cells']['W1'], 'Reserva por holguras')
+        # CREVAL, paquete 5, CR-41: el orden del presupuestador; G es el
+        # costo unitario y la reserva queda en el grupo plegable.
+        self.assertEqual(budget['cells']['F1'], 'Costo sin APU')
+        self.assertEqual(budget['cells']['X1'], 'Reserva por holguras')
         # Paquete 1.16, CR-22 g: el código del APU va al final de APU.
-        self.assertIn('XLOOKUP', budget['cells']['M2'])
+        self.assertIn('XLOOKUP', budget['cells']['G2'])
+        # El ítem se guarda como texto («01» no se vuelve 1).
+        text = [ref for ref, format_id in budget['formats'].items()
+                if data['formats'][str(format_id)] == '@']
+        self.assertEqual(text, ['A2:A%s' % (budget['rowNumber'] - 49)])
         # CR-18, a: ninguna celda se guarda como número.
         for sheet in data['sheets']:
             for ref, content in sheet.get('cells', {}).items():
@@ -121,8 +126,10 @@ class TestBudgetWorksheet(TestBudgetBook):
         self.assertAlmostEqual(costs['BK-LAD'][0], 0.9661)
         rows = document.construction_odoo_rows()
         self.assertEqual(len(rows['PRESUPUESTO']), 3)
-        self.assertEqual(rows['PRESUPUESTO'][0][5], 'Costo unitario sin APU')
-        self.assertEqual(rows['PRESUPUESTO'][1][4], 'BK-R01')
+        # CREVAL, paquete 5, CR-41: el APU por nombre y su código calculado.
+        self.assertEqual(rows['PRESUPUESTO'][0][5], 'Costo sin APU')
+        self.assertTrue(rows['PRESUPUESTO'][1][4].endswith(' · BK-R01'))
+        self.assertEqual(rows['PRESUPUESTO'][0][-1], 'Código del APU (calc.)')
         self.assertTrue(all(isinstance(value, str) for row in rows['PRESUPUESTO']
                             for value in row))
 

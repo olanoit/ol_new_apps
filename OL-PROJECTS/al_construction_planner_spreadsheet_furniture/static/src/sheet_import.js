@@ -14,6 +14,9 @@ import {
     validate,
     writeRows,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
+import { columnsOf, ensureRows } from "@al_construction_planner_spreadsheet/bring_preview";
+// Viven en la base (vista previa común de «Traer la venta», CREVAL paquete 5).
+export { columnsOf, ensureRows };
 import { TREE_SHEET, clearFloorGroups, groupTreeByFloor } from "./floor_groups";
 import { writeActivitiesToMatrix } from "./activity_matrix";
 import { CancelledError, openProgress } from "./sheet_progress";
@@ -35,19 +38,6 @@ function parseRef(ref) {
 }
 
 /** La pestaña tiene al menos ``rows`` filas. */
-export function ensureRows(model, sheetId, rows) {
-    const current = model.getters.getNumberRows(sheetId);
-    if (current < rows) {
-        model.dispatch("ADD_COLUMNS_ROWS", {
-            sheetId,
-            sheetName: model.getters.getSheetName(sheetId),
-            dimension: "ROW",
-            base: current - 1,
-            quantity: rows - current,
-            position: "after",
-        });
-    }
-}
 
 /**
  * Amplía el maestro con las fórmulas, listas y marcas de la plantilla para
@@ -210,33 +200,6 @@ function writeObra(model, obra) {
 }
 
 /** Columna de cada clave: _CLAVES o el encabezado; sin las de fórmula. */
-export function columnsOf(model, sheetId, name, spec, keys) {
-    const header = (collectSheets(model, [name])[name] || [[]])[0] || [];
-    const byHeader = {};
-    header.forEach((text, col) => {
-        const key = normText(text);
-        if (key && byHeader[key] === undefined) {
-            byHeader[key] = col;
-        }
-    });
-    const columns = {};
-    spec.keys.forEach((key) => {
-        let col = keys[name]?.[key];
-        if (col === undefined) {
-            for (const text of [key, ...(spec.headers?.[key] || [])]) {
-                if (byHeader[normText(text)] !== undefined) {
-                    col = byHeader[normText(text)];
-                    break;
-                }
-            }
-        }
-        const cell = col !== undefined && model.getters.getCell({ sheetId, col, row: 1 });
-        if (col !== undefined && !(cell && cell.isFormula)) {
-            columns[key] = col;
-        }
-    });
-    return { columns, header };
-}
 
 async function writeSheet(model, name, spec, payload, keys, runner) {
     const getters = model.getters;

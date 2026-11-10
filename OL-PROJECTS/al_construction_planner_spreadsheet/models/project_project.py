@@ -9,6 +9,8 @@ import json
 
 from odoo import api, fields, models
 
+from odoo.addons.al_construction_planner.models.common import budget_code_levels
+
 from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import (
     COLUMNS, PRESUPUESTO_FORMULAS,
 )
@@ -17,7 +19,7 @@ from .sheet_keys import keys_sheet
 from .sheet_migration import last_part
 
 SPREADSHEET_VERSION = '18.5.10'
-HEADER_STYLE, TITLE_STYLE, CALC_STYLE, DATA_STYLE = 1, 2, 3, 4
+HEADER_STYLE, TITLE_STYLE, CALC_STYLE, DATA_STYLE, WRAP_STYLE = 1, 2, 3, 4, 5
 DEFAULT_ROWS = 300
 INSTRUCTIONS = [
     'Hoja de trabajo de presupuesto y plan (Planificación de obra)',
@@ -148,7 +150,95 @@ PRESUPUESTO_UOM_FORMULA = '=IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code}
 # Orden de las columnas de la plantilla (paquete 1.16, CR-22 g). Las hojas
 # creadas antes tienen el código en la columna A (``construction_sheet_layout``
 # 0 o 1); «Traer de Odoo» les escribe las fórmulas de su orden.
-BUDGET_LAYOUT = 2
+# 3: CREVAL, paquete 5, CR-41: PRESUPUESTO en el orden del presupuestador, el
+#    APU elegido por nombre, Especialidad y Sub-especialidad calculadas del
+#    título de encima y el grupo plegable «Holguras y margen».
+BUDGET_LAYOUT = 3
+# Primera plantilla con la receta por nombre en APU_DETALLE (CR-22 g).
+RECIPE_PICK_LAYOUT = 2
+# CREVAL, paquete 5, CR-41: columnas de PRESUPUESTO desde la plantilla 3,
+# (clave, encabezado, tipo). «data» la escribe el presupuestador; «formula»,
+# las de PRESUPUESTO_FORMULA_TEXT; «calc», las de PRESUPUESTO_CALC. Desde
+# «subspecialty» van en el grupo plegable «Holguras y margen». «state» y
+# «apu_pick» no tienen clave en _CLAVES: el envío no las lee (lee el código
+# del APU de su columna calculada).
+PRESUPUESTO_GROUP_START = 'subspecialty'
+PRESUPUESTO_COLUMNS_V3 = [
+    ('item', 'Ítem', 'data'),
+    ('name', 'Partida', 'data'),
+    ('uom', 'Und', 'data'),
+    ('qty_real', 'Metrado', 'data'),
+    ('apu_pick', 'APU (escriba el nombre)', 'data'),
+    ('cost_no_apu', 'Costo sin APU', 'data'),
+    ('unit_cost', 'Costo unitario', 'formula'),
+    ('price_unit', 'Precio unitario', 'formula'),
+    ('subtotal', 'Parcial', 'formula'),
+    ('state', 'Estado', 'calc'),
+    ('specialty', 'Especialidad', 'calc'),
+    ('subspecialty', 'Sub-especialidad', 'calc'),
+    ('mode', 'Modalidad de ejecución', 'data'),
+    ('qty_slack_pct', 'Holgura de metrado (%)', 'data'),
+    ('qty_slack', 'Holgura de metrado (cantidad)', 'data'),
+    ('qty_offered', 'Metrado ofertado', 'formula'),
+    ('cost_slack_pct', 'Holgura de costo (%)', 'data'),
+    ('cost_slack', 'Holgura de costo (monto)', 'data'),
+    ('cost_offered', 'Costo unitario ofertado', 'formula'),
+    ('margin_pct', 'Margen (%)', 'data'),
+    ('margin', 'Margen (monto)', 'data'),
+    ('amount_offered', 'Costo ofertado', 'formula'),
+    ('cost_real', 'Costo real', 'formula'),
+    ('reserve', 'Reserva por holguras', 'formula'),
+    ('specialty_catalog', 'Especialidad (catálogo)', 'data'),
+    ('subspecialty_catalog', 'Sub-especialidad (catálogo)', 'data'),
+    ('apu', 'Código del APU (calc.)', 'calc'),
+]
+PRESUPUESTO_UNKEYED = ('state', 'apu_pick')
+# Código de los dos primeros niveles del ítem, con la regla de
+# ``budget_code_levels`` (con puntos o compacto, dos dígitos por nivel).
+_LEVEL1 = 'IFERROR(LEFT({item}{r},FIND(".",{item}{r})-1),{item}{r})'
+_SEGMENT = 'IFERROR(LEFT(MID({item}{r},LEN(%s)+2,99),FIND(".",MID({item}{r},LEN(%s)+2,99))-1),' \
+    'MID({item}{r},LEN(%s)+2,99))' % (_LEVEL1, _LEVEL1, _LEVEL1)
+_LEVEL2 = '%s&"."&IF(AND(LEN(%s)>2,MOD(LEN(%s),2)=0),LEFT(%s,2),%s)' % (
+    _LEVEL1, _SEGMENT, _SEGMENT, _SEGMENT, _SEGMENT)
+PRESUPUESTO_CALC = {
+    'state': (
+        '=IF(AND({item}{r}="",{name}{r}=""),"",IF(AND({qty_real}{r}="",{apu}{r}="",'
+        '{cost_no_apu}{r}=""),"Título",IF(AND({apu}{r}="",{cost_no_apu}{r}=""),'
+        '"Falta APU o costo",IF(AND({apu}{r}<>"",COUNTIF(APU!${apu_code}:${apu_code},{apu}{r})=0),'
+        '"APU no existe",IF(AND({apu}{r}<>"",IFERROR(VALUE({unit_cost}{r}),0)=0),"APU sin costo",'
+        'IF({uom}{r}="","Falta unidad","OK"))))))'),
+    # Del título de primer y segundo nivel que tiene encima (por el ítem).
+    'specialty': ('=IF(OR({item}{r}="",%s={item}{r}&""),"",IFERROR(XLOOKUP(%s,{item}:{item},'
+                  '{name}:{name}),""))' % (_LEVEL1, _LEVEL1)),
+    'subspecialty': ('=IF(OR({item}{r}="",ISERROR(FIND(".",{item}{r})),%s={item}{r}&""),"",'
+                     'IFERROR(XLOOKUP(%s,{item}:{item},{name}:{name}),""))' % (_LEVEL2, _LEVEL2)),
+    # El código del APU elegido por nombre («nombre · código»).
+    'apu': '=IF({apu_pick}{r}="","",IFERROR(%s,{apu_pick}{r}))' % last_part(
+        '{apu_pick}{r}', '" · "'),
+}
+
+
+def presupuesto_columns(layout=BUDGET_LAYOUT):
+    """[(clave, encabezado, tipo)] de PRESUPUESTO en la plantilla ``layout``;
+    antes de la 3, las columnas A a Y del libro y «Estado» al final."""
+    if layout >= 3:
+        return PRESUPUESTO_COLUMNS_V3
+    return [(key, header, 'formula' if key in PRESUPUESTO_FORMULAS else 'data')
+            for key, header in zip(PRESUPUESTO_KEYS, PRESUPUESTO_HEADERS)] + [
+        ('state', 'Estado', 'calc')]
+
+
+def presupuesto_letters(layout=BUDGET_LAYOUT):
+    """{clave: letra} de PRESUPUESTO (con «state», la columna Estado)."""
+    return {key: _col(i) for i, (key, _header, _kind) in enumerate(presupuesto_columns(layout))}
+
+
+def presupuesto_headers(layout=BUDGET_LAYOUT):
+    """Encabezados que escribe «Traer de Odoo» (sin «Estado» antes de la 3)."""
+    columns = presupuesto_columns(layout)
+    if layout < 3:
+        columns = columns[:-1]
+    return [header for _key, header, _kind in columns]
 # Hoja de planificación: desde el 2, BOM y PIEZAS en el orden del paquete 1.17
 # (M117-02) y _LISTAS con los módulos por tipología.
 # 4: M117-24, MODULOS calcula la clase desde el catálogo de tipos (REFERENCIAS AB:AD).
@@ -184,7 +274,10 @@ OBRA_LABELS = ['Obra', 'Cliente', 'Moneda', 'Tipo de contrato', 'Formato de impr
                'Gastos generales %', 'Imprevistos %', 'Utilidad %', 'Descuento %', 'IGV %',
                'Fecha', 'Versión',
                # CREVAL, paquete 5, CR-40: margen de las partidas sin el suyo.
-               'Margen por defecto %']
+               'Margen por defecto %',
+               # CR-45: el plazo de la obra, para avisar en PLAN de una fecha
+               # fuera de él (el envío no los lee).
+               'Inicio de la obra', 'Fin de la obra']
 assert OBRA_LABELS.index('Margen por defecto %') + 1 == OBRA_MARGIN_ROW
 
 
@@ -220,10 +313,13 @@ def sheet_digits(env, company=None):
 def presupuesto_formula(key, row, layout=BUDGET_LAYOUT, digits=DEFAULT_DIGITS):
     """Fórmula de la columna ``key`` de PRESUPUESTO en la fila ``row``.
     ``layout`` < 2: hoja anterior, con el código del APU en la columna A."""
-    letters = {k: _col(i) for i, k in enumerate(PRESUPUESTO_KEYS)}
-    text = PRESUPUESTO_FORMULA_TEXT[key] if key != 'uom' else PRESUPUESTO_UOM_FORMULA
+    letters = presupuesto_letters(layout)
+    if key in PRESUPUESTO_CALC:
+        text = PRESUPUESTO_CALC[key]
+    else:
+        text = PRESUPUESTO_FORMULA_TEXT[key] if key != 'uom' else PRESUPUESTO_UOM_FORMULA
     text = text.replace('{pp}', str(digits[0])).replace('{cd}', str(digits[1]))
-    if layout < BUDGET_LAYOUT:
+    if layout < RECIPE_PICK_LAYOUT:
         apu = template_letters('APU', layout=layout)
         text = text.replace(
             'IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code},APU!${apu_unit}:${apu_unit}),0)',
@@ -245,11 +341,16 @@ def presupuesto_row(values, row, layout=BUDGET_LAYOUT, digits=DEFAULT_DIGITS):
     """Fila completa de PRESUPUESTO: los datos de ``values`` y las fórmulas
     grises; la unidad, con fórmula si hay APU."""
     result = []
-    for key in PRESUPUESTO_KEYS:
-        if key in PRESUPUESTO_FORMULAS:
+    columns = presupuesto_columns(layout)
+    if layout < 3:
+        columns = columns[:-1]  # «Estado» no se reescribe en las anteriores
+    for key, _header, kind in columns:
+        if kind != 'data':
             result.append(presupuesto_formula(key, row, layout, digits))
         elif key == 'uom' and values.get('apu'):
             result.append(presupuesto_formula('uom', row, layout, digits))
+        elif key == 'apu_pick' and not values.get('apu_pick') and values.get('apu'):
+            result.append(cell_text(values['apu']))
         else:
             result.append(cell_text(values.get(key)))
     return result
@@ -286,9 +387,9 @@ ROW_KEYS = {
 
 def data_keys(name, layout=BUDGET_LAYOUT):
     """Claves de las columnas de datos de la plantilla, en su orden."""
-    if layout < BUDGET_LAYOUT and name in LEGACY_TEMPLATE_KEYS:
+    if layout < RECIPE_PICK_LAYOUT and name in LEGACY_TEMPLATE_KEYS:
         return list(LEGACY_TEMPLATE_KEYS[name])
-    if layout >= BUDGET_LAYOUT and name in TEMPLATE_KEYS:
+    if layout >= RECIPE_PICK_LAYOUT and name in TEMPLATE_KEYS:
         return list(TEMPLATE_KEYS[name])
     return [key for key, _aliases, _required in COLUMNS[name]
             if (name, key) not in (('APU', 'unit_cost'), ('PRESUPUESTO', 'cost_real'))
@@ -299,7 +400,7 @@ def calculated(name, layout=BUDGET_LAYOUT):
     """Columnas calculadas de la pestaña (las hojas anteriores no tienen las
     de la receta por nombre)."""
     items = CALCULATED.get(name, [])
-    if layout < BUDGET_LAYOUT:
+    if layout < RECIPE_PICK_LAYOUT:
         items = [(header, formula) for header, formula in items if header not in (
             'Código de la receta', 'Receta n.º (calc.)') and not (
             name == 'APU' and header == 'Para elegir')]
@@ -548,6 +649,9 @@ class ProjectProject(models.Model):
             given['IGV %'] = tax.amount
         given.setdefault('Fecha', fields.Date.to_string(fields.Date.context_today(self)))
         given.setdefault('Versión', '1')
+        if project:
+            given.setdefault('Inicio de la obra', fields.Date.to_string(project.date_start) or '')
+            given.setdefault('Fin de la obra', fields.Date.to_string(project.date) or '')
         return [[label, given[label]] for label in OBRA_LABELS if given.get(label) not in (
             None, '')]
 
@@ -653,11 +757,15 @@ class ProjectProject(models.Model):
                 name = (line.name or '').splitlines()[0]
                 if item and name.startswith(item):
                     name = name[len(item):].strip()
-                apu = (task.construction_execution_template_id or
-                       line.construction_execution_template_id).code or ''
+                recipe = task.construction_execution_template_id or \
+                    line.construction_execution_template_id
+                apu = recipe.code or ''
                 rows['PRESUPUESTO'].append({
                     'item': item, 'specialty': section, 'subspecialty': subsection,
                     'name': name, 'apu': apu,
+                    # CR-41: el APU por nombre, con el código al final.
+                    'apu_pick': '%s · %s' % (recipe.with_context(lang=lang).name, apu)
+                    if apu else '',
                     # D1: sin receta, el costo de la línea (o su precio, si
                     # vino de otro sistema solo con precio por partida).
                     'cost_no_apu': '' if apu else (
@@ -685,6 +793,84 @@ class ProjectProject(models.Model):
 
     @api.model
     @api.model
+    def _construction_budget_rows_from_sheets(self, sheets):
+        """CREVAL, paquete 5, CR-38, punto 4: las filas de una hoja «Presupuesto
+        y plan» (valores calculados, con las claves de _CLAVES ya puestas)
+        para rehacerla con la plantilla vigente. Lee cada pestaña por sus
+        encabezados, como el envío; el APU y el insumo pasan a elegirse por
+        nombre, y la Especialidad y la Sub-especialidad escritas en las filas
+        pasan a filas de título (la plantilla 3 las calcula del título)."""
+        Wizard = self.env['construction.budget.book.wizard']
+        errors = []
+
+        def read(name):
+            rows = sheets.get(name) or []
+            if not rows:
+                return []
+            return [{key: value for key, value in row.items() if key != '_row'}
+                    for row in Wizard._sheet_rows(rows, name, errors)]
+
+        def text(value):
+            return '' if value in (None, False) else str(value).strip()
+
+        values = {'OBRA': [[row[0], row[1]] for row in sheets.get('OBRA') or []
+                           if len(row) > 1 and text(row[0])]}
+        values['INSUMOS'] = read('INSUMOS')
+        names = {text(row.get('code')): row for row in values['INSUMOS']}
+        values['APU'] = read('APU')
+        apus = {text(row.get('code')): text(row.get('name')) for row in values['APU']}
+
+        def apu_pick(code):
+            return '%s · %s' % (apus[code], code) if apus.get(code) else code
+
+        values['APU_DETALLE'] = []
+        for row in read('APU_DETALLE'):
+            code, apu = text(row.get('code')), text(row.get('apu'))
+            insumo = names.get(code)
+            if not text(row.get('pick')) and insumo:
+                row['pick'] = ' · '.join(text(insumo.get(key)) for key in (
+                    'kind', 'name', 'uom', 'code'))
+            elif not text(row.get('pick')):
+                row['pick'] = code
+            row['apu_pick'] = apu_pick(apu) if apu else ''
+            values['APU_DETALLE'].append(row)
+        partidas, titles = [], set()
+        for row in read('PRESUPUESTO'):
+            if text(row.get('apu')):
+                row['apu_pick'] = apu_pick(text(row['apu']))
+            item = text(row.get('item'))
+            if item and not text(row.get('apu')) and not text(row.get('uom')) and \
+                    text(row.get('qty_real')) in ('', '0') and not text(row.get('cost_no_apu')):
+                titles.add(item)
+            partidas.append(row)
+        values['PRESUPUESTO'] = []
+        for row in partidas:
+            levels = budget_code_levels(text(row.get('item')))[:-1]
+            for depth, field in enumerate(('specialty', 'subspecialty')):
+                name = text(row.get(field))
+                if depth >= len(levels) or not name or levels[depth] in titles:
+                    continue
+                code = levels[depth]
+                if name.startswith(code + ' '):
+                    name = name[len(code):].strip()
+                values['PRESUPUESTO'].append({'item': code, 'name': name})
+                titles.add(code)
+            values['PRESUPUESTO'].append(row)
+        # PLAN: sus columnas de dato y el metrado de obra (CR-45).
+        plan_rows = sheets.get('PLAN') or []
+        values['PLAN'] = []
+        if plan_rows:
+            header = [text(cell) for cell in plan_rows[0]]
+            columns = [header.index(label) if label in header else None
+                       for label in PLAN_COLUMNS + ['', '', '', 'Metrado de obra']]
+            for row in plan_rows[1:]:
+                picked = ['' if index is None or index >= len(row) else row[index]
+                          for index in columns]
+                if any(text(value) for value in picked):
+                    values['PLAN'].append(picked)
+        return values
+
+    @api.model
     def _construction_budget_order_sheets(self, sheets, last):
         """CREVAL, paquete 5, CR-39: INICIO primero y las pestañas en el orden
         de trabajo; LISTAS, REFERENCIAS, _CLAVES e INSTRUCCIONES ocultas."""
@@ -704,7 +890,7 @@ class ProjectProject(models.Model):
         metrado vendido y APU de PRESUPUESTO, por el ítem), el metrado de obra
         que decide el planificador y el estado de la partida. Las columnas se
         leen por su encabezado."""
-        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        p = presupuesto_letters()
         base = len(PLAN_COLUMNS)
         sold = lambda key: ('IF($A{r}="","",IFERROR(XLOOKUP($A{r}&"",PRESUPUESTO!$%s$2:$%s$%s,'
                             'PRESUPUESTO!$%s$2:$%s$%s),""))' % (p['item'], p['item'], last,
@@ -723,8 +909,18 @@ class ProjectProject(models.Model):
             '=IF($A{r}="","",IF($C{r}="","Falta modalidad",IF(AND({s}{r}<>"",{q}{r}<>"",'
             'IFERROR(VALUE({q}{r}),0)<>IFERROR(VALUE({s}{r}),0)),"Metrado "&TEXT(IFERROR('
             'VALUE({q}{r})/VALUE({s}{r})-1,0),"+0.0%;-0.0%"),IF(AND($E{r}<>"",$F{r}<>"",'
-            '$F{r}<$E{r}),"Fecha fuera de orden","OK"))))'
+            '$F{r}<$E{r}),"Fecha fuera de orden",{outside}))))'
         ).replace('{s}', sold_qty).replace('{q}', site_qty)
+        # Pendiente de la entrega 4: inicio o fin fuera del plazo de la obra
+        # (OBRA); las fechas pueden estar escritas como fecha o como texto.
+        start, end = ('OBRA!$B$%s' % (OBRA_LABELS.index(label) + 1)
+                      for label in ('Inicio de la obra', 'Fin de la obra'))
+        day = lambda ref: 'IFERROR(DATEVALUE(%s&""),%s)' % (ref, ref)  # noqa: E731
+        state = state.replace('{outside}', (
+            'IF(OR(AND($E{r}<>"",%(s)s<>"",%(e1)s<%(s1)s),AND($F{r}<>"",%(e)s<>"",%(f1)s>%(e2)s)),'
+            '"Fecha fuera de la obra","OK")') % {
+                's': start, 'e': end, 'e1': day('$E{r}'), 's1': day(start), 'f1': day('$F{r}'),
+                'e2': day(end)})
         for index, (header, formula, style) in enumerate(columns):
             letter = _col(base + index)
             cells['%s1' % letter] = header
@@ -747,7 +943,7 @@ class ProjectProject(models.Model):
         partida por partida de PLAN: costo vendido (sin margen, el «Costo
         real» de PRESUPUESTO), costo planificado (metrado de obra × costo
         unitario), diferencia, % y semáforo con el umbral de la compañía."""
-        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        p = presupuesto_letters()
         site = _col(len(PLAN_COLUMNS) + 3)
         sold_qty = _col(len(PLAN_COLUMNS) + 1)
         look = lambda key: 'IFERROR(VALUE(XLOOKUP(PLAN!$A{r}&"",PRESUPUESTO!$%s$2:$%s$%s,' \
@@ -795,7 +991,7 @@ class ProjectProject(models.Model):
         parcial de cada especialidad con su peso. Mismas reglas que el pie de
         la cotización: gastos generales, imprevistos y utilidad sobre las
         partidas; el descuento sobre su suma."""
-        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
+        p = presupuesto_letters()
         rng = lambda key: 'PRESUPUESTO!$%s$2:$%s$%s' % (p[key], p[key], last)  # noqa: E731
         pct = lambda label: 'IFERROR(VALUE(OBRA!$B$%s),0)/100' % (  # noqa: E731
             OBRA_LABELS.index(label) + 1)
@@ -842,8 +1038,8 @@ class ProjectProject(models.Model):
     def _construction_budget_start_sheet(self, last):
         """INICIO de la hoja de presupuesto (CR-39): cabecera, ruta con su
         estado calculado por la hoja, «◀ Siguiente» y cuatro indicadores."""
-        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
-        state = _col(len(PRESUPUESTO_KEYS))
+        p = presupuesto_letters()
+        state = p['state']
         rng = lambda key: 'PRESUPUESTO!$%s$2:$%s$%s' % (p[key], p[key], last)  # noqa: E731
         states = 'PRESUPUESTO!$%s$2:$%s$%s' % (state, state, last)
         apu = template_letters('APU')
@@ -912,12 +1108,18 @@ class ProjectProject(models.Model):
         }
 
     def _construction_presupuesto_sheet(self, partidas, rows, last):
-        """Pestaña PRESUPUESTO (CR-18, c): columnas A a W; amarillo los
-        datos, gris las fórmulas, que llegan hasta la última fila."""
+        """Pestaña PRESUPUESTO (CR-18, c; CREVAL, paquete 5, CR-41): ítem y
+        partida fijos, lo que escribe el presupuestador y lo que calcula la
+        hoja a la vista (costo, precio, parcial, estado y especialidad); las
+        holguras, el margen y los catálogos, en el grupo plegable «Holguras y
+        margen». Amarillo los datos, gris las fórmulas, que llegan hasta la
+        última fila."""
+        columns = presupuesto_columns()
+        p = presupuesto_letters()
         cells, styles = {}, {}
-        for i, (key, header) in enumerate(zip(PRESUPUESTO_KEYS, PRESUPUESTO_HEADERS)):
+        for i, (_key, header, kind) in enumerate(columns):
             cells['%s1' % _col(i)] = header
-            styles['%s1' % _col(i)] = CALC_STYLE if key in PRESUPUESTO_FORMULAS else DATA_STYLE
+            styles['%s1' % _col(i)] = DATA_STYLE if kind == 'data' else CALC_STYLE
         digits = sheet_digits(self.env)
         for number in range(2, rows + 2):
             index = number - 2
@@ -925,36 +1127,32 @@ class ProjectProject(models.Model):
             for i, content in enumerate(presupuesto_row(values, number, digits=digits)):
                 if content:
                     cells['%s%s' % (_col(i), number)] = content
-        mode = _col(PRESUPUESTO_KEYS.index('mode'))
-        # CREVAL, paquete 5, CR-41: estado de cada partida antes de validar
-        # (no se envía), filas de título pintadas, ítem como texto y la
-        # partida ancha y fija con el ítem.
-        p = {key: _col(i) for i, key in enumerate(PRESUPUESTO_KEYS)}
-        state = _col(len(PRESUPUESTO_KEYS))
-        apu = template_letters('APU')
-        cells['%s1' % state] = 'Estado'
-        styles['%s1' % state] = CALC_STYLE
-        for number in range(2, rows + 2):
-            cells['%s%s' % (state, number)] = (
-                '=IF(AND({i}{r}="",{n}{r}=""),"",IF(AND({q}{r}="",{a}{r}="",{c}{r}=""),"Título",'
-                'IF(AND({a}{r}="",{c}{r}=""),"Falta APU o costo",IF(AND({a}{r}<>"",COUNTIF(APU!${k}:${k},'
-                '{a}{r})=0),"APU no existe",IF(AND({a}{r}<>"",IFERROR(VALUE({u}{r}),0)=0),'
-                '"APU sin costo",IF({m}{r}="","Falta unidad","OK"))))))').format(
-                i=p['item'], n=p['name'], q=p['qty_real'], a=p['apu'], c=p['cost_no_apu'],
-                k=apu['code'], u=p['unit_cost'], m=p['uom'], r=number)
-        cols = {str(i): {'size': max(110, 8 * len(header))}
-                for i, header in enumerate(PRESUPUESTO_HEADERS)}
-        cols[str(PRESUPUESTO_KEYS.index('name'))] = {'size': 360}
-        cols[str(len(PRESUPUESTO_KEYS))] = {'size': 140}
-        item, name = p['item'], p['name']
+            styles['%s%s' % (p['name'], number)] = WRAP_STYLE
+        state = p['state']
+        widths = {'item': 62, 'name': 360, 'uom': 44, 'qty_real': 80, 'apu_pick': 200,
+                  'cost_no_apu': 80, 'unit_cost': 76, 'price_unit': 80, 'subtotal': 96,
+                  'state': 120, 'specialty': 120}
+        cols = {str(i): {'size': widths.get(key, max(110, 8 * len(header)))}
+                for i, (key, header, _kind) in enumerate(columns)}
+        money = ['%s2:%s%s' % (p[key], p[key], last) for key in (
+            'qty_real', 'cost_no_apu', 'unit_cost', 'price_unit', 'subtotal', 'qty_offered',
+            'cost_offered', 'amount_offered', 'cost_real', 'reserve')]
+        formats = {'%s2:%s%s' % (p['item'], p['item'], last): '@'}
+        formats.update({ref: '#,##0.00' for ref in money})
+        keys = [key for key, _header, _kind in columns]
+        group_start = keys.index(PRESUPUESTO_GROUP_START)
+        apu_pick = template_letters('APU')['Para elegir']
         return {
             'id': 'sheet_presupuesto', 'name': 'PRESUPUESTO',
-            'colNumber': max(26, len(PRESUPUESTO_KEYS) + 1), 'rowNumber': rows + 50,
+            'colNumber': max(26, len(columns)), 'rowNumber': rows + 50,
             'cells': cells, 'styles': styles,
-            'panes': {'xSplit': PRESUPUESTO_KEYS.index('name') + 1, 'ySplit': 1},
-            'formats': {'%s2:%s%s' % (item, item, last): '@'},
+            'panes': {'xSplit': keys.index('name') + 1, 'ySplit': 1},
+            'formats': formats,
+            # «Holguras y margen»: plegado; el signo + de la cabecera lo abre.
+            'headerGroups': {'ROW': [], 'COL': [
+                {'start': group_start, 'end': len(columns) - 1, 'isFolded': True}]},
             'conditionalFormats': [
-                {'id': 'PRESUPUESTO_title', 'ranges': ['A2:%s%s' % (state, last)],
+                {'id': 'PRESUPUESTO_title', 'ranges': ['A2:%s%s' % (_col(len(columns) - 1), last)],
                  'stopIfTrue': False,
                  'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
                           'values': ['=$%s2="Título"' % state],
@@ -967,11 +1165,18 @@ class ProjectProject(models.Model):
                           'style': {'fillColor': '#F6E1E4'}}},
             ],
             'cols': cols,
-            'dataValidationRules': [{
-                'id': 'PRESUPUESTO_mode', 'isBlocking': True,
-                'ranges': ['%s2:%s%s' % (mode, mode, last)],
-                'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
-                              'values': LISTS['Modalidad']}}],
+            'dataValidationRules': [
+                {'id': 'PRESUPUESTO_mode', 'isBlocking': True,
+                 'ranges': ['%s2:%s%s' % (p['mode'], p['mode'], last)],
+                 'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
+                               'values': LISTS['Modalidad']}},
+                # El APU se elige escribiendo parte del nombre (como la
+                # receta en APU_DETALLE, CR-22 g).
+                {'id': 'PRESUPUESTO_apu_pick', 'isBlocking': False,
+                 'ranges': ['%s2:%s%s' % (p['apu_pick'], p['apu_pick'], last)],
+                 'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                               'values': ['APU!$%s$2:$%s$%s' % (apu_pick, apu_pick, last)]}},
+            ],
         }
 
     @api.model
@@ -1000,9 +1205,12 @@ class ProjectProject(models.Model):
         return result
 
     @api.model
-    def _construction_budget_spreadsheet_data(self, order=None, project=None):
-        """Datos de la hoja de presupuesto y plan, con lo que ya hay en Odoo."""
-        values = self._construction_budget_rows(order, project)
+    def _construction_budget_spreadsheet_data(self, order=None, project=None, values=None):
+        """Datos de la hoja de presupuesto y plan, con lo que ya hay en Odoo
+        (o con ``values``, las filas de una hoja anterior que se actualiza:
+        INSUMOS, APU y APU_DETALLE pueden venir como {clave: valor})."""
+        if values is None:
+            values = self._construction_budget_rows(order, project)
         company = (project.company_id if project else False) or \
             (order.company_id if order else False) or self.env.company
         # CREVAL, paquete 5, CR-43: días de un precio antiguo en INSUMOS.
@@ -1032,7 +1240,13 @@ class ProjectProject(models.Model):
         key_columns = {}
         for name in ('INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO'):
             data_headers, calc_headers = sheet_headers(name)
-            keys = data_keys(name) if name != 'PRESUPUESTO' else PRESUPUESTO_KEYS
+            if name == 'PRESUPUESTO':
+                # CR-41: las columnas de la plantilla, con su clave.
+                key_columns[name] = [
+                    (key, i) for i, (key, _header, _kind) in enumerate(presupuesto_columns())
+                    if key not in PRESUPUESTO_UNKEYED]
+                continue
+            keys = data_keys(name)
             letters = {key: _col(i) for i, key in enumerate(keys)}
             calc_letters = {header: _col(len(data_headers) + i)
                             for i, header in enumerate(calc_headers)}
@@ -1058,13 +1272,14 @@ class ProjectProject(models.Model):
             # columna de su clave (las calculadas no se escriben).
             data_letters = {key: letters[key] for key in data_keys(name)}
             for number, row in enumerate(values[name], start=2):
-                for key, value in zip(ROW_KEYS[name], row):
+                pairs = row.items() if isinstance(row, dict) else zip(ROW_KEYS[name], row)
+                for key, value in pairs:
                     if key in data_letters and value not in (None, '', False):
                         cells['%s%s' % (data_letters[key], number)] = cell_text(value)
             for header, formula in CALCULATED.get(name, []):
                 column = calc_letters[header]
                 template = formula.replace('{n}', str(last)).replace(
-                    '{pd}', str(price_days)).replace('{pa}', _col(PRESUPUESTO_KEYS.index('apu')))
+                    '{pd}', str(price_days)).replace('{pa}', presupuesto_letters()['apu'])
                 for key, letter in letters.items():
                     template = template.replace('{c:%s}' % key, letter)
                 for calc_header, letter in calc_letters.items():
@@ -1134,6 +1349,9 @@ class ProjectProject(models.Model):
         sheets.append({'id': 'sheet_plan', 'name': 'PLAN', 'colNumber': 14,
                        'rowNumber': rows + 50, 'cells': plan_cells,
                        'styles': plan_styles, 'conditionalFormats': plan_conditional,
+                       # El ítem como texto: «01.01» no se vuelve 1.01 y se
+                       # encuentra en PRESUPUESTO.
+                       'formats': {'A2:A%s' % last: '@'},
                        'panes': {'xSplit': 0, 'ySplit': 1},
                        'dataValidationRules': [{
                            'id': 'plan_mode', 'isBlocking': True,
@@ -1201,13 +1419,24 @@ class ProjectProject(models.Model):
         # Clave interna de cada columna (paquete 1.16, M116-09 y CR-22 d).
         sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))
         sheets = self._construction_budget_order_sheets(sheets, last)
+        # o-spreadsheet lee el formato de cada zona por su número en
+        # ``formats`` (como mobiliario): sin esto, el ítem «01» de PRESUPUESTO
+        # se volvía número y los importes de INICIO, PIE y CONTROL quedaban
+        # sin formato.
+        formats = {}
+        for sheet in sheets:
+            if sheet.get('formats'):
+                sheet['formats'] = {ref: formats.setdefault(text, len(formats) + 1)
+                                    for ref, text in sheet['formats'].items()}
         settings = self.env['documents.document']._empty_spreadsheet_data().get('settings', {})
         return {
             'version': SPREADSHEET_VERSION, 'sheets': sheets,
             'styles': {str(HEADER_STYLE): {'bold': True, 'fillColor': '#DDE4EE'},
                        str(TITLE_STYLE): {'bold': True, 'fontSize': 12},
                        str(CALC_STYLE): {'bold': True, 'fillColor': '#D9D9D9'},
-                       str(DATA_STYLE): {'bold': True, 'fillColor': '#FFF2CC'}},
+                       str(DATA_STYLE): {'bold': True, 'fillColor': '#FFF2CC'},
+                       str(WRAP_STYLE): {'wrapping': 'wrap'}},
+            'formats': {str(format_id): text for text, format_id in formats.items()},
             'settings': settings, 'lists': lists, 'listNextId': len(reference_lists) + 1,
             'pivots': {}, 'pivotNextId': 1, 'revisionId': 'START_REVISION',
         }

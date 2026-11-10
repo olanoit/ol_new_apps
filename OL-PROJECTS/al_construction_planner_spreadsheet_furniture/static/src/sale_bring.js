@@ -4,6 +4,12 @@
  * sin que el analista lo marque: la huella oculta guarda lo que trajo la vez anterior.
  */
 import { Component, onMounted, useState, xml } from "@odoo/owl";
+import {
+    BringDialog,
+    compareBring,
+    ensureRows,
+    writeTrace,
+} from "@al_construction_planner_spreadsheet/bring_preview";
 import { registries } from "@odoo/o-spreadsheet";
 import { SpreadsheetAction } from "@documents_spreadsheet/bundle/actions/spreadsheet_action";
 import { Dialog } from "@web/core/dialog/dialog";
@@ -12,185 +18,16 @@ import { patch } from "@web/core/utils/patch";
 import {
     afterValidateHooks,
     collectSheets,
-    dispatchBatch,
     ensureSheet,
     keyColumns,
-    normText,
     validate,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
 import { TREE_SHEET, clearFloorGroups, groupTreeByFloor } from "./floor_groups";
-import { columnsOf, ensureCapacity, ensureRows, writeWithProgress } from "./sheet_import";
+import { ensureCapacity, writeWithProgress } from "./sheet_import";
 
 const { topbarMenuRegistry } = registries;
-const TRACE = "_HUELLA";
 const isFurniture = (env) =>
     env.constructionSheetKind && env.constructionSheetKind() === "furniture";
-
-const norm = (value) => {
-    const text = String(value ?? "").trim();
-    const number = Number(text);
-    return text !== "" && !Number.isNaN(number) ? String(Math.round(number * 1e6) / 1e6) : text;
-};
-const rowKey = (values, spec) => spec.match.map((key) => normText(values[key] ?? "")).join("|");
-
-/** Lo que ya tiene cada pestaña: {clave de la fila: {row, values}}. */
-function readTab(model, name, spec, keys) {
-    const getters = model.getters;
-    const sheetId = getters.getSheetIdByName(name);
-    const rows = {};
-    let last = 0;
-    if (!sheetId) {
-        return { rows, last, columns: {}, sheetId };
-    }
-    const { columns } = columnsOf(model, sheetId, name, spec, keys);
-    for (let row = 1; row < getters.getNumberRows(sheetId); row++) {
-        const values = {};
-        let filled = false;
-        for (const key of spec.keys) {
-            if (columns[key] === undefined) {
-                continue;
-            }
-            const content = getters.getCell({ sheetId, col: columns[key], row })?.content ?? "";
-            values[key] = content;
-            filled = filled || content !== "";
-        }
-        if (filled) {
-            last = row;
-            const id = rowKey(values, spec);
-            if (id.replaceAll("|", "") && !rows[id]) {
-                rows[id] = { row, values };
-            }
-        }
-    }
-    return { rows, last, columns, sheetId };
-}
-
-function readTrace(model) {
-    const sheetId = model.getters.getSheetIdByName(TRACE);
-    const trace = {};
-    if (!sheetId) {
-        return trace;
-    }
-    for (let row = 0; row < model.getters.getNumberRows(sheetId); row++) {
-        const id = model.getters.getCell({ sheetId, col: 0, row })?.content;
-        if (id) {
-            trace[id] = JSON.parse(model.getters.getCell({ sheetId, col: 1, row })?.content || "{}");
-        }
-    }
-    return trace;
-}
-
-/**
- * Nuevo, Cambia, Igual y Sobra de cada pestaña. Se marcan solas las filas que nadie
- * tocó desde la última vez; lo editado a mano y lo que sobra quedan desmarcados.
- */
-export function compareBring(model, data) {
-    const keys = keyColumns(model);
-    const trace = readTrace(model);
-    const tabs = [];
-    for (const [name, spec] of Object.entries(data.tabs)) {
-        const current = readTab(model, name, spec, keys);
-        const items = [];
-        const seen = new Set();
-        for (const values of spec.rows) {
-            const record = Object.fromEntries(spec.keys.map((key, index) => [key, values[index] ?? ""]));
-            const id = rowKey(record, spec);
-            seen.add(id);
-            const existing = current.rows[id];
-            if (!existing) {
-                items.push({ id, label: id, kind: "new", marked: true, record });
-                continue;
-            }
-            const differs = spec.keys.filter((key) => norm(existing.values[key]) !== norm(record[key]));
-            if (!differs.length) {
-                items.push({ id, label: id, kind: "same", marked: false, record, row: existing.row });
-                continue;
-            }
-            const before = trace[`${name}|${id}`];
-            // Vacío en la hoja no es una edición: la fila aún no tenía ese dato.
-            const edited = differs.some(
-                (key) => norm(existing.values[key]) !== "" &&
-                    (!before || norm(before[key]) !== norm(existing.values[key]))
-            );
-            items.push({
-                id, label: `${id}: ${differs.join(", ")}`, kind: "change", marked: !edited, record,
-                row: existing.row,
-            });
-        }
-        if (!spec.keep_extra) {
-            for (const [id, existing] of Object.entries(current.rows)) {
-                if (!seen.has(id)) {
-                    items.push({ id, label: id, kind: "extra", marked: false, row: existing.row });
-                }
-            }
-        }
-        tabs.push({ name, spec, items, last: current.last, columns: current.columns, sheetId: current.sheetId });
-    }
-    return tabs;
-}
-
-class BringDialog extends Component {
-    static components = { Dialog };
-    static props = ["close", "tabs", "warnings", "apply"];
-    static template = xml`
-        <Dialog title="title" size="'xl'">
-            <div t-foreach="props.warnings" t-as="warning" t-key="warning_index"
-                 class="alert alert-warning py-1" t-esc="warning"/>
-            <table class="table table-sm o_main_table o_construction_bring_preview">
-                <thead><tr><th>Pestaña</th><th class="text-end">Nuevo</th><th class="text-end">Cambia</th>
-                    <th class="text-end">Igual</th><th class="text-end">Sobra</th><th/></tr></thead>
-                <tbody>
-                    <t t-foreach="state.tabs" t-as="tab" t-key="tab.name">
-                        <tr>
-                            <td t-esc="tab.name"/>
-                            <td class="text-end" t-esc="count(tab, 'new')"/>
-                            <td class="text-end" t-esc="count(tab, 'change')"/>
-                            <td class="text-end" t-esc="count(tab, 'same')"/>
-                            <td class="text-end" t-esc="count(tab, 'extra')"/>
-                            <td class="text-end">
-                                <button t-if="selectable(tab).length" class="btn btn-link btn-sm p-0"
-                                        t-on-click="() => tab.open = !tab.open">Ver filas</button>
-                            </td>
-                        </tr>
-                        <t t-if="tab.open">
-                            <tr t-foreach="selectable(tab)" t-as="item" t-key="item.id" class="table-light">
-                                <td colspan="5">
-                                    <label><input type="checkbox" t-att-checked="item.marked"
-                                                  t-on-change="(ev) => item.marked = ev.target.checked"/>
-                                        <t t-esc="labels[item.kind]"/> · <t t-esc="item.label"/></label>
-                                </td>
-                                <td/>
-                            </tr>
-                        </t>
-                    </t>
-                </tbody>
-            </table>
-            <t t-set-slot="footer">
-                <button class="btn btn-primary o_construction_bring_confirm" t-on-click="confirm">Confirmar</button>
-                <button class="btn btn-secondary" t-on-click="props.close">Cancelar</button>
-            </t>
-        </Dialog>
-    `;
-
-    setup() {
-        this.title = _t("Traer la venta");
-        this.labels = { new: _t("Nuevo"), change: _t("Cambia"), extra: _t("Sobra") };
-        this.state = useState({ tabs: this.props.tabs });
-    }
-
-    count(tab, kind) {
-        return tab.items.filter((item) => item.kind === kind).length;
-    }
-
-    selectable(tab) {
-        return tab.items.filter((item) => item.kind === "change" || item.kind === "extra");
-    }
-
-    async confirm() {
-        this.props.close();
-        await this.props.apply(this.state.tabs);
-    }
-}
 
 async function applyBring(env, tabs, data) {
     const model = env.model;
@@ -241,21 +78,6 @@ async function applyBring(env, tabs, data) {
     await env.constructionCall("construction_sale_bring_done", data.version);
     await validate(env, { quiet: true });
     env.constructionNotify(_t("Venta traída a la hoja (versión anterior guardada)."));
-}
-
-function writeTrace(model, traced) {
-    const sheetId = ensureSheet(model, TRACE);
-    const current = readTrace(model);
-    const merged = { ...current, ...traced };
-    ensureRows(model, sheetId, Object.keys(merged).length + 5);
-    const commands = [];
-    Object.entries(merged).forEach(([id, values], row) => {
-        commands.push(
-            ["UPDATE_CELL", { sheetId, col: 0, row, content: `'${id}`.slice(1) }],
-            ["UPDATE_CELL", { sheetId, col: 1, row, content: JSON.stringify(values) }]
-        );
-    });
-    dispatchBatch(model, commands);
 }
 
 export async function bringSale(env) {

@@ -19,7 +19,8 @@ from odoo.exceptions import UserError
 from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import COLUMNS
 
 from .project_project import (
-    PRESUPUESTO_HEADERS, ROW_KEYS, TEMPLATE_LABELS, cell_text, presupuesto_row, sheet_digits,
+    BUDGET_LAYOUT, PLAN_COLUMNS, ROW_KEYS, TEMPLATE_LABELS, cell_text, data_keys,
+    presupuesto_headers, presupuesto_row, sheet_digits,
 )
 from .sheet_keys import KEYS_SHEET, apply_keys
 
@@ -344,13 +345,88 @@ class DocumentsDocument(models.Model):
         # (paquete 1.16, M116-09): sirve para las hojas nuevas y las anteriores,
         # y no pisa las columnas de fórmula.
         result['_keyed'] = keyed
-        result['PRESUPUESTO'] = [PRESUPUESTO_HEADERS] + [
+        result['PRESUPUESTO'] = [presupuesto_headers(self.construction_sheet_layout)] + [
             presupuesto_row(values, number, self.construction_sheet_layout,
                             sheet_digits(self.env, self.construction_project_id.company_id
                                          or self.construction_sale_order_id.company_id or None))
             for number, values in enumerate(rows['PRESUPUESTO'], start=2)]
         result['_from_top'] = ['OBRA', 'PRESUPUESTO']
         return result
+
+    def construction_plan_bring(self):
+        """CREVAL, paquete 5, CR-45, punto 2: «Traer la venta» de la hoja de
+        planificación de obra, con vista previa y huella (como mobiliario,
+        M117-22). PLAN compara por ítem solo lo vendido (ítem y partida): lo
+        que escribe el planificador (metrado de obra, modalidad, contratista,
+        fechas) no se trae. INSUMOS, APU y APU_DETALLE son los APU de obra:
+        lo que cambió en la hoja desde la última vez queda desmarcado. OBRA y
+        PRESUPUESTO son la copia de lo vendido y se reescriben enteras.
+
+        :return: ``{'tabs': {pestaña: {'keys', 'match', 'headers', 'rows',
+            'keep_extra'}}, 'from_top': {pestaña: filas}, 'warnings': [...]}``
+        """
+        self.ensure_one()
+        if self.construction_budget_role != 'plan':
+            raise UserError(self.env._('«Traer la venta» es de la hoja de planificación de obra.'))
+        rows = self.construction_odoo_rows()
+        layout = self.construction_sheet_layout
+        match = {'INSUMOS': ['code'], 'APU': ['code'], 'APU_DETALLE': ['apu_pick', 'pick']}
+        tabs = {}
+        for name, spec in rows['_keyed'].items():
+            keys = data_keys(name, layout)
+            index = {key: position for position, key in enumerate(spec['keys'])}
+            tabs[name] = {
+                'keys': keys, 'match': match[name], 'keep_extra': True,
+                'headers': {key: spec['aliases'].get(key, [key]) for key in keys},
+                'rows': [[row[index[key]] if key in index and index[key] < len(row) else ''
+                          for key in keys] for row in spec['rows']],
+            }
+        tabs['PLAN'] = {
+            'keys': ['item', 'name'], 'match': ['item'], 'keep_extra': False,
+            'headers': {'item': [PLAN_COLUMNS[0]], 'name': [PLAN_COLUMNS[1]]},
+            'rows': [[row[0], row[1]] for row in rows.get('PLAN', []) if row and row[0]],
+        }
+        warnings = []
+        if not tabs['PLAN']['rows']:
+            warnings.append(self.env._(
+                'La cotización no tiene partidas con ítem: PLAN no cambia.'))
+        return {'tabs': tabs, 'from_top': {name: rows[name] for name in rows['_from_top']},
+                'warnings': warnings}
+
+    def construction_budget_upgrade(self, sheets):
+        """CREVAL, paquete 5, CR-38, punto 4 (decisión del 05-nov):
+        «Actualizar a la plantilla vigente» de una hoja «Presupuesto y plan»:
+        guarda una versión y la rehace como hoja de presupuesto de venta, con
+        la plantilla de hoy y lo escrito en la anterior. Las fórmulas propias
+        de la hoja anterior pasan como su valor. La hoja de planificación de
+        obra se crea aparte, desde la obra, con «Traer la venta».
+
+        :param sheets: ``{pestaña: [[valor, …], …]}``, los valores calculados.
+        :return: la acción que abre la hoja actualizada.
+        """
+        self.ensure_one()
+        if self.construction_sheet_kind != 'budget' or self.construction_budget_role:
+            raise UserError(self.env._(
+                'Solo una hoja «Presupuesto y plan» se actualiza a la hoja de venta.'))
+        order = self._construction_order()
+        project = self.construction_project_id or order.project_id
+        Project = self.env['project.project']
+        values = Project._construction_budget_rows_from_sheets(apply_keys(sheets))
+        self._construction_copy_version(self.env._('Antes de actualizar a la plantilla vigente'))
+        data = Project._construction_budget_spreadsheet_data(order, project, values=values)
+        self.write({
+            'name': self.env._('Presupuesto de venta · %(order)s · %(partner)s', order=order.name,
+                               partner=order.partner_id.commercial_partner_id.name or ''),
+            'datas': base64.b64encode(json.dumps(data).encode()),
+            'construction_sale_order_id': order.id,
+            'construction_budget_role': 'sale',
+            'construction_sheet_layout': BUDGET_LAYOUT,
+        })
+        self._delete_collaborative_data()
+        order.message_post(body=self.env._(
+            'Hoja «Presupuesto y plan» actualizada a hoja de presupuesto de venta (versión '
+            'anterior guardada).'))
+        return self.action_open_spreadsheet()
 
     def action_construction_new_version(self):
         """«Nueva versión»: una copia numerada de la hoja en la misma carpeta,
