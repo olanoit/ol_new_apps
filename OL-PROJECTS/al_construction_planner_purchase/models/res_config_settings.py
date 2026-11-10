@@ -7,3 +7,5 @@ class ResConfigSettings(models.TransientModel):
 
     construction_price_alert_pct = fields.Float(
         related='company_id.construction_price_alert_pct', readonly=False)
+    construction_price_review_pct = fields.Float(
+        related='company_id.construction_price_review_pct', readonly=False)

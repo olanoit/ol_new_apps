@@ -46,7 +46,8 @@
         <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_open_recipe_wizard']" position="after">
-                <button name="action_open_price_wizard" type="object" string="Aplicar costo"
+                <!-- Paquete 1.18, M118-04: por grupo, con las líneas sin costo. -->
+                <button name="action_open_price_group_wizard" type="object" string="Aplicar costo"
                         invisible="state != 'draft'"
                         groups="al_construction_planner.group_planner_plan_planner"/>
             </xpath>

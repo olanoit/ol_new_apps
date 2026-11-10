@@ -972,6 +972,12 @@ class ConstructionResourcePlanLine(models.Model):
         help='Qué miró el planificador al fijar el costo (p. ej. «media móvil 4 semanas '
              'al 28/09: 122.84»).')
     price_basis_date = fields.Date(string='Fecha de la base')
+    # Paquete 1.18, M118-04: referencia a la vista para decidir el costo; no
+    # cambia el costo planificado, que sigue siendo una decisión.
+    price_reference = fields.Float(
+        string='Costo de referencia', digits='Product Price', readonly=True,
+        help='Costo del producto en el maestro, en la unidad de la línea, al generar el plan.')
+    price_reference_date = fields.Date(string='Fecha de la referencia', readonly=True)
     amount_budgeted = fields.Monetary(
         string='Presupuesto', readonly=True, copy=False, currency_field='currency_id',
         help='Monto de la línea congelado al aprobar el plan.')

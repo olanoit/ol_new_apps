@@ -17,7 +17,8 @@ fijas: ``STATE_CELL``, ``CONTROL_PLANNER_COL`` y ``CONTROL_ORIGIN_COL``.
 from odoo import models
 
 from .activity_matrix import (
-    FIRST_ROW, MATRIX_ROWS, RATE_ROW, TOTAL_ROW, matrix_last_data, matrix_total_col,
+    FIRST_ROW, HEADER_ROW, MATRIX_ROWS, RATE_ROW, TOTAL_ROW, matrix_last_data,
+    matrix_total_col,
 )
 from .construction_sheet_parameter import PARAMETERS_SHEET, parameter_formula
 from .project_project import (
@@ -163,6 +164,22 @@ class ProjectProject(models.Model):
         in_site = rng('TIPOLOGIAS', '#En la obra (calc.)')
         finish = "'ACABADOS DE OBRA'!$%s$2:$%s$61"
         has_sale = '%s<>""' % obra('Hoja de venta')
+
+        def names(values, *conditions, suffix=''):
+            """M118-02, punto 2: hasta tres nombres de lo que falla y «y N
+            más», como texto de fórmula (vacío si no hay ninguno)."""
+            args = ','.join(conditions)
+            count = 'IFERROR(ROWS(FILTER(%s,%s)),0)' % (values, args)
+            return ('IF({n}=0,"",IFERROR(TEXTJOIN(", ",TRUE,TAKE(FILTER({v},{a}),3)),"")'
+                    '&IF({n}>3," y "&({n}-3)&" más","")&"{s}")').format(
+                n=count, v=values, a=args, s=suffix)
+
+        def join(*parts):
+            """Partes no vacías separadas por « · »; sin ninguna, el texto
+            de la regla."""
+            return 'TEXTJOIN(" · ",TRUE,%s)' % ','.join(parts)
+
+        typology_code = rng('TIPOLOGIAS', 'code')
         if matrix_tabs:
             rates_ok = 'AND(%s)' % ','.join(
                 'COUNTIFS({s}!$B${rate}:${d}${rate},0,{s}!$B${qty}:${d}${qty},">0")=0'.format(
@@ -170,48 +187,92 @@ class ProjectProject(models.Model):
                     qty=TOTAL_ROW) for tab in matrix_tabs)
             contracts = '=' + '+'.join('%s!$%s$%s' % (
                 sheet_ref(tab['name']), matrix_total_col(tab), TOTAL_ROW) for tab in matrix_tabs)
+            # M118-02, punto 5: las actividades sin tarifa con su pestaña.
+            rate_names = [
+                'IF(COUNTIFS({s}!$B${rate}:${d}${rate},0,{s}!$B${qty}:${d}${qty},">0")=0,"",'
+                '"{tab}: "&{names})'.format(
+                    s=sheet_ref(tab['name']), d=matrix_last_data(tab), rate=RATE_ROW,
+                    qty=TOTAL_ROW, tab=tab['name'], names=names(
+                        '{s}!$B${h}:${d}${h}'.format(s=sheet_ref(tab['name']), h=HEADER_ROW,
+                                                     d=matrix_last_data(tab)),
+                        '{s}!$B${r}:${d}${r}=0'.format(s=sheet_ref(tab['name']), r=RATE_ROW,
+                                                       d=matrix_last_data(tab)),
+                        '{s}!$B${q}:${d}${q}>0'.format(s=sheet_ref(tab['name']), q=TOTAL_ROW,
+                                                       d=matrix_last_data(tab)),
+                        suffix=self.env._(' sin tarifa')))
+                for tab in matrix_tabs]
         else:
             rates_ok = 'COUNTIF(%s,0)=0' % col('ACTIVIDADES', '#Tarifa (calc.)')
             contracts = '=SUM(%s)' % col('ACTIVIDADES', '#Costo en la obra (calc.)')
+            rate_names = [names(rng('ACTIVIDADES', 'activity'),
+                                '%s=0' % rng('ACTIVIDADES', '#Tarifa (calc.)'),
+                                suffix=self.env._(' sin tarifa'))]
+        bom_stage = rng('BOM', '#Etapa usada (calc.)')
+        bom_product = rng('BOM', 'product_name')
+        no_stage = 'SUMPRODUCT((%s<>"")*(%s=""))' % (bom_product, bom_stage)
         steps = [
             (self.env._('Traer la venta'), self.env._('Lo vendido llega a la hoja'), 'OBRA',
              'IF(%s,%s<>"",AND(%s<>"",%s<>"",%s<>""))' % (
                  has_sale, obra('Venta traída el'), obra('Inicio'), obra('Fin'), obra('Cliente')),
-             False, self.env._('Traiga la venta, o llene Inicio, Fin y Cliente')),
+             False, '"%s"' % self.env._('Traiga la venta, o llene Inicio, Fin y Cliente')),
             (self.env._('Tablero de cada acabado'), self.env._('El producto de cada acabado vendido'),
              'ACABADOS DE OBRA',
              'SUMPRODUCT((%s<>"")*(%s=""))=0' % (finish % ('A', 'A'), finish % ('G', 'G')),
-             '%s=FALSE' % has_sale, self.env._('Hay acabados sin tablero')),
+             '%s=FALSE' % has_sale,
+             names(finish % ('A', 'A'), '%s<>""' % (finish % ('A', 'A')),
+                   '%s=""' % (finish % ('G', 'G')), suffix=self.env._(' sin tablero'))),
             (self.env._('Muebles y módulos del ETO'), self.env._('Árbol, tipologías y módulos'),
              'MODULOS',
              'AND(COUNTA(%s)>1,COUNTIF(%s,"Falta")=0,COUNTIFS(%s,">0",%s,0)=0,'
              'COUNTIFS(ERRORES!$A:$A,"ARBOL",ERRORES!$E:$E,"Error")=0)' % (
                  col('TIPOLOGIAS', 'code'), col('ARBOL', '#Módulos (calc.)'), in_site,
                  rng('TIPOLOGIAS', '#Módulos (calc.)')),
-             False, self.env._('Cada tipología del ARBOL tiene MODULOS')),
+             False, join(
+                 'IF(COUNTA(%s)>1,"","%s")' % (col('TIPOLOGIAS', 'code'),
+                                               self.env._('TIPOLOGIAS está vacía')),
+                 names(typology_code, '%s>0' % in_site,
+                       '%s=0' % rng('TIPOLOGIAS', '#Módulos (calc.)'),
+                       suffix=self.env._(' sin módulos')),
+                 names(rng('ARBOL', 'typology'), '%s="Falta"' % rng('ARBOL', '#Módulos (calc.)'),
+                       suffix=self.env._(' no están en TIPOLOGIAS')),
+                 'IF(COUNTIFS(ERRORES!$A:$A,"ARBOL",ERRORES!$E:$E,"Error")=0,"","%s")'
+                 % self.env._('ARBOL tiene errores (ERRORES)'))),
             (self.env._('Materiales y piezas'), self.env._('BOM y PIEZAS de cada módulo'), 'BOM',
-             'AND(COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0,SUMPRODUCT((%s<>"")*(%s=""))=0)' % (
+             'AND(COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0,%s=0)' % (
                  col('BOM', 'product_name'), in_site,
-                 rng('TIPOLOGIAS', '#Costo de materiales (calc.)'),
-                 rng('BOM', 'product_name'), rng('BOM', '#Etapa usada (calc.)')),
-             False, self.env._('Cada módulo tiene BOM con etapa')),
+                 rng('TIPOLOGIAS', '#Costo de materiales (calc.)'), no_stage),
+             False, join(
+                 'IF(COUNTA(%s)>1,"","%s")' % (col('BOM', 'product_name'),
+                                               self.env._('BOM está vacía')),
+                 names(typology_code, '%s>0' % in_site,
+                       '%s=0' % rng('TIPOLOGIAS', '#Costo de materiales (calc.)'),
+                       suffix=self.env._(' sin materiales')),
+                 'IF({n}=0,"",{n}&"{t}")'.format(
+                     n=no_stage, t=self.env._(' líneas de BOM sin etapa')))),
             (self.env._('Actividades a hitos'), self.env._('Contratas, contrato y precios'), 'TARIFAS',
              'AND(COUNTA(%s)>1,%s,COUNTA(%s)>1,COUNTIFS(%s,">0",%s,0)=0)' % (
                  col('TARIFAS', 'activity'), rates_ok,
                  col('VENTA', 'price'), in_site, rng('TIPOLOGIAS', '#Precio (calc.)')),
-             False, self.env._('TARIFAS tiene cada actividad y VENTA cada tipología')),
-            (self.env._('Programa por piso'), self.env._('Fecha de inicio y ritmo'), PROGRAM_SHEET,
-             'AND(PROGRAMA!$B$3<>"",IFERROR(PROGRAMA!$B$4>0,FALSE))',
-             False, self.env._('PROGRAMA tiene fecha de inicio y ritmo')),
-            (self.env._('Validar y enviar'), self.env._('Última validación sin errores'), ERRORS_SHEET,
-             'AND(LEFT(ERRORES!$A$1,7)="Validad",ISNUMBER(SEARCH("· 0 errores",ERRORES!$A$1)))',
-             False, self.env._('Menú Planificación de obra › Validar')),
-            # M119-01, al final para no mover las filas: las actividades del presupuesto de mano de obra tienen
-            # rendimiento (aviso: sin él no suman).
+             False, join(*(
+                 ['IF(COUNTA(%s)>1,"","%s")' % (col('TARIFAS', 'activity'),
+                                                self.env._('TARIFAS está vacía'))]
+                 + rate_names
+                 + [names(typology_code, '%s>0' % in_site,
+                          '%s=0' % rng('TIPOLOGIAS', '#Precio (calc.)'),
+                          suffix=self.env._(' sin precio en VENTA'))]))),
+            # M119-01; M118-02, punto 5: antes de «Programa por piso», en el
+            # orden en que se llena la hoja. Sin rendimiento no suman (aviso).
             (self.env._('Rendimientos'), self.env._('Actividades del presupuesto de MO'),
              PARAMETERS_SHEET, 'COUNTIF(_MO!$L:$L,1)=0',
              '%s' % ('FALSE' if self._construction_budget_blocks() else 'TRUE'),
-             self.env._('Aviso: hay actividades sin rendimiento (PROGRAMA, presupuesto de MO)')),
+             '"%s"' % self.env._('Aviso: hay actividades sin rendimiento (PROGRAMA, presupuesto '
+                                 'de MO)')),
+            (self.env._('Programa por piso'), self.env._('Fecha de inicio y ritmo'), PROGRAM_SHEET,
+             'AND(PROGRAMA!$B$3<>"",IFERROR(PROGRAMA!$B$4>0,FALSE))',
+             False, '"%s"' % self.env._('PROGRAMA tiene fecha de inicio y ritmo')),
+            (self.env._('Validar y enviar'), self.env._('Última validación sin errores'), ERRORS_SHEET,
+             'AND(LEFT(ERRORES!$A$1,7)="Validad",ISNUMBER(SEARCH("· 0 errores",ERRORES!$A$1)))',
+             False, '"%s"' % self.env._('Menú Planificación de obra › Validar')),
         ]
         first_step = 12
         for index, (name, what, sheet, condition, not_applicable, missing) in enumerate(steps):
@@ -225,8 +286,13 @@ class ProjectProject(models.Model):
             cells['D%s' % row] = state
             previous = 'COUNTIF($D$%s:D%s,"%s")=0' % (first_step, row - 1, MISSING) \
                 if index else 'TRUE'
-            cells['E%s' % row] = '=IF(D{r}<>"{m}","",IF({p},"◀ Siguiente · ","")&"{t}")'.format(
-                r=row, m=MISSING, p=previous, t=missing)
+            cells['E%s' % row] = ('=IF(D{r}<>"{m}","",IF({p},"◀ Siguiente · ","")&'
+                                  'IFERROR({t},""))').format(r=row, m=MISSING, p=previous,
+                                                             t=missing)
+            # M118-02, punto 1: el paso pendiente para «Lo que falta» (columna
+            # oculta K, una fila por paso).
+            cells['K%s' % row] = '=IF(D{r}<>"{m}","",A{r}&": "&SUBSTITUTE(E{r},"◀ Siguiente · ",""))'.format(
+                r=row, m=MISSING)
         last_step = first_step + len(steps) - 1
         status = 'D%s:D%s' % (first_step, last_step)
         conditional = [
@@ -234,28 +300,52 @@ class ProjectProject(models.Model):
             _rule('start_missing', [status], '=D%s="%s"' % (first_step, MISSING), RED_FILL),
         ]
 
-        # Indicadores.
+        # Indicadores (M118-01: venta antes y después del descuento comercial
+        # y margen estimado sobre la venta neta, cada cifra con su origen).
         cells['A21'] = self.env._('Indicadores')
         styles['A21'] = TITLE_STYLE
+        cells['C21'] = self.env._('De dónde sale')
+        styles['C21'] = HEADER_STYLE
         tip = lambda key: rng('TIPOLOGIAS', key)  # noqa: E731
+        has_contracts = 'COUNTA(%s)>1' % col('CONTRATOS', 'name')
+        net_sale = '=IF(%s,SUM(%s),IFERROR(VALUE(%s),B28))' % (
+            has_contracts, col('VENTA', '#Venta neta (calc.)'), obra('Subtotal de la cotización'))
         indicators = [
-            (self.env._('Muebles a producir'), '=MAX(COUNTA(%s)-1,0)' % col('ARBOL', 'space')),
+            (self.env._('Muebles a producir'), '=MAX(COUNTA(%s)-1,0)' % col('ARBOL', 'space'),
+             self.env._('Ambientes del ARBOL')),
             (self.env._('Módulos a armar (sin zócalos)'),
-             '=SUM(%s)' % col('ARBOL', '#Módulos (calc.)')),
-            (self.env._('ML a instalar'), '=SUM(%s)' % col('ARBOL', '#ML (calc.)')),
-            (self.env._('Piezas'), '=SUMPRODUCT(%s,%s)' % (in_site, tip('#Piezas (calc.)'))),
-            (self.env._('Costo de materiales (costo vivo)'),
-             '=SUM(%s)' % col('BOM', '#Costo en la obra (calc.)')),
-            (self.env._('Contratas'), contracts),
-            (self.env._('Venta'), '=SUMPRODUCT(%s,%s)' % (in_site, tip('#Precio (calc.)'))),
-            (self.env._('Margen'), '=IF(B28=0,"",B28-B26-B27)'),
+             '=SUM(%s)' % col('ARBOL', '#Módulos (calc.)'), self.env._('MODULOS por ambiente')),
+            (self.env._('ML a instalar'), '=SUM(%s)' % col('ARBOL', '#ML (calc.)'),
+             self.env._('Anchos de MODULOS')),
+            (self.env._('Piezas'), '=SUMPRODUCT(%s,%s)' % (in_site, tip('#Piezas (calc.)')),
+             self.env._('PIEZAS por ambiente')),
+            (self.env._('Costo de materiales estimado (costo del maestro)'),
+             '=SUM(%s)' % col('BOM', '#Costo en la obra (calc.)'),
+             self.env._('BOM × costo del producto en el maestro; el plan lleva el costo decidido')),
+            (self.env._('Contratas'), contracts, self.env._('Matriz de actividades × TARIFAS')),
+            (self.env._('Venta antes de descuento'),
+             '=SUMPRODUCT(%s,%s)' % (in_site, tip('#Precio (calc.)')),
+             self.env._('VENTA × ambientes de la obra')),
+            (self.env._('Descuento comercial'), '=IF(B28=0,"",B30-B28)',
+             self.env._('Venta neta menos venta antes de descuento')),
+            (self.env._('Venta neta'), net_sale,
+             '=IF(%s,"%s","%s")' % (has_contracts,
+                                    self.env._('VENTA × ambientes × factor del contrato'),
+                                    self.env._('Sin CONTRATOS: subtotal de la hoja de venta'))),
+            (self.env._('Margen estimado'), '=IF(B30=0,"",B30-B26-B27)',
+             self.env._('Venta neta − materiales estimados − contratas')),
+            (self.env._('Margen estimado (%)'), '=IF(OR(B30=0,B31=""),"",B31/B30)',
+             self.env._('Sobre la venta neta')),
         ]
-        for row, (label, formula) in enumerate(indicators, start=22):
+        for row, (label, formula, source) in enumerate(indicators, start=22):
             cells['A%s' % row] = label
             cells['B%s' % row] = formula
-        cells['C29'] = '=IF(B28=0,"",B29/B28)'
-        formats = {'B26': '#,##0.00', 'B27': '#,##0.00', 'B28': '#,##0.00', 'B29': '#,##0.00',
-                   'C29': '0.0%', 'B24': '#,##0.00'}
+            cells['C%s' % row] = source
+        formats = {'B24': '#,##0.00', 'B26': '#,##0.00', 'B27': '#,##0.00', 'B28': '#,##0.00',
+                   'B29': '#,##0.00', 'B30': '#,##0.00', 'B31': '#,##0.00', 'B32': '0.0%'}
+        # M118-01, punto 4: margen negativo en rojo claro.
+        conditional.append(_rule('start_negative_margin', ['B31:B32'],
+                                 '=AND(ISNUMBER(B31),B31<0)', RED_FILL))
 
         # Conteos por pestaña (el nombre de la pestaña no admite un conteo).
         cells['F10'] = self.env._('Pestañas')
@@ -281,38 +371,44 @@ class ProjectProject(models.Model):
         # Lo que falta: una fila por paso no listo.
         cells['F27'] = self.env._('Lo que falta')
         styles['F27'] = TITLE_STYLE
-        cells['F28'] = '=IFERROR(FILTER(A{f}:A{l}&": "&E{f}:E{l},D{f}:D{l}="{m}"),"{ok}")'.format(
-            f=first_step, l=last_step, m=MISSING,
+        # M118-02, punto 1: una línea por paso pendiente y el margen negativo
+        # de M118-01 como aviso; «Nada…» solo sin ninguno de los dos.
+        cells['K%s' % (last_step + 1)] = '=IF(AND(ISNUMBER(B31),B31<0),"%s"&TEXT(B31,"#,##0.00"),"")' % (
+            self.env._('Aviso: margen negativo con la venta neta: '))
+        cells['F28'] = '=IF(TEXTJOIN("",TRUE,K{f}:K{l})="","{ok}",TEXTJOIN(CHAR(10),TRUE,K{f}:K{l}))'.format(
+            f=first_step, l=last_step + 1,
             ok=self.env._('Nada: la hoja está lista para enviar'))
+        styles['F28'] = dict(styles.get('F28') or {}, wrapping='wrap')
 
         # Gráficos: costo de materiales por sub etapa y muebles por rubro.
-        cells['A31'] = self.env._('Costo de materiales por sub etapa')
-        styles['A31'] = TITLE_STYLE
+        cells['A34'] = self.env._('Costo de materiales por sub etapa')
+        styles['A34'] = TITLE_STYLE
         stage_rows = max(len(stage_labels), 1)
-        for row, label in enumerate(stage_labels, start=32):
+        for row, label in enumerate(stage_labels, start=35):
             cells['A%s' % row] = label
             cells['B%s' % row] = '=SUMIFS(%s,%s,A%s)' % (
                 col('BOM', '#Costo en la obra (calc.)'), col('BOM', 'stage'), row)
             formats['B%s' % row] = '#,##0.00'
         families = FIXED_LISTS[('TIPOLOGIAS', 'family')]
-        cells['D31'] = self.env._('Muebles por rubro')
-        styles['D31'] = TITLE_STYLE
-        for row, family in enumerate(families, start=32):
+        cells['D34'] = self.env._('Muebles por rubro')
+        styles['D34'] = TITLE_STYLE
+        for row, family in enumerate(families, start=35):
             cells['D%s' % row] = family
             cells['E%s' % row] = '=SUMIFS(%s,%s,D%s)' % (in_site, rng('TIPOLOGIAS', 'family'),
                                                        row)
         figures = [
             _bar_chart('al_start_stage_cost', self.env._('Costo de materiales por sub etapa'),
-                       'A32:A%s' % (31 + stage_rows), 'B32:B%s' % (31 + stage_rows), 10, 1),
+                       'A35:A%s' % (34 + stage_rows), 'B35:B%s' % (34 + stage_rows), 10, 1),
             _bar_chart('al_start_family', self.env._('Muebles por rubro'),
-                       'D32:D%s' % (31 + len(families)), 'E32:E%s' % (31 + len(families)), 10,
+                       'D35:D%s' % (34 + len(families)), 'E35:E%s' % (34 + len(families)), 10,
                        17),
         ]
 
         # Resumen por piso con filtros nativos (torre, piso y rubro). La clave
         # del piso («Torre A / Piso 3») viene de ARBOL: los vacíos de un rango
         # derramado valen 0 y no sirven de criterio.
-        top = 42
+        # M118-01: debajo de los gráficos, que bajaron por los indicadores.
+        top = max(46, 36 + stage_rows, 36 + len(families))
         cells['A%s' % top] = self.env._('Resumen por piso: filtre por torre, piso o rubro')
         styles['A%s' % top] = TITLE_STYLE
         head = top + 1
@@ -343,7 +439,9 @@ class ProjectProject(models.Model):
             'name': START_SHEET, 'colNumber': 20, 'rowNumber': first + SUMMARY_ROWS + 10,
             'cells': cells, 'styles': styles, 'formats': formats,
             'cols': {'0': {'size': 230}, '1': {'size': 200}, '2': {'size': 320},
-                     '5': {'size': 160}},
+                     '4': {'size': 360}, '5': {'size': 160},
+                     # M118-02: auxiliar de «Lo que falta».
+                     '10': {'isHidden': True}},
             'conditionalFormats': conditional, 'figures': figures, 'tables': tables,
         }
 
@@ -391,15 +489,20 @@ class ProjectProject(models.Model):
             (self.env._('Piezas'), '=%s' % tip('#Piezas (calc.)')),
             (self.env._('Costo por unidad'), '=%s' % tip('#Costo de materiales (calc.)')),
             (self.env._('Costo en la obra'), '=IFERROR(B17*B8,"")'),
-            (self.env._('Precio por ambiente (VENTA)'), '=%s' % tip('#Precio (calc.)')),
-            (self.env._('Margen por unidad'), '=IF(IFERROR(VALUE(B19),0)=0,"",B19-B17)'),
+            (self.env._('Precio por ambiente vendido (VENTA)'), '=%s' % tip('#Precio (calc.)')),
+            # M118-01: el precio neto, con el factor de descuento del contrato
+            # de la tipología, y el margen sobre él.
+            (self.env._('Precio neto por ambiente'),
+             '=IF(IFERROR(VALUE(B19),0)=0,"",B19*IFERROR(VALUE(%s),1))' % tip('#Factor (calc.)')),
+            (self.env._('Margen por unidad (sobre el precio neto)'),
+             '=IF(IFERROR(VALUE(B20),0)=0,"",B20-B17)'),
         ]
         formats = {}
         for row, (label, formula) in enumerate(lines, start=5):
             cells['A%s' % row] = label
             cells['B%s' % row] = formula
             styles['A%s' % row] = HEADER_STYLE
-        for row in (17, 18, 19, 20):
+        for row in (17, 18, 19, 20, 21):
             formats['B%s' % row] = '#,##0.00'
         cells['A22'] = self.env._('Precio nuevo por ambiente')
         styles['A22'] = HEADER_STYLE

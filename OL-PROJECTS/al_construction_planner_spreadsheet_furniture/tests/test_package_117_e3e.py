@@ -187,7 +187,7 @@ class TestPackage117Bring(BringCommon, TransactionCase):
         self.assertIn('Departamentos vendidos', sheets['CONTROL']['Z5'])
         self.assertEqual(sheets['FICHA']['A23'], 'ML vendidos')
         self.assertIn('Traer la venta', sheets['INICIO']['A12'])
-        self.assertIn('Validar y enviar', sheets['INICIO']['A18'])
+        self.assertIn('Validar y enviar', sheets['INICIO']['A19'])
         self.assertIn('parter' if False else 'res.partner',
                       {item['model'] for item in data['lists'].values()})
 

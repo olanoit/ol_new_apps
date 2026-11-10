@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import RedirectWarning, UserError, ValidationError
 from odoo.tests import Form, new_test_user, tagged
 
 from .common import PlannerCommon
@@ -87,7 +87,8 @@ class TestBaseline(PlannerCommon):
         self.assertIn('Sin etapa', self.plan.stage_summary_html)
         # Con etapa pero sin costo, sigue bloqueado y ya no lista etapas.
         self.plan.line_ids.filtered(lambda l: not l.stage).stage = 'production'
-        with self.assertRaises(UserError) as error:
+        # Paquete 1.18, M118-04: solo el costo pendiente abre «Aplicar costo».
+        with self.assertRaises(RedirectWarning) as error:
             self.plan.with_user(self.planner).action_request_approval()
         self.assertNotIn('sin etapa', str(error.exception))
         self.assertIn('Líneas sin costo', str(error.exception))
@@ -131,9 +132,13 @@ class TestBaseline(PlannerCommon):
         self.assertIn('Ponderado de 6 meses', lines[0].price_basis)
         self.assertRegex(lines[0].price_basis, r'122[.,]84')
         self.assertEqual(lines[0].price_basis_date, wizard.basis_date)
-        # Desde la lista de líneas: un solo producto por vez.
-        with self.assertRaises(UserError):
-            self.plan.line_ids.filtered('product_id')[:20].action_open_price_wizard()
+        # Desde la lista de líneas: con varios productos, «Aplicar costo» por
+        # grupo (paquete 1.18, M118-04).
+        several = self.plan.line_ids.filtered('product_id')[:20]
+        self.assertGreater(len(several.product_id), 1)
+        action = several.action_open_price_wizard()
+        self.assertEqual(action['res_model'], 'construction.plan.price.group.wizard')
+        self.assertEqual(action['context']['default_scope'], 'selection')
         action = lines.action_open_price_wizard()
         self.assertEqual(action['context']['default_product_id'], self.p_white.id)
         # Plan no en borrador: ya no se aplica costo.

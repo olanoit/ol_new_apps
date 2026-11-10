@@ -145,9 +145,9 @@ registry.category("web_tour.tours").add("al_construction_furniture_planning", {
                     ["INICIO", "D14", "Listo"], // tipologías y módulos
                     ["INICIO", "D16", "Falta"], // contratas y venta
                     ["INICIO", "G12", 3], // filas de ARBOL
-                    ["INICIO", "B44", "Piso 2"],
-                    ["INICIO", "D44", "Piso 2"],
-                    ["INICIO", "E44", 1],
+                    ["INICIO", "B48", "Piso 2"],
+                    ["INICIO", "D48", "Piso 2"],
+                    ["INICIO", "E48", 1],
                     ["BOM", "J2", "T4C-MEL"], // código desde «nombre · unidad · código»
                     ["REFERENCIAS", "S2", "Material"],
                 ]);

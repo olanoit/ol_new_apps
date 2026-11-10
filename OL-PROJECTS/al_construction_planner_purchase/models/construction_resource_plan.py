@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import Command, models
-from odoo.exceptions import UserError
+from odoo.exceptions import RedirectWarning, UserError
 
 
 class ConstructionResourcePlan(models.Model):
@@ -104,17 +104,56 @@ class ConstructionResourcePlan(models.Model):
             'context': {'default_plan_id': self.id},
         }
 
+    def action_open_price_group_wizard(self, scope='unpriced', lines=None):
+        """«Aplicar costo» por grupo (paquete 1.18, M118-04): desde el plan,
+        con las líneas sin costo o con la selección de la lista."""
+        self.ensure_one()
+        self._check_draft()
+        context = {'default_plan_id': self.id, 'default_scope': scope,
+                   'dialog_size': 'extra-large'}
+        if lines:
+            context['default_selected_line_ids'] = [Command.set(lines.ids)]
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Aplicar costo'),
+            'res_model': 'construction.plan.price.group.wizard',
+            'view_mode': 'form',
+            'views': [(False, 'form')],
+            'target': 'new',
+            'context': context,
+        }
+
+    def action_request_approval(self):
+        """M118-04, punto 5: si lo único que falta es el costo, el aviso dice
+        cuántos productos faltan y abre «Aplicar costo» con ese filtro. Con
+        otros motivos, el mensaje de siempre con todos."""
+        for plan in self.filtered(lambda p: p.state == 'draft'):
+            unpriced = plan.line_ids.filtered(
+                lambda l: l.line_state != 'cancel' and l.qty_planned and l.product_id
+                and not l.price_unit_planned and not l.is_client_supply)
+            if unpriced and len(plan._get_approval_issues()) == 1:
+                action = plan.action_open_price_group_wizard()
+                raise RedirectWarning(self.env._(
+                    'El plan %(plan)s no se puede enviar a aprobación. Líneas sin costo: '
+                    '%(lines)s de %(products)s productos. Decida su costo con «Aplicar costo».',
+                    plan=plan.display_name, lines=len(unpriced),
+                    products=len(unpriced.product_id)),
+                    action, self.env._('Aplicar costo'))
+        return super().action_request_approval()
+
 
 class ConstructionResourcePlanLine(models.Model):
     _inherit = 'construction.resource.plan.line'
 
     def action_open_price_wizard(self):
-        """«Aplicar costo» desde la lista de líneas: las seleccionadas, que
-        deben ser de un solo plan y un solo producto."""
+        """«Aplicar costo» desde la lista de líneas: con un solo producto, el
+        asistente de siempre; con varios, el de grupo (paquete 1.18, M118-04)."""
         plan = self.plan_id
-        if len(plan) != 1 or len(self.product_id) != 1 or not all(self.mapped('product_id')):
+        if len(plan) != 1 or not all(self.mapped('product_id')):
             raise UserError(self.env._(
-                'Seleccione líneas de un solo plan y de un solo producto.'))
+                'Seleccione líneas de un solo plan y con producto.'))
+        if len(self.product_id) > 1:
+            return plan.action_open_price_group_wizard('selection', self)
         action = plan.action_open_price_wizard()
         action['context'] = {
             'default_plan_id': plan.id,

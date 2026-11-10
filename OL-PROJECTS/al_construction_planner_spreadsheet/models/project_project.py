@@ -128,7 +128,10 @@ BUDGET_LAYOUT = 2
 #    MODULOS con la actividad efectiva; REFERENCIAS con la lista 9 (AG:AI).
 # 6: M119-01, «Rendimientos» y banda en PARAMETROS, _MO y el presupuesto de mano
 #    de obra en PROGRAMA.
-FURNITURE_LAYOUT = 6
+# 7: M118-01/02, venta neta en VENTA y TIPOLOGIAS (factor del contrato); INICIO
+#    con venta antes y después del descuento, «Lo que falta» con nombres y
+#    «Rendimientos» antes de «Programa por piso».
+FURNITURE_LAYOUT = 7
 # Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
 FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
                 ('profit', 'Utilidad %'), ('discount', 'Descuento %')]

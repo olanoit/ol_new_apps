@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paquete 1.18, M118-04: «Aplicar costo» por grupo de productos -->
+    <record id="construction_plan_price_group_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.price.group.wizard.form</field>
+        <field name="model">construction.plan.price.group.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Aplicar costo">
+                <field name="plan_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <group string="Líneas">
+                        <field name="scope" widget="radio"/>
+                        <field name="categ_id" invisible="scope != 'category'" required="scope == 'category'"
+                               options="{'no_create': True}"/>
+                        <field name="stage_id" invisible="scope != 'stage'" required="scope == 'stage'"
+                               options="{'no_create': True}"/>
+                        <field name="selected_line_ids" invisible="1"/>
+                    </group>
+                    <group string="Costo del plan">
+                        <field name="basis"/>
+                        <field name="basis_date"/>
+                        <field name="review_pct"/>
+                        <field name="product_count"/>
+                        <field name="review_count" decoration-warning="review_count"/>
+                    </group>
+                </group>
+                <div class="text-muted small mb-2">
+                    Las filas en ámbar se movieron más que la variación que pide revisión y vienen
+                    sin marcar; sin compras, escriba el costo o marque «Usar la referencia».
+                </div>
+                <field name="row_ids">
+                    <list editable="bottom" create="0" delete="0" decoration-warning="needs_review">
+                        <field name="needs_review" column_invisible="1"/>
+                        <field name="currency_id" column_invisible="1"/>
+                        <field name="product_id" readonly="1" force_save="1"/>
+                        <field name="default_code" optional="hide"/>
+                        <field name="uom_id" readonly="1" force_save="1"/>
+                        <field name="qty" readonly="1" force_save="1"/>
+                        <field name="price_reference" readonly="1" force_save="1"/>
+                        <field name="price_suggested" readonly="1" force_save="1"/>
+                        <field name="variation_pct" readonly="1" force_save="1"/>
+                        <field name="purchase_count" readonly="1" force_save="1"/>
+                        <field name="line_ids" column_invisible="1"/>
+                        <field name="price_unit" class="fw-bold"/>
+                        <field name="use_reference" widget="boolean_toggle"/>
+                        <field name="apply" widget="boolean_toggle"/>
+                        <button name="action_open_purchase_prices" type="object" icon="fa-line-chart"
+                                title="Precios de compra del producto"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_apply" type="object" string="Aplicar costo"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

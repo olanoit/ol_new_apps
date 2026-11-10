@@ -53,6 +53,8 @@
                 <field name="construction_person_days" optional="show" invisible="resource_type not in ('labor', 'contract')"/>
                 <field name="price_basis" optional="hide"/>
                 <field name="price_basis_date" optional="hide"/>
+                <field name="price_reference" optional="show"/>
+                <field name="price_reference_date" optional="hide"/>
                 <field name="date_needed" optional="show"/>
                 <field name="supply_mode" optional="hide"/>
                 <field name="analytic_distribution" widget="analytic_distribution" optional="hide"
@@ -137,6 +139,8 @@
                             <field name="currency_id" invisible="1"/>
                             <field name="price_basis"/>
                             <field name="price_basis_date"/>
+                            <field name="price_reference"/>
+                            <field name="price_reference_date"/>
                         </group>
                         <group string="Ejecución">
                             <field name="qty_requested"/>

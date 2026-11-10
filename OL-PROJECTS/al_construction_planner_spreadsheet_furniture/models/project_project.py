@@ -95,6 +95,22 @@ CALCULATED = {
                                         '{c:code}{r}))'),
         ('Precio (calc.)', '=IF({c:code}{r}="","",IFERROR(XLOOKUP({c:code}{r},'
                            '{x:VENTA:typology},{x:VENTA:price}),0))'),
+        # M118-01: factor de descuento del contrato de la tipología (VENTA).
+        ('Factor (calc.)', '=IF({c:code}{r}="","",IFERROR(XLOOKUP({c:code}{r},'
+                           '{x:VENTA:typology},{x:VENTA:#Factor (calc.)}),1))'),
+    ],
+    # M118-01: venta neta por fila de VENTA con el factor de su contrato
+    # (vacío: 1, sin descuento).
+    'VENTA': [
+        ('Factor (calc.)', '=IF({c:contract}{r}="","",IF(IFERROR(XLOOKUP({c:contract}{r},'
+                           '{x:CONTRATOS:name},{x:CONTRATOS:discount_factor})&"","")="",1,'
+                           'IFERROR(VALUE(XLOOKUP({c:contract}{r},{x:CONTRATOS:name},'
+                           '{x:CONTRATOS:discount_factor})),1)))'),
+        ('Ambientes (calc.)', '=IF({c:typology}{r}="","",IFERROR(XLOOKUP({c:typology}{r},'
+                              '{x:TIPOLOGIAS:code},{x:TIPOLOGIAS:#En la obra (calc.)}),0))'),
+        ('Venta neta (calc.)', '=IF({c:typology}{r}="","",IFERROR(VALUE({c:price}{r}),0)*'
+                               'IFERROR(VALUE({c:#Ambientes (calc.)}{r}),0)*'
+                               '{c:#Factor (calc.)}{r})'),
     ],
     # El zócalo no se arma (va sin unión): no cuenta en «módulos a armar».
     'MODULOS': [
@@ -637,6 +653,12 @@ class ProjectProject(models.Model):
             marks.append(mark('empty', [column(letters['advance']), column(letters['guarantee'])],
                               '=AND(${n}{f}<>"",{c}{f}="")'.format(
                                   n=letters['name'], c=letters['advance'], f=first), UNKNOWN_STYLE))
+            # M118-03, punto 3: sin plantilla de hitos, el contrato no tiene
+            # ingreso (la obra toma el de la orden de venta).
+            template = letters['milestone_template']
+            marks.append(mark('milestones', [column(template)],
+                              '=AND(${n}{f}<>"",{c}{f}="")'.format(
+                                  n=letters['name'], c=template, f=first), NO_COST_STYLE))
         elif name == 'VENTA':
             price, typology = letters['price'], letters['typology']
             marks.append(mark('sold', [column(price)], (

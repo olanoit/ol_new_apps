@@ -233,7 +233,8 @@ patch(SpreadsheetAction.prototype, {
             },
             constructionNotify: (message, type = "success", options = {}) =>
                 notification.add(message, { type, ...options }),
-            constructionDialog: (component, props) => dialog.add(component, props),
+            constructionDialog: (component, props, options = {}) =>
+                dialog.add(component, props, options),
             constructionOfferLocked: () => Boolean(this.data?.construction_offer_locked),
             constructionMetadata: (key) => this.data?.[key],
         });
@@ -321,12 +322,32 @@ export async function validate(env, { quiet = false } = {}) {
 }
 
 /** M113-03: el maestro se valida antes de abrir el asistente; con errores no se envía. */
+/**
+ * Ganchos antes del envío de la hoja de planificación (paquete 1.18,
+ * M118-02): cada uno recibe ``env`` y devuelve ``false`` para no enviar o un
+ * objeto con ``after`` (función que corre después del envío).
+ */
+export const beforeSendHooks = [];
+
 async function sendFurniture(env) {
     const result = await validate(env, { quiet: true });
     if (result.errors) {
         return;
     }
+    const afterSend = [];
+    for (const hook of beforeSendHooks) {
+        const answer = await hook(env);
+        if (answer === false) {
+            return;
+        }
+        if (answer && answer.after) {
+            afterSend.push(answer.after);
+        }
+    }
     await send(env, "budget");
+    for (const after of afterSend) {
+        await after();
+    }
 }
 
 async function updateCosts(env) {

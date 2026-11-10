@@ -316,6 +316,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
             for row in result['contracts']:
                 if _text(row.get('name')) and not self._contract_partner(row):
                     warn['contract_no_partner'].append(_text(row.get('name')))
+                # M118-03, punto 3: sin plantilla, sin hitos ni ingreso del
+                # contrato (la obra toma el de la orden de venta).
+                if _text(row.get('name')) and not _text(row.get('milestone_template')):
+                    warn['contract_no_milestones'].append(_text(row.get('name')))
         # Aviso: el presupuesto de la obra aún no está aprobado (propuesta).
         project = self.project_id
         if 'construction_sale_order_id' in project._fields:
@@ -336,6 +340,9 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'Hojas de contratos y venta sin el puente de Ventas instalado (se omiten)'),
             'contract_no_partner': self.env._(
                 'Contratos sin cliente (ni en la hoja ni en la obra): no se crean'),
+            'contract_no_milestones': self.env._(
+                'Contrato sin plantilla de hitos: el ingreso contratado se toma de la orden de '
+                'venta (elija la plantilla en CONTRATOS)'),
             'budget_not_approved': self.env._(
                 'El presupuesto de la obra no está aprobado por el cliente'),
             'module_unknown': self.env._(
@@ -429,7 +436,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
         self._apply_obra(data.get('obra', {}))
         self._apply_roles(data.get('roles', []))
         if 'construction.contract' in self.env:
-            self._apply_contracts(data)
+            summary['contract_warnings'] = self._apply_contracts(data) or []
         return summary
 
     def _apply_rates(self, rows):
@@ -569,6 +576,12 @@ class ConstructionMasterImportWizard(models.TransientModel):
             contract = Contract.search([('project_id', '=', self.project_id.id),
                                         ('name', '=', name)], limit=1)
             vals = {'name': name, 'project_id': self.project_id.id}
+            # M118-03, punto 1: el contrato lleva la orden de la obra; uno
+            # existente sin orden la recibe en el siguiente envío.
+            order = self.project_id.construction_sale_order_id \
+                if 'construction_sale_order_id' in self.project_id._fields else False
+            if order and not contract.sale_order_id:
+                vals['sale_order_id'] = order.id
             # M117-22, punto 5: vacío, un contrato existente conserva su valor.
             for key, field in (('advance', 'advance_pct'), ('guarantee', 'guarantee_pct')):
                 number = _number(row.get(key))
@@ -611,8 +624,26 @@ class ConstructionMasterImportWizard(models.TransientModel):
             line = contract.price_line_ids.filtered(lambda l, t=typology: l.typology_id == t)
             vals = {'unit_price': _number(row.get('price')) or 0.0}
             if line:
+                # M118-03, punto 1: el precio sin línea de venta la recibe.
+                if not line.sale_line_id:
+                    vals.update(self._construction_price_sale_line(contract, typology))
                 line.write(vals)
             else:
                 contract.price_line_ids = [Command.create(dict(
                     vals, typology_id=typology.id,
                     **self._construction_price_sale_line(contract, typology)))]
+        # M118-03, puntos 2 y 3: con plantilla, los hitos se generan al enviar
+        # (los ya facturados se conservan); sin ella, el ingreso contratado de
+        # la obra sale de la orden de venta y el envío lo avisa.
+        warnings = []
+        for contract in contracts.values():
+            if not contract.price_line_ids:
+                continue
+            if contract.milestone_template_id or contract.price_line_ids.milestone_template_id:
+                contract.action_generate_milestones()
+            else:
+                warnings.append(self.env._(
+                    'Contrato %s sin plantilla de hitos: el ingreso contratado se toma de la orden '
+                    'de venta. Elija la plantilla en CONTRATOS y vuelva a enviar.',
+                    contract.display_name))
+        return warnings

@@ -5,6 +5,11 @@ from odoo import fields, models
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
+    # Paquete 1.18, M118-04, punto 4.
+    construction_price_review_pct = fields.Float(
+        string='Variación que pide revisión (%)', default=10.0,
+        help='«Aplicar costo» por grupo deja sin marcar los productos cuyo costo de la base se '
+             'aleja del costo de referencia más que este porcentaje.')
     construction_price_alert_pct = fields.Float(
         string='Alerta de precio sobre el plan (%)', default=5.0,
         help='El abastecimiento de la obra marca el producto cuyo último precio de compra '

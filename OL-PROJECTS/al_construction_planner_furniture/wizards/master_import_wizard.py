@@ -778,6 +778,9 @@ class ConstructionMasterImportWizard(models.TransientModel):
             'plantilla, %(spaces)s ambientes nuevos y %(eto)s módulos del ETO.',
             file=self.filename or '—', typologies=summary['typologies'],
             modules=summary['modules'], spaces=summary['spaces'], eto=summary['eto']))
+        # M118-03, punto 3: el contrato sin plantilla de hitos.
+        for warning in summary.get('contract_warnings') or []:
+            project_sudo.message_post(author_id=self.env.user.partner_id.id, body=warning)
         return self.project_id.action_view_construction_typologies()
 
     def _module_extra_values(self, row):

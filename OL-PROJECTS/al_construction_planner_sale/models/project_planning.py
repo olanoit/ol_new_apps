@@ -22,8 +22,8 @@ class ProjectProject(models.Model):
     construction_income_planned = fields.Monetary(
         string='Ingreso contratado', compute='_compute_construction_margins',
         currency_field='construction_margin_currency_id', compute_sudo=True,
-        help='Contratos de obra con sus cambios aprobados o, sin contratos, la orden de venta '
-             'de la obra (sin impuestos).')
+        help='Contratos de obra con hitos, con sus cambios aprobados o, mientras ningún contrato '
+             'tenga hitos, la orden de venta de la obra (sin impuestos).')
     construction_cost_planned = fields.Monetary(
         string='Costo planificado', compute='_compute_construction_margins',
         currency_field='construction_margin_currency_id', compute_sudo=True,
@@ -80,6 +80,9 @@ class ProjectProject(models.Model):
             contracts = self.env['construction.contract'].search([
                 ('project_id', '=', project.id), ('state', 'in', ('draft', 'active', 'closed'))]) \
                 if project.id else self.env['construction.contract']
+            # Paquete 1.18, M118-03, punto 4: un contrato sin hitos aún no
+            # tiene monto; mientras ninguno los tenga, cuenta la orden.
+            contracts = contracts.filtered('milestone_ids')
             if contracts:
                 income = sum(c.currency_id._convert(
                     c.amount_total + c.amount_changes, currency, company, fields.Date.today())

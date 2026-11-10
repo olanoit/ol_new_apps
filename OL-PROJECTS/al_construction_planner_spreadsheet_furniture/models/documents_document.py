@@ -917,6 +917,23 @@ class DocumentsDocument(models.Model):
         self.construction_sheet_rows = rows
         return result
 
+    def construction_log_pending_send(self, pending):
+        """M118-02, punto 4: lo enviado con pasos pendientes queda en la
+        conversación de la obra."""
+        self.ensure_one()
+        pending = [str(item) for item in pending or [] if item]
+        if not pending or not self.construction_project_id:
+            return False
+        # sudo: quien planifica puede no tener escritura en la obra; solo se
+        # deja el mensaje con él como autor.
+        project_sudo = self.construction_project_id.sudo()
+        body = Markup('<p>%s</p><ul>%s</ul>') % (
+            self.env._('Hoja enviada (v%(version)s) con %(count)s pasos pendientes:',
+                       version=self.construction_send_version or 1, count=len(pending)),
+            Markup('').join(Markup('<li>%s</li>') % item for item in pending))
+        project_sudo.message_post(author_id=self.env.user.partner_id.id, body=body)
+        return True
+
     def construction_sheet_import_done(self, filename, sheets, errors, warnings):
         """Deja en el historial de la obra la importación de un Excel a la
         hoja (M113-04)."""

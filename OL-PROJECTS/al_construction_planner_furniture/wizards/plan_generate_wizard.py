@@ -127,7 +127,11 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         analytic = {str(project.account_id.id): 100.0} if project.account_id else False
         Task = self.env['project.task']
         result = {'modules_to_create': [], 'lines': [], 'warnings': defaultdict(list),
-                  'line_kinds': defaultdict(lambda: [0, 0.0])}
+                  'line_kinds': defaultdict(lambda: [0, 0.0]),
+                  # M118-04, punto 2: monto estimado con el costo de referencia
+                  # de las líneas sin costo decidido.
+                  'reference': [0.0], 'reference_missing': set(),
+                  'reference_products': set()}
         spaces = self._get_spaces()
         existing_modules = Task.search([
             ('construction_space_task_id', 'in', spaces.ids), ('construction_level', '=', 'module')])
@@ -183,7 +187,33 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                 required_cache[(budget.id, activity.id)] = budget._required_productivity(activity)
             return budget, required_cache[(budget.id, activity.id)]
 
+        today = fields.Date.context_today(self)
+        reference_cache = {}
+
+        def reference(vals):
+            """M118-04, punto 1: costo del producto en el maestro, en la
+            unidad de la línea, como referencia (el costo planificado sigue
+            siendo una decisión)."""
+            product = self.env['product.product'].browse(vals.get('product_id'))
+            if not product:
+                return 0.0
+            key = (product.id, vals.get('product_uom_id'))
+            if key not in reference_cache:
+                uom = self.env['uom.uom'].browse(vals.get('product_uom_id')) or product.uom_id
+                cost = product.with_company(plan.company_id).standard_price
+                reference_cache[key] = product.uom_id._compute_price(cost, uom) \
+                    if uom and uom != product.uom_id else cost
+            return reference_cache[key]
+
         def add(kind, vals):
+            if vals.get('resource_type') == 'material':
+                vals['price_reference'] = reference(vals)
+                vals['price_reference_date'] = today
+                if not vals['price_unit_planned']:
+                    result['reference'][0] += vals['qty_planned'] * vals['price_reference']
+                    if not vals['price_reference']:
+                        result['reference_missing'].add(vals['product_id'])
+                    result['reference_products'].add(vals['product_id'])
             budget, required = labor_budget(vals)
             if required:
                 vals['construction_person_days'] = vals['qty_planned'] / required
@@ -440,7 +470,15 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                     label, level or self.env._('Ambiente o módulo'), count, fmt(amount)))
             rows.append(Markup('<tr class="fw-bold"><td>%s</td><td></td>'
                                '<td class="text-end">%s</td><td class="text-end">%s</td></tr>') % (
-                self.env._('Total de líneas'), total_count, fmt(total_amount)))
+                self.env._('Total de líneas (monto con costo decidido)'), total_count,
+                fmt(total_amount)))
+            # M118-04, punto 2: lo que costarían las líneas sin costo con el
+            # costo de referencia del maestro.
+            if data['reference_products']:
+                rows.append(Markup('<tr class="text-muted"><td>%s</td><td></td><td></td>'
+                                   '<td class="text-end">%s</td></tr>') % (
+                    self.env._('Monto estimado con el costo de referencia (materiales sin costo '
+                               'decidido)'), fmt(data['reference'][0])))
             wizard.preview_html = Markup(
                 '<table class="table table-sm o_main_table"><thead><tr><th>%s</th><th>%s</th>'
                 '<th class="text-end">%s</th><th class="text-end">%s</th></tr></thead>'
@@ -460,8 +498,15 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         unpriced = sum(1 for vals in data['lines'] if not vals['price_unit_planned'])
         if unpriced:
             items.append(self.env._(
-                '%(count)s líneas sin costo: el planificador debe escribirlo (Aplicar costo) '
-                'antes de enviar el plan a aprobación.', count=unpriced))
+                '%(count)s líneas sin costo de %(products)s productos por decidir: el planificador '
+                'debe escribirlo (Aplicar costo) antes de enviar el plan a aprobación.',
+                count=unpriced, products=len(data['reference_products'])))
+        missing = self.env['product.product'].browse(sorted(data['reference_missing']))
+        if missing:
+            items.append(self.env._(
+                'Sin costo en el maestro: %s.', ', '.join(
+                    ' · '.join(filter(None, [p.name, p.default_code])) for p in missing[:20])
+                + (' …' if len(missing) > 20 else '')))
         messages = {
             'no_typology': self.env._('Ambientes sin tipología (no se generan)'),
             'no_modules': self.env._('Ambientes sin módulos (marque «Crear módulos faltantes»)'),
