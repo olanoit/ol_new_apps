@@ -49,6 +49,29 @@ class PurchaseOrder(models.Model):
                 'purchase_line_id', self.order_line)
         return res
 
+    def button_cancel(self):
+        res = super().button_cancel()
+        self._construction_release_cancelled_lines()
+        return res
+
+    def _construction_release_cancelled_lines(self):
+        """CR-33 (paquete 4 de CREVAL): al anular la orden de contrata, cada
+        línea del plan que queda sin asignación vigente vuelve a no tener
+        contrata; si tiene otra orden vigente, se queda con la contrata de esa
+        orden."""
+        orders = self.filtered(lambda o: o.construction_is_service_order and o.state == 'cancel')
+        if not orders:
+            return
+        # sudo: anular la orden la hace compras; la línea del plan es del
+        # planificador y solo se le quita la contrata que ya no tiene orden.
+        plan_lines_sudo = orders.sudo().order_line.construction_allocation_ids.plan_line_id
+        for line in plan_lines_sudo:
+            partner = line._construction_active_contract_partner()
+            if line.partner_id != partner:
+                line.with_context(construction_plan_force=True).write(
+                    {'partner_id': partner.id})
+        plan_lines_sudo._refresh_control()
+
     def action_view_construction_settlements(self):
         self.ensure_one()
         return {
@@ -84,6 +107,19 @@ class PurchaseOrderLine(models.Model):
 
 class ConstructionResourcePlanLine(models.Model):
     _inherit = 'construction.resource.plan.line'
+
+    def _construction_active_contract_allocations(self):
+        """Asignaciones de la línea a una orden de contrata vigente."""
+        return self.sudo().allocation_ids.filtered(
+            lambda a: a.kind == 'service_order' and a.state != 'cancel'
+            and a.purchase_line_id.order_id.state != 'cancel')
+
+    def _construction_active_contract_partner(self):
+        """Contrata de la última orden vigente de la línea (o ninguna)."""
+        self.ensure_one()
+        allocations = self._construction_active_contract_allocations()
+        orders = allocations.purchase_line_id.order_id.sorted('id', reverse=True)
+        return orders[:1].partner_id.sudo(False)
 
     def _get_driver_amounts(self):
         """Además del personal propio, lo asignado a la OC de servicio de la

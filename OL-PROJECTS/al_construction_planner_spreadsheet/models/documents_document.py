@@ -19,7 +19,7 @@ from odoo.exceptions import UserError
 from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import COLUMNS
 
 from .project_project import (
-    PRESUPUESTO_HEADERS, ROW_KEYS, TEMPLATE_LABELS, cell_text, presupuesto_row,
+    PRESUPUESTO_HEADERS, ROW_KEYS, TEMPLATE_LABELS, cell_text, presupuesto_row, sheet_digits,
 )
 from .sheet_keys import KEYS_SHEET, apply_keys
 
@@ -316,8 +316,10 @@ class DocumentsDocument(models.Model):
         # y no pisa las columnas de fórmula.
         result['_keyed'] = keyed
         result['PRESUPUESTO'] = [PRESUPUESTO_HEADERS] + [
-            presupuesto_row(values, number, self.construction_sheet_layout) for number, values in
-            enumerate(rows['PRESUPUESTO'], start=2)]
+            presupuesto_row(values, number, self.construction_sheet_layout,
+                            sheet_digits(self.env, self.construction_project_id.company_id
+                                         or self.construction_sale_order_id.company_id or None))
+            for number, values in enumerate(rows['PRESUPUESTO'], start=2)]
         result['_from_top'] = ['OBRA', 'PRESUPUESTO']
         return result
 

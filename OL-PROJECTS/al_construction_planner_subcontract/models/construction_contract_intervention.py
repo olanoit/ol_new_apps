@@ -168,13 +168,31 @@ class ConstructionTaskProgress(models.Model):
         for progress in self.filtered('partner_id'):
             po_line = Settlement._get_service_line(progress)
             intervened = po_line.construction_intervention_date
-            if intervened and progress.date and progress.date > intervened:
+            if not intervened or not progress.date or progress.date < intervened:
+                continue
+            if progress.date > intervened:
                 raise ValidationError(self.env._(
                     '%(task)s · %(activity)s: la contrata %(partner)s se intervino el %(date)s en '
                     'esta partida y no registra avance nuevo.',
                     task=progress.task_id.display_name,
                     activity=progress.activity_id.display_name,
                     partner=progress.partner_id.display_name, date=intervened))
+            # CR-36 (paquete 4 de CREVAL): del día de la intervención vale solo
+            # lo reportado antes de confirmarla.
+            intervention = po_line.construction_intervention_line_id.intervention_id
+            confirmed = intervention.create_date
+            reported = progress.create_date or fields.Datetime.now()
+            if confirmed and reported > confirmed:
+                hour = fields.Datetime.context_timestamp(
+                    progress.with_context(tz=self.env.user.tz or 'America/Lima'), confirmed)
+                raise ValidationError(self.env._(
+                    '%(task)s · %(activity)s: la contrata %(partner)s se intervino el %(date)s a '
+                    'las %(hour)s (%(name)s); el avance de ese día reportado después no se '
+                    'registra.',
+                    task=progress.task_id.display_name,
+                    activity=progress.activity_id.display_name,
+                    partner=progress.partner_id.display_name, date=intervened,
+                    hour=hour.strftime('%H:%M'), name=intervention.name))
 
 
 class ConstructionGuaranteeFund(models.Model):

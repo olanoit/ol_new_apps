@@ -751,7 +751,12 @@ class ConstructionContractSettlement(models.Model):
         icon = Markup('<i class="fa fa-lg fa-info-circle"></i>')
         pending = self.review_ids.filtered(lambda r: r.status == 'pending')[:1]
         if pending and pending.todo_by:
-            text = self.env._('Pendiente de aprobación por %s', pending.todo_by)
+            # Paquete 4 de CREVAL, CR-37: el grupo con su eje
+            # («Planificación de obra: ejecución › Aprueba»), no «Grupo Aprueba».
+            group = pending.reviewer_group_id
+            todo_by = ' › '.join(filter(None, [group.privilege_id.name, group.name])) \
+                if group else pending.todo_by
+            text = self.env._('Pendiente de aprobación por %s', todo_by)
         else:
             text = self.env._('Esta liquidación necesita aprobación')
         return Markup('%s %s') % (icon, text)

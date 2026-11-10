@@ -27,6 +27,7 @@ from collections import defaultdict
 from markupsafe import Markup
 
 from odoo import Command, api, fields, models
+from odoo.tools import float_round
 from odoo.exceptions import UserError
 
 from odoo.addons.al_construction_planner.models.common import budget_code_levels, norm
@@ -69,6 +70,8 @@ COLUMNS = {
         # Paquete 1.16, CR-22 g: el insumo se elige por nombre en la hoja de
         # trabajo; el código se calcula de esta columna (informativa).
         ('pick', ('Insumo: escriba tipo o nombre',), False),
+        # Paquete 4 de CREVAL, CR-31: lo entrega el cliente (Sí o vacío).
+        ('client_supply', ('Suministro del cliente',), False),
     ],
     # Columnas A a W del libro 6.6 con «Costo unitario sin APU» (CR-18, c y
     # D1), en el orden de la hoja; las de PRESUPUESTO_FORMULAS son fórmulas.
@@ -135,6 +138,9 @@ MODES = {
 }
 CONTRACT_TYPES = {'suma alzada': 'lump_sum', 'precios unitarios': 'unit_price'}
 PRINT_FORMATS = {'solo precios': 'prices', 'suma alzada': 'prices', 'desglosado': 'breakdown'}
+YES_TEXTS = ('si', 'sí', 'x', '1', 'yes', 'true', 'verdadero')
+COLUMN_LABELS = {key: aliases[0] for columns in COLUMNS.values()
+                 for key, aliases, _required in columns}
 FORMULA_ERRORS = ('#REF!', '#DIV/0!', '#VALUE!', '#N/A', '#NAME?', '#NUM!', '#NULL!')
 # Líneas del pie que no son partidas (CR-12): nombre de la línea y signo.
 FOOTER_LINES = (
@@ -162,6 +168,16 @@ def _date(value):
             continue
     return False
 
+
+
+def _column_letter(index):
+    """Letra de la columna ``index`` (0 → A)."""
+    letters = ''
+    index += 1
+    while index:
+        index, rest = divmod(index - 1, 26)
+        letters = chr(65 + rest) + letters
+    return letters
 
 class ConstructionBudgetBookWizard(models.TransientModel):
     _name = 'construction.budget.book.wizard'
@@ -219,9 +235,16 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         return sheets
 
     @api.model
-    def _sheet_rows(self, rows, sheet, errors):
-        """Filas de una hoja con encabezados: [{clave: valor, '_row': n}]."""
+    def _sheet_rows(self, rows, sheet, errors, broken=None):
+        """Filas de una hoja con encabezados: [{clave: valor, '_row': n}].
+
+        Paquete 4 de CREVAL, CR-29: una columna obligatoria que falta da un
+        solo error (la hoja queda marcada en ``broken`` para no
+        encadenar errores en las que la usan), y toda celda con una fórmula
+        rota (#REF!…) de la fila se informa, también en las columnas de
+        cálculo que el envío no lee."""
         columns = COLUMNS[sheet]
+        best = (-1, None, {}, [])
         for position, row in enumerate(rows[:10]):
             names = [norm(_text(cell)) for cell in row]
             index = {}
@@ -233,21 +256,33 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                         index[key] = names.index(norm(alias))
                         break
             if all(key in index for key, _aliases, required in columns if required):
+                headers = list(row)
                 break
+            if len(index) > best[0]:
+                best = (len(index), position, index, row)
         else:
-            missing = [aliases[0] for key, aliases, required in columns if required]
-            errors.append((sheet, 1, '', self.env._(
-                'No se encuentran los encabezados obligatorios: %s.', ', '.join(missing))))
+            index = best[2]
+            for key, aliases, required in columns:
+                if required and key not in index:
+                    errors.append((sheet, 1, key, self.env._(
+                        'Falta la columna obligatoria «%(column)s» en %(sheet)s.',
+                        column=aliases[0], sheet=sheet)))
+            if broken is not None:
+                broken.add(sheet)
             return []
         result = []
         for number, row in enumerate(rows[position + 1:], start=position + 2):
             values = {key: row[i] if i < len(row) else None for key, i in index.items()}
             if not any(_text(value) for value in values.values()):
                 continue
-            for key, value in values.items():
+            by_column = {i: key for key, i in index.items()}
+            for i, value in enumerate(row):
                 if isinstance(value, str) and value.strip().upper() in FORMULA_ERRORS:
-                    errors.append((sheet, number, key, self.env._(
-                        'La fórmula da error (%s).', value.strip())))
+                    column = by_column.get(i) or (_text(headers[i]) if i < len(headers) else '') \
+                        or _column_letter(i)
+                    errors.append((sheet, number, column, self.env._(
+                        'La fórmula da error (%s): revise si se borró una columna o una '
+                        'pestaña que usa.', value.strip())))
             values['_row'] = number
             result.append(values)
         return result
@@ -280,6 +315,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         self.ensure_one()
         sheets = self._load_book(content or base64.b64decode(self.file))
         errors, warnings = [], []
+        broken = set()
         for name in ('INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO'):
             if name not in sheets:
                 errors.append((name, 0, '', self.env._('Falta la hoja %s.', name)))
@@ -316,7 +352,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                     'La unidad «%s» no tiene equivalencia (hoja LISTAS).', text)))
             return uom
 
-        for row in self._sheet_rows(sheets['INSUMOS'], 'INSUMOS', errors):
+        for row in self._sheet_rows(sheets['INSUMOS'], 'INSUMOS', errors, broken):
             code = _text(row.get('code'))
             if code in book['insumos']:
                 errors.append(('INSUMOS', row['_row'], 'code', self.env._(
@@ -340,7 +376,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 else self.env['uom.uom'],
                 'price': _number(row.get('price')) or 0.0, 'currency': currency,
                 'row': row['_row']}
-        for row in self._sheet_rows(sheets['APU'], 'APU', errors):
+        for row in self._sheet_rows(sheets['APU'], 'APU', errors, broken):
             code = _text(row.get('code'))
             if code in book['apus']:
                 errors.append(('APU', row['_row'], 'code', self.env._(
@@ -357,26 +393,31 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 'hours': _number(row.get('hours')) or 0.0,
                 'mode': MODES.get(mode_text, 'own'), 'stage': _text(row.get('stage')),
                 'unit_cost': _number(row.get('unit_cost')), 'lines': [], 'row': row['_row']}
-        for row in self._sheet_rows(sheets['APU_DETALLE'], 'APU_DETALLE', errors):
+        for row in self._sheet_rows(sheets['APU_DETALLE'], 'APU_DETALLE', errors, broken):
             apu, code = _text(row.get('apu')), _text(row.get('code'))
             if apu not in book['apus']:
-                errors.append(('APU_DETALLE', row['_row'], 'apu', self.env._(
-                    'El APU %s no existe en la hoja APU.', apu)))
+                if 'APU' not in broken:
+                    errors.append(('APU_DETALLE', row['_row'], 'apu', self.env._(
+                        'El APU %s no existe en la hoja APU.', apu)))
                 continue
             if code not in book['insumos']:
-                errors.append(('APU_DETALLE', row['_row'], 'code', self.env._(
-                    'El insumo %s no existe en la hoja INSUMOS.', code)))
+                if 'INSUMOS' not in broken:
+                    errors.append(('APU_DETALLE', row['_row'], 'code', self.env._(
+                        'El insumo %s no existe en la hoja INSUMOS.', code)))
                 continue
             book['apus'][apu]['lines'].append({
                 'insumo': code, 'crew': _number(row.get('crew')), 'pct': _number(row.get('pct')),
                 'qty': _number(row.get('qty')), 'price': _number(row.get('price')),
-                'stage': _text(row.get('stage')), 'row': row['_row']})
+                'stage': _text(row.get('stage')),
+                'client_supply': norm(_text(row.get('client_supply'))) in YES_TEXTS,
+                'row': row['_row']})
         items = defaultdict(int)
-        for row in self._sheet_rows(sheets['PRESUPUESTO'], 'PRESUPUESTO', errors):
+        for row in self._sheet_rows(sheets['PRESUPUESTO'], 'PRESUPUESTO', errors, broken):
             apu = _text(row.get('apu'))
             if apu and apu not in book['apus']:
-                errors.append(('PRESUPUESTO', row['_row'], 'apu', self.env._(
-                    'El APU %s no existe en la hoja APU.', apu)))
+                if 'APU' not in broken:
+                    errors.append(('PRESUPUESTO', row['_row'], 'apu', self.env._(
+                        'El APU %s no existe en la hoja APU.', apu)))
                 continue
             item = _text(row.get('item'))
             cost_no_apu = _number(row.get('cost_no_apu'))
@@ -387,6 +428,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             if item and not apu and not _text(row.get('uom')) and not _number(
                     row.get('qty_real')) and cost_no_apu is None and cost_real is None:
                 book['titles'][item] = _text(row.get('name')) or item
+                book.setdefault('title_rows', {})[item] = row['_row']
                 catalog = _text(row.get('specialty_catalog')) or _text(
                     row.get('subspecialty_catalog'))
                 if catalog:
@@ -446,6 +488,21 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                     'end': _date(row[index['end']]) if 'end' in index and
                     index['end'] < len(row) else False,
                 }
+        # CR-30: el nombre de cada nivel de la ruta, de la fila que lo da (el
+        # título o las columnas Especialidad y Sub-especialidad de cualquier
+        # partida), para que el nodo sea uno por código.
+        level_names = {}
+        for partida in book['partidas']:
+            codes = budget_code_levels(partida['item'])[:-1]
+            for depth, column in enumerate(('specialty', 'subspecialty')):
+                if depth < len(codes) and partida[column]:
+                    level_names.setdefault(codes[depth], partida[column])
+        book['level_names'] = level_names
+        # Paquete 4 de CREVAL, CR-29 y CR-30: lo que hoy solo detectaba el
+        # envío.
+        errors += self._check_contract_activities(book)
+        errors += self._check_catalog_accounts(book)
+        warnings += self._check_level_names(book)
         unnumbered = [p for p in book['partidas'] if not p['item']]
         if unnumbered:
             warnings.append(self.env._('%s partidas sin número de ítem.', len(unnumbered)))
@@ -576,19 +633,160 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         return {'type': 'ir.actions.act_window', 'res_model': self._name, 'res_id': self.id,
                 'view_mode': 'form', 'target': 'new'}
 
-    def _book_direct_cost(self, book):
-        """Costo directo real del libro: el «Costo real» de cada partida o,
-        sin él, metrado real × costo del APU."""
-        unit = {code: self._apu_unit_cost(book, apu) for code, apu in book['apus'].items()}
-        total = 0.0
+    def _partida_mode(self, book, partida):
+        """Modalidad efectiva de la partida: la de PLAN, la de la fila o la
+        del APU."""
+        apu = book['apus'].get(partida['apu']) or {}
+        return (book.get('plan', {}).get(partida['item']) or {}).get('mode') \
+            or partida['mode'] or apu.get('mode') or 'own'
+
+    def _check_contract_activities(self, book):
+        """CR-29 a): un APU de una partida en contrata (solo mano de obra o a
+        todo costo) necesita la actividad de la contrata: un insumo de tipo
+        contrata en su detalle o la actividad que ya tiene la receta en Odoo."""
+        Template = self.env['construction.execution.template']
+        modes = dict(self.env['project.task']._fields[
+            'construction_execution_mode']._description_selection(self.env))
+        errors, seen = [], set()
         for partida in book['partidas']:
-            if partida['cost_real'] is not None:
-                total += partida['cost_real']
-            elif partida['apu']:
-                total += partida['qty_real'] * unit[partida['apu']]
-            else:
-                total += partida['qty_real'] * (partida.get('cost_no_apu') or 0.0)
-        return total
+            code = partida['apu']
+            if not code or code in seen or code not in book['apus']:
+                continue
+            mode = self._partida_mode(book, partida)
+            if mode not in ('labor_contract', 'full_contract'):
+                continue
+            apu = book['apus'][code]
+            if any(book['insumos'].get(line['insumo'], {}).get('kind') == 'contract'
+                   for line in apu['lines']):
+                continue
+            existing = Template.search([
+                ('code', '=', code), ('company_id', 'in', (self.company_id.id, False)),
+                ('project_id', 'in', (self.project_id.id, False))], limit=1)
+            if existing.contract_activity_id:
+                continue
+            seen.add(code)
+            errors.append(('APU', apu['row'], 'mode', self.env._(
+                'APU %(apu)s (modalidad «%(mode)s», partida %(item)s): falta la actividad de la '
+                'contrata. Agregue en APU_DETALLE un insumo de tipo contrata.',
+                apu=code, mode=modes.get(mode, mode), item=partida['item'] or partida['name'])))
+        return errors
+
+    def _catalog_levels(self):
+        """Niveles de la plantilla de la obra en modo Catálogo con plan
+        analítico, por profundidad (solo los dos primeros tienen columna de
+        catálogo en la hoja)."""
+        template = self.project_id.construction_level_template_id
+        levels = template.line_ids.sorted(lambda l: (l.sequence, l.id)) if template else []
+        return {depth: level for depth, level in enumerate(levels[:2])
+                if level.analytic_mode == 'catalog' and level.analytic_plan_id}
+
+    def _check_catalog_accounts(self, book):
+        """CR-29 b): con un nivel en modo Catálogo, cada partida necesita la
+        cuenta del catálogo de ese nivel, escrita en la columna de catálogo o
+        por el nombre del título."""
+        levels = self._catalog_levels()
+        if not levels:
+            return []
+        Task = self.env['project.task']
+        columns = {0: COLUMN_LABELS['specialty_catalog'],
+                   1: COLUMN_LABELS['subspecialty_catalog']}
+        errors, seen = [], set()
+        for partida in book['partidas']:
+            path = self._partida_path(book, partida)
+            catalog = self._partida_catalog(book, partida) or [False, False]
+            for depth, level in levels.items():
+                if depth >= len(path):
+                    continue
+                code, name = path[depth]
+                key = (depth, code or name)
+                if key in seen:
+                    continue
+                if Task._construction_catalog_account(level, catalog[depth]) or \
+                        Task._construction_catalog_account(level, name):
+                    continue
+                seen.add(key)
+                examples = self.env['account.analytic.account'].search(
+                    [('plan_id', 'child_of', level.analytic_plan_id.id)], limit=3)
+                row = book.get('title_rows', {}).get(code) or partida['row']
+                errors.append(('PRESUPUESTO', row, columns[depth], self.env._(
+                    '%(level)s %(title)s: no tiene cuenta del catálogo «%(plan)s». Escriba en '
+                    '«%(column)s» el código o el nombre de una cuenta del plan%(examples)s.',
+                    level=level.name, title=' '.join(filter(None, [code, name])) if name != code
+                    else code, plan=level.analytic_plan_id.name, column=columns[depth],
+                    examples=(' (%s)' % ', '.join(
+                        ' · '.join(filter(None, [a.name, a.code])) for a in examples))
+                    if examples else '')))
+        return errors
+
+    def _check_level_names(self, book):
+        """CR-30: dos filas que dan nombres distintos al mismo código de
+        nivel (título y columnas Especialidad o Sub-especialidad)."""
+        names = defaultdict(set)
+        for code, name in book.get('titles', {}).items():
+            if name and name != code:
+                names[code].add(name)
+        for partida in book['partidas']:
+            codes = budget_code_levels(partida['item'])[:-1]
+            for depth, column in enumerate(('specialty', 'subspecialty')):
+                text = partida[column]
+                if depth < len(codes) and text:
+                    # «3.90 MUROS» y «MUROS» son el mismo nombre.
+                    label = text[len(codes[depth]):].strip() \
+                        if text.startswith(codes[depth] + ' ') else text
+                    title = book.get('titles', {}).get(codes[depth])
+                    if title and title != codes[depth]:
+                        title = title[len(codes[depth]):].strip() \
+                            if title.startswith(codes[depth] + ' ') else title
+                    if label and label != title:
+                        names[codes[depth]].add(label)
+        warnings = []
+        for code, labels in sorted(names.items()):
+            clean = {label[len(code):].strip() if label.startswith(code + ' ') else label
+                     for label in labels}
+            if len(clean) > 1:
+                warnings.append(self.env._(
+                    'El nivel %(code)s tiene nombres distintos en la hoja: %(names)s. Se usa el '
+                    'de su fila de título.', code=code, names=' / '.join(sorted(clean))))
+        return warnings
+
+    def _partida_direct_cost(self, book, partida):
+        """Costo real de la partida con el redondeo de la línea de la
+        cotización (CR-27): el costo unitario a «Product Price» y el importe a
+        la moneda."""
+        Precision = self.env['decimal.precision']
+        if partida['cost_real'] is not None and not partida['qty_real']:
+            return self.currency_id.round(partida['cost_real'])
+        cost = float_round(self._partida_offer(book, partida)[0],
+                           precision_digits=Precision.precision_get('Product Price'))
+        qty = float_round(partida['qty_real'] or 0.0,
+                          precision_digits=Precision.precision_get('Product Unit'))
+        return self.currency_id.round(qty * cost)
+
+    def _book_direct_cost(self, book):
+        """Costo directo real del libro: por partida, metrado real × costo
+        unitario (del «Costo real», del APU o sin APU), con un solo redondeo
+        como la línea de la cotización (CR-27)."""
+        return sum(self._partida_direct_cost(book, partida) for partida in book['partidas'])
+
+    def _direct_cost_differences(self, book, lines):
+        """Partidas cuyo costo real en la cotización no es el del libro
+        (CR-27, punto 3)."""
+        by_item = {}
+        for line in lines:
+            if line.construction_budget_item:
+                by_item[line.construction_budget_item] = by_item.get(
+                    line.construction_budget_item, 0.0) + line.construction_amount_real
+        result = []
+        for partida in book['partidas']:
+            expected = self._partida_direct_cost(book, partida)
+            real = by_item.get(partida['item'])
+            if real is None or self.currency_id.compare_amounts(real, expected):
+                result.append(self.env._(
+                    '%(item)s %(name)s: libro %(book)s, cotización %(real)s',
+                    item=partida['item'] or '', name=partida['name'] or '',
+                    book=self.currency_id.format(expected),
+                    real=self.currency_id.format(real or 0.0)))
+        return result
 
     def _apu_unit_cost(self, book, apu):
         """Costo por unidad del APU con las fórmulas de 6.6: cuadrilla ×
@@ -652,10 +850,13 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         expected = self._book_direct_cost(book)
         compared = real
         if abs(compared - expected) > 0.011:
+            differences = self._direct_cost_differences(book, lines)
             raise UserError(self.env._(
                 'El costo directo de la cotización (%(real)s) no es el del libro (%(book)s): '
-                'se revierte el envío. Revise los costos del APU y el «Costo real».',
-                real=self.currency_id.format(compared), book=self.currency_id.format(expected)))
+                'se revierte el envío. Revise los costos del APU y el «Costo real».%(detail)s',
+                real=self.currency_id.format(compared), book=self.currency_id.format(expected),
+                detail=('\n' + self.env._('Partidas con diferencia:') + '\n'
+                        + '\n'.join(differences[:15])) if differences else ''))
         messages = [self.env._(
             'Cotización %(order)s: %(lines)s partidas, costo directo real %(amount)s.',
             order=order.name, lines=len(lines), amount=self.currency_id.format(real))]
@@ -753,6 +954,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                     vals['product_id'] = product.id
                 if insumo['currency'] and insumo['currency'] != self.company_id.currency_id:
                     vals['line_currency_id'] = insumo['currency'].id
+                if line.get('client_supply'):
+                    vals['is_client_supply'] = True
                 lines.append(vals)
             recipes[code] = {'name': apu['name'], 'uom': apu['uom'], 'lines': lines}
         # Sin obra, las recetas son de la cotización (D4), no de la biblioteca.
@@ -898,7 +1101,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         path = []
         for depth, code in enumerate(codes):
             name = book.get('titles', {}).get(code) or (
-                fallback[depth] if depth < len(fallback) else False) or code
+                fallback[depth] if depth < len(fallback) else False) or \
+                book.get('level_names', {}).get(code) or code
             path.append([code, name])
         return path
 

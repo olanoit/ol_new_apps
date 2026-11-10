@@ -850,7 +850,12 @@ class ConstructionResourcePlan(models.Model):
         icon = Markup('<i class="fa fa-lg fa-info-circle"></i>')
         pending = self.review_ids.filtered(lambda r: r.status == 'pending')[:1]
         if pending and pending.todo_by:
-            text = self.env._('Pendiente de aprobación por %s', pending.todo_by)
+            # Paquete 4 de CREVAL, CR-37: el grupo con su eje
+            # («Planificación de obra: ejecución › Aprueba»), no «Grupo Aprueba».
+            group = pending.reviewer_group_id
+            todo_by = ' › '.join(filter(None, [group.privilege_id.name, group.name])) \
+                if group else pending.todo_by
+            text = self.env._('Pendiente de aprobación por %s', todo_by)
         else:
             text = self.env._('Este plan de recursos necesita aprobación')
         return Markup('%s %s') % (icon, text)
@@ -1440,6 +1445,17 @@ class ConstructionResourcePlanLine(models.Model):
         self.ensure_one()
         return sum(a._get_requested_qty()
                    for a in self.allocation_ids.filtered(lambda a: a.state != 'open'))
+
+    @api.depends('task_id', 'product_id', 'activity_id', 'resource_type')
+    def _compute_display_name(self):
+        """Paquete 4 de CREVAL, CR-37: la línea por su nombre (nivel y
+        recurso), no por su número interno."""
+        types = dict(self._fields['resource_type']._description_selection(self.env))
+        for line in self:
+            resource = (line.product_id or line.activity_id).display_name or \
+                types.get(line.resource_type, '')
+            line.display_name = ' · '.join(filter(None, [line.task_id.name, resource])) or \
+                self.env._('Línea del plan')
 
     def _get_issue_summary(self, limit=10, places=6):
         """Resumen de las líneas con un problema: cada producto o actividad

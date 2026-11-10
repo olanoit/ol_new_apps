@@ -10,7 +10,7 @@
                 <button name="action_view_construction_plans" type="object" class="oe_stat_button" icon="fa-sitemap" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_plan_count" widget="statinfo" string="Plan de recursos"/>
                 </button>
-                <button name="action_view_construction_typologies" type="object" class="oe_stat_button" icon="fa-th" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
+                <button name="action_view_construction_typologies" type="object" class="oe_stat_button" icon="fa-th" invisible="not is_construction_site or not construction_typology_count" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_typology_count" widget="statinfo" string="Tipologías"/>
                 </button>
             </xpath>

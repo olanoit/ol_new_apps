@@ -436,9 +436,14 @@ class ConstructionResourcePlan(models.Model):
         ml = sum(self._tree_space_ml(spaces).values())
         if tasks is not None:
             ml += self._tree_loose_ml(module_domain, spaces)
+        terms = self.env['construction.level.labels.mixin']._construction_level_terms(
+            self.project_id.construction_level_template_id)
+        no_modules = self.project_id.construction_level_template_id and not terms.get('module')
         totals.update({
             'empty': False,
-            'modules': Task.search_count(module_domain),
+            # CR-37: sin nivel de módulo, se cuentan las partidas (niveles con
+            # APU) de la selección.
+            'modules': len(spaces) if no_modules else Task.search_count(module_domain),
             'spaces': len(spaces),
             'ml': round(ml, 2),
         })
@@ -613,12 +618,24 @@ class ConstructionResourcePlan(models.Model):
         project = self.project_id
         terms = self.env['construction.level.labels.mixin']._construction_level_terms(
             project.construction_level_template_id)
-        detail = terms.get('module') or self.env._('Módulo')
         space = terms.get('space') or self.env._('Ambiente')
+        # Paquete 4 de CREVAL, CR-37: sin nivel de módulo en la plantilla
+        # (construcción por partidas), el detalle es el nivel con APU.
+        has_modules = bool(terms.get('module')) or not project.construction_level_template_id
+        detail = terms.get('module') or (self.env._('Módulo') if has_modules else space)
+        levels = [terms[key] for key in sorted(
+            (k for k in terms if k.startswith('level_')), key=lambda k: int(k[6:]))]
         return {
             'detail': detail, 'details': self._plural(detail),
+            'has_modules': has_modules,
             'space': space, 'spaces': self._plural(space),
-            'unit': terms.get('apartment') or self.env._('Departamento'),
+            'unit': terms.get('apartment') or (levels[1] if len(levels) > 1 else '')
+            or self.env._('Departamento'),
+            'empty_hint': self.env._(
+                'Marque la obra o un nivel (%s) para ver sus recursos.',
+                ', '.join(name.lower() for name in levels)) if levels and not has_modules
+            else self.env._('Marque una obra, un piso, un departamento o módulos para ver sus '
+                            'recursos.'),
             'show_ml': self._tree_show_ml(),
             'show_amounts': can_see_amounts(self.env),
             'show_typology': bool(self.env['construction.typology'].search_count(

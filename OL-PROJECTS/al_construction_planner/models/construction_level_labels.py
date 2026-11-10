@@ -8,8 +8,12 @@ en el contexto (CREVAL v1.0, 6.3) o, sin obra, la de la compañía. «Partida» 
 «Actividad» en una constructora; «Mueble» y «Módulo» en mobiliario. Sin
 plantilla quedan los nombres del planificador."""
 import ast
+import re
 
 from odoo import api, models
+
+# «Subpartida 1 (N4)» → «Subpartida 1».
+LEVEL_NUMBER = re.compile(r'\s*\(N\d+\)\s*$')
 
 
 #: Campo → función del nivel en la plantilla (``level`` de la línea de la
@@ -55,9 +59,12 @@ class ConstructionLevelLabelsMixin(models.AbstractModel):
             return terms
         for depth, line in enumerate(template.line_ids.sorted(lambda l: (l.sequence, l.id)),
                                      start=1):
-            terms['level_%s' % depth] = line.name
+            # Paquete 4 de CREVAL, CR-37: el mismo formato en todos los
+            # niveles; la marca «(N4)» de los nombres numerados no se muestra.
+            name = LEVEL_NUMBER.sub('', line.name or '')
+            terms['level_%s' % depth] = name
             if line.level and line.level not in terms:
-                terms[line.level] = line.name
+                terms[line.level] = name
         return terms
 
     @api.model
@@ -91,6 +98,7 @@ class ConstructionLevelLabelsMixin(models.AbstractModel):
         fields_map = self._construction_level_label_fields()
         if not terms:
             return arch, view
+        level_names = {name for key, name in terms.items() if key.startswith('level_')}
         for node in arch.xpath('//filter[@context]'):
             try:
                 context = ast.literal_eval(node.get('context'))
@@ -99,8 +107,16 @@ class ConstructionLevelLabelsMixin(models.AbstractModel):
             group_by = context.get('group_by') if isinstance(context, dict) else None
             fname = (group_by or '').split(':')[0]
             key = fields_map.get(fname)
-            if key and key in terms:
+            if not key:
+                continue
+            if key in terms:
                 node.set('string', terms[key])
+            # CR-37: cada nivel una vez. Se ocultan el agrupador de una función
+            # que la plantilla no tiene (Departamento en construcción), el de
+            # un nivel que no existe y el de una función que repite un nivel.
+            if key not in terms or (not key.startswith('level_')
+                                    and terms[key] in level_names):
+                node.set('invisible', '1')
         for node in arch.xpath('//field[@name]'):
             key = fields_map.get(node.get('name'))
             if key and key in terms and node.get('string'):

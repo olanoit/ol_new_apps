@@ -123,10 +123,19 @@ class ProjectTask(models.Model):
     @api.model
     def _selection_construction_current_stage(self):
         names = self.env.company._construction_space_state_names()
-        stages = self.env['construction.stage'].with_context(active_test=False)._leaf_stages()
+        # CR-35 (paquete 4 de CREVAL): las etapas hoja de todo el catálogo,
+        # también las archivadas, para leer lo ya registrado por su nombre.
+        # sudo: solo se leen los nombres de las etapas para la lista de valores.
+        Stage = self.env['construction.stage'].sudo().with_context(active_test=False)
+        stages = Stage.search([])._leaf_stages()
+        seen = {'pending', 'measured', 'delivered'}
+        options = []
+        for stage in stages:
+            if stage.code and stage.code not in seen:
+                seen.add(stage.code)
+                options.append((stage.code, stage._label()))
         return ([('pending', names['pending']), ('measured', names['measured'])]
-                + [(stage.code, stage._label()) for stage in stages]
-                + [('delivered', names['delivered'])])
+                + options + [('delivered', names['delivered'])])
 
     @api.depends('construction_level', 'parent_id.construction_level',
                  'parent_id.construction_level1_task_id', 'parent_id.construction_level2_task_id')

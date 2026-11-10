@@ -134,11 +134,14 @@
             </p>
             <t t-else="">
                 <div class="o_cp_schedule_summary small mb-2">
-                    <div><span class="o_cp_summary_modules" t-esc="schedule.summary.modules"/>
-                        <t t-esc="schedule.terms.details.toLowerCase()"/>
+                    <div><span class="o_cp_summary_modules" t-esc="schedule.summary.modules"/>&#160;<t t-esc="(schedule.summary.modules === 1 ? schedule.terms.detail : schedule.terms.details).toLowerCase()"/>
                         <t t-if="schedule.terms.show_ml"> · <t t-esc="schedule.summary.ml"/> ML</t></div>
-                    <div t-if="showAmounts">Material S/ <t t-esc="fmt(schedule.summary.material)"/> ·
-                        contrata S/ <t t-esc="fmt(schedule.summary.contract)"/></div>
+                    <!-- CR-37: el total de cada tipo de recurso de la selección. -->
+                    <div t-if="showAmounts and schedule.summary.groups" class="o_cp_summary_types">
+                        <t t-foreach="schedule.summary.groups" t-as="group" t-key="group.type_id or group_index">
+                            <t t-if="!group_first"> · </t><t t-esc="group.name"/> S/ <t t-esc="fmt(group.amount)"/>
+                        </t>
+                    </div>
                     <div>Avance <t t-esc="pct(schedule.summary.progress)"/></div>
                 </div>
                 <div class="d-flex justify-content-end">

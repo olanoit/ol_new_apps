@@ -170,13 +170,20 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
                 lambda l: l.task_id in tasks)._construction_recipe_generated()
             for line in replaced.filtered('previous_line_id'):
                 predecessors.setdefault(line._construction_successor_key(), line.previous_line_id)
+            # CR-31 (paquete 4 de CREVAL): la línea nueva conserva «Suministro
+            # del cliente» de la que reemplaza (o de su línea anterior).
+            client_supply = {line._construction_successor_key() for line in replaced
+                             if line.is_client_supply or line.previous_line_id.is_client_supply}
             replaced.unlink()
             for vals in vals_list:
-                previous = predecessors.pop((
-                    vals.get('task_id'), vals.get('resource_type'), vals.get('product_id') or False,
-                    vals.get('activity_id') or False, vals.get('stage') or False), False)
+                key = (vals.get('task_id'), vals.get('resource_type'),
+                       vals.get('product_id') or False, vals.get('activity_id') or False,
+                       vals.get('stage') or False)
+                previous = predecessors.pop(key, False)
                 if previous:
                     vals['previous_line_id'] = previous.id
+                if key in client_supply and not vals.get('is_client_supply'):
+                    vals.update(is_client_supply=True, price_unit_planned=0.0)
         lines = self.env['construction.resource.plan.line'].with_context(
             construction_plan_generating=True).create(vals_list)
         lines._apply_analytic_rules()

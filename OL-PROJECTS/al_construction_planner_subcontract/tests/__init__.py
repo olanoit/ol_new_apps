@@ -4,3 +4,4 @@ from . import test_corrections_creval
 from . import test_refresh_decisions
 from . import test_invoice_rounding
 from . import test_contract_intervention
+from . import test_package4_contracts

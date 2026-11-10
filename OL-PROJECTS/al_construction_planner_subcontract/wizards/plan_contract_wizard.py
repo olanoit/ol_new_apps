@@ -174,16 +174,24 @@ class ConstructionPlanContractWizard(models.TransientModel):
     def _has_balance(self, line):
         return line.product_uom_id.compare(line.qty_planned - line.qty_requested, 0.0) > 0
 
+    @api.model
+    def _has_active_contract(self, line):
+        """CR-33: la partida está tomada solo si tiene una orden de contrata
+        vigente (no anulada)."""
+        return bool(line.partner_id and line._construction_active_contract_allocations())
+
     def _taken_by_partner(self, lines):
-        """{contrata: líneas} de las líneas que ya tienen contrata."""
-        return lines.filtered('partner_id').grouped('partner_id')
+        """{contrata: líneas} de las líneas que ya tienen contrata con orden
+        vigente."""
+        return lines.filtered(self._has_active_contract).grouped('partner_id')
 
     def _check_something_to_assign(self):
         """CR-24 a): si toda la selección ya tiene contrata (con saldo o sin
         él), el asistente no abre: dice de quién es y sugiere intervenirla."""
         self.ensure_one()
         lines = self._contract_lines()
-        if not lines or lines.filtered(lambda l: not l.partner_id and self._has_balance(l)):
+        if not lines or lines.filtered(
+                lambda l: not self._has_active_contract(l) and self._has_balance(l)):
             return
         taken = self._taken_by_partner(lines)
         if not taken:
@@ -191,9 +199,12 @@ class ConstructionPlanContractWizard(models.TransientModel):
         raise UserError(self.env._(
             'Las partidas seleccionadas ya tienen contrata: %(partners)s. Para cambiarla, use '
             '«Intervenir contrata» en su orden.',
-            partners='; '.join(self.env._('%(partner)s (%(count)s líneas)',
-                                          partner=partner.display_name, count=len(group))
-                               for partner, group in taken.items())))
+            partners='; '.join(
+                (self.env._('%(partner)s (1 línea)', partner=partner.display_name)
+                 if len(group) == 1 else
+                 self.env._('%(partner)s (%(count)s líneas)', partner=partner.display_name,
+                            count=len(group)))
+                for partner, group in taken.items())))
 
     def _get_stages(self):
         self.ensure_one()
@@ -232,7 +243,8 @@ class ConstructionPlanContractWizard(models.TransientModel):
         if self.activity_ids:
             lines = lines.filtered(lambda l: l.activity_id in self.activity_ids)
         notes = []
-        others = lines.filtered(lambda l: l.partner_id and l.partner_id != self.partner_id)
+        others = lines.filtered(lambda l: self._has_active_contract(l)
+                                and l.partner_id != self.partner_id)
         if others and self.partner_id:
             notes.append(self.env._(
                 '%(count)s líneas ya tienen otra contrata (%(partners)s) y no se reasignan.',

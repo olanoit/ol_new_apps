@@ -158,6 +158,18 @@ class ConstructionTaskProgress(models.Model):
     _qty_positive = models.Constraint(
         'CHECK(qty > 0)', 'Las unidades del avance deben ser mayores que cero.')
 
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        """Paquete 4 de CREVAL, CR-37: sin nivel de módulo en la plantilla
+        (construcción por partidas), el avance es de la partida."""
+        res = super().fields_get(allfields, attributes)
+        terms = self._construction_level_terms()
+        if terms and not terms.get('module') and terms.get('space') \
+                and 'string' in res.get('task_id', {}):
+            res['task_id']['string'] = terms['space']
+        return res
+
     @api.depends('task_id', 'activity_id')
     def _compute_plan_line_id(self):
         Line = self.env['construction.resource.plan.line']

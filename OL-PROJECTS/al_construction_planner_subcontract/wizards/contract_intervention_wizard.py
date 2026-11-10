@@ -203,10 +203,41 @@ class ConstructionContractInterventionWizard(models.TransientModel):
                 'La contrata tiene avance validado el %s en estas partidas: la intervención no '
                 'puede ser anterior.', fields.Date.to_string(later.date)))
 
+    def _fresh_rows(self, rows):
+        """CR-34 (paquete 4 de CREVAL): las cifras de cada partida marcada se
+        recalculan desde la línea de la orden al confirmar. El navegador solo
+        manda la línea y la marca (las columnas son de solo lectura), y la
+        orden pudo cambiar entre abrir el asistente y confirmarlo."""
+        self.ensure_one()
+        fresh = {vals['purchase_line_id']: vals for vals in self._prepare_lines()}
+        result = []
+        for row in rows:
+            vals = fresh.get(row.purchase_line_id.id)
+            if not vals:
+                raise UserError(self.env._(
+                    'La línea %s ya no se puede intervenir: vuelva a abrir el asistente.',
+                    row.purchase_line_id.display_name))
+            po_line = row.purchase_line_id.sudo()
+            uom = po_line.product_uom_id
+            # La cantidad nueva no baja de lo valorizado (recibido).
+            if uom.compare(vals['qty_new'], po_line.qty_received) < 0:
+                raise UserError(self.env._(
+                    '%(task)s: la cantidad nueva (%(new)s) es menor que lo valorizado '
+                    '(%(valued)s).', task=vals['task_label'], new=vals['qty_new'],
+                    valued=po_line.qty_received))
+            currency = self.currency_id
+            valued = vals['qty_valued'] * vals['price_unit']
+            released = vals['qty_released'] * vals['price_unit']
+            vals['amount_valued'] = currency.round(valued) if currency else valued
+            vals['amount_released'] = currency.round(released) if currency else released
+            result.append(vals)
+        return result
+
     def action_confirm(self):
         self.ensure_one()
         rows = self.line_ids.filtered('intervene')
         self._check_can_intervene(rows)
+        values = self._fresh_rows(rows)
         order = self.purchase_order_id
         # sudo: la intervención la decide ejecución › aprueba, que no
         # administra compras ni el fondo (lo retiene el sistema, como pide
@@ -221,19 +252,19 @@ class ConstructionContractInterventionWizard(models.TransientModel):
             'user_id': self.env.user.id,
             'line_ids': [Command.create({
                 'sequence': index,
-                'purchase_line_id': row.purchase_line_id.id,
-                'task_label': row.task_label,
-                'activity_id': row.activity_id.id,
-                'uom_id': row.uom_id.id,
-                'price_unit': row.price_unit,
-                'qty_contracted': row.qty_contracted,
-                'qty_validated': row.qty_validated,
-                'qty_valued': row.qty_valued,
-                'qty_new': row.qty_new,
-                'qty_released': row.qty_released,
-                'amount_valued': row.amount_valued,
-                'amount_released': row.amount_released,
-            }) for index, row in enumerate(rows)],
+                'purchase_line_id': vals['purchase_line_id'],
+                'task_label': vals['task_label'],
+                'activity_id': vals['activity_id'],
+                'uom_id': vals['uom_id'],
+                'price_unit': vals['price_unit'],
+                'qty_contracted': vals['qty_contracted'],
+                'qty_validated': vals['qty_validated'],
+                'qty_valued': vals['qty_valued'],
+                'qty_new': vals['qty_new'],
+                'qty_released': vals['qty_released'],
+                'amount_valued': vals['amount_valued'],
+                'amount_released': vals['amount_released'],
+            }) for index, vals in enumerate(values)],
         })
         plan_lines = self._apply_to_order(order_sudo, intervention_sudo)
         funds = self._retain_fund(order_sudo, intervention_sudo)

@@ -17,6 +17,7 @@ from odoo import Command, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.al_construction_planner.models.common import norm
+from odoo.addons.al_construction_planner.models.construction_level_analytic import TASK_CODE
 
 COLUMNS = [
     ('item', ('item', 'ítem', 'partida n', 'codigo', 'código'), False),
@@ -51,6 +52,12 @@ def _number(value):
     except ValueError:
         return None
 
+
+
+def _task_code(name):
+    """Código al inicio del nombre de una tarea («3.90 MUROS» → «3.90»)."""
+    match = TASK_CODE.match(name or '')
+    return match.group(1).rstrip('.') if match else False
 
 class ConstructionBudgetImportWizard(models.TransientModel):
     _name = 'construction.budget.import.wizard'
@@ -330,14 +337,34 @@ class SaleOrder(models.Model):
             account = Task._construction_catalog_account(level, catalog) \
                 if level.analytic_mode in ('catalog', 'mixed') else Task.env[
                     'account.analytic.account']
+            # CR-29 b): en modo Catálogo, la cuenta cuyo nombre es el del
+            # título (no se crea ninguna).
+            if not account and level.analytic_mode == 'catalog':
+                account = Task._construction_catalog_account(level, name)
+            # CR-30 (paquete 4 de CREVAL): el nodo de un nivel con código se
+            # ubica por su código dentro de la obra; el nombre lo da la fila
+            # que lo define.
+            if code:
+                key = (parent.id, level.id, code)
             if key not in cache:
-                cache[key] = Task.search([
+                found = Task.search([
                     ('project_id', '=', project.id), ('parent_id', '=', parent.id),
                     ('construction_level_line_id', '=', level.id), ('name', '=', label)],
-                    limit=1) or Task.create({
-                        'name': label, 'project_id': project.id, 'parent_id': parent.id,
-                        'construction_level_line_id': level.id, 'user_ids': False,
-                        'construction_analytic_account_id': account.id})
+                    limit=1)
+                if not found and code:
+                    found = Task.search([
+                        ('project_id', '=', project.id), ('parent_id', '=', parent.id),
+                        ('construction_level_line_id', '=', level.id),
+                        '|', ('name', '=', code), ('name', '=like', code + ' %')]).filtered(
+                        lambda t: _task_code(t.name) == code)[:1]
+                    # El nodo creado solo con su código toma el nombre de la
+                    # fila que lo define.
+                    if found and found.name == code and label != code:
+                        found.name = label
+                cache[key] = found or Task.create({
+                    'name': label, 'project_id': project.id, 'parent_id': parent.id,
+                    'construction_level_line_id': level.id, 'user_ids': False,
+                    'construction_analytic_account_id': account.id})
             task = cache[key]
             if account and not task.construction_analytic_account_id:
                 task.construction_analytic_account_id = account

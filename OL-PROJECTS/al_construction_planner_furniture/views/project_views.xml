@@ -17,6 +17,11 @@
                         invisible="not is_construction_site"
                         groups="al_construction_planner.group_planner_plan_planner"/>
             </xpath>
+            <!-- Paquete 4 de CREVAL, CR-37: «Tipologías» se ve siempre con el
+                 puente de mobiliario; sin él, solo si la obra ya tiene. -->
+            <xpath expr="//button[@name='action_view_construction_typologies']" position="attributes">
+                <attribute name="invisible">not is_construction_site</attribute>
+            </xpath>
         </field>
     </record>
     <record id="project_task_view_form_construction_furniture" model="ir.ui.view">

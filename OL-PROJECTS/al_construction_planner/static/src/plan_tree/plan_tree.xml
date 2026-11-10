@@ -78,8 +78,7 @@
                  class="o_cp_selbar d-flex flex-wrap align-items-center gap-3 px-3 py-2 border-bottom">
                 <span class="fw-bold o_cp_summary">
                     Selección:
-                    <span class="o_cp_summary_modules" t-esc="state.summary.modules"/>
-                    <t t-esc="state.terms.details.toLowerCase()"/> ·
+                    <t t-if="state.terms.has_modules"><span class="o_cp_summary_modules" t-esc="state.summary.modules"/>&#160;<t t-esc="state.terms.details.toLowerCase()"/> · </t>
                     <span t-esc="state.summary.spaces"/> <t t-esc="state.terms.spaces.toLowerCase()"/> ·
                     <t t-if="state.terms.show_ml"><span t-esc="fmt(state.summary.ml)"/> ML · </t>
                     <t t-if="state.terms.show_amounts">S/ <span class="o_cp_summary_total" t-esc="fmt(state.summary.total)"/></t>
@@ -118,7 +117,7 @@
                             <tr>
                                 <th>Nivel</th>
                                 <th t-if="state.terms.show_typology">Tipología</th>
-                                <th class="text-end o_cp_col_details" t-esc="state.terms.details"/>
+                                <th t-if="state.terms.has_modules" class="text-end o_cp_col_details" t-esc="state.terms.details"/>
                                 <th t-if="state.terms.show_ml" class="text-end">ML</th>
                                 <t t-if="state.measure !== 'progress'">
                                     <t t-foreach="columns" t-as="col" t-key="col.field">
@@ -151,7 +150,7 @@
                                         <span t-if="node.has_apu" class="badge text-bg-info ms-1" title="Lleva APU">APU</span>
                                     </td>
                                     <td t-if="state.terms.show_typology" t-esc="node.typology"/>
-                                    <td class="text-end" t-esc="node.modules"/>
+                                    <td t-if="state.terms.has_modules" class="text-end" t-esc="node.modules"/>
                                     <td t-if="state.terms.show_ml" class="text-end" t-esc="node.ml ? fmt(node.ml) : ''"/>
                                     <t t-if="state.measure !== 'progress'">
                                         <t t-foreach="columns" t-as="col" t-key="col.field">
@@ -169,7 +168,7 @@
                 <aside class="o_cp_panel border-start overflow-auto">
                     <h5 class="px-3 py-2 m-0 border-bottom">Recursos acumulados de la selección</h5>
                     <div t-if="!state.summary or state.summary.empty" class="p-3 text-muted small">
-                        Marque una obra, un piso, un departamento o módulos para ver sus recursos.
+                        <t t-esc="state.terms.empty_hint"/>
                     </div>
                     <t t-else="">
                         <!-- Por tipo de recurso, en el orden del catálogo, con su subtotal

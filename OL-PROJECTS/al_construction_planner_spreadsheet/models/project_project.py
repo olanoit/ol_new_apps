@@ -102,7 +102,11 @@ PRESUPUESTO_FORMULA_TEXT = {
                     '+IFERROR(VALUE({cost_slack}{r}),0))',
     'price_unit': '=IF({cost_offered}{r}="","",{cost_offered}{r}*(1+IFERROR(VALUE({margin_pct}{r}),0)/100)'
                   '+IFERROR(VALUE({margin}{r}),0))',
-    'cost_real': '=IF(OR({qty_real}{r}="",{unit_cost}{r}=""),"",{qty_real}{r}*{unit_cost}{r})',
+    # CR-27 (paquete 4 de CREVAL): un solo redondeo, como la línea de la
+    # cotización: el costo unitario a la precisión «Product Price» y el
+    # importe a la moneda.
+    'cost_real': '=IF(OR({qty_real}{r}="",{unit_cost}{r}=""),"",'
+                 'ROUND({qty_real}{r}*ROUND({unit_cost}{r},{pp}),{cd}))',
     'amount_offered': '=IF(OR({qty_offered}{r}="",{cost_offered}{r}=""),"",'
                       '{qty_offered}{r}*{cost_offered}{r})',
     'subtotal': '=IF(OR({qty_offered}{r}="",{price_unit}{r}=""),"",'
@@ -137,6 +141,8 @@ LISTS = {
     'Tipo de contrato': ['Suma alzada', 'Precios unitarios'],
     'Formato de impresión': ['Solo precios', 'Desglosado'],
 }
+# Columnas de sí o no (CR-31: suministro del cliente).
+YES_NO = ['Sí', 'No']
 OBRA_LABELS = ['Obra', 'Cliente', 'Moneda', 'Tipo de contrato', 'Formato de impresión',
                'Gastos generales %', 'Imprevistos %', 'Utilidad %', 'Descuento %', 'IGV %',
                'Fecha', 'Versión']
@@ -159,11 +165,24 @@ def cell_text(value):
     return value if isinstance(value, str) else str(value)
 
 
-def presupuesto_formula(key, row, layout=BUDGET_LAYOUT):
+# Decimales del costo unitario («Product Price») y de la moneda (CR-27).
+DEFAULT_DIGITS = (4, 2)
+
+
+def sheet_digits(env, company=None):
+    """(decimales del costo unitario, decimales de la moneda) con los que
+    redondea la línea de la cotización."""
+    company = company or env.company
+    return (env['decimal.precision'].precision_get('Product Price'),
+            company.currency_id.decimal_places)
+
+
+def presupuesto_formula(key, row, layout=BUDGET_LAYOUT, digits=DEFAULT_DIGITS):
     """Fórmula de la columna ``key`` de PRESUPUESTO en la fila ``row``.
     ``layout`` < 2: hoja anterior, con el código del APU en la columna A."""
     letters = {k: _col(i) for i, k in enumerate(PRESUPUESTO_KEYS)}
     text = PRESUPUESTO_FORMULA_TEXT[key] if key != 'uom' else PRESUPUESTO_UOM_FORMULA
+    text = text.replace('{pp}', str(digits[0])).replace('{cd}', str(digits[1]))
     if layout < BUDGET_LAYOUT:
         apu = template_letters('APU', layout=layout)
         text = text.replace(
@@ -182,15 +201,15 @@ def presupuesto_formula(key, row, layout=BUDGET_LAYOUT):
     return text
 
 
-def presupuesto_row(values, row, layout=BUDGET_LAYOUT):
+def presupuesto_row(values, row, layout=BUDGET_LAYOUT, digits=DEFAULT_DIGITS):
     """Fila completa de PRESUPUESTO: los datos de ``values`` y las fórmulas
     grises; la unidad, con fórmula si hay APU."""
     result = []
     for key in PRESUPUESTO_KEYS:
         if key in PRESUPUESTO_FORMULAS:
-            result.append(presupuesto_formula(key, row, layout))
+            result.append(presupuesto_formula(key, row, layout, digits))
         elif key == 'uom' and values.get('apu'):
-            result.append(presupuesto_formula('uom', row, layout))
+            result.append(presupuesto_formula('uom', row, layout, digits))
         else:
             result.append(cell_text(values.get(key)))
     return result
@@ -203,7 +222,8 @@ TEMPLATE_KEYS = {
     'INSUMOS': ['kind', 'name', 'uom', 'price', 'currency', 'date', 'source', 'worker_category',
                 'code'],
     'APU': ['name', 'uom', 'productivity', 'hours', 'mode', 'stage', 'code'],
-    'APU_DETALLE': ['apu_pick', 'pick', 'crew', 'pct', 'qty', 'price', 'stage'],
+    'APU_DETALLE': ['apu_pick', 'pick', 'crew', 'pct', 'qty', 'price', 'stage',
+                    'client_supply'],
 }
 # Orden de las hojas anteriores (código en la columna A).
 LEGACY_TEMPLATE_KEYS = {
@@ -219,7 +239,8 @@ CALCULATED_KEYS = {('APU_DETALLE', 'Código de la receta'): 'apu',
 ROW_KEYS = {
     'INSUMOS': ['code', 'name', 'kind', 'uom', 'price', 'currency'],
     'APU': ['code', 'name', 'uom', 'productivity', 'hours', 'mode'],
-    'APU_DETALLE': ['apu', 'pick', 'crew', 'pct', 'qty', 'price', 'stage', 'code', 'apu_pick'],
+    'APU_DETALLE': ['apu', 'pick', 'crew', 'pct', 'qty', 'price', 'stage', 'code', 'apu_pick',
+                    'client_supply'],
 }
 
 
@@ -500,7 +521,9 @@ class ProjectProject(models.Model):
                     # El código va al final: en las hojas anteriores es dato.
                     code,
                     # CR-22 g: la receta por nombre, con el código al final.
-                    '%s · %s' % (recipe.name, recipe.code)])
+                    '%s · %s' % (recipe.name, recipe.code),
+                    # CR-31 (paquete 4 de CREVAL).
+                    self.env._('Sí') if line.is_client_supply else ''])
         rows['INSUMOS'] = list(insumos.values())
         if order:
             section = subsection = ''
@@ -554,10 +577,11 @@ class ProjectProject(models.Model):
         for i, (key, header) in enumerate(zip(PRESUPUESTO_KEYS, PRESUPUESTO_HEADERS)):
             cells['%s1' % _col(i)] = header
             styles['%s1' % _col(i)] = CALC_STYLE if key in PRESUPUESTO_FORMULAS else DATA_STYLE
+        digits = sheet_digits(self.env)
         for number in range(2, rows + 2):
             index = number - 2
             values = partidas[index] if index < len(partidas) else {}
-            for i, content in enumerate(presupuesto_row(values, number)):
+            for i, content in enumerate(presupuesto_row(values, number, digits=digits)):
                 if content:
                     cells['%s%s' % (_col(i), number)] = content
         mode = _col(PRESUPUESTO_KEYS.index('mode'))
@@ -670,12 +694,13 @@ class ProjectProject(models.Model):
                 for number in range(2, rows + 2):
                     cells['%s%s' % (column, number)] = template.replace('{r}', str(number))
             rules = []
-            for key, list_name in (('kind', 'Tipo de insumo'), ('mode', 'Modalidad')):
+            for key, values_list in (('kind', LISTS['Tipo de insumo']),
+                                     ('mode', LISTS['Modalidad']), ('client_supply', YES_NO)):
                 if key in letters:
                     rules.append({'id': '%s_%s' % (name, key), 'isBlocking': True,
                                   'ranges': ['%s2:%s%s' % (letters[key], letters[key], last)],
                                   'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
-                                                'values': LISTS[list_name]}})
+                                                'values': values_list}})
             conditional = []
             if name == 'APU_DETALLE':
                 # CR-22 g: la receta y el insumo se eligen escribiendo parte
