@@ -85,10 +85,16 @@ _ACTIVITY_NAME = ('=IF({c:activity}{r}="","",IFERROR(XLOOKUP(%s,'
                   % pick_code('{c:activity}{r}'))
 _ACTIVITY_CODE = '=IF({c:activity}{r}="","",%s)' % pick_code('{c:activity}{r}')
 _MODULE_CODE = '=IF({c:module}{r}="","",%s)' % pick_code('{c:module}{r}')
-# M118-08: el nombre del módulo de la fila (su tipología y su código en MODULOS).
-_MODULE_NAME = ('=IF({c:module}{r}="","",IFERROR(INDEX(FILTER({x:MODULOS:name},'
-                '{x:MODULOS:typology}={c:typology}{r},{x:MODULOS:code}=%s),1),""))'
-                % pick_code('{c:module}{r}'))
+# M118-08: el nombre del módulo de la fila (su tipología y su código en MODULOS),
+# de la lista «código · nombre» de su tipología en _LISTAS ({l:modules}, una fila
+# por tipología de {l:typologies}). Antes era un FILTER de MODULOS por fila: la
+# hoja evalúa las dos ramas del IF, y con 1,650 filas de PIEZAS y de BOM costaba
+# unos 3 s en cada recálculo completo; el MATCH de la tipología va en caché.
+_TYPOLOGY_MODULES = 'INDEX({l:modules},MATCH({c:typology}{r},{l:typologies},0),0)'
+_MODULE_NAME = ('=IF({c:module}{r}="","",IFERROR(TEXTAFTER(INDEX(%s,1,MATCH(SUBSTITUTE('
+                'SUBSTITUTE(SUBSTITUTE(%s,"~","~~"),"*","~*"),"?","~?")&" · *",%s,0)),'
+                '" · "),""))' % (_TYPOLOGY_MODULES, pick_code('{c:module}{r}'),
+                                 _TYPOLOGY_MODULES))
 # Ambientes de la obra con la tipología de la fila.
 _IN_SITE = ('IFERROR(XLOOKUP({c:typology}{r},{x:TIPOLOGIAS:code},'
             '{x:TIPOLOGIAS:#En la obra (calc.)}),0)')
@@ -361,7 +367,14 @@ def full_column(layout, sheet, key):
 
 def sheet_formula(layout, name, text):
     """Fórmula de la pestaña ``name`` con ``{c:clave}`` (columna de la
-    misma pestaña) y ``{x:pestaña:clave}`` (columna completa de otra)."""
+    misma pestaña), ``{x:pestaña:clave}`` (columna completa de otra) y
+    ``{l:modules}``/``{l:typologies}`` (módulos de cada tipología en _LISTAS)."""
+    if '{l:' in text:
+        first = layout['n_groups'] + layout['n_shorts'] + 1
+        last = layout['n_groups'] + layout['n_shorts'] + TYPOLOGY_BLOCK
+        text = text.replace('{l:modules}', '%s!$B$%s:$%s$%s' % (
+            LISTS_SHEET, first, layout['last_col'], last)).replace(
+            '{l:typologies}', '%s!$A$%s:$A$%s' % (LISTS_SHEET, first, last))
     text = re.sub(r'\{x:([^:}]+):([^}]+)\}',
                   lambda match: full_column(layout, match.group(1), match.group(2)), text)
     return re.sub(r'\{c:([^}]+)\}', lambda match: column_of(layout, name, match.group(1)),

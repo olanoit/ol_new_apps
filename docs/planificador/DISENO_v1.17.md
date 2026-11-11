@@ -241,6 +241,35 @@ columnas (un comando por celda en la hoja de Odoo, lo mismo con `SET_FORMATTING`
 `UPDATE_CELL`). El recálculo crece con las fórmulas que miran columnas enteras
 (`COUNTIF(ARBOL!$E:$E…)`, `SUMIFS`, `XLOOKUP`, `FILTER`); bajarlo es cambiar la plantilla.
 
+**Importación sobre la hoja ya ampliada (11-nov-2026, segunda medición).** El tiempo no
+estaba en escribir las celdas (unos 3 s) sino en los recálculos completos del libro: uno al
+quitar las filas de resumen por piso y otro al volver a insertarlas. Medido por fórmula, el
+recálculo completo (unos 15 s) se iba casi todo en dos cosas:
+
+- unos 10 s en el evaluador de la hoja de Odoo: tras cada lista de _LISTAS que derrama
+  (unas 3,300, tres por fila de PIEZAS y de BOM) copiaba y volvía a agregar todas las celdas
+  pendientes. Se reemplazó ese paso por uno que agrega solo las nuevas
+  (`ARQUITECTURA_COMUN.md`, sección 7);
+- unos 3 s en «Nombre del módulo (calc.)» de PIEZAS y BOM: un `FILTER` de MODULOS por fila.
+  La hoja de Odoo evalúa las dos ramas de `IF`, así que las filas vacías también lo pagaban.
+  Ahora toma el nombre de la lista «código · nombre» de su tipología en _LISTAS (búsqueda en
+  caché). Las hojas existentes lo reciben con «Actualizar a la plantilla vigente»; hasta
+  entonces, las filas nuevas de una ampliación ya traen la fórmula nueva y dan el mismo
+  resultado que las anteriores, salvo un módulo cuya tipología no está en TIPOLOGIAS, que
+  queda sin nombre (tampoco aparece en la lista de Módulo).
+
+Además, la importación escribe, quita y rehace los grupos por piso con la evaluación
+aplazada, y evalúa una sola vez al final.
+
+| Recorrido automático, 1,500 filas de ARBOL, 38 pisos | Antes | Después |
+|---|---|---|
+| Recálculo completo del libro (1,650 filas) | unos 15 s | unos 6 s |
+| Importar en la hoja ya ampliada | unos 30 s | unos 18 s |
+| Volver a importar (reemplazar) sobre la hoja agrupada por piso | dos recálculos completos | unos 20 s, uno solo |
+
+De los 18 s, unos 6 s son el recálculo, unos 6 s insertar las 38 filas de resumen (la hoja
+ajusta todos los rangos en cada inserción) y el resto leer el archivo, escribir y validar.
+
 **Sin medir: la obra grande de 8,000 líneas en BOM** (punto 1 del pedido). La corrida
 anterior de 8,000 filas agotó la memoria de la máquina de desarrollo y no se repitió.
 La meta de menos de 60 s (D3) sigue sin acordar: con 1,500 filas se cumple; con 8,000

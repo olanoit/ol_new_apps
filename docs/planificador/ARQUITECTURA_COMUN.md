@@ -189,12 +189,21 @@ esa misma regla.
    `al_construction_planner_mrp/models/plan_exceed_wizard.py` y
    `al_construction_planner_budget/models/plan_exceed_wizard.py`.
 2. **Un reemplazo sin `super()` se documenta en este archivo, con su alcance.**
-   Hoy hay uno: el cálculo de la cantidad comprada del requerimiento de compra
-   (`al_construction_material_request/models/purchase_request.py`). Corrige el
-   reparto de OCA cuando una línea de OC consolida varias solicitudes, y afecta a
-   todos los requerimientos de compra de la base, no solo a los de obra. Con una
-   sola solicitud por línea de OC da el mismo resultado que OCA. También se
-   reemplazan los mensajes de OCA en `purchase_request_messages.py`.
+   Hoy hay dos:
+   - El cálculo de la cantidad comprada del requerimiento de compra
+     (`al_construction_material_request/models/purchase_request.py`). Corrige el
+     reparto de OCA cuando una línea de OC consolida varias solicitudes, y afecta a
+     todos los requerimientos de compra de la base, no solo a los de obra. Con una
+     sola solicitud por línea de OC da el mismo resultado que OCA. También se
+     reemplazan los mensajes de OCA en `purchase_request_messages.py`.
+   - `invalidatePositionsDependingOnSpread` del evaluador de la hoja de Odoo
+     (`al_construction_planner_spreadsheet/static/src/send_to_planner.js`): las
+     celdas que dependen de lo que derrama una fórmula de matriz. El original copia
+     en cada derrame todas las celdas pendientes y las vuelve a agregar; el
+     reemplazo agrega solo las nuevas. Afecta a todas las hojas de cálculo y
+     tableros de la base. Programa las mismas celdas; si un rango dependiente ya
+     estaba pendiente en parte, recorre también sus dependientes, así que puede
+     calcular de más, nunca de menos.
 3. **El código que corre en cada movimiento de stock, cada transferencia o cada
    apunte analítico filtra primero lo que es de obra y sale enseguida si no lo
    es.** La suite atiende también ventas, farmacia y punto de venta.
@@ -251,7 +260,8 @@ esa misma regla.
 | 10-nov-2026 | Paquete 7 de CREVAL: los indicadores de la obra (venta, costo y margen a hoy, avance físico y valorizado, mes, cierre, CPI y SPI) se calculan en un solo método del puente de ventas (`project.project._construction_indicators`), que usan la ficha de la obra y la cartera del Inicio; el costo ejecutado y el ingreso salen de la analítica de la obra por el tipo de la cuenta, sin los prefijos excluidos de la compañía. La cartera vive en el Inicio del núcleo y pide los indicadores a un gancho (`_work_indicators`); sin el puente de ventas queda la tabla de planes. Los indicadores del mes en curso se guardan en la obra y se marcan para recalcular al confirmar una valorización, publicar un asiento con la analítica de la obra o aprobar una meta. Cada pendiente del Inicio tiene un área (`_pending_areas`, por clave); el que no la declara cae en «Otros». La estrella es el favorito nativo del proyecto | Construcción (CREVAL) | Común (núcleo, venta) |
 | 10-nov-2026 | Paquete 5 de CREVAL, pendientes: la vista previa con huella de «Traer la venta» (comparar, diálogo y `_HUELLA`) pasa de mobiliario a la hoja base (`bring_preview.js`) y la usa también la hoja de planificación de obra por partidas; mobiliario la importa de ahí. La hoja de presupuesto registra sus formatos en `formats` del libro (antes se ignoraban). PRESUPUESTO tiene la plantilla 3 (orden del presupuestador, APU por nombre, especialidad calculada); las claves de columna no cambian | Construcción | Común (hoja); mobiliario |
 | 10-nov-2026 | Paquete 5 de CREVAL, últimos pendientes. Plantilla 4 de la hoja de presupuesto: INSUMOS elige el producto del maestro por nombre (lista en LISTAS, que renuevan «Traer de Odoo» y «Traer la venta») y un complemento de la hoja (`product_pick.js`) llena la fila al elegir; los datos siguen siendo datos, sin fórmulas en sus columnas. «Traer de Odoo» decide qué columnas no escribe por la plantilla de la hoja (`calculated`), no por la fórmula de la fila 2. El envío desde la hoja de planificación (`site_plan`) guarda los APU como recetas de la obra y no toca la cotización: la partida pasa antes a una copia del APU vendido (`construction_sold_copy`, receta de la cotización que la creación de niveles no reapunta). CONTROL de la hoja de planificación compara también con el plan de Odoo («Actualizar CONTROL con el plan de Odoo») | Construcción | Común (hoja); puente de ventas |
-| 11-nov-2026 | La ampliación de la hoja de mobiliario (M113-05) evalúa el libro una sola vez, al final: los lotes con `deferEvaluation` (`dispatchBatch`) dejan el plugin de evaluación de la hoja sin evaluar celda por celda ni al cerrar el lote, y `resumeEvaluation` reconstruye las dependencias y evalúa todo. Es un parche sobre la hoja de Odoo para toda la base; sin la marca llama a `super()` y la hoja se evalúa como siempre. Las tablas y las tablas dinámicas que crecen van en el lote que cierra la ampliación, porque `UPDATE_TABLE` también recalcula el libro entero; una tabla que ya creció al escribir debajo de ella no se toca. Con 1,650 filas, de unos 105 s a unos 48 s | Mobiliario | Común (hoja); mobiliario |
+| 11-nov-2026 | La ampliación de la hoja de mobiliario (M113-05) evalúa el libro una sola vez, al final: entre `deferEvaluation` y `resumeEvaluation` el plugin de evaluación de la hoja no evalúa al cerrar cada comando o lote, y al cerrar evalúa una vez todo lo pendiente. Es un parche sobre la hoja de Odoo para toda la base; fuera de esa ventana llama a `super()` y la hoja se evalúa como siempre. Las tablas y las tablas dinámicas que crecen van en el lote que cierra la ampliación, porque `UPDATE_TABLE` también recalcula el libro entero; una tabla que ya creció al escribir debajo de ella no se toca. Con 1,650 filas, de unos 105 s a unos 48 s | Mobiliario | Común (hoja); mobiliario |
+| 11-nov-2026 | Importar a la hoja de mobiliario usa la misma ventana: ampliar, escribir, parámetros, OBRA y grupos por piso se evalúan juntos una vez (las ventanas se anidan). Al reemplazar, los grupos se quitan dentro de la ventana; al agregar, antes, porque la última fila con datos se lee evaluada. Los grupos leen los pisos como se escribieron (`groupTreeByFloor` con `written`). El evaluador de la hoja reemplaza `invalidatePositionsDependingOnSpread` (sección 7). «Nombre del módulo (calc.)» de PIEZAS y BOM toma el nombre de la lista de su tipología en _LISTAS en vez de un `FILTER` de MODULOS: la hoja de Odoo evalúa las dos ramas de `IF`, y las filas vacías también pagaban el `FILTER`. Recálculo completo con 1,650 filas: de unos 15 s a unos 6 s; importar 1,500 filas en la hoja ya ampliada: de unos 30 s a unos 18 s | Mobiliario | Común (hoja); mobiliario |
 
 ## 9. Conflictos abiertos
 

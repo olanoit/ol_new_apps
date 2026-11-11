@@ -74,6 +74,7 @@ patch(corePluginRegistry.get("dataValidation").prototype, {
  */
 patch(coreViewsPluginRegistry.get("evaluation").prototype, {
     beforeHandle(cmd) {
+        patchSpreadInvalidation(this.evaluator);
         if (cmd.type === BATCH_COMMAND) {
             if (cmd.defer) {
                 this.alDeferred = true;
@@ -89,6 +90,65 @@ patch(coreViewsPluginRegistry.get("evaluation").prototype, {
         }
     },
 });
+
+/**
+ * Celdas que dependen de lo que derramó una fórmula de matriz. La hoja de Odoo 19
+ * copia en cada derrame el conjunto de celdas pendientes y lo vuelve a agregar
+ * entero: con 3,300 listas de _LISTAS que derraman (categorías, productos y
+ * módulos de cada fila de PIEZAS y BOM), unos 10 s de cada recálculo completo de
+ * la hoja de mobiliario. Aquí se agregan solo las celdas nuevas; las pendientes
+ * ya se van a calcular. Reemplazo sin ``super()``: ARQUITECTURA_COMUN, sección 7.
+ */
+let spreadPatched = false;
+const inside = (small, big) =>
+    small.left >= big.left &&
+    small.right <= big.right &&
+    small.top >= big.top &&
+    small.bottom <= big.bottom;
+function patchSpreadInvalidation(evaluator) {
+    const proto = evaluator && Object.getPrototypeOf(evaluator);
+    if (spreadPatched || !proto || typeof proto.invalidatePositionsDependingOnSpread !== "function") {
+        return;
+    }
+    spreadPatched = true;
+    proto.invalidatePositionsDependingOnSpread = function (sheetId, resultZone) {
+        const { top, left, bottom, right } = resultZone;
+        // La zona derramada sin su primera celda (la de la fórmula).
+        const start = [];
+        if (bottom > top) {
+            start.push({ sheetId, zone: { top: top + 1, bottom, left, right: left } });
+        }
+        if (right > left) {
+            start.push({ sheetId, zone: { top, bottom, left: left + 1, right } });
+        }
+        if (!start.length) {
+            return;
+        }
+        const graph = this.formulaDependencies();
+        const pending = this.nextRangesToUpdate;
+        const seen = [...start];
+        const isSeen = (range) =>
+            seen.some(
+                (other) =>
+other.sheetId === range.sheetId && inside(range.zone, other.zone)
+            );
+        const found = [];
+        const queue = [...start];
+        while (queue.length) {
+            for (const range of graph.rTree.search(queue.pop())) {
+                if (isSeen(range) || pending.has(range)) {
+                    continue;
+                }
+                seen.push(range);
+                queue.push(range);
+                if (!(range.sheetId === sheetId && inside(range.zone, resultZone))) {
+                    found.push(range);
+                }
+            }
+        }
+        pending.addMany(found);
+    };
+}
 
 /** Despacha ``commands`` ([tipo, datos]) en revisiones de 2 000 comandos. */
 export function dispatchBatch(model, commands) {

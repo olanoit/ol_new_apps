@@ -25,6 +25,25 @@ const treeRows = () => {
     return count;
 };
 
+/** Filas de resumen por piso de ARBOL (M113-08, punto 4). */
+const summaryRows = () => {
+    const getters = findModel(odoo.__WOWL_DEBUG__.root.__owl__).getters;
+    const sheetId = getters.getSheetIdByName("ARBOL");
+    let col = -1;
+    for (let c = 0; c < getters.getNumberCols(sheetId); c++) {
+        if (getters.getCell({ sheetId, col: c, row: 0 })?.content === "Resumen del piso") {
+            col = c;
+        }
+    }
+    let count = 0;
+    for (let row = 1; col >= 0 && row < getters.getNumberRows(sheetId); row++) {
+        if (getters.getCell({ sheetId, col, row })?.content) {
+            count++;
+        }
+    }
+    return count;
+};
+
 /**
  * Un paso de tour no espera más de 60 s. Este paso espera hasta 55 s a que
  * se cumpla la condición y sigue aunque no se cumpla: encadenado antes del
@@ -158,6 +177,51 @@ registry.category("web_tour.tours").add("al_construction_sheet_progress", {
             },
         },
         {
+            content: "El nombre del módulo sale de la lista de su tipología",
+            trigger: "body",
+            run: () => {
+                const model = findModel(odoo.__WOWL_DEBUG__.root.__owl__);
+                const getters = model.getters;
+                // {pestaña: {clave: columna}} de _CLAVES (columna desde 1).
+                const keys = {};
+                const keySheet = getters.getSheetIdByName("_CLAVES");
+                for (let row = 1; row < getters.getNumberRows(keySheet); row++) {
+                    const [sheet, key, col] = [0, 1, 2].map(
+                        (c) => getters.getEvaluatedCell({ sheetId: keySheet, col: c, row }).value
+                    );
+                    if (sheet && key && typeof col === "number") {
+                        (keys[sheet] = keys[sheet] || {})[key] = col - 1;
+                    }
+                }
+                const put = (name, row, values) => {
+                    const sheetId = getters.getSheetIdByName(name);
+                    for (const [key, content] of Object.entries(values)) {
+                        model.dispatch("UPDATE_CELL", { sheetId, col: keys[name][key], row, content });
+                    }
+                };
+                const nameOf = (name) => {
+                    const sheetId = getters.getSheetIdByName(name);
+                    for (let col = 0; col < getters.getNumberCols(sheetId); col++) {
+                        const header = getters.getEvaluatedCell({ sheetId, col, row: 0 }).value;
+                        if (header === "Nombre del módulo (calc.)") {
+                            return getters.getEvaluatedCell({ sheetId, col, row: 1 }).value;
+                        }
+                    }
+                    throw new Error(`${name} sin «Nombre del módulo (calc.)»`);
+                };
+                put("TIPOLOGIAS", 1, { code: "TZ9" });
+                // «M11» antes que «M*1»: el asterisco del código no es comodín.
+                put("MODULOS", 1, { typology: "TZ9", code: "M11", name: "Otro" });
+                put("MODULOS", 2, { typology: "TZ9", code: "M*1", name: "Bajo · cocina" });
+                put("PIEZAS", 1, { typology: "TZ9", module: "M*1" });
+                put("BOM", 1, { typology: "TZ9", module: "M11 · Otro" });
+                const found = [nameOf("PIEZAS"), nameOf("BOM")];
+                if (found[0] !== "Bajo · cocina" || found[1] !== "Otro") {
+                    throw new Error(`Nombres del módulo: ${JSON.stringify(found)}`);
+                }
+            },
+        },
+        {
             content: "Una regla que se solapa sigue recortando a la anterior",
             trigger: "body",
             run: () => {
@@ -191,6 +255,28 @@ registry.category("web_tour.tours").add("al_construction_sheet_progress", {
                 }
                 model.dispatch("REMOVE_DATA_VALIDATION_RULE", { sheetId, id: "al_test_uno" });
                 model.dispatch("REMOVE_DATA_VALIDATION_RULE", { sheetId, id: "al_test_dos" });
+            },
+        },
+        {
+            content: "Otra importación sobre la hoja agrupada por piso",
+            trigger: "body",
+            run: () => {
+                if (summaryRows() !== 38) {
+                    throw new Error(`ARBOL tiene ${summaryRows()} filas de resumen`);
+                }
+                document.querySelectorAll(".o_notification_close").forEach((b) => b.click());
+            },
+        },
+        ...importSteps(),
+        {
+            content: "Reemplaza las filas y vuelve a agrupar, sin resúmenes de más",
+            trigger: ".o_notification:contains('Importado de carga_grande.xlsx')",
+            timeout: 60000,
+            run: () => {
+                console.log(`AL_PERF reimportar: ${Math.round(performance.now() - window.alImportStart)} ms`);
+                if (treeRows() !== 1500 || summaryRows() !== 38) {
+                    throw new Error(`ARBOL: ${treeRows()} filas y ${summaryRows()} resúmenes`);
+                }
             },
         },
     ],

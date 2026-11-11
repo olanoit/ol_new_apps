@@ -414,8 +414,11 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
     const getters = model.getters;
     // M113-08 punto 4: ARBOL se vuelve a agrupar por piso; antes se quitan
     // las filas de resumen para que los datos queden seguidos.
+    // Al reemplazar se quitan con la evaluación aplazada: quitar filas recalcula
+    // el libro entero. Al agregar, antes de leer la última fila con datos.
     const tree = Boolean(payload.sheets[TREE_SHEET]);
-    if (tree) {
+    const replace = payload.mode !== "append";
+    if (tree && !replace) {
         clearFloorGroups(model);
     }
     const keys = keyColumns(model);
@@ -448,6 +451,9 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         // después: lee las tipologías calculadas.
         deferEvaluation(model);
         try {
+            if (tree && replace) {
+                clearFloorGroups(model);
+            }
             if (payload.expand_rows) {
                 await ensureCapacity(env, needed, runner);
             }
