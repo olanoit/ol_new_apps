@@ -11,9 +11,31 @@ from datetime import timedelta
 
 from odoo import fields
 from odoo.exceptions import AccessError
-from odoo.tests import new_test_user, tagged
+from odoo import Command
+from odoo.tests import HttpCase, new_test_user, tagged
 
 from odoo.addons.al_construction_planner_suite.tests.common import PlannerCommon
+
+
+def _board_data(cls):
+    """Dos cocinas del piso 05 con su instalación programada en la semana 1."""
+    grp = 'al_construction_planner.group_planner_'
+    cls.env.user.group_ids |= cls.env.ref(grp + 'user') | cls.env.ref(
+        grp + 'feature_control')
+    today = fields.Date.context_today(cls.env.user)
+    cls.origin = today - timedelta(days=today.weekday() + 21)
+    cls.lines = cls.env['construction.resource.plan.line']
+    for space in (cls.space_501, cls.space_502):
+        cls.lines |= cls.env['construction.resource.plan.line'].create({
+            'plan_id': cls.plan.id, 'task_id': space.id, 'resource_type': 'contract',
+            'activity_id': cls.act_inst_low.id, 'stage': 'installation',
+            'partner_id': cls.contractor.id, 'qty_planned': 2.0,
+            'price_unit_planned': 16.0, 'product_uom_id': cls.act_inst_low.uom_id.id})
+        cls.env['construction.space.stage'].create({
+            'space_task_id': space.id, 'stage': 'installation',
+            'date_start': cls.origin, 'date_end': cls.origin + timedelta(days=4)})
+    cls.plan.action_request_approval()
+    cls.Board = cls.env['construction.installation.board']
 
 
 @tagged('post_install', '-at_install')
@@ -22,23 +44,7 @@ class TestInstallationBoard(PlannerCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        grp = 'al_construction_planner.group_planner_'
-        cls.env.user.group_ids |= cls.env.ref(grp + 'user') | cls.env.ref(
-            grp + 'feature_control')
-        today = fields.Date.context_today(cls.env.user)
-        cls.origin = today - timedelta(days=today.weekday() + 21)
-        cls.lines = cls.env['construction.resource.plan.line']
-        for space in (cls.space_501, cls.space_502):
-            cls.lines |= cls.env['construction.resource.plan.line'].create({
-                'plan_id': cls.plan.id, 'task_id': space.id, 'resource_type': 'contract',
-                'activity_id': cls.act_inst_low.id, 'stage': 'installation',
-                'partner_id': cls.contractor.id, 'qty_planned': 2.0,
-                'price_unit_planned': 16.0, 'product_uom_id': cls.act_inst_low.uom_id.id})
-            cls.env['construction.space.stage'].create({
-                'space_task_id': space.id, 'stage': 'installation',
-                'date_start': cls.origin, 'date_end': cls.origin + timedelta(days=4)})
-        cls.plan.action_request_approval()
-        cls.Board = cls.env['construction.installation.board']
+        _board_data(cls)
 
     def _validate(self, line, day):
         photo = self.env['ir.attachment'].create({'name': 'f.png', 'datas': b'eA=='})
@@ -155,3 +161,70 @@ class TestInstallationBoard(PlannerCommon):
         self.assertEqual(cell['status'], 'no_order')
         self.assertNotIn(cell['stage_label'], [item['stage'] for item in
                                                data['indicators']['late']['items']])
+
+    def test_order_title_and_previous_stage(self):
+        """Correcciones del tablero: CT-02, los pisos en el orden del árbol, del
+        más alto al más bajo, no por creación; CT-03, el título dice las etapas
+        prendidas; CT-06, la etapa anterior del catálogo llega aunque esté
+        oculta."""
+        self.task('Piso 01', 'floor')  # creado después del 05, misma secuencia
+        data = self.Board.get_data(self.project.id)
+        names = [floor['name'] for floor in data['floors']]
+        self.assertLess(names.index('Piso 05'), names.index('Piso 01'))
+        self.assertEqual(data['title'], 'Control semanal de instalación')
+        both = self.Board.get_data(self.project.id, None, None, True, True)
+        self.assertEqual(both['title'], 'Control semanal de producción e instalación')
+        self.assertTrue(both['production'])
+        self.assertEqual(self.Board._title(True, False), 'Control semanal de producción')
+        # Armado, programado en la semana 1, termina en la 2: la instalación lo
+        # dice con solo «Instalación» prendida.
+        assembly = self.env['construction.resource.plan.line'].with_context(
+            construction_plan_force=True).create({
+                'plan_id': self.plan.id, 'task_id': self.space_501.id,
+                'resource_type': 'contract', 'activity_id': self.act_screw.id,
+                'stage': 'assembly', 'partner_id': self.contractor.id, 'qty_planned': 2.0,
+                'price_unit_planned': 6.0, 'product_uom_id': self.act_screw.uom_id.id})
+        self.env['construction.space.stage'].create({
+            'space_task_id': self.space_501.id, 'stage': 'assembly',
+            'date_start': self.origin, 'date_end': self.origin + timedelta(days=4)})
+        self._validate(assembly, self.origin + timedelta(days=8))
+        cell = self._cell(self.Board.get_data(self.project.id))
+        previous = cell['previous']
+        self.assertEqual(previous['stage_label'],
+                         self.env.ref('al_construction_planner.stage_assembly')._label())
+        if 'construction_space_task_ids' in self.env['mrp.production']._fields:
+            # Con Fabricación, armado avanza con las órdenes: sin orden, «Sin
+            # orden», pero la celda igual dice su etapa anterior.
+            self.assertEqual(previous['status'], 'no_order')
+        else:
+            self.assertEqual((previous['status'], previous['finish_week'],
+                              previous['delay_weeks']), ('done', 2, 1))
+
+
+@tagged('post_install', '-at_install')
+class TestInstallationBoardTour(HttpCase, PlannerCommon):
+    """Correcciones del tablero: la prueba de pantalla recorre la obra, una
+    celda, el número de un piso, Producción, el período, los atajos y el
+    indicador de mano de obra; falla si aparece un error."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        _board_data(cls)
+        cls.project.name = 'Obra tablero (test)'
+        cls.task('Piso 01', 'floor')
+
+    def setUp(self):
+        super().setUp()
+        # Los datos son de la compañía del entorno; la base puede tener al
+        # administrador en otra.
+        grp = 'al_construction_planner.group_planner_'
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id,
+            'group_ids': [Command.link(self.env.ref(grp + 'user').id),
+                          Command.link(self.env.ref(grp + 'feature_control').id)]})
+
+    def test_board_tour(self):
+        self.start_tour('/odoo', 'al_construction_installation_board', login='admin')
+

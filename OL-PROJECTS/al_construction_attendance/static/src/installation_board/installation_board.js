@@ -195,10 +195,6 @@ export class InstallationBoard extends Component {
     selectFloor(floor) {
         this.state.selection = { kind: "floor", floor };
     }
-    previousCell(floor, cell) {
-        const index = floor.cells.indexOf(cell);
-        return index > 0 ? floor.cells[index - 1] : null;
-    }
 
     // Radiografía (como el prototipo: valor y nota en cada semáforo) -----------
     plazo(cell) {
@@ -246,8 +242,9 @@ export class InstallationBoard extends Component {
         const week = this.state.data.weeks.find((w) => w.number === number);
         return week ? `${week.monday} al ${week.saturday}` : "";
     }
-    previousText(floor, cell) {
-        const prev = this.previousCell(floor, cell);
+    /** CT-06: la sub etapa anterior del catálogo, visible o no (la envía el servidor). */
+    previousText(cell) {
+        const prev = cell.previous;
         if (!prev) {
             return "—";
         }
@@ -260,7 +257,45 @@ export class InstallationBoard extends Component {
     floorTitle(floor) {
         const spaces = new Set();
         floor.cells.forEach((cell) => cell.spaces.forEach((space) => spaces.add(space.id)));
-        return _t("Piso %(floor)s · %(count)s cocinas", { floor: floor.name, count: spaces.size });
+        // CT-05: el nombre del nivel tal como está en el árbol («Piso 05»).
+        return _t("%(floor)s · %(count)s cocinas", { floor: floor.name, count: spaces.size });
+    }
+    /**
+     * CT-01: departamentos y muebles del piso: una fila por ambiente, una
+     * columna por sub etapa visible con su marca, y el pie «Hechos».
+     */
+    floorTable(floor) {
+        const rows = new Map();
+        for (const cell of floor.cells) {
+            for (const space of cell.spaces) {
+                if (!rows.has(space.id)) {
+                    rows.set(space.id, {
+                        id: space.id,
+                        apartment: space.apartment,
+                        typology: space.typology,
+                        qty: space.qty,
+                        marks: {},
+                    });
+                }
+                rows.get(space.id).marks[cell.stage] = space.state;
+            }
+        }
+        const sorted = [...rows.values()].sort((a, b) =>
+            String(a.apartment).localeCompare(String(b.apartment), undefined, { numeric: true })
+        );
+        const columns = floor.cells.map((cell) => ({
+            cell,
+            label: cell.stage_label.split(" ")[0],
+            done: sorted.filter((row) => row.marks[cell.stage] === "done").length,
+        }));
+        return { rows: sorted, columns, total: sorted.length };
+    }
+    /**
+     * CT-01: ✓ hecho, ◐ en curso, · pendiente. (No se llama «mark»: la plantilla
+     * usa ese nombre para la franja del período en las curvas.)
+     */
+    unitMark(state) {
+        return state === "done" ? "✓" : state === "partial" ? "◐" : "·";
     }
     missing(cell) {
         return cell.spaces.filter((space) => space.state !== "done");

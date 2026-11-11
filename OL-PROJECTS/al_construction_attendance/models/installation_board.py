@@ -89,8 +89,11 @@ class ConstructionInstallationBoard(models.AbstractModel):
         # obra que el usuario puede leer (se comprobó arriba).
         project_sudo = project.sudo()
         plan = project_sudo.construction_current_plan_id
-        space_stages = self.env['construction.space.stage'].sudo().search(
-            [('project_id', '=', project.id), ('stage', 'in', shown.mapped('code'))])
+        # Correcciones del tablero, CT-06: también las sub etapas ocultas, para
+        # la etapa anterior de cada celda.
+        all_space_stages = self.env['construction.space.stage'].sudo().search(
+            [('project_id', '=', project.id), ('stage', 'in', stages.mapped('code'))])
+        space_stages = all_space_stages.filtered(lambda r: r.stage in shown.mapped('code'))
         first_dates = space_stages.mapped('date_start')
         if not first_dates or not plan:
             return {'empty': True, 'project': project.display_name}
@@ -112,10 +115,12 @@ class ConstructionInstallationBoard(models.AbstractModel):
             week_to = week_from
         period_end = monday_of(week_to) + timedelta(days=6)
 
+        # CT-02: del piso más alto al más bajo, en el orden del árbol de la obra
+        # (secuencia, nombre e id de cada nivel), no en el de creación.
         floors = project_sudo.task_ids.filtered(lambda t: t.construction_level == 'floor')
-        floors = floors.sorted(lambda t: (t.sequence, t.id), reverse=True)
+        floors = floors.sorted(self._tree_position, reverse=True)
         lines = plan.line_ids.filtered(
-            lambda l: l.stage in shown.mapped('code') and l.floor_task_id in floors
+            lambda l: l.stage in stages.mapped('code') and l.floor_task_id in floors
             and l.resource_type in ('contract', 'labor', 'production'))
         progress = self.env['construction.task.progress'].sudo().search([
             ('plan_line_id', 'in', lines.ids), ('state', '=', 'validated'),
@@ -127,7 +132,7 @@ class ConstructionInstallationBoard(models.AbstractModel):
         for line in lines:
             lines_by_cell[(line.floor_task_id.id, line.stage)] |= line
         sched_by_cell = defaultdict(list)
-        for record in space_stages:
+        for record in all_space_stages:
             sched_by_cell[(record.floor_task_id.id, record.stage)].append(record.date_end)
         budgets = {budget.stage: budget for budget in project_sudo.construction_labor_budget_ids}
         controls = self.env['construction.labor.weekly.control'].sudo().search(
@@ -135,18 +140,29 @@ class ConstructionInstallationBoard(models.AbstractModel):
 
         # Corrección 3 del 1.19: la producción avanza con las órdenes de
         # fabricación (si el puente de Fabricación está instalado).
-        production = self._production_progress(project, shown & production_stages,
-                                               period_end)
-        cells = {}
+        made = self._production_progress(project, production_stages, period_end)
+        all_cells = {}
         for floor in floors:
-            for stage in shown:
+            for stage in stages:
                 key = (floor.id, stage.code)
-                source = production.get(key, {}) if production is not None \
+                source = made.get(key, {}) if made is not None \
                     and stage in production_stages else None
-                cells[key] = self._cell(
+                all_cells[key] = self._cell(
                     floor, stage, lines_by_cell[key], done_by_line, sched_by_cell.get(key),
                     week_of, monday_of, today, week_to, current_week, budgets.get(stage.code),
                     show_amounts, source)
+        # CT-06: la sub etapa anterior del catálogo de la obra, visible o no.
+        ordered = list(stages)
+        for (floor_id, code), cell in all_cells.items():
+            index = next(i for i, stage in enumerate(ordered) if stage.code == code)
+            previous = all_cells.get((floor_id, ordered[index - 1].code)) if index else None
+            cell['previous'] = previous and {
+                'stage_label': previous['stage_label'], 'status': previous['status'],
+                'pct': previous['pct'], 'finish_week': previous['finish_week'],
+                'delay_weeks': previous['delay_weeks'],
+            }
+        cells = {key: cell for key, cell in all_cells.items()
+                 if key[1] in shown.mapped('code')}
         self._budget_status(cells, controls, week_from, week_to, monday_of, show_amounts,
                             budgets)
         # Indicadores.
@@ -187,8 +203,7 @@ class ConstructionInstallationBoard(models.AbstractModel):
             'empty': False,
             'project': project.display_name, 'project_id': project.id,
             'show_amounts': show_amounts,
-            'title': (self.env._('Control semanal de producción e instalación') if production
-                      else self.env._('Control semanal de instalación')),
+            'title': self._title(production, installation),
             'production': bool(production), 'installation': bool(installation),
             'has_production': bool(production_stages),
             'week_from': week_from, 'week_to': week_to, 'current_week': current_week,
@@ -211,6 +226,24 @@ class ConstructionInstallationBoard(models.AbstractModel):
             },
             'curves': curves,
         }
+
+    @staticmethod
+    def _tree_position(task):
+        """Posición de una tarea en el árbol de la obra: secuencia, nombre e id
+        de cada nivel, de la raíz a la tarea (el orden del árbol)."""
+        chain = []
+        while task:
+            chain.append((task.sequence, task.name or '', task.id))
+            task = task.parent_id
+        return tuple(reversed(chain))
+
+    def _title(self, production, installation):
+        """CT-03: el título dice las etapas prendidas."""
+        if production and installation:
+            return self.env._('Control semanal de producción e instalación')
+        if production:
+            return self.env._('Control semanal de producción')
+        return self.env._('Control semanal de instalación')
 
     def _period_label(self, week_from, week_to, monday_of):
         start = monday_of(week_from)

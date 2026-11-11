@@ -278,3 +278,36 @@ Notas de diseño:
   los indicadores, estado del período, leyenda y semana en curso, como el
   prototipo. Quedan fuera del prototipo los montos de materiales de
   producción en la radiografía (el presupuesto de mano de obra no los cubre).
+
+## 10. Correcciones del tablero (requerimiento del 11-nov-2026)
+
+Requerimiento: `docs/md/Allcenter_Planificacion_Paquete_1.19_Correcciones_Tablero.pdf`
+(CT-01 a CT-16), con el prototipo de referencia. Dos entregas: CT-01 a CT-06 y,
+después, CT-07 a CT-16.
+
+### Entrega 1 · CT-01 a CT-06 (11-nov)
+
+| Código | Qué se hizo | Dónde |
+|---|---|---|
+| CT-01 | La tabla del piso (`floorTable`) y la marca de cada estado (`unitMark`: ✓, ◐, ·). La marca no se llama `mark`: la plantilla usa ese nombre para la franja del período en las curvas, y lo tapaba aunque existiera el método | `installation_board.js` |
+| CT-02 | Los pisos en el orden del árbol de la obra (secuencia, nombre e id de cada nivel, de la raíz al piso), del más alto al más bajo | `_tree_position` |
+| CT-03 | El título dice las etapas prendidas. Era un error de variable: el valor del botón «Producción» se reemplazaba por el avance de las órdenes de fabricación | `_title` |
+| CT-04 | La leyenda con el color de cada estado; las celdas con los colores del prototipo | `installation_board.scss` |
+| CT-05 | El nombre del piso tal como está en el árbol, sin «Piso» delante | `installation_board.xml`, `floorTitle` |
+| CT-06 | El servidor calcula las celdas de todas las sub etapas del catálogo de la obra y manda en cada celda visible la anterior (`previous`), esté visible o no | `get_data` |
+
+Pruebas: `test_order_title_and_previous_stage` (CT-02, CT-03, CT-06) y la prueba de
+pantalla `TestInstallationBoardTour`. Recorre la obra, el clic en una celda y en
+el número de un piso, prender y apagar Producción, «Desde» y «Hasta», cada atajo
+y el indicador de mano de obra; falla si aparece un error. Reprodujo el error de
+CT-01 antes de corregirlo.
+
+**Diferencias frente al requerimiento.**
+
+- CT-06: con el puente de Fabricación instalado, armado (1.2) avanza con las
+  órdenes de fabricación. Sin orden, la etapa anterior dice «sin orden», no
+  «terminado». El texto «1.2 Armado: terminado S8 (+1 sem.)» del criterio
+  depende de que la obra de prueba tenga sus órdenes (entrega 2).
+- CT-02: el orden es el del árbol (secuencia, luego nombre). Un piso «Piso 9»
+  junto a un «Piso 10» sin cero delante se ordena como texto, igual que en el
+  árbol.
