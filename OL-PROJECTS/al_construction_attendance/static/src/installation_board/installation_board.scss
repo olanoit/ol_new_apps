@@ -46,7 +46,11 @@
         .o_cib_btn { display: inline-flex; align-items: center; gap: 6px; } }
 
     // CT-08: semanas
-    .o_cib_weeks { padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .o_cib_weeks {
+        padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+        // Los estilos de Odoo ponen los select y los rótulos a todo el ancho.
+        select, label { display: inline-block; width: auto; margin: 0; }
+    }
     .o_cib_gap { width: 6px; }
     .o_cib_period { margin-left: auto; text-align: right; b { font-size: 14px; } }
 

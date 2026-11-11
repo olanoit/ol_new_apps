@@ -214,10 +214,13 @@ class ConstructionInstallationBoard(models.AbstractModel):
                               'done': sum(1 for c in stage_cells if c['status'] == STATUS_DONE),
                               'total': len(stage_cells)})
         curves = []
+        # Las curvas llegan a la última semana del programa (o a «Hasta»), no a
+        # la de hoy: así se ven como en el prototipo.
+        curve_last = max([c['sched_week'] for c in counted if c['sched_week']] + [week_to, 1])
         for stage in shown:
             stage_cells = [c for c in counted if c['stage'] == stage.code]
             points = []
-            for number in range(1, last_week + 1):
+            for number in range(1, curve_last + 1):
                 points.append({
                     'week': number,
                     'planned': sum(1 for c in stage_cells
