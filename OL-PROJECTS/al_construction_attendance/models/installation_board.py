@@ -26,6 +26,8 @@ from datetime import timedelta
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
 
+from odoo.addons.al_construction_planner.models.construction_labor_budget import DEFAULT_BAND
+
 STATUS_DONE, STATUS_LATE, STATUS_CURRENT, STATUS_PENDING = 'done', 'late', 'current', 'pending'
 # Corrección 3 del 1.19: un piso sin orden de fabricación en una sub etapa de
 # producción no cuenta como atrasado.
@@ -122,6 +124,12 @@ class ConstructionInstallationBoard(models.AbstractModel):
         lines = plan.line_ids.filtered(
             lambda l: l.stage in stages.mapped('code') and l.floor_task_id in floors
             and l.resource_type in ('contract', 'labor', 'production'))
+        period_start = monday_of(week_from)
+        # CT-15: materiales del plan de cada piso, para las sub etapas de
+        # producción.
+        materials = plan.line_ids.filtered(
+            lambda l: l.resource_type == 'material' and l.floor_task_id in floors
+            and l.stage in production_stages.mapped('code'))
         progress = self.env['construction.task.progress'].sudo().search([
             ('plan_line_id', 'in', lines.ids), ('state', '=', 'validated'),
             ('is_rework', '=', False), ('date', '<=', period_end)], order='date, id')
@@ -163,8 +171,31 @@ class ConstructionInstallationBoard(models.AbstractModel):
             }
         cells = {key: cell for key, cell in all_cells.items()
                  if key[1] in shown.mapped('code')}
+        # CT-16: lo que avanzó cada piso dentro del período.
+        for cell in cells.values():
+            cell['period_done'] = sum(
+                qty for line_id in cell['line_ids'] for day, qty in done_by_line[line_id]
+                if period_start <= day <= period_end)
         self._budget_status(cells, controls, week_from, week_to, monday_of, show_amounts,
                             budgets)
+        band = max(budgets.values(), key=lambda b: b.band).band if budgets else DEFAULT_BAND
+        if made is not None:
+            self._production_budget(cells, production_stages, materials, made, show_amounts,
+                                    band)
+        # CT-13: ambientes y medida del piso (la de su primera sub etapa con
+        # presupuesto de mano de obra, la de instalación).
+        floor_info = {}
+        for floor in floors:
+            spaces = set()
+            for stage in stages:
+                spaces |= {space['id'] for space in all_cells[(floor.id, stage.code)]['spaces']}
+            measure = next((all_cells[(floor.id, stage.code)] for stage in install_stages
+                            if all_cells[(floor.id, stage.code)]['planned']), None)
+            floor_info[floor.id] = {
+                'spaces': len(spaces),
+                'qty': measure['planned'] if measure else 0.0,
+                'unit': measure['unit'] if measure else '',
+            }
         # Indicadores.
         counted = [c for c in cells.values() if c['status'] != STATUS_NO_ORDER]
         in_period = [c for c in counted if c['sched_week']
@@ -174,10 +205,11 @@ class ConstructionInstallationBoard(models.AbstractModel):
         install_codes = set(install_stages.mapped('code'))
         labor = self._labor_indicator(controls, week_from, week_to, monday_of, show_amounts,
                                       install_codes)
+        labor['band'] = band
         per_stage = []
         for stage in shown:
             stage_cells = [c for c in to_date if c['stage'] == stage.code]
-            per_stage.append({'stage': stage._label(),
+            per_stage.append({'stage': stage._label(), 'number': stage.number or stage.name,
                               'done': sum(1 for c in stage_cells if c['status'] == STATUS_DONE),
                               'total': len(stage_cells)})
         curves = []
@@ -193,7 +225,8 @@ class ConstructionInstallationBoard(models.AbstractModel):
                                 if c['finish_week'] and c['finish_week'] <= number
                                 and number <= week_to),
                 })
-            curves.append({'stage': stage._label(), 'points': points})
+            curves.append({'stage': stage._label(), 'points': points,
+                           'total': len([c for c in stage_cells if c['sched_week']])})
         weeks = [{'number': number, 'monday': monday_of(number).strftime('%d/%m'),
                   'saturday': (monday_of(number) + timedelta(days=5)).strftime('%d/%m'),
                   'state': 'closed' if number < current_week else (
@@ -202,7 +235,12 @@ class ConstructionInstallationBoard(models.AbstractModel):
         return {
             'empty': False,
             'project': project.display_name, 'project_id': project.id,
+            'plan_id': plan.id,
+            'period_start': fields.Date.to_string(period_start),
+            'period_end': fields.Date.to_string(period_end),
+            'period_last_monday': fields.Date.to_string(monday_of(week_to)),
             'show_amounts': show_amounts,
+            'currency': project.company_id.currency_id.symbol or self.env.company.currency_id.symbol,
             'title': self._title(production, installation),
             'production': bool(production), 'installation': bool(installation),
             'has_production': bool(production_stages),
@@ -211,14 +249,15 @@ class ConstructionInstallationBoard(models.AbstractModel):
             'period_label': self._period_label(week_from, week_to, monday_of),
             'stages': [{'code': stage.code, 'label': stage._label(),
                         'installation': stage in install_stages} for stage in shown],
-            'floors': [{'id': floor.id, 'name': floor.name,
-                        'cells': [cells[(floor.id, stage.code)] for stage in shown]}
+            'floors': [dict(floor_info[floor.id], id=floor.id, name=floor.name,
+                            cells=[cells[(floor.id, stage.code)] for stage in shown])
                        for floor in floors],
             'indicators': {
                 'period': {'done': sum(1 for c in in_period if c['status'] == STATUS_DONE),
                            'total': len(in_period)},
                 'late': {'count': len(late), 'items': [
-                    {'floor': c['floor'], 'stage': c['stage_label'], 'pct': c['pct']}
+                    {'floor': c['floor'], 'stage': c['stage_label'], 'number': c['stage_number'],
+                     'pct': c['pct']}
                     for c in late]},
                 'finished': {'done': sum(1 for c in to_date if c['status'] == STATUS_DONE),
                              'total': len(to_date), 'per_stage': per_stage},
@@ -281,6 +320,12 @@ class ConstructionInstallationBoard(models.AbstractModel):
             produced = sum(moves.mapped('quantity'))
             last = max(moves.mapped('date')).date() if moves else None
             per_space = production.product_qty / len(spaces)
+            # CT-15: costo de lo consumido en la orden, repartido entre sus
+            # ambientes como lo producido.
+            raw = production.move_raw_ids.filtered(
+                lambda m: m.state == 'done' and m.date and m.date.date() <= period_end)
+            consumed_each = sum(move.quantity * move.product_id.standard_price
+                                for move in raw) / len(spaces)
             remaining = produced
             plant = production.picking_type_id.warehouse_id.name or production.company_id.name
             for space in spaces:
@@ -289,9 +334,11 @@ class ConstructionInstallationBoard(models.AbstractModel):
                 for code in order_codes:
                     entry = result.setdefault((space.construction_floor_task_id.id, code), {
                         'planned': 0.0, 'done': 0.0, 'spaces': {}, 'finish': None,
-                        'productions': [], 'plants': []})
+                        'productions': [], 'plants': [], 'consumed': 0.0,
+                        'unit': production.product_uom_id.name})
                     entry['planned'] += per_space
                     entry['done'] += take
+                    entry['consumed'] += consumed_each
                     entry['spaces'][space] = (per_space, take)
                     if production.id not in [p['id'] for p in entry['productions']]:
                         entry['productions'].append({'id': production.id,
@@ -347,10 +394,14 @@ class ConstructionInstallationBoard(models.AbstractModel):
                 'id': space.id, 'apartment': space.construction_apartment_task_id.name or '',
                 'name': space.name, 'typology': space.construction_typology_id.code or '',
                 'qty': round(space_planned, 2), 'state': state})
+        partners_all = lines.filtered(lambda l: l.resource_type == 'contract').partner_id
         return {
             'floor': floor.name, 'floor_id': floor.id, 'stage': stage.code,
-            'stage_label': stage._label(), 'pct': round(pct * 100),
+            'stage_label': stage._label(), 'stage_number': stage.number or stage.name,
+            'pct': round(pct * 100),
             'planned': round(planned, 2), 'done': round(done, 2),
+            'unit': lines.activity_id.uom_id[:1].name or '',
+            'partner_ids': partners_all.commercial_partner_id.ids,
             'sched_week': sched_week,
             'sched_dates': ('%s al %s' % (monday_of(sched_week).strftime('%d/%m'),
                                           (monday_of(sched_week) + timedelta(days=5))
@@ -397,8 +448,11 @@ class ConstructionInstallationBoard(models.AbstractModel):
                 'qty': round(space_planned, 2), 'state': state})
         return {
             'floor': floor.name, 'floor_id': floor.id, 'stage': stage.code,
-            'stage_label': stage._label(), 'pct': round(pct * 100),
+            'stage_label': stage._label(), 'stage_number': stage.number or stage.name,
+            'pct': round(pct * 100),
             'planned': round(planned, 2), 'done': round(done, 2), 'sched_week': sched_week,
+            'unit': source.get('unit') or '', 'partner_ids': [], 'production': True,
+            'consumed': source.get('consumed', 0.0),
             'sched_dates': ('%s al %s' % (monday_of(sched_week).strftime('%d/%m'),
                                           (monday_of(sched_week) + timedelta(days=5))
                                           .strftime('%d/%m')) if sched_week else ''),
@@ -414,35 +468,105 @@ class ConstructionInstallationBoard(models.AbstractModel):
 
     def _budget_status(self, cells, controls, week_from, week_to, monday_of, show_amounts,
                        budgets):
-        """Semáforo de presupuesto por celda: el presupuesto del avance del
-        piso frente a lo real repartido por su avance en la semana."""
+        """Semáforo de presupuesto por celda de mano de obra.
+
+        CT-16: lo real de la sub etapa en el período (de cada contrata, si el
+        control la distingue) se reparte entre los pisos por lo que cada uno
+        avanzó dentro del período; un piso que terminó antes no recibe nada.
+        Del presupuesto del piso, la parte de su cantidad en la sub etapa."""
         start, end = monday_of(week_from), monday_of(week_to)
         rows = controls.filtered(lambda r: start <= r.week_start <= end)
-        for (floor_id, stage_code), cell in cells.items():
+        # Avance del período por sub etapa y contrata, para el reparto.
+        totals = defaultdict(float)
+        for (_floor_id, code), cell in cells.items():
+            for key in self._share_keys(code, cell):
+                totals[key] += cell['period_done']
+        for (_floor_id, stage_code), cell in cells.items():
             budget = budgets.get(stage_code)
             if not budget or not cell['planned']:
                 continue
             stage_rows = rows.filtered(lambda r, code=stage_code: r.budget_id.stage == code)
-            stage_progress = sum(stage_rows.mapped('progress'))
-            share = (cell['done'] / stage_progress) if stage_progress else 0.0
-            share = min(share, 1.0)
-            real_pd = sum(stage_rows.mapped('person_days_real')) * share
-            budget_pd = sum(stage_rows.mapped('progress_person_days')) * share
-            real_amount = sum(stage_rows.mapped('amount_real')) * share
-            budget_amount = sum(stage_rows.mapped('progress_amount')) * share
+            real_pd = budget_pd = real_amount = budget_amount = 0.0
+            for key in self._share_keys(stage_code, cell):
+                part = stage_rows.filtered(
+                    lambda r, partner=key[1]: not partner or
+                    r.partner_id.commercial_partner_id.id == partner)
+                total = totals[key]
+                share = cell['period_done'] / total if total else 0.0
+                real_pd += sum(part.mapped('person_days_real')) * share
+                budget_pd += sum(part.mapped('progress_person_days')) * share
+                real_amount += sum(part.mapped('amount_real')) * share
+                budget_amount += sum(part.mapped('progress_amount')) * share
             band = (budget.band or 0.0) / 100.0
             by_amount = budget.mode == 'own' and show_amounts
             real, base = (real_amount, budget_amount) if by_amount else (real_pd, budget_pd)
             deviation = (real / base - 1) if base else 0.0
             state = 'none' if not base else (
                 'inside' if deviation <= 0 else ('band' if deviation <= band else 'outside'))
-            cell['budget'] = {
+            ratio = cell['planned'] / budget.quantity if budget.quantity else 0.0
+            info = {
                 'state': state, 'deviation': round(deviation * 100, 1),
                 'unit': 'amount' if by_amount else 'person_days',
-                'real': round(real, 2), 'base': round(base, 2),
-                'budget_total': round(budget.amount if show_amounts else
-                                      budget.person_days_budget, 2),
+                'real_pd': round(real_pd, 2), 'advance_pd': round(budget_pd, 2),
+                'floor_pd': round(budget.person_days_budget * ratio, 2),
+                'basis': self._budget_basis(budget, show_amounts, cell['unit']),
             }
+            if show_amounts:
+                info.update({
+                    'real_amount': round(real_amount, 2),
+                    'advance_amount': round(budget_amount, 2),
+                    'floor_amount': round(budget.amount * ratio, 2),
+                })
+            cell['budget'] = info
+
+    @staticmethod
+    def _share_keys(code, cell):
+        """Claves del reparto de una celda: (sub etapa, contrata) por cada
+        contrata del piso; sin contrata, (sub etapa, 0)."""
+        return [(code, partner) for partner in cell['partner_ids']] or [(code, 0)]
+
+    def _budget_basis(self, budget, show_amounts, unit=''):
+        """«instalación por ML» o «cuadrilla propia, jornal S/ 120»."""
+        stage = (budget.stage_id.name or '').lower()
+        if budget.mode == 'own':
+            if show_amounts and budget.daily_wage:
+                return self.env._('cuadrilla propia, jornal %(currency)s %(wage)s',
+                                  currency=budget.currency_id.symbol or '',
+                                  wage='{:,.0f}'.format(budget.daily_wage))
+            return self.env._('cuadrilla propia')
+        unit = budget.line_ids.activity_id.uom_id[:1].name or unit
+        return self.env._('%(stage)s por %(unit)s', stage=stage, unit=unit) if unit else stage
+
+    def _production_budget(self, cells, production_stages, materials, made, show_amounts,
+                           band_pct):
+        """CT-15: en las sub etapas de producción, los materiales del plan del
+        piso en la sub etapa frente al costo de lo consumido en sus órdenes,
+        sobre lo avanzado. Sin «Ve montos», solo el semáforo."""
+        planned = defaultdict(float)
+        for line in materials:
+            planned[(line.floor_task_id.id, line.stage)] += line.amount_planned
+        band = (band_pct or 0.0) / 100.0
+        codes = set(production_stages.mapped('code'))
+        for key, cell in cells.items():
+            if key[1] not in codes or cell['status'] == STATUS_NO_ORDER:
+                continue
+            budget = planned.get(key, 0.0)
+            advance = budget * cell['pct'] / 100.0
+            consumed = cell.get('consumed', 0.0)
+            if not advance:
+                state, deviation = 'none', 0.0
+            else:
+                deviation = consumed / advance - 1
+                state = 'inside' if deviation <= 0 else (
+                    'band' if deviation <= band else 'outside')
+            info = {'state': state, 'deviation': round(deviation * 100, 1), 'unit': 'amount',
+                    'basis': self.env._('materiales del piso'), 'production': True}
+            if show_amounts:
+                info.update({'floor_amount': round(budget, 2),
+                             'advance_amount': round(advance, 2),
+                             'real_amount': round(consumed, 2)})
+            cell['budget'] = info
+            cell.pop('consumed', None)
 
     def _labor_indicator(self, controls, week_from, week_to, monday_of, show_amounts,
                          install_codes):
@@ -460,6 +584,56 @@ class ConstructionInstallationBoard(models.AbstractModel):
             'empty': False, 'unit': 'amount' if show_amounts else 'person_days',
             'real': round(real, 2), 'base': round(base, 2),
             'deviation': round((real / base - 1) * 100, 1) if base else 0.0,
+        }
+
+    # ------------------------------------------------------------------
+    # Enlaces del tablero
+    # ------------------------------------------------------------------
+    @api.model
+    def action_labor_control(self, project_id, date_from, date_to):
+        """CT-14: el control semanal de mano de obra de la obra, en las semanas
+        del período."""
+        project = self.env['project.project'].browse(project_id)
+        self._check_board_access(project)
+        action = self.env['ir.actions.act_window']._for_xml_id(
+            'al_construction_attendance.action_construction_labor_weekly_control')
+        action['domain'] = [('project_id', '=', project.id),
+                            ('week_start', '>=', date_from), ('week_start', '<=', date_to)]
+        action['context'] = {}
+        return action
+
+    @api.model
+    def action_cell_progress(self, project_id, line_ids, label):
+        """CT-12: los avances de una sub etapa en un piso."""
+        self._check_board_access(self.env['project.project'].browse(project_id))
+        return {
+            'type': 'ir.actions.act_window', 'name': label,
+            'res_model': 'construction.task.progress',
+            'views': [[False, 'list'], [False, 'form']],
+            'domain': [('plan_line_id', 'in', line_ids)],
+        }
+
+    @api.model
+    def action_cell_attendance(self, project_id, partner_ids, stage, date_from, date_to, label):
+        """CT-12: las marcaciones de quien ejecuta la sub etapa en el período:
+        de la contrata, o los jornales de la cuadrilla propia en la sub etapa."""
+        project = self.env['project.project'].browse(project_id)
+        self._check_board_access(project)
+        if partner_ids:
+            return {
+                'type': 'ir.actions.act_window', 'name': label,
+                'res_model': 'construction.contractor.attendance',
+                'views': [[False, 'list'], [False, 'form']],
+                'domain': [('project_id', '=', project.id),
+                           ('partner_id', 'child_of', partner_ids),
+                           ('date', '>=', date_from), ('date', '<=', date_to)],
+            }
+        return {
+            'type': 'ir.actions.act_window', 'name': label,
+            'res_model': 'construction.crew.day',
+            'views': [[False, 'list'], [False, 'form']],
+            'domain': [('project_id', '=', project.id), ('stage', '=', stage),
+                       ('date', '>=', date_from), ('date', '<=', date_to)],
         }
 
 

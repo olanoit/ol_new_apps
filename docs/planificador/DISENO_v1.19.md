@@ -311,3 +311,34 @@ CT-01 antes de corregirlo.
 - CT-02: el orden es el del árbol (secuencia, luego nombre). Un piso «Piso 9»
   junto a un «Piso 10» sin cero delante se ordena como texto, igual que en el
   árbol.
+
+### Entrega 2 · CT-07 a CT-16 (11-nov)
+
+| Código | Qué se hizo |
+|---|---|
+| CT-07 | Cabecera del prototipo: ruta «Obras / obra» (desde la obra lleva de vuelta a ella) o lista de obras (desde el menú Ejecución), título de 20 px y «Etapas (una o ambas):» con «✓»/«+» |
+| CT-08 | Barra de semanas en una tarjeta; el atajo que corresponde al período queda marcado (una semana, cuatro, desde la semana 1 hasta la última cerrada); período y estado a la derecha |
+| CT-09 | Cuatro tarjetas con rótulo en mayúsculas, cifra de 26 px y nota; rojo si terminaron menos de los programados o si hay atrasados; atrasados «Piso 13 · 2.1 (70 %)» separados por coma |
+| CT-10 | Edificio en tarjeta con la leyenda a la derecha; número de piso como botón (oscuro si está elegido); celdas redondeadas de 30 px con la barra de avance, estado a la izquierda y nota a la derecha; borde morado en el período y oscuro en la elegida |
+| CT-11 | Columna derecha con la radiografía y las curvas; queda fija al desplazar el edificio ([P]). Curvas a todo el ancho con base, semana «Hasta», período sombreado, programa gris punteado y real verde, y «X de Y a la fecha · N en total» |
+| CT-12 | Radiografía de una celda con insignia, tres semáforos y los datos en el orden pedido: presupuesto del piso con su base («instalación por ML», «cuadrilla propia, jornal S/ 120»), del avance / real en soles solo con «Ve montos» y persona-días; tabla «Cocinas del piso» con «✓ Hecho», «Falta» o «Pendiente»; «Qué falta» en caja gris |
+| CT-13 | Radiografía de un piso: «Piso 13 · 8 cocinas · 41.23 ML» (la medida de su primera sub etapa con presupuesto de mano de obra), peor estado, una tarjeta por sub etapa, tabla con marcas, «Qué falta» y enlace al árbol |
+| CT-14 | El indicador abre el control semanal de mano de obra filtrado por la obra y las semanas del período; verde, ámbar (dentro de la banda) o rojo |
+| CT-15 | En las sub etapas de producción, los materiales del plan del piso en la sub etapa frente al costo de lo consumido en sus órdenes (costo estándar), sobre lo avanzado; sin «Ve montos», solo el semáforo |
+| CT-16 | Lo real de cada contrata en el período se reparte entre sus pisos por lo que cada uno avanzó dentro del período |
+
+Pruebas nuevas: `TestInstallationBoardBudget` (CT-14, CT-15 y CT-16) y la prueba de
+pantalla con los selectores de la disposición nueva.
+
+**Diferencias frente al requerimiento.**
+
+- CT-12: «Ver avances y marcaciones» abre los avances de la sub etapa en el piso.
+  Las marcaciones no se guardan por piso ni por sub etapa, así que van en un
+  segundo enlace, «Marcaciones del período». Para una contrata son sus marcaciones
+  en la obra; para la cuadrilla propia, sus jornales en la sub etapa.
+- CT-13: «Ver el piso en el árbol de la obra» abre el árbol del plan vigente; el
+  árbol no tiene todavía cómo abrir un nodo elegido.
+- CT-15: lo consumido se valora al costo estándar del producto. La banda es la
+  mayor de los presupuestos de mano de obra de la obra (10 % sin presupuesto).
+- Datos de aceptación: la obra «ZZ TABLERO PRUEBA» necesita cargar datos en
+  newallcenter-dev1, que no es una base de pruebas. Se carga con permiso.

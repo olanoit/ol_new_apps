@@ -1,238 +1,267 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
+    <!-- Control semanal de instalación (M119-05), con la disposición del prototipo
+         de las correcciones del tablero (CT-07 a CT-13). -->
     <t t-name="al_construction_attendance.InstallationBoard">
-        <div class="o_action o_cib d-flex flex-column h-100 overflow-auto">
-            <div class="o_cib_top d-flex flex-wrap align-items-center gap-2 p-2 border-bottom">
-                <select class="form-select w-auto o_cib_project" t-on-change="onProject">
-                    <option value="">Elija la obra…</option>
-                    <t t-foreach="state.projects" t-as="project" t-key="project.id">
-                        <option t-att-value="project.id" t-att-selected="project.id === state.projectId" t-esc="project.name"/>
-                    </t>
-                </select>
-                <t t-if="state.data and !state.data.empty">
-                    <h4 class="m-0 me-2 o_cib_title" t-esc="state.data.title"/>
-                    <button class="btn btn-sm btn-light" t-on-click="() => this.move(-1)" title="Semana anterior">‹</button>
-                    <label class="small">Desde</label>
-                    <select class="form-select form-select-sm w-auto o_cib_from" t-on-change="onFrom">
-                        <t t-foreach="state.data.weeks" t-as="week" t-key="week.number">
-                            <option t-att-value="week.number" t-att-selected="week.number === state.weekFrom">S<t t-esc="week.number"/> · <t t-esc="week.monday"/><t t-if="week.state === 'current'"> (en curso)</t></option>
-                        </t>
-                    </select>
-                    <label class="small">Hasta</label>
-                    <select class="form-select form-select-sm w-auto o_cib_to" t-on-change="onTo">
-                        <t t-foreach="state.data.weeks" t-as="week" t-key="week.number">
-                            <option t-att-value="week.number" t-att-selected="week.number === state.weekTo">S<t t-esc="week.number"/> · <t t-esc="week.saturday"/></option>
-                        </t>
-                    </select>
-                    <button class="btn btn-sm btn-light" t-on-click="() => this.move(1)" title="Semana siguiente">›</button>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-secondary o_cib_shortcut_one" t-on-click="() => this.shortcut('one')">Una semana</button>
-                        <button class="btn btn-outline-secondary o_cib_shortcut_four" t-on-click="() => this.shortcut('four')">Últimas 4</button>
-                        <button class="btn btn-outline-secondary o_cib_shortcut_all" t-on-click="() => this.shortcut('all')">Desde el inicio</button>
-                    </div>
-                    <div class="btn-group btn-group-sm ms-auto">
-                        <button t-if="state.data.has_production" t-att-class="'btn o_cib_toggle_production ' + (state.production ? 'btn-primary' : 'btn-outline-primary')" t-on-click="() => this.toggle('production')">Producción</button>
-                        <button t-att-class="'btn ' + (state.installation ? 'btn-primary' : 'btn-outline-primary')" t-on-click="() => this.toggle('installation')">Instalación</button>
-                    </div>
-                    <div class="w-100 small"><b t-esc="state.data.period_label"/> <span class="text-muted ms-2" t-esc="periodState()"/></div>
-                </t>
-            </div>
-            <div t-if="!state.projectId" class="p-4 text-muted">Elija una obra para ver su control semanal.</div>
-            <div t-elif="state.data and state.data.empty" class="p-4 text-muted">La obra no tiene plan vigente ni etapas en el Cronograma.</div>
-            <t t-elif="state.data">
-                <t t-set="ind" t-value="state.data.indicators"/>
-                <div class="o_cib_kpis d-flex flex-wrap gap-2 p-2">
-                    <div class="o_cib_kpi">
-                        <div class="o_cib_kpi_label" t-esc="state.weekFrom === state.weekTo ? 'Pisos de la semana' : 'Pisos del período'"/>
-                        <div class="o_cib_kpi_value"><t t-esc="ind.period.done"/> de <t t-esc="ind.period.total"/></div>
-                        <div class="o_cib_kpi_note" t-esc="state.weekFrom === state.weekTo ? 'Terminados de los programados para la semana.' : 'Terminados de los programados en las ' + (state.weekTo - state.weekFrom + 1) + ' semanas.'"/>
-                    </div>
-                    <div class="o_cib_kpi">
-                        <div class="o_cib_kpi_label">Pisos atrasados</div>
-                        <div t-att-class="'o_cib_kpi_value ' + (ind.late.count ? 'text-danger' : '')" t-esc="ind.late.count"/>
-                        <div class="o_cib_kpi_note">
-                            <t t-if="!ind.late.count">Ningún piso atrasado.</t>
-                            <t t-foreach="ind.late.items.slice(0, 6)" t-as="item" t-key="item_index">
-                                <span class="me-2"><t t-esc="item.floor"/> · <t t-esc="item.stage.split(' ')[0]"/> (<t t-esc="item.pct"/> %)</span>
+        <div class="o_action o_cib h-100 overflow-auto">
+            <div class="o_cib_page">
+                <!-- CT-07: cabecera -->
+                <div class="o_cib_head">
+                    <div>
+                        <a t-if="fromProject and state.data and !state.data.empty" href="#" class="o_cib_crumb" t-on-click.prevent="openProject">Obras / <t t-esc="state.data.project"/></a>
+                        <select t-if="!fromProject" class="form-select form-select-sm w-auto o_cib_project" t-on-change="onProject">
+                            <option value="">Elija la obra…</option>
+                            <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                                <option t-att-value="project.id" t-att-selected="project.id === state.projectId" t-esc="project.name"/>
                             </t>
-                        </div>
+                        </select>
+                        <h1 class="o_cib_title" t-esc="state.data and !state.data.empty ? state.data.title : 'Control semanal de instalación'"/>
                     </div>
-                    <div class="o_cib_kpi">
-                        <div class="o_cib_kpi_label">Pisos terminados</div>
-                        <div class="o_cib_kpi_value"><t t-esc="ind.finished.done"/> de <t t-esc="ind.finished.total"/></div>
-                        <div class="o_cib_kpi_note">
-                            <t t-foreach="ind.finished.per_stage" t-as="item" t-key="item_index">
-                                <span class="me-2"><t t-esc="item.stage.split(' ')[0]"/>: <t t-esc="item.done"/>/<t t-esc="item.total"/></span>
-                            </t>
-                            (programados a la fecha)
-                        </div>
-                    </div>
-                    <div class="o_cib_kpi o_cib_kpi_labor" t-on-click="openControl" role="button" title="Abrir el control semanal de mano de obra">
-                        <t t-set="lab" t-value="labor()"/>
-                        <div class="o_cib_kpi_label" t-esc="lab.label"/>
-                        <div t-att-class="'o_cib_kpi_value ' + (lab.light === 'red' ? 'text-danger' : '')" t-esc="lab.value"/>
-                        <div class="o_cib_kpi_note" t-esc="lab.note"/>
+                    <div t-if="state.data and !state.data.empty" class="o_cib_stages">
+                        <span class="o_cib_sub">Etapas (una o ambas):</span>
+                        <button t-att-class="'o_cib_btn o_cib_toggle_installation' + (state.installation ? ' o_cib_active' : '')" t-att-aria-pressed="state.installation ? 'true' : 'false'" t-on-click="() => this.toggle('installation')">
+                            <span aria-hidden="true" t-esc="state.installation ? '✓' : '+'"/> Instalación
+                        </button>
+                        <button t-if="state.data.has_production" t-att-class="'o_cib_btn o_cib_toggle_production' + (state.production ? ' o_cib_active' : '')" t-att-aria-pressed="state.production ? 'true' : 'false'" t-on-click="() => this.toggle('production')">
+                            <span aria-hidden="true" t-esc="state.production ? '✓' : '+'"/> Producción
+                        </button>
                     </div>
                 </div>
-                <div class="d-flex flex-grow-1 gap-2 px-2 pb-2 o_cib_body">
-                    <div class="o_cib_building flex-grow-1">
-                        <table class="table table-sm o_cib_table">
-                            <thead>
-                                <tr>
-                                    <th>Piso</th>
-                                    <t t-foreach="state.data.stages" t-as="stage" t-key="stage.code">
-                                        <th t-esc="stage.label"/>
-                                    </t>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="state.data.floors" t-as="floor" t-key="floor.id">
-                                    <tr>
-                                        <th class="o_cib_floor" role="button" t-on-click="() => this.selectFloor(floor)" t-esc="floor.name"/>
-                                        <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
-                                            <td role="button" t-on-click="() => this.selectCell(floor, cell)"
-                                                t-att-class="'o_cib_cell o_cib_' + cell.status + (inPeriod(cell) ? ' o_cib_in_period' : '') + (state.selection and state.selection.cell === cell ? ' o_cib_selected' : '')"
-                                                t-att-title="statusLabel(cell.status)">
-                                                <div class="o_cib_bar" t-att-style="'width:' + cell.pct + '%'"/>
-                                                <span class="o_cib_text"><b t-esc="cellMain(cell)"/> <small t-esc="cellNote(cell)"/></span>
-                                            </td>
-                                        </t>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                        <div class="d-flex flex-wrap gap-3 small o_cib_legend">
-                            <span><span class="o_cib_swatch o_cib_done"/>Terminado</span>
-                            <span><span class="o_cib_swatch o_cib_late"/>Atrasado</span>
-                            <span><span class="o_cib_swatch o_cib_current"/>En curso</span>
-                            <span><span class="o_cib_swatch o_cib_pending"/>Pendiente</span>
-                            <span><span class="o_cib_swatch o_cib_in_period"/>Programado en el período</span>
-                        </div>
-                        <div class="small fw-bold mt-3">Pisos terminados por semana</div>
-                        <div class="d-flex flex-wrap gap-3 mt-2">
-                            <t t-foreach="state.data.curves" t-as="curve" t-key="curve.stage">
-                                <div class="o_cib_curve">
-                                    <div class="small fw-bold" t-esc="curve.stage"/>
-                                    <svg width="230" height="80" viewBox="-5 -5 230 80">
-                                        <t t-set="mark" t-value="curveMark(curve)"/>
-                                        <rect t-att-x="mark.x" y="0" t-att-width="mark.width" height="70" class="o_cib_curve_mark"/>
-                                        <path t-att-d="curvePath(curve, 'planned')" class="o_cib_curve_planned"/>
-                                        <path t-att-d="curvePath(curve, 'real')" class="o_cib_curve_real"/>
-                                    </svg>
-                                    <div class="small text-muted"><span class="o_cib_dot o_cib_dot_planned"/> programa <span class="o_cib_dot o_cib_dot_real ms-2"/> real</div>
-                                </div>
+                <div t-if="!state.projectId" class="o_cib_card o_cib_empty">Elija una obra para ver su control semanal.</div>
+                <div t-elif="state.data and state.data.empty" class="o_cib_card o_cib_empty">La obra no tiene plan vigente ni etapas en el Cronograma.</div>
+                <t t-elif="state.data">
+                    <t t-set="ind" t-value="state.data.indicators"/>
+                    <!-- CT-08: semanas -->
+                    <div class="o_cib_card o_cib_weeks">
+                        <span class="o_cib_sub fw-bold">Semanas:</span>
+                        <button class="o_cib_btn" aria-label="Período anterior" t-on-click="() => this.move(-1)">‹</button>
+                        <label class="o_cib_sub" for="o_cib_from">Desde</label>
+                        <select id="o_cib_from" class="o_cib_btn o_cib_from" t-on-change="onFrom">
+                            <t t-foreach="state.data.weeks" t-as="week" t-key="week.number">
+                                <option t-att-value="week.number" t-att-selected="week.number === state.weekFrom" t-esc="weekOption(week)"/>
                             </t>
-                        </div>
+                        </select>
+                        <label class="o_cib_sub" for="o_cib_to">Hasta</label>
+                        <select id="o_cib_to" class="o_cib_btn o_cib_to" t-on-change="onTo">
+                            <t t-foreach="state.data.weeks" t-as="week" t-key="week.number">
+                                <option t-att-value="week.number" t-att-selected="week.number === state.weekTo" t-esc="weekOption(week)"/>
+                            </t>
+                        </select>
+                        <button class="o_cib_btn" aria-label="Período siguiente" t-on-click="() => this.move(1)">›</button>
+                        <span class="o_cib_gap"/>
+                        <button t-att-class="'o_cib_btn o_cib_shortcut_one' + (shortcutActive('one') ? ' o_cib_active' : '')" t-on-click="() => this.shortcut('one')">Una semana</button>
+                        <button t-att-class="'o_cib_btn o_cib_shortcut_four' + (shortcutActive('four') ? ' o_cib_active' : '')" t-on-click="() => this.shortcut('four')">Últimas 4</button>
+                        <button t-att-class="'o_cib_btn o_cib_shortcut_all' + (shortcutActive('all') ? ' o_cib_active' : '')" t-on-click="() => this.shortcut('all')">Desde el inicio</button>
+                        <span class="o_cib_period"><b t-esc="state.data.period_label"/><br/><span class="o_cib_sub" t-esc="periodState()"/></span>
                     </div>
-                    <div class="o_cib_side border-start ps-2">
-                        <div t-if="!state.selection" class="text-muted small p-2">Haga clic en un piso o en una de sus celdas para ver su situación al cierre del período.</div>
-                        <t t-elif="state.selection.kind === 'cell'">
-                            <t t-set="cell" t-value="state.selection.cell"/>
-                            <h5><t t-esc="cell.floor"/> · <t t-esc="cell.stage_label"/></h5>
-                            <div class="small text-muted mb-2">Estado al cierre de la semana <t t-esc="state.weekTo"/>.</div>
-                            <div class="o_cib_chips">
-                                <t t-foreach="[['Plazo', plazo(cell)], ['Presupuesto', presupuesto(cell)], ['Alcance', alcance(cell)]]" t-as="row" t-key="row[0]">
-                                    <div t-att-class="'o_cib_chip o_cib_chip_' + row[1].light">
-                                        <div class="o_cib_chip_label" t-esc="row[0]"/>
-                                        <div class="o_cib_chip_value" t-esc="row[1].value"/>
-                                        <div class="o_cib_chip_note" t-esc="row[1].note"/>
-                                    </div>
-                                </t>
+                    <!-- CT-09: indicadores -->
+                    <div class="o_cib_kpis">
+                        <t t-set="k1" t-value="kpiPeriod()"/>
+                        <div class="o_cib_card o_cib_kpi">
+                            <span class="o_cib_lbl" t-esc="k1.label"/>
+                            <span t-att-class="'o_cib_big ' + k1.tone" t-esc="k1.value"/>
+                            <span class="o_cib_sub" t-esc="k1.note"/>
+                        </div>
+                        <div class="o_cib_card o_cib_kpi">
+                            <span class="o_cib_lbl">Pisos atrasados</span>
+                            <span t-att-class="'o_cib_big ' + (ind.late.count ? 'o_cib_tone_bad' : 'o_cib_tone_ok')" t-esc="ind.late.count"/>
+                            <span class="o_cib_sub" t-esc="lateText()"/>
+                        </div>
+                        <div class="o_cib_card o_cib_kpi">
+                            <span class="o_cib_lbl">Pisos terminados</span>
+                            <span class="o_cib_big"><t t-esc="ind.finished.done"/> de <t t-esc="ind.finished.total"/></span>
+                            <span class="o_cib_sub" t-esc="finishedText()"/>
+                        </div>
+                        <t t-set="lab" t-value="labor()"/>
+                        <button class="o_cib_card o_cib_kpi o_cib_kpi_labor" t-on-click="openControl" title="Abrir el control semanal de mano de obra">
+                            <span class="o_cib_lbl" t-esc="lab.label"/>
+                            <span t-att-class="'o_cib_big ' + lab.tone" t-esc="lab.value"/>
+                            <span class="o_cib_sub" t-esc="lab.note"/>
+                        </button>
+                    </div>
+                    <div class="o_cib_body">
+                        <!-- CT-10: edificio -->
+                        <div class="o_cib_card o_cib_building">
+                            <div class="o_cib_building_head">
+                                <span class="o_cib_card_title">Edificio: avance de cada piso</span>
+                                <span class="o_cib_sub o_cib_legend">
+                                    <span><span class="o_cib_swatch o_cib_done"/>Terminado</span>
+                                    <span><span class="o_cib_swatch o_cib_late"/>Atrasado</span>
+                                    <span><span class="o_cib_swatch o_cib_current"/>En curso</span>
+                                    <span><span class="o_cib_swatch o_cib_pending"/>Pendiente</span>
+                                    <span><span class="o_cib_swatch o_cib_in_period"/>Programado en la semana</span>
+                                </span>
                             </div>
-                            <dl class="small mt-2 mb-1 o_cib_facts">
-                                <dt>Ejecuta</dt><dd t-esc="cell.executor"/>
-                                <dt>Programado</dt><dd t-esc="cell.sched_week ? 'Semana ' + cell.sched_week + ' (' + cell.sched_dates + ')' : '—'"/>
-                                <dt>Terminado</dt><dd t-esc="cell.finish_week ? 'Semana ' + cell.finish_week : '—'"/>
-                                <dt>Avance</dt><dd t-esc="cell.status === 'no_order' ? 'Sin orden de fabricación' : cell.pct + ' %'"/>
-                                <dt>Etapa anterior</dt><dd t-esc="previousText(cell)"/>
-                                <t t-if="cell.budget and cell.budget.state !== 'none'">
-                                    <dt t-esc="cell.budget.unit === 'amount' ? 'Del avance / real (S/)' : 'Persona-días'"/>
-                                    <dd><t t-esc="cell.budget.base"/> del avance / <t t-esc="cell.budget.real"/> reales</dd>
-                                </t>
-                            </dl>
-                            <table class="table table-sm small">
-                                <thead><tr><th>Dpto.</th><th>Tipología</th><th>Cantidad</th><th>Estado</th></tr></thead>
-                                <tbody>
-                                    <t t-foreach="cell.spaces" t-as="space" t-key="space.id">
-                                        <tr><td t-esc="space.apartment"/><td t-esc="space.typology"/><td t-esc="space.qty"/>
-                                            <td t-esc="space.state === 'done' ? 'Hecho' : (space.state === 'partial' ? 'En curso' : 'Falta')"/></tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                            <div class="small"><b>Qué falta:</b>
-                                <t t-if="missing(cell).length"><t t-esc="missing(cell).length"/> cocina(s) (<t t-esc="missing(cell).map((s) => s.apartment).join(', ')"/>).</t>
-                                <t t-else="">Nada: el piso está completo en esta sub etapa.</t>
-                            </div>
-                            <div class="small" t-if="cell.productions and cell.productions.length">
-                                <b>Órdenes de fabricación:</b>
-                                <t t-foreach="cell.productions" t-as="production" t-key="production.id">
-                                    <button class="btn btn-link btn-sm px-1 py-0" t-on-click="() => this.openProduction(production)" t-esc="production.name"/>
-                                </t>
-                            </div>
-                            <button t-if="cell.line_ids.length" class="btn btn-link btn-sm px-0" t-on-click="() => this.openProgress(cell)">Ver los avances del piso</button>
-                        </t>
-                        <t t-else="">
-                            <t t-set="floor" t-value="state.selection.floor"/>
-                            <h5 t-esc="floorTitle(floor)"/>
-                            <div class="small text-muted mb-2">Todas las sub etapas visibles, al cierre de la semana <t t-esc="state.weekTo"/>. Plazo · Presupuesto · Alcance; clic en una sub etapa para su detalle.</div>
-                            <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
-                                <div class="o_cib_floor_stage" role="button" t-on-click="() => this.selectCell(floor, cell)">
-                                    <b t-esc="cell.stage_label"/>
-                                    <span t-att-class="'o_cib_mini o_cib_chip_' + plazo(cell).light" t-esc="plazo(cell).value"/>
-                                    <span t-att-class="'o_cib_mini o_cib_chip_' + presupuesto(cell).light" t-esc="presupuesto(cell).value"/>
-                                    <span t-att-class="'o_cib_mini o_cib_chip_' + alcance(cell).light" t-esc="alcance(cell).value"/>
-                                </div>
-                            </t>
-                            <t t-set="ftable" t-value="floorTable(floor)"/>
-                            <div class="o_cib_units mt-2" t-if="ftable.rows.length">
-                                <div class="small fw-bold mb-1">Departamentos y muebles del piso</div>
-                                <table class="table table-sm small mb-1">
+                            <div class="o_cib_scroll">
+                                <table class="o_cib_table" t-att-style="'min-width: ' + (state.data.stages.length > 3 ? 820 : 520) + 'px'">
                                     <thead>
                                         <tr>
-                                            <th>Dpto.</th><th>Tipología</th><th>Cantidad</th>
-                                            <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
-                                                <th class="text-center" t-esc="col.label"/>
+                                            <th class="o_cib_th" style="width: 80px;">Piso</th>
+                                            <t t-foreach="state.data.stages" t-as="stage" t-key="stage.code">
+                                                <th class="o_cib_th" t-esc="stage.label"/>
                                             </t>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <t t-foreach="ftable.rows" t-as="row" t-key="row.id">
+                                        <t t-foreach="state.data.floors" t-as="floor" t-key="floor.id">
                                             <tr>
-                                                <td t-esc="row.apartment"/>
-                                                <td t-esc="row.typology"/>
-                                                <td t-esc="row.qty"/>
-                                                <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
-                                                    <td role="button" t-on-click="() => this.selectCell(floor, col.cell)"
-                                                        t-att-class="'text-center o_cib_mark o_cib_mark_' + (row.marks[col.cell.stage] || 'pending')"
-                                                        t-esc="unitMark(row.marks[col.cell.stage])"/>
+                                                <td class="o_cib_floor_td">
+                                                    <button t-att-class="'o_cib_floor' + (isFloorSelected(floor) ? ' o_cib_floor_selected' : '')" t-att-aria-label="'Radiografía del ' + floor.name" t-on-click="() => this.selectFloor(floor)" t-esc="floor.name"/>
+                                                </td>
+                                                <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
+                                                    <td class="o_cib_cell_td">
+                                                        <button t-att-class="'o_cib_cell o_cib_' + cell.status + (inPeriod(cell) ? ' o_cib_in_period' : '') + (isCellSelected(cell) ? ' o_cib_selected' : '')"
+                                                                t-att-aria-label="floor.name + ', ' + cell.stage_label + ': ' + cellMain(cell)"
+                                                                t-on-click="() => this.selectCell(floor, cell)">
+                                                            <span class="o_cib_bar" aria-hidden="true" t-att-style="'width:' + barWidth(cell) + '%'"/>
+                                                            <span class="o_cib_text"><span t-esc="cellMain(cell)"/><span class="o_cib_note" t-esc="cellNote(cell)"/></span>
+                                                        </button>
+                                                    </td>
                                                 </t>
                                             </tr>
                                         </t>
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="3">Hechos</td>
-                                            <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
-                                                <td class="text-center"><t t-esc="col.done"/>/<t t-esc="ftable.total"/></td>
-                                            </t>
-                                        </tr>
-                                    </tfoot>
                                 </table>
-                                <div class="text-muted small">✓ hecho · ◐ en curso · · pendiente</div>
                             </div>
-                            <div class="small mt-2"><b>Qué falta:</b>
-                                <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
-                                    <div t-if="cell.status !== 'done'">
-                                        <t t-esc="cell.stage_label"/>:
-                                        <t t-if="cell.status === 'pending'">programada S<t t-esc="cell.sched_week"/></t>
-                                        <t t-else=""><t t-esc="missing(cell).length"/> ambiente(s)<t t-if="cell.status === 'late'">, atrasada</t></t>
-                                    </div>
+                        </div>
+                        <!-- CT-11: columna derecha, a la vista al desplazar el edificio -->
+                        <div class="o_cib_side">
+                            <div class="o_cib_card o_cib_xray">
+                                <span class="o_cib_lbl">Radiografía</span>
+                                <div t-if="!state.selection" class="o_cib_sub">Haga clic en un piso o en una de sus celdas para ver su situación al cierre del período.</div>
+                                <t t-elif="state.selection.kind === 'cell'">
+                                    <t t-call="al_construction_attendance.InstallationBoardCell"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-call="al_construction_attendance.InstallationBoardFloor"/>
                                 </t>
                             </div>
-                        </t>
+                            <div class="o_cib_card o_cib_curves">
+                                <span class="o_cib_lbl">Pisos terminados por semana</span>
+                                <t t-foreach="state.data.curves" t-as="curve" t-key="curve.stage">
+                                    <t t-set="geo" t-value="curveGeometry(curve)"/>
+                                    <div>
+                                        <div class="o_cib_curve_head"><b t-esc="curve.stage"/><span class="o_cib_sub" t-esc="curveText(curve, curve_index)"/></div>
+                                        <svg viewBox="0 0 300 70" preserveAspectRatio="none" class="o_cib_curve" role="img" t-att-aria-label="curve.stage + ': pisos terminados frente al programa'">
+                                            <line x1="0" x2="300" y1="66" y2="66" stroke="#D8DADD"/>
+                                            <rect t-att-x="geo.rangeX" y="2" t-att-width="geo.rangeW" height="64" fill="#EDE4EB"/>
+                                            <line t-att-x1="geo.selX" t-att-x2="geo.selX" y1="2" y2="66" stroke="#714B67" stroke-dasharray="3 3"/>
+                                            <polyline t-att-points="geo.plan" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="5 4"/>
+                                            <polyline t-att-points="geo.real" fill="none" stroke="#2E9E5B" stroke-width="2.5"/>
+                                        </svg>
+                                    </div>
+                                </t>
+                                <span class="o_cib_sub"><span class="o_cib_leg_plan">┅</span> Programa · <span class="o_cib_leg_real">━</span> Real</span>
+                            </div>
+                        </div>
                     </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- CT-12: radiografía de una celda -->
+    <t t-name="al_construction_attendance.InstallationBoardCell">
+        <t t-set="cell" t-value="state.selection.cell"/>
+        <t t-set="floor" t-value="state.selection.floor"/>
+        <span class="o_cib_xray_title"><t t-esc="cell.floor"/> · <t t-esc="cell.stage_label"/></span>
+        <span t-att-class="'o_cib_badge o_cib_badge_' + cell.status" t-esc="statusLabel(cell.status)"/>
+        <span class="o_cib_sub" t-esc="closeHint()"/>
+        <div class="o_cib_chips">
+            <t t-foreach="[['Plazo', plazo(cell)], ['Presupuesto', presupuesto(cell)], ['Alcance', alcance(cell)]]" t-as="row" t-key="row[0]">
+                <div t-att-class="'o_cib_chip o_cib_chip_' + row[1].light">
+                    <div class="o_cib_chip_label" t-esc="row[0]"/>
+                    <div class="o_cib_chip_value" t-esc="row[1].value"/>
+                    <div class="o_cib_chip_note" t-esc="row[1].note"/>
                 </div>
             </t>
         </div>
+        <div class="o_cib_facts">
+            <t t-foreach="facts(cell)" t-as="fact" t-key="fact.k">
+                <span class="o_cib_fact_k" t-esc="fact.k"/><span t-esc="fact.v"/>
+            </t>
+        </div>
+        <span class="o_cib_lbl">Cocinas del piso</span>
+        <table class="o_cib_units_table">
+            <thead><tr><th class="o_cib_th">Dpto</th><th class="o_cib_th">Cocina</th><th class="o_cib_th text-end" t-esc="cell.unit || 'Cantidad'"/><th class="o_cib_th">Estado</th></tr></thead>
+            <tbody>
+                <t t-foreach="cell.spaces" t-as="space" t-key="space.id">
+                    <t t-set="unitState" t-value="spaceState(cell, space)"/>
+                    <tr>
+                        <td t-esc="space.apartment"/>
+                        <td t-esc="space.typology"/>
+                        <td class="text-end" t-esc="formatQty(space.qty)"/>
+                        <td t-att-class="'fw-bold o_cib_unit_' + unitState.kind" t-esc="unitState.text"/>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+        <div class="o_cib_missing"><b>Qué falta:</b> <t t-esc="cellMissing(cell)"/></div>
+        <div t-if="cell.productions and cell.productions.length" class="o_cib_sub">
+            <b>Órdenes de fabricación:</b>
+            <t t-foreach="cell.productions" t-as="production" t-key="production.id">
+                <a href="#" class="ms-1" t-on-click.prevent="() => this.openProduction(production)" t-esc="production.name"/>
+            </t>
+        </div>
+        <a t-if="cell.line_ids.length" href="#" class="o_cib_link o_cib_link_progress" t-on-click.prevent="() => this.openProgress(cell)" t-esc="'Ver avances y marcaciones de ' + cell.stage_label + ' en el ' + floor.name.toLowerCase()"/>
+        <a t-if="cell.line_ids.length" href="#" class="o_cib_link o_cib_link_attendance" t-on-click.prevent="() => this.openAttendance(cell)">Marcaciones del período</a>
+    </t>
+
+    <!-- CT-13: radiografía de un piso -->
+    <t t-name="al_construction_attendance.InstallationBoardFloor">
+        <t t-set="floor" t-value="state.selection.floor"/>
+        <t t-set="worst" t-value="worstStatus(floor)"/>
+        <span class="o_cib_xray_title" t-esc="floorTitle(floor)"/>
+        <span t-att-class="'o_cib_badge o_cib_badge_' + worst" t-esc="statusLabel(worst)"/>
+        <span class="o_cib_sub">Todas las sub etapas visibles, al cierre de la semana <t t-esc="state.weekTo"/>.</span>
+        <div class="o_cib_floor_stages">
+            <t t-foreach="floor.cells" t-as="cell" t-key="cell.stage">
+                <button class="o_cib_floor_stage" t-on-click="() => this.selectCell(floor, cell)">
+                    <span class="o_cib_floor_stage_name" t-esc="cell.stage_label"/>
+                    <span t-att-class="'o_cib_mini o_cib_chip_' + plazo(cell).light" t-esc="plazo(cell).value"/>
+                    <span t-att-class="'o_cib_mini o_cib_chip_' + presupuesto(cell).light" t-esc="presupuesto(cell).value"/>
+                    <span t-att-class="'o_cib_mini o_cib_chip_' + alcance(cell).light" t-esc="alcance(cell).value"/>
+                </button>
+            </t>
+            <span class="o_cib_sub">Plazo · Presupuesto · Alcance. Clic en una sub etapa para su detalle.</span>
+        </div>
+        <t t-set="ftable" t-value="floorTable(floor)"/>
+        <span class="o_cib_lbl">Departamentos y muebles del piso</span>
+        <div class="o_cib_units">
+            <table class="o_cib_units_table">
+                <thead>
+                    <tr>
+                        <th class="o_cib_th">Dpto</th><th class="o_cib_th">Cocina</th><th class="o_cib_th text-end" t-esc="floor.unit || 'Cantidad'"/>
+                        <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
+                            <th class="o_cib_th text-center" t-esc="col.label"/>
+                        </t>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="ftable.rows" t-as="row" t-key="row.id">
+                        <tr>
+                            <td t-esc="row.apartment"/>
+                            <td t-esc="row.typology"/>
+                            <td class="text-end" t-esc="formatQty(row.qty)"/>
+                            <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
+                                <td t-att-class="'text-center o_cib_mark o_cib_mark_' + markKind(col.cell, row.marks[col.cell.stage])"
+                                    t-esc="unitMark(row.marks[col.cell.stage])"/>
+                            </t>
+                        </tr>
+                    </t>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">Hechos</td>
+                        <t t-foreach="ftable.columns" t-as="col" t-key="col.cell.stage">
+                            <td class="text-center"><t t-esc="col.done"/>/<t t-esc="ftable.total"/></td>
+                        </t>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <span class="o_cib_sub">✓ hecho · ◐ en curso · · pendiente</span>
+        <div class="o_cib_missing"><b>Qué falta:</b> <t t-esc="floorMissing(floor)"/></div>
+        <a href="#" class="o_cib_link o_cib_link_tree" t-on-click.prevent="() => this.openTree(floor)" t-esc="'Ver el ' + floor.name.toLowerCase() + ' en el árbol de la obra'"/>
     </t>
 </templates>

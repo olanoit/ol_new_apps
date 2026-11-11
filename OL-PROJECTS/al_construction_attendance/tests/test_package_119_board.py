@@ -228,3 +228,76 @@ class TestInstallationBoardTour(HttpCase, PlannerCommon):
     def test_board_tour(self):
         self.start_tour('/odoo', 'al_construction_installation_board', login='admin')
 
+
+
+@tagged('post_install', '-at_install')
+class TestInstallationBoardBudget(PlannerCommon):
+    """Correcciones del tablero: CT-16 (lo real de la contrata se reparte por
+    lo que cada piso avanzó dentro del período), CT-15 (presupuesto de las sub
+    etapas de producción en soles) y CT-14 (el indicador abre el control
+    semanal de la obra en el período)."""
+
+    _validate = TestInstallationBoard._validate
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        _board_data(cls)
+
+    def test_real_split_by_period_progress(self):
+        floor_04 = self.task('Piso 04', 'floor')
+        apt = self.task('Dpto 401', 'apartment', floor_04)
+        space_401 = self.task('Cocina', 'space', apt, construction_typology_id=self.typology.id)
+        line_04 = self.env['construction.resource.plan.line'].with_context(
+            construction_plan_force=True).create({
+                'plan_id': self.plan.id, 'task_id': space_401.id, 'resource_type': 'contract',
+                'activity_id': self.act_inst_low.id, 'stage': 'installation',
+                'partner_id': self.contractor.id, 'qty_planned': 2.0,
+                'price_unit_planned': 16.0, 'product_uom_id': self.act_inst_low.uom_id.id})
+        # El piso 05 termina en la semana 1; el 04 avanza en la semana 3.
+        for line in self.lines:
+            self._validate(line, self.origin + timedelta(days=2))
+        self._validate(line_04, self.origin + timedelta(days=15))
+        budget = self.env['construction.labor.budget'].create({
+            'project_id': self.project.id, 'mode': 'contract',
+            'stage_id': self.env.ref('al_construction_planner.stage_installation').id})
+        self.env['construction.labor.weekly.control'].create({
+            'project_id': self.project.id, 'budget_id': budget.id,
+            'partner_id': self.contractor.id,
+            'week_start': self.origin + timedelta(days=14),
+            'progress': 2.0, 'person_days_real': 4.0, 'progress_person_days': 3.0})
+        data = self.Board.get_data(self.project.id, 2, 3)
+        cells = {f['name']: f['cells'][0] for f in data['floors']}
+        self.assertEqual(cells['Piso 05']['budget'].get('real_pd', 0.0), 0.0)
+        self.assertEqual(cells['Piso 04']['budget']['real_pd'], 4.0)
+        self.assertEqual(cells['Piso 04']['budget']['advance_pd'], 3.0)
+        self.assertEqual(cells['Piso 04']['budget']['state'], 'outside')
+        self.assertIn('por', cells['Piso 04']['budget']['basis'])
+        # CT-14: el control semanal de la obra, en las semanas del período.
+        action = self.Board.action_labor_control(
+            self.project.id, data['period_start'], data['period_last_monday'])
+        self.assertIn(('project_id', '=', self.project.id), action['domain'])
+        self.assertIn(('week_start', '>=', data['period_start']), action['domain'])
+
+    def test_production_budget_in_soles(self):
+        product = self.env['product.product'].create({'name': 'Tablero (test tablero)',
+                                                      'type': 'consu'})
+        material = self.env['construction.resource.plan.line'].with_context(
+            construction_plan_force=True).create({
+                'plan_id': self.plan.id, 'task_id': self.space_501.id,
+                'resource_type': 'material', 'product_id': product.id, 'stage': 'production',
+                'qty_planned': 10.0, 'price_unit_planned': 10.0,
+                'product_uom_id': product.uom_id.id})
+        stages = self.env.ref('al_construction_planner.stage_production')
+        key = (self.floor.id, 'production')
+        cells = {key: {'status': 'current', 'pct': 50, 'consumed': 60.0}}
+        # 100 de materiales, la mitad avanzada (50) y 60 consumidos: +20 %.
+        self.Board._production_budget(cells, stages, material, {}, True, 10.0)
+        self.assertEqual(cells[key]['budget']['state'], 'outside')
+        self.assertEqual(cells[key]['budget']['deviation'], 20.0)
+        self.assertEqual(cells[key]['budget']['advance_amount'], 50.0)
+        # Sin «Ve montos», solo el semáforo.
+        cells = {key: {'status': 'current', 'pct': 50, 'consumed': 52.0}}
+        self.Board._production_budget(cells, stages, material, {}, False, 10.0)
+        self.assertEqual(cells[key]['budget']['state'], 'band')
+        self.assertNotIn('advance_amount', cells[key]['budget'])

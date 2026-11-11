@@ -51,9 +51,9 @@ registry.category("web_tour.tours").add("al_construction_installation_board", {
         },
         {
             content: "CT-05: la radiografía sin «Piso Piso»",
-            trigger: ".o_cib_side h5:contains('Piso 05 ·')",
+            trigger: ".o_cib_xray_title:contains('Piso 05 ·')",
             run: () => {
-                if (document.querySelector(".o_cib_side h5").textContent.includes("Piso Piso")) {
+                if (document.querySelector(".o_cib_xray_title").textContent.includes("Piso Piso")) {
                     throw new Error("El nombre del piso repite «Piso»");
                 }
             },
