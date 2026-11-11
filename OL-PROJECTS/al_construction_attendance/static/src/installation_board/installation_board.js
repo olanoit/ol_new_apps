@@ -11,6 +11,7 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { useSetupAction } from "@web/search/action_hook";
 
 const STATUS_LABELS = {
     done: _t("Terminado"),
@@ -34,19 +35,40 @@ export class InstallationBoard extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         const params = this.props.action?.params || {};
+        // Al volver por la ruta (por ejemplo, desde el control semanal), el
+        // tablero sigue en la obra, el período, las etapas y lo elegido.
+        const saved = this.props.state || {};
         // CT-07: desde la obra, la ruta lleva de vuelta a ella; desde el menú
         // Ejecución, la lista de obras.
         this.fromProject = Boolean(params.project_id);
         this.state = useState({
             projects: [],
-            projectId: params.project_id || false,
-            weekFrom: null,
-            weekTo: null,
-            production: false,
-            installation: true,
+            projectId: saved.projectId || params.project_id || false,
+            weekFrom: saved.weekFrom ?? null,
+            weekTo: saved.weekTo ?? null,
+            production: saved.production ?? false,
+            installation: saved.installation ?? true,
             data: null,
-            selection: null,
+            // Lo elegido antes de salir: ``reselect`` lo busca en los datos.
+            selection: saved.selection || null,
             loading: false,
+        });
+        useSetupAction({
+            getLocalState: () => {
+                const selection = this.state.selection;
+                return {
+                    projectId: this.state.projectId,
+                    weekFrom: this.state.weekFrom,
+                    weekTo: this.state.weekTo,
+                    production: this.state.production,
+                    installation: this.state.installation,
+                    selection: selection && {
+                        kind: selection.kind,
+                        floor: { id: selection.floor.id },
+                        cell: selection.cell ? { stage: selection.cell.stage } : null,
+                    },
+                };
+            },
         });
         onWillStart(async () => {
             if (!this.fromProject) {

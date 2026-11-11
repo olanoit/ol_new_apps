@@ -77,12 +77,33 @@ registry.category("web_tour.tours").add("al_construction_installation_board", {
         { trigger: ".o_cib_shortcut_one", run: "click" },
         { trigger: ".o_cib_shortcut_four", run: "click" },
         { trigger: ".o_cib_shortcut_all", run: "click" },
-        { trigger: ".o_cib_table .o_cib_cell" },
+        { trigger: ".o_cib_shortcut_all.o_cib_active" },
+        { trigger: ".o_cib_toggle_production", run: "click" },
+        { trigger: ".o_cib_title:contains('producción e instalación')" },
+        { trigger: ".o_cib_floor:contains('Piso 05')", run: "click" },
+        { trigger: ".o_cib_floor_selected" },
         {
             content: "El indicador de mano de obra abre el control semanal",
             trigger: ".o_cib_kpi_labor",
             run: "click",
         },
         { trigger: ".o_list_view, .o_view_nocontent" },
+        {
+            content: "Volver por la ruta",
+            trigger: ".o_breadcrumb a:first, .breadcrumb-item a:first",
+            run: "click",
+        },
+        {
+            content: "El tablero conserva el período, las etapas y el piso elegido",
+            trigger: ".o_cib_title:contains('producción e instalación')",
+            run: () => {
+                if (!document.querySelector(".o_cib_shortcut_all.o_cib_active")) {
+                    throw new Error("El tablero no conservó el período");
+                }
+                if (!document.querySelector(".o_cib_floor_selected")) {
+                    throw new Error("El tablero no conservó el piso elegido");
+                }
+            },
+        },
     ],
 });
