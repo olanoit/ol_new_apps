@@ -105,7 +105,7 @@ registry.category("web_tour.tours").add("al_construction_sheet_progress", {
             timeout: 60000,
         },
         // Antes amplía la hoja vacía a 1,650 filas: unos 85,000 comandos con
-        // la plantilla vigente.
+        // la plantilla vigente, unos 50 s.
         waitLonger(labelHas("ARBOL")),
         waitLonger(labelHas("ARBOL")),
         {
@@ -138,6 +138,22 @@ registry.category("web_tour.tours").add("al_construction_sheet_progress", {
                 console.log(`AL_PERF importar: ${Math.round(performance.now() - window.alImportStart)} ms`);
                 if (treeRows() < 1500) {
                     throw new Error(`ARBOL tiene ${treeRows()} filas`);
+                }
+                // La ampliación evalúa la hoja una sola vez, al final: las
+                // fórmulas de las filas nuevas ya tienen su valor (G repite el
+                // piso de B cuando A está vacía).
+                const getters = findModel(odoo.__WOWL_DEBUG__.root.__owl__).getters;
+                const sheetId = getters.getSheetIdByName("ARBOL");
+                let evaluated = 0;
+                for (let row = 1; row < getters.getNumberRows(sheetId); row++) {
+                    const floor = getters.getCell({ sheetId, col: 1, row })?.content;
+                    const value = getters.getEvaluatedCell({ sheetId, col: 6, row }).value;
+                    if (floor && value === floor) {
+                        evaluated++;
+                    }
+                }
+                if (evaluated < 1500) {
+                    throw new Error(`ARBOL tiene ${evaluated} filas calculadas`);
                 }
             },
         },

@@ -11,6 +11,7 @@ import {
     keyColumns,
     lastDataRow,
     normText,
+    resumeEvaluation,
     validate,
     writeRows,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
@@ -46,31 +47,49 @@ function parseRef(ref) {
 async function applyExtension(env, extension, runner) {
     const model = env.model;
     const getters = model.getters;
-    const commands = [];
     const parts = Object.entries(extension.sheets || {}).filter(([name]) =>
         getters.getSheetIdByName(name)
     );
-    // M117-08: todas las filas en un lote, un solo recálculo del libro.
-    dispatchBatch(
-        model,
-        parts
-            .map(([name, part]) => [getters.getSheetIdByName(name), part.row_number])
-            .filter(([sheetId, rows]) => getters.getNumberRows(sheetId) < rows)
-            .map(([sheetId, rows]) => {
-                const current = getters.getNumberRows(sheetId);
-                return [
-                    "ADD_COLUMNS_ROWS",
-                    {
-                        sheetId,
-                        sheetName: getters.getSheetName(sheetId),
-                        dimension: "ROW",
-                        base: current - 1,
-                        quantity: rows - current,
-                        position: "after",
-                    },
-                ];
-            })
-    );
+    try {
+        // M117-08: todas las filas en un lote. La hoja se evalúa una sola vez,
+        // al cerrar la ampliación (unos 16 s con 1,650 filas): evaluar las
+        // fórmulas mientras se escriben costaba unos 30 s más.
+        dispatchBatch(model, rowCommands(getters, parts), { deferEvaluation: true });
+        const commands = extensionCommands(getters, parts, extension);
+        runner.progress.total += commands.length;
+        await runner.write(model, _t("Ampliando la hoja"), commands, {
+            locked: true,
+            deferEvaluation: true,
+        });
+    } finally {
+        resumeEvaluation(model, extensionTail(getters, parts, extension));
+    }
+}
+
+/** Filas que faltan en cada pestaña. */
+function rowCommands(getters, parts) {
+    return parts
+        .map(([name, part]) => [getters.getSheetIdByName(name), part.row_number])
+        .filter(([sheetId, rows]) => getters.getNumberRows(sheetId) < rows)
+        .map(([sheetId, rows]) => {
+            const current = getters.getNumberRows(sheetId);
+            return [
+                "ADD_COLUMNS_ROWS",
+                {
+                    sheetId,
+                    sheetName: getters.getSheetName(sheetId),
+                    dimension: "ROW",
+                    base: current - 1,
+                    quantity: rows - current,
+                    position: "after",
+                },
+            ];
+        });
+}
+
+/** Fórmulas, listas, formato y formato condicional de las filas nuevas. */
+function extensionCommands(getters, parts, extension) {
+    const commands = [];
     for (const [name, part] of parts) {
         const sheetId = getters.getSheetIdByName(name);
         for (const [ref, content] of Object.entries(part.cells)) {
@@ -112,22 +131,6 @@ async function applyExtension(env, extension, runner) {
                 },
             ]);
         }
-        // La tabla nativa crece con las filas.
-        const table = part.table_bottom !== undefined && getters.getCoreTables(sheetId)[0];
-        if (table) {
-            const zone = table.range.zone;
-            commands.push([
-                "UPDATE_TABLE",
-                {
-                    sheetId,
-                    zone,
-                    newTableRange: getters.getRangeDataFromZone(sheetId, {
-                        ...zone,
-                        bottom: Math.max(zone.bottom, part.table_bottom),
-                    }),
-                },
-            ]);
-        }
     }
     const summaryId = getters.getSheetIdByName("RESUMEN");
     if (summaryId) {
@@ -135,8 +138,36 @@ async function applyExtension(env, extension, runner) {
             commands.push(["UPDATE_CELL", { sheetId: summaryId, ...parseRef(ref), content }]);
         }
     }
-    runner.progress.total += commands.length;
-    await runner.write(model, _t("Ampliando la hoja"), commands, { locked: true });
+    return commands;
+}
+
+/**
+ * Tablas y tablas dinámicas que crecen con las filas, para el lote que cierra
+ * la ampliación. UPDATE_TABLE quita las celdas combinadas de su rango y con eso
+ * la hoja recalcula el libro entero, como al cambiar una tabla dinámica: todo
+ * va junto, un recálculo. Una tabla que ya creció al escribir justo debajo de
+ * ella no se toca.
+ */
+function extensionTail(getters, parts, extension) {
+    const tables = [];
+    for (const [name, part] of parts) {
+        const sheetId = getters.getSheetIdByName(name);
+        const table = part.table_bottom !== undefined && getters.getCoreTables(sheetId)[0];
+        if (table && table.range.zone.bottom < part.table_bottom) {
+            const zone = table.range.zone;
+            tables.push([
+                "UPDATE_TABLE",
+                {
+                    sheetId,
+                    zone,
+                    newTableRange: getters.getRangeDataFromZone(sheetId, {
+                        ...zone,
+                        bottom: part.table_bottom,
+                    }),
+                },
+            ]);
+        }
+    }
     const pivots = [];
     for (const [pivotId, bottom] of Object.entries(extension.pivots || {})) {
         try {
@@ -160,7 +191,7 @@ async function applyExtension(env, extension, runner) {
             // Una tabla dinámica borrada por el usuario: nada que ampliar.
         }
     }
-    dispatchBatch(model, pivots);
+    return [...tables, ...pivots];
 }
 
 /** M117-15: el valor y el motivo de cada parámetro, por su clave (columna G). */

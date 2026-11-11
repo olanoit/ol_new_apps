@@ -56,8 +56,9 @@ export function openProgress(env, total) {
         /**
          * Escribe ``commands`` por tramos; con «Cancelar», se detiene. Con ``locked``
          * no se puede cancelar: una ampliación a medias dejaría filas sin fórmulas.
+         * Con ``deferEvaluation`` la hoja no se evalúa hasta ``resumeEvaluation``.
          */
-        async write(model, sheet, commands, { locked = false } = {}) {
+        async write(model, sheet, commands, { locked = false, deferEvaluation = false } = {}) {
             progress.sheet = sheet;
             progress.locked = locked;
             for (let start = 0; start < commands.length; start += PROGRESS_CHUNK) {
@@ -65,7 +66,7 @@ export function openProgress(env, total) {
                     throw new CancelledError();
                 }
                 const chunk = commands.slice(start, start + PROGRESS_CHUNK);
-                dispatchBatch(model, chunk);
+                dispatchBatch(model, chunk, { deferEvaluation });
                 progress.done += chunk.length;
                 // Un respiro real: con 0 ms el navegador no llega a pintar.
                 await new Promise((resolve) => setTimeout(resolve, 30));

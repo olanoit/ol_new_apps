@@ -223,6 +223,24 @@ mantiene: uno mayor deja la pantalla quieta más tiempo sin ganar nada apreciabl
 | Escribir y validar 1,500 filas de ARBOL en una hoja ya ampliada | no medido por separado | unos 17 s |
 | Cancelar a la mitad | no existía | unos 3 s |
 
+**Medición del 11-nov-2026.** La plantilla vigente escribe unas 66,000 fórmulas, 152 bloques
+de formato y 9,880 reglas al ampliar a 1,650 filas, y la ampliación había subido a unos 105 s.
+El costo no estaba en escribir sino en evaluar: cada lote evaluaba las fórmulas nuevas, cada
+`UPDATE_TABLE` recalculaba el libro entero (unos 17 s) y las tablas dinámicas lo recalculaban
+otra vez al final. Ahora la ampliación escribe con la evaluación aplazada y evalúa el libro una
+sola vez, al cerrar, junto con las tablas y las tablas dinámicas:
+
+| Ampliar de 10 a 1,650 filas | Tiempo |
+|---|---|
+| Con la plantilla vigente, antes | unos 105 s |
+| Tablas y tablas dinámicas en un solo lote | unos 62 s |
+| Además, evaluación aplazada hasta el final | unos 48 s |
+
+De esos 48 s, unos 20 s son el recálculo final del libro y unos 10 s el formato de las
+columnas (un comando por celda en la hoja de Odoo, lo mismo con `SET_FORMATTING` que con
+`UPDATE_CELL`). El recálculo crece con las fórmulas que miran columnas enteras
+(`COUNTIF(ARBOL!$E:$E…)`, `SUMIFS`, `XLOOKUP`, `FILTER`); bajarlo es cambiar la plantilla.
+
 **Sin medir: la obra grande de 8,000 líneas en BOM** (punto 1 del pedido). La corrida
 anterior de 8,000 filas agotó la memoria de la máquina de desarrollo y no se repitió.
 La meta de menos de 60 s (D3) sigue sin acordar: con 1,500 filas se cumple; con 8,000

@@ -5,7 +5,8 @@ import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 
-const { corePluginRegistry, featurePluginRegistry, topbarMenuRegistry } = registries;
+const { coreViewsPluginRegistry, corePluginRegistry, featurePluginRegistry, topbarMenuRegistry } =
+    registries;
 
 const BATCH_COMMAND = "AL_CONSTRUCTION_BATCH";
 const BATCH_SIZE = 2000;
@@ -58,11 +59,51 @@ patch(corePluginRegistry.get("dataValidation").prototype, {
     },
 });
 
-/** Despacha ``commands`` ([tipo, datos]) en revisiones de 2 000 comandos. */
-export function dispatchBatch(model, commands) {
+/**
+ * Evaluación aplazada: mientras llegan lotes con ``deferEvaluation``, la hoja no
+ * evalúa celda por celda ni al cerrar cada lote, y el primer lote sin esa marca
+ * reconstruye las dependencias y evalúa el libro una sola vez. Ampliar la hoja
+ * de mobiliario a 1,650 filas escribe unas 66,000 fórmulas y termina con un
+ * recálculo completo de todos modos (las tablas dinámicas crecen): evaluarlas
+ * mientras se escriben costaba unos 30 s de más.
+ */
+patch(coreViewsPluginRegistry.get("evaluation").prototype, {
+    beforeHandle(cmd) {
+        if (cmd.type === BATCH_COMMAND) {
+            this.alDeferred = Boolean(cmd.deferEvaluation);
+            if (this.alDeferred) {
+                this.shouldRebuildDependenciesGraph = true;
+            }
+        }
+        super.beforeHandle(cmd);
+    },
+    finalize() {
+        if (!this.alDeferred) {
+            super.finalize();
+        }
+    },
+});
+
+/**
+ * Despacha ``commands`` ([tipo, datos]) en revisiones de 2 000 comandos. Con
+ * ``deferEvaluation``, la hoja no se evalúa hasta el siguiente lote sin esa marca
+ * (``resumeEvaluation``).
+ */
+export function dispatchBatch(model, commands, { deferEvaluation = false } = {}) {
     for (let start = 0; start < commands.length; start += BATCH_SIZE) {
-        model.dispatch(BATCH_COMMAND, { commands: commands.slice(start, start + BATCH_SIZE) });
+        model.dispatch(BATCH_COMMAND, {
+            commands: commands.slice(start, start + BATCH_SIZE),
+            deferEvaluation,
+        });
     }
+}
+
+/**
+ * Cierra una escritura aplazada: despacha ``commands`` en un solo lote (pocos:
+ * tablas, tablas dinámicas) y evalúa el libro una vez.
+ */
+export function resumeEvaluation(model, commands = []) {
+    model.dispatch(BATCH_COMMAND, { commands, deferEvaluation: false });
 }
 
 export const KEYS_SHEET = "_CLAVES";
