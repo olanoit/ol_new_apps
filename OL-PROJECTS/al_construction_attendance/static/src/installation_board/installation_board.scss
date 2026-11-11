@@ -75,12 +75,14 @@
         &.o_cib_floor_selected { background: #111827; color: #ffffff; }
     }
     .o_cib_cell {
-        position: relative; overflow: hidden; width: 100%; min-height: 30px; padding: 4px 10px;
+        position: relative; overflow: hidden; width: 100%; min-height: 30px; padding: 4px 8px;
         border: 0; border-radius: 5px; text-align: left; font: inherit; font-size: 12.5px;
         font-weight: 600; cursor: pointer; display: flex; align-items: center;
         .o_cib_bar { position: absolute; left: 0; top: 0; bottom: 0; opacity: 0.28; }
-        .o_cib_text { position: relative; display: flex; justify-content: space-between; gap: 6px; width: 100%; }
-        .o_cib_note { font-weight: 400; opacity: 0.85; }
+        // En una sola línea, también con las cinco sub etapas a 1280 px; si no
+        // cupiera, la tabla se desplaza dentro de su tarjeta.
+        .o_cib_text { position: relative; display: flex; justify-content: space-between; gap: 6px; width: 100%; white-space: nowrap; }
+        .o_cib_note { font-weight: 400; opacity: 0.85; font-size: 11.5px; }
         &.o_cib_done { background: #e3f3e9; color: #14532d; .o_cib_bar { background: #2e9e5b; } }
         &.o_cib_late { background: #fbe4e4; color: #8b1c1c; .o_cib_bar { background: #d64545; } }
         &.o_cib_current { background: #e8eefc; color: #1e3a8a; .o_cib_bar { background: #6b8de3; } }
