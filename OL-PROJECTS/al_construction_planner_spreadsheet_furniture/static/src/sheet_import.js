@@ -230,6 +230,25 @@ function writeObra(model, obra) {
     dispatchBatch(model, commands);
 }
 
+/** Pisos seguidos (agrupador y piso) de las filas de ARBOL del archivo. */
+function floorRuns(spec) {
+    const floor = spec.keys.indexOf("floor");
+    const group = spec.keys.indexOf("group");
+    if (floor < 0) {
+        return 0;
+    }
+    let runs = 0;
+    let previous = "";
+    for (const values of spec.rows) {
+        const key = `${group >= 0 ? values[group] ?? "" : ""}/${values[floor] ?? ""}`;
+        if (values[floor] !== null && values[floor] !== undefined && values[floor] !== "" && key !== previous) {
+            runs++;
+        }
+        previous = key;
+    }
+    return runs;
+}
+
 /** Columna de cada clave: _CLAVES o el encabezado; sin las de fórmula. */
 
 async function writeSheet(model, name, spec, payload, keys, runner, last) {
@@ -435,7 +454,9 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         const sheetId = getters.getSheetIdByName(name);
         lasts[name] = sheetId ? lastDataRow(getters, sheetId) : -1;
         const base = payload.mode === "append" && sheetId ? lasts[name] : 0;
-        needed = Math.max(needed, base + spec.rows.length);
+        // ARBOL lleva además una fila de resumen encima de cada piso.
+        const summaries = name === TREE_SHEET ? floorRuns(spec) : 0;
+        needed = Math.max(needed, base + spec.rows.length + summaries);
     }
     // M117-08: por tramos, con el avance a la vista; se puede cancelar.
     const total = Object.values(payload.sheets).reduce(

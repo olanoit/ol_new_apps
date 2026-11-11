@@ -277,6 +277,25 @@ registry.category("web_tour.tours").add("al_construction_sheet_progress", {
                 if (treeRows() !== 1500 || summaryRows() !== 38) {
                     throw new Error(`ARBOL: ${treeRows()} filas y ${summaryRows()} resúmenes`);
                 }
+                // Cada resumen va justo encima de su piso, con su grupo y sus cuentas.
+                const getters = findModel(odoo.__WOWL_DEBUG__.root.__owl__).getters;
+                const sheetId = getters.getSheetIdByName("ARBOL");
+                const groups = getters.getHeaderGroups(sheetId, "ROW");
+                if (groups.length !== 38) {
+                    throw new Error(`ARBOL tiene ${groups.length} grupos`);
+                }
+                let col = 0;
+                while (getters.getCell({ sheetId, col, row: 0 })?.content !== "Resumen del piso") {
+                    col++;
+                }
+                for (const group of groups) {
+                    const summary = getters.getEvaluatedCell({ sheetId, col, row: group.start - 1 });
+                    const floor = getters.getCell({ sheetId, col: 1, row: group.start })?.content;
+                    const size = group.end - group.start + 1;
+                    if (!String(summary.value).startsWith(`${floor} · ${size} ambientes`)) {
+                        throw new Error(`Resumen «${summary.value}» sobre ${floor} (${size} filas)`);
+                    }
+                }
             },
         },
     ],

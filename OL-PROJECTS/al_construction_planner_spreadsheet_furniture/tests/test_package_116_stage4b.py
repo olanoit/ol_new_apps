@@ -193,7 +193,8 @@ class TestPackage116Stage4bTour(HttpCase):
             }),
         })
         self.start_tour('/odoo', 'al_construction_furniture_sheet_import', login='admin')
-        self.assertEqual(document.construction_sheet_rows, 17)
+        # 15 filas y una de resumen por cada uno de los 4 pisos, más el 10 %.
+        self.assertEqual(document.construction_sheet_rows, 21)
         commands = [command for revision in self.env['spreadsheet.revision'].search(
             [('res_model', '=', 'documents.document'), ('res_id', '=', document.id)])
             for command in json.loads(revision.commands).get('commands', [])]

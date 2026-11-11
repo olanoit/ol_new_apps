@@ -270,6 +270,25 @@ aplazada, y evalúa una sola vez al final.
 De los 18 s, unos 6 s son el recálculo, unos 6 s insertar las 38 filas de resumen (la hoja
 ajusta todos los rangos en cada inserción) y el resto leer el archivo, escribir y validar.
 
+**Filas de resumen sin insertar filas (11-nov-2026, tercera medición).** De esos 18 s, unos
+12 s eran las filas de resumen: insertar 38 filas (la hoja ajusta todos los rangos del libro
+en cada una) y el recálculo completo que obliga una inserción. Ahora la fila de resumen es
+una fila más de la plantilla: agrupar reacomoda las celdas escritas de ARBOL (no las
+fórmulas), en orden y sin filas vacías, y deja libre la fila de encima de cada piso; quitar
+los grupos solo borra el texto del resumen. Como no cambia la forma de la hoja, solo se
+recalcula lo que depende de las celdas movidas. La importación cuenta esas filas al pedir
+la ampliación. Si las filas de la plantilla no alcanzan (la última fila destino no tiene
+las fórmulas), se insertan como antes; las hojas con resúmenes insertados se limpian
+borrando esas filas, una vez.
+
+| Recorrido automático, 1,500 filas de ARBOL, 38 pisos | Antes | Después |
+|---|---|---|
+| Importar en la hoja ya ampliada | unos 18 s | unos 7 s |
+| Volver a importar (reemplazar) sobre la hoja agrupada | unos 16 a 20 s | unos 7.5 s |
+
+Cambio visible: las filas vacías dentro de ARBOL desaparecen al agrupar (antes cortaban el
+bloque del piso y quedaban fuera de los grupos).
+
 **Sin medir: la obra grande de 8,000 líneas en BOM** (punto 1 del pedido). La corrida
 anterior de 8,000 filas agotó la memoria de la máquina de desarrollo y no se repitió.
 La meta de menos de 60 s (D3) sigue sin acordar: con 1,500 filas se cumple; con 8,000
