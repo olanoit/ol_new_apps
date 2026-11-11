@@ -60,19 +60,25 @@ patch(corePluginRegistry.get("dataValidation").prototype, {
 });
 
 /**
- * Evaluación aplazada: mientras llegan lotes con ``deferEvaluation``, la hoja no
- * evalúa celda por celda ni al cerrar cada lote, y el primer lote sin esa marca
- * reconstruye las dependencias y evalúa el libro una sola vez. Ampliar la hoja
- * de mobiliario a 1,650 filas escribe unas 66,000 fórmulas y termina con un
- * recálculo completo de todos modos (las tablas dinámicas crecen): evaluarlas
- * mientras se escriben costaba unos 30 s de más.
+ * Evaluación aplazada: entre ``deferEvaluation`` y ``resumeEvaluation`` la hoja no
+ * evalúa al cerrar cada comando o lote; ``resumeEvaluation`` evalúa una sola vez
+ * todo lo pendiente. Si algo pidió rehacer las dependencias (filas nuevas, tablas,
+ * tablas dinámicas), evalúa el libro entero; si no, solo las celdas escritas y las
+ * que dependen de ellas, juntas. Ampliar la hoja de mobiliario a 1,650 filas
+ * escribe unas 66,000 fórmulas: evaluarlas mientras se escriben costaba unos 30 s
+ * de más. Importar 1,500 filas en una hoja ya ampliada volvía a calcular, en cada
+ * lote de 2,000 celdas, las fórmulas que miran columnas enteras.
+ *
+ * Mientras tanto, ``getEvaluatedCell`` devuelve los valores de antes: quien
+ * aplaza no lee valores de lo que acaba de escribir ni de filas que se movieron.
  */
 patch(coreViewsPluginRegistry.get("evaluation").prototype, {
     beforeHandle(cmd) {
         if (cmd.type === BATCH_COMMAND) {
-            this.alDeferred = Boolean(cmd.deferEvaluation);
-            if (this.alDeferred) {
-                this.shouldRebuildDependenciesGraph = true;
+            if (cmd.defer) {
+                this.alDeferred = true;
+            } else if (cmd.resume) {
+                this.alDeferred = false;
             }
         }
         super.beforeHandle(cmd);
@@ -84,26 +90,30 @@ patch(coreViewsPluginRegistry.get("evaluation").prototype, {
     },
 });
 
-/**
- * Despacha ``commands`` ([tipo, datos]) en revisiones de 2 000 comandos. Con
- * ``deferEvaluation``, la hoja no se evalúa hasta el siguiente lote sin esa marca
- * (``resumeEvaluation``).
- */
-export function dispatchBatch(model, commands, { deferEvaluation = false } = {}) {
+/** Despacha ``commands`` ([tipo, datos]) en revisiones de 2 000 comandos. */
+export function dispatchBatch(model, commands) {
     for (let start = 0; start < commands.length; start += BATCH_SIZE) {
-        model.dispatch(BATCH_COMMAND, {
-            commands: commands.slice(start, start + BATCH_SIZE),
-            deferEvaluation,
-        });
+        model.dispatch(BATCH_COMMAND, { commands: commands.slice(start, start + BATCH_SIZE) });
     }
+}
+
+// Aplazamientos abiertos por modelo: uno dentro de otro no evalúa al cerrar.
+const deferrals = new WeakMap();
+
+/** Abre una escritura aplazada; se cierra siempre con ``resumeEvaluation``. */
+export function deferEvaluation(model) {
+    deferrals.set(model, (deferrals.get(model) || 0) + 1);
+    model.dispatch(BATCH_COMMAND, { commands: [], defer: true });
 }
 
 /**
  * Cierra una escritura aplazada: despacha ``commands`` en un solo lote (pocos:
- * tablas, tablas dinámicas) y evalúa el libro una vez.
+ * tablas, tablas dinámicas) y, si era la última abierta, evalúa el libro una vez.
  */
 export function resumeEvaluation(model, commands = []) {
-    model.dispatch(BATCH_COMMAND, { commands, deferEvaluation: false });
+    const depth = Math.max(0, (deferrals.get(model) || 1) - 1);
+    deferrals.set(model, depth);
+    model.dispatch(BATCH_COMMAND, { commands, defer: depth > 0, resume: depth === 0 });
 }
 
 export const KEYS_SHEET = "_CLAVES";

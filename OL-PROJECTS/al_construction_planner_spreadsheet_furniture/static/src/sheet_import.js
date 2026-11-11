@@ -6,6 +6,7 @@ import {
     clearCells,
     clearData,
     collectSheets,
+    deferEvaluation,
     dispatchBatch,
     ensureSheet,
     keyColumns,
@@ -50,17 +51,16 @@ async function applyExtension(env, extension, runner) {
     const parts = Object.entries(extension.sheets || {}).filter(([name]) =>
         getters.getSheetIdByName(name)
     );
+    // M117-08: todas las filas en un lote. La hoja se evalúa una sola vez, al
+    // cerrar la ampliación (unos 16 s con 1,650 filas), o al cerrar la
+    // importación que la pidió: evaluar las fórmulas mientras se escriben
+    // costaba unos 30 s más.
+    deferEvaluation(model);
     try {
-        // M117-08: todas las filas en un lote. La hoja se evalúa una sola vez,
-        // al cerrar la ampliación (unos 16 s con 1,650 filas): evaluar las
-        // fórmulas mientras se escriben costaba unos 30 s más.
-        dispatchBatch(model, rowCommands(getters, parts), { deferEvaluation: true });
+        dispatchBatch(model, rowCommands(getters, parts));
         const commands = extensionCommands(getters, parts, extension);
         runner.progress.total += commands.length;
-        await runner.write(model, _t("Ampliando la hoja"), commands, {
-            locked: true,
-            deferEvaluation: true,
-        });
+        await runner.write(model, _t("Ampliando la hoja"), commands, { locked: true });
     } finally {
         resumeEvaluation(model, extensionTail(getters, parts, extension));
     }
@@ -232,7 +232,7 @@ function writeObra(model, obra) {
 
 /** Columna de cada clave: _CLAVES o el encabezado; sin las de fórmula. */
 
-async function writeSheet(model, name, spec, payload, keys, runner) {
+async function writeSheet(model, name, spec, payload, keys, runner, last) {
     const getters = model.getters;
     const sheetId = ensureSheet(model, name);
     const { columns, header } = columnsOf(model, sheetId, name, spec, keys);
@@ -248,7 +248,7 @@ async function writeSheet(model, name, spec, payload, keys, runner) {
             );
         }
     } else {
-        start = Math.max(1, lastDataRow(getters, sheetId) + 1);
+        start = Math.max(1, last + 1);
     }
     ensureRows(model, sheetId, start + spec.rows.length + 1);
     const commands = [];
@@ -424,11 +424,14 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
     if (activitySpec) {
         delete payload.sheets.ACTIVIDADES;
     }
-    // Filas que necesita cada pestaña (M113-05).
+    // Filas que necesita cada pestaña (M113-05). La última fila con datos se
+    // lee aquí: mientras se escribe, la hoja no se evalúa.
     let needed = 0;
+    const lasts = {};
     for (const [name, spec] of Object.entries(payload.sheets)) {
         const sheetId = getters.getSheetIdByName(name);
-        const base = payload.mode === "append" && sheetId ? lastDataRow(getters, sheetId) : 0;
+        lasts[name] = sheetId ? lastDataRow(getters, sheetId) : -1;
+        const base = payload.mode === "append" && sheetId ? lasts[name] : 0;
         needed = Math.max(needed, base + spec.rows.length);
     }
     // M117-08: por tramos, con el avance a la vista; se puede cancelar.
@@ -438,11 +441,34 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
     );
     const runner = openProgress(env, total);
     try {
-        if (payload.expand_rows) {
-            await ensureCapacity(env, needed, runner);
-        }
-        for (const [name, spec] of Object.entries(payload.sheets)) {
-            await writeSheet(model, name, spec, payload, keys, runner);
+        // La hoja se evalúa una sola vez, con el avance abierto: la ampliación,
+        // las filas, los parámetros y los grupos por piso juntos (los grupos
+        // insertan filas y recalculan el libro entero). Antes se evaluaba en
+        // cada lote de 2,000 celdas y otra vez al agrupar. La matriz va
+        // después: lee las tipologías calculadas.
+        deferEvaluation(model);
+        try {
+            if (payload.expand_rows) {
+                await ensureCapacity(env, needed, runner);
+            }
+            for (const [name, spec] of Object.entries(payload.sheets)) {
+                await writeSheet(model, name, spec, payload, keys, runner, lasts[name]);
+            }
+            for (const [name, rows] of Object.entries(payload.other || {})) {
+                const sheetId = ensureSheet(model, name);
+                if (payload.mode === "replace") {
+                    clearData(model, sheetId, 0);
+                }
+                ensureRows(model, sheetId, rows.length + 1);
+                writeRows(model, sheetId, rows, 0);
+            }
+            writeParameters(model, payload.parameters);
+            writeObra(model, payload.obra);
+            if (tree) {
+                groupTreeByFloor(model, { written: true });
+            }
+        } finally {
+            resumeEvaluation(model);
         }
     } catch (error) {
         runner.finish();
@@ -453,14 +479,6 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         return { errors: 0, warnings: 0, cancelled: true };
     }
     runner.finish();
-    for (const [name, rows] of Object.entries(payload.other || {})) {
-        const sheetId = ensureSheet(model, name);
-        if (payload.mode === "replace") {
-            clearData(model, sheetId, 0);
-        }
-        ensureRows(model, sheetId, rows.length + 1);
-        writeRows(model, sheetId, rows, 0);
-    }
     let matrixWarnings = [];
     if (activitySpec) {
         // TIPOLOGIAS ya está escrita: la matriz sabe en qué fila va cada una.
@@ -472,11 +490,6 @@ export async function applyImport(env, payload, { logImport = true } = {}) {
         dispatchBatch(model, commands);
         matrixWarnings = warnings;
         payload.sheets.ACTIVIDADES = activitySpec;
-    }
-    writeParameters(model, payload.parameters);
-    writeObra(model, payload.obra);
-    if (tree) {
-        groupTreeByFloor(model);
     }
     const sheetCount =
         Object.keys(payload.sheets).length + Object.keys(payload.other || {}).length;

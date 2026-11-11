@@ -45,22 +45,48 @@ export function headerIndex(header, text) {
     return header.findIndex((value) => normText(value) === normText(text));
 }
 
-/** Valores calculados de una columna, de la fila 2 a la ``last`` (0 = la primera). */
-export function columnValues(model, sheetId, col, last) {
+/**
+ * Valor de una celda sin evaluar la hoja: el que la hoja le dio al escribirla.
+ * Sirve con la evaluación aplazada para las columnas de dato (las fórmulas dan
+ * su último valor calculado).
+ */
+function writtenValue(getters, position) {
+    const cell = getters.getCell(position);
+    if (!cell) {
+        return null;
+    }
+    if (cell.isFormula) {
+        return getters.getEvaluatedCell(position).value;
+    }
+    return cell.format === "@" && cell.parsedValue !== null ? cell.content : cell.parsedValue;
+}
+
+const valueReader = (getters, written) =>
+    written
+        ? (position) => writtenValue(getters, position)
+        : (position) => getters.getEvaluatedCell(position).value;
+
+/**
+ * Valores calculados de una columna, de la fila 2 a la ``last`` (0 = la primera).
+ * Con ``written``, los escritos (ver ``writtenValue``).
+ */
+export function columnValues(model, sheetId, col, last, written = false) {
+    const read = valueReader(model.getters, written);
     const values = [];
     for (let row = 1; row <= last; row++) {
-        const value = model.getters.getEvaluatedCell({ sheetId, col, row }).value;
+        const value = read({ sheetId, col, row });
         values.push(value === null || value === undefined ? "" : value);
     }
     return values;
 }
 
 /** Última fila (0 = la primera) con dato en las columnas ``cols``. */
-export function lastRowOf(model, sheetId, cols) {
+export function lastRowOf(model, sheetId, cols, written = false) {
     const getters = model.getters;
+    const read = valueReader(getters, written);
     for (let row = getters.getNumberRows(sheetId) - 1; row >= 1; row--) {
         for (const col of cols) {
-            const value = getters.getEvaluatedCell({ sheetId, col, row }).value;
+            const value = read({ sheetId, col, row });
             if (value !== null && value !== undefined && value !== "") {
                 return row;
             }
@@ -114,8 +140,13 @@ export function hasFloorGroups(model) {
 /**
  * Rehace los grupos de ARBOL: un bloque por piso seguido (agrupador y piso),
  * con su fila de resumen encima. Devuelve cuántos pisos agrupó.
+ *
+ * Con ``written``, lee los pisos como se escribieron, sin evaluar: la
+ * importación agrupa con la evaluación aplazada. Insertar las filas de resumen
+ * obliga a recalcular el libro entero (unos 15 s con 1,650 filas); así ese
+ * recálculo es el mismo de la ampliación y no uno más.
  */
-export function groupTreeByFloor(model) {
+export function groupTreeByFloor(model, { written = false } = {}) {
     const getters = model.getters;
     const sheetId = getters.getSheetIdByName(TREE_SHEET);
     if (!sheetId) {
@@ -130,9 +161,9 @@ export function groupTreeByFloor(model) {
     if (floorCol < 0 || spaceCol < 0) {
         return 0;
     }
-    const last = lastRowOf(model, sheetId, [floorCol, spaceCol]);
-    const floors = columnValues(model, sheetId, floorCol, last);
-    const groups = groupCol >= 0 ? columnValues(model, sheetId, groupCol, last) : [];
+    const last = lastRowOf(model, sheetId, [floorCol, spaceCol], written);
+    const floors = columnValues(model, sheetId, floorCol, last, written);
+    const groups = groupCol >= 0 ? columnValues(model, sheetId, groupCol, last, written) : [];
     const floorKey = (index) => {
         const floor = String(floors[index] ?? "");
         const group = String(groups[index] ?? "");
