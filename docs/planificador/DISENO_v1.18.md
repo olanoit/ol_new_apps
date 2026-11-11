@@ -133,8 +133,11 @@ por modalidad van en M118-07 (entrega 5).
   ritmo una vez al final y avisa con un mensaje en el plan a quien lo pidió
   (o dice en qué ambiente falló). Mientras genera, el plan muestra el avance
   y «Generar plan» queda deshabilitado. Escape con el calendario abierto ya no
-  cierra el diálogo. Falta la medición con la obra grande de dev1 (meta: 30,000
-  líneas en menos de 5 minutos).
+  cierra el diálogo. Medición del 11-nov en dev1, con una copia temporal de
+  la obra grande (153 ambientes; la copia se deshizo al terminar): el proceso
+  de fondo generó 1,141 tareas de módulo y 27,860 líneas en 230 s (unos 248 s
+  para 30,000; meta, 5 minutos). La medición no incluye los 16 commits de las
+  tandas.
 - M118-12: complemento común de la hoja (`paste_blocks.js`): el pegado desde
   el portapapeles en las pestañas de datos de las hojas del planificador se
   escribe en un solo paso (un Ctrl+Z), cruza las columnas fijas, salta las

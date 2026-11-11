@@ -38,6 +38,8 @@ ORM (`construction_plan_force` para el plan aprobado):
 - P00039-INT01: 176 contratadas, 80 ejecutadas, 80 valorizadas, saldo 96,
   S/ 1,120.00 valorizado y S/ 1,344.00 liberado. Lo ejecutado es lo validado
   hasta la confirmación: AVN/2026/00187 (10 und, reportado después) no cuenta,
-  como manda CR-36; el avance sigue validado en la base.
+  como manda CR-36. El 11-nov, con permiso, el avance volvió a reportado y se
+  rechazó con su motivo; la línea 1461 del plan queda con 80 ejecutadas, como
+  la orden.
 - Plan 19: las líneas 1417, 1418, 1424, 1464 y 1467 quedan sin contrata (solo
   tenían asignaciones de P00038, anulada).
