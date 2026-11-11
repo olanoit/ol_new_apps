@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Paquete 1.17, entrega 4. M117-08 (avance) y M117-24 en la hoja."""
+from odoo import Command
 from odoo.tests import HttpCase, tagged
 
 from .test_package_116_stage4b import _book, _headers, _row
@@ -55,6 +56,14 @@ class TestPackage117TypesInSheet(TestWorksheetV18):
 
 @tagged('post_install', '-at_install')
 class TestPackage117ProgressTour(HttpCase):
+
+    def setUp(self):
+        super().setUp()
+        # Los datos del test son de la compañía del entorno; la base puede
+        # tener al administrador en otra (y el navegador abriría sus datos).
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id})
 
     def test_progress_cancel_and_time(self):
         site = self.env['project.project'].create({

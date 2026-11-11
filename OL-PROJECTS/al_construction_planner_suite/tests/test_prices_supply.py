@@ -506,6 +506,14 @@ class TestPricesSupply(PlannerCommon):
 @tagged('post_install', '-at_install')
 class TestSupplyBoardTour(HttpCase):
 
+    def setUp(self):
+        super().setUp()
+        # Los datos del test son de la compañía del entorno; la base puede
+        # tener al administrador en otra (y el navegador abriría sus datos).
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id})
+
     def test_supply_board_tour(self):
         self.env['tier.definition'].search(
             [('model', '=', 'construction.resource.plan')]).active = False

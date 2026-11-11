@@ -161,6 +161,14 @@ class TestPackage117SaleSheetTour(SaleSheetCommon, HttpCase):
         super().setUpClass()
         cls._setup_quote()
 
+    def setUp(self):
+        super().setUp()
+        # Los datos del test son de la compañía del entorno; la base puede
+        # tener al administrador en otra (y el navegador abriría sus datos).
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id})
+
     def test_values_of_the_recording(self):
         self.order.action_construction_open_spreadsheet()
         self.env['construction.sale.rate'].create({

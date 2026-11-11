@@ -8,14 +8,22 @@ DEMO_SCRIPT = Path(__file__).parents[1] / 'tools' / 'planner_demo_data.py'
 
 def load_demo(env, prefix):
     """Ejecuta el script demo (piso 05 de la especificación) sin su commit,
-    en una obra propia del test (otro prefijo y otros códigos de actividad,
+    en una obra propia del test (otro prefijo y otros códigos de actividad y
+    de producto,
     para no depender de los datos demo de la base) y devuelve sus variables
     (plan, project, floor, act…)."""
     code = (DEMO_SCRIPT.read_text()
             .replace('env.cr.commit()', '')
             .replace("P = ''", 'P = %r' % f'{prefix} ')
             .replace("full_code = code",
-                     "full_code = f'%s-{code}'" % prefix.replace(' ', '')))
+                     "full_code = f'%s-{code}'" % prefix.replace(' ', ''))
+            # Los códigos de los productos también llevan el prefijo: la base
+            # puede tener los del maestro real con otro costo.
+            .replace("[('default_code', '=', ref)]",
+                     "[('default_code', '=', %r + ref)]" % f'{prefix}-')
+            .replace("'default_code': ref,", "'default_code': %r + ref," % f'{prefix}-')
+            .replace("'default_code': f'HER-{code}'",
+                     "'default_code': f'%s-HER-{code}'" % prefix.replace(' ', '')))
     namespace = {'env': env, 'print': lambda *args, **kwargs: None}
     exec(compile(code, str(DEMO_SCRIPT), 'exec'), namespace)  # noqa: S102
     return namespace

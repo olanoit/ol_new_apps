@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date, timedelta
 
+from odoo import Command
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import HttpCase, new_test_user, tagged
 from odoo.tests.common import TransactionCase
@@ -329,6 +330,14 @@ class TestSchedule(TransactionCase):
 
 @tagged('post_install', '-at_install')
 class TestScheduleTour(HttpCase):
+
+    def setUp(self):
+        super().setUp()
+        # Los datos del test son de la compañía del entorno; la base puede
+        # tener al administrador en otra (y el navegador abriría sus datos).
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id})
 
     def test_schedule_tour(self):
         # El cronograma abre el plan aprobado más reciente: el de este test.

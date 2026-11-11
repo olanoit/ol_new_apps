@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from odoo import Command
 from odoo.exceptions import AccessError
 from odoo.tests import HttpCase, TransactionCase, new_test_user, tagged
 
@@ -150,6 +151,14 @@ class TestPlanTree(TransactionCase):
 
 @tagged('post_install', '-at_install')
 class TestPlanTreeTour(HttpCase):
+
+    def setUp(self):
+        super().setUp()
+        # Los datos del test son de la compañía del entorno; la base puede
+        # tener al administrador en otra (y el navegador abriría sus datos).
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id})
 
     def test_plan_tree_tour(self):
         plan = load_demo(self.env, 'TEST TOUR')['plan']

@@ -25,6 +25,25 @@ const treeRows = () => {
     return count;
 };
 
+/**
+ * Un paso de tour no espera más de 60 s. Este paso espera hasta 55 s a que
+ * se cumpla la condición y sigue aunque no se cumpla: encadenado antes del
+ * paso real, alarga la espera de las cargas lentas.
+ */
+const waitLonger = (done) => ({
+    trigger: "body",
+    timeout: 60000,
+    run: async () => {
+        const end = performance.now() + 55000;
+        while (!done() && performance.now() < end) {
+            await new Promise((resolve) => setTimeout(resolve, 250));
+        }
+    },
+});
+
+const labelHas = (text) => () =>
+    document.querySelector(".o_construction_progress_label")?.textContent.includes(text);
+
 const importSteps = () => [
     { trigger: ".o-topbar-menu:contains('Planificación de obra')", run: "click" },
     { trigger: ".o-menu-item[data-name='construction_furniture_import']", run: "click" },
@@ -85,10 +104,15 @@ registry.category("web_tour.tours").add("al_construction_sheet_progress", {
             trigger: ".o_construction_progress_label:contains('Ampliando')",
             timeout: 60000,
         },
+        // Antes amplía la hoja vacía a 1,650 filas: unos 85,000 comandos con
+        // la plantilla vigente.
+        waitLonger(labelHas("ARBOL")),
+        waitLonger(labelHas("ARBOL")),
         {
             content: "El cuadro muestra la pestaña y las filas",
             trigger: ".o_construction_progress_label:contains('ARBOL')",
             timeout: 60000,
+            run: () => console.log(`AL_PERF ampliar: ${Math.round(performance.now() - window.alImportStart)} ms`),
         },
         { trigger: ".o_construction_progress_cancel", run: "click" },
         {

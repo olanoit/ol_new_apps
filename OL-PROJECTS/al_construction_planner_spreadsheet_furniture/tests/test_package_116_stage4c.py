@@ -18,6 +18,7 @@ import json
 import re
 from io import BytesIO
 
+from odoo import Command
 from odoo.tests import Form, HttpCase, tagged
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
@@ -215,6 +216,14 @@ class TestPackage116Stage4cSheet(TestWorksheetV18):
 @tagged('post_install', '-at_install')
 class TestPackage116Stage4cTour(HttpCase):
     """M113-07 a 11 en el navegador, con las fórmulas evaluadas."""
+
+    def setUp(self):
+        super().setUp()
+        # Los datos del test son de la compañía del entorno; la base puede
+        # tener al administrador en otra (y el navegador abriría sus datos).
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id})
 
     def test_planning_in_the_sheet(self):
         category = self.env['product.category'].create({'name': 'T4C TABLEROS'})

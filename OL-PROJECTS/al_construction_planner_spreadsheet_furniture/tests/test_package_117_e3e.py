@@ -2,6 +2,7 @@
 """Paquete 1.17, entrega 3, bloque e. M117-22: traer la venta a la planificación."""
 import json
 
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import HttpCase, TransactionCase, tagged
 
@@ -239,6 +240,14 @@ class TestPackage117BringTour(BringCommon, HttpCase):
     def setUpClass(cls):
         super().setUpClass()
         cls._setup_bring()
+
+    def setUp(self):
+        super().setUp()
+        # Los datos del test son de la compañía del entorno; la base puede
+        # tener al administrador en otra (y el navegador abriría sus datos).
+        self.env.ref('base.user_admin').write({
+            'company_ids': [Command.link(self.env.company.id)],
+            'company_id': self.env.company.id})
 
     def test_sheet_is_born_with_the_sale(self):
         self.start_tour('/odoo', 'al_construction_bring_sale', login='admin')
