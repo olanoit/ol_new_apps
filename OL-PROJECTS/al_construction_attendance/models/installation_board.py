@@ -96,11 +96,12 @@ class ConstructionInstallationBoard(models.AbstractModel):
         all_space_stages = self.env['construction.space.stage'].sudo().search(
             [('project_id', '=', project.id), ('stage', 'in', stages.mapped('code'))])
         space_stages = all_space_stages.filtered(lambda r: r.stage in shown.mapped('code'))
-        first_dates = space_stages.mapped('date_start')
-        if not first_dates or not plan:
+        if not space_stages.mapped('date_start') or not plan:
             return {'empty': True, 'project': project.display_name}
-        origin = _monday(min(first_dates))
-        last_date = max(space_stages.mapped('date_end') + [today])
+        # La semana 1 es la de la primera sub etapa de la obra, visible o no:
+        # prender «Producción» no cambia el número de las semanas.
+        origin = _monday(min(d for d in all_space_stages.mapped('date_start') if d))
+        last_date = max([d for d in all_space_stages.mapped('date_end') if d] + [today])
 
         def week_of(day):
             return (_monday(day) - origin).days // 7 + 1 if day else 0
@@ -386,8 +387,10 @@ class ConstructionInstallationBoard(models.AbstractModel):
                 continue
             by_space[space][0] += line.qty_planned
             by_space[space][1] += sum(qty for _day, qty in done_by_line[line.id])
+        # Por departamento: la radiografía lista las cocinas en ese orden.
         for space, (space_planned, space_done) in sorted(
-                by_space.items(), key=lambda item: item[0].display_name or ''):
+                by_space.items(), key=lambda item: (
+                    item[0].construction_apartment_task_id.name or '', item[0].id)):
             state = 'done' if space_planned and space_done >= space_planned * COMPLETE else (
                 'pending' if not space_done else 'partial')
             spaces.append({

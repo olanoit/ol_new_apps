@@ -340,5 +340,19 @@ pantalla con los selectores de la disposición nueva.
   árbol no tiene todavía cómo abrir un nodo elegido.
 - CT-15: lo consumido se valora al costo estándar del producto. La banda es la
   mayor de los presupuestos de mano de obra de la obra (10 % sin presupuesto).
-- Datos de aceptación: la obra «ZZ TABLERO PRUEBA» necesita cargar datos en
-  newallcenter-dev1, que no es una base de pruebas. Se carga con permiso.
+- Semanas: la semana 1 es la de la primera sub etapa de la obra, visible o no.
+  Antes contaba desde la primera visible, y prender «Producción» cambiaba el
+  número de las semanas.
+- Datos de aceptación: `tests/board_acceptance_data.py` carga «ZZ TABLERO
+  PRUEBA», y `TestBoardAcceptanceData` comprueba en la semana 8:
+  - «3 de 6» y los tres atrasados;
+  - «27 de 30» y mano de obra −0.2 %;
+  - de «Piso 20» a «Piso 01» y el piso 07 «Terminado · S6 · +1 sem.»;
+  - piso 13 · 2.1: «Contrata B», 6 cocinas con 1307 y 1308 en falta, «En la
+    banda» +2.0 %, S/ 742.14 y la etapa anterior «terminado S8 (+1 sem.)»;
+  - con Producción, el título y cuatro atrasados.
+- El % de los atrasados sale de las cantidades reales, no del prototipo: el
+  piso 13 · 2.1 tiene 6 de 8 cocinas hechas, que son 76 % de sus ML (el prototipo
+  dice 70 %); el 11 · 2.2, 5 de 8 cocinas, 62 %; el 09 · 2.3, 76 %. El prototipo
+  da a la vez «70 %» y «6 de 8 cocinas», y con cocinas de distinto ML las dos
+  cifras no salen juntas de un mismo avance.

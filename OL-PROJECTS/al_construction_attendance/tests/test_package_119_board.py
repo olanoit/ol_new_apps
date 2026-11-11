@@ -12,9 +12,12 @@ from datetime import timedelta
 from odoo import fields
 from odoo.exceptions import AccessError
 from odoo import Command
-from odoo.tests import HttpCase, new_test_user, tagged
+from odoo.tests import HttpCase, TransactionCase, new_test_user, tagged
+from unittest import SkipTest
 
 from odoo.addons.al_construction_planner_suite.tests.common import PlannerCommon
+
+from . import board_acceptance_data
 
 
 def _board_data(cls):
@@ -301,3 +304,57 @@ class TestInstallationBoardBudget(PlannerCommon):
         self.Board._production_budget(cells, stages, material, {}, False, 10.0)
         self.assertEqual(cells[key]['budget']['state'], 'band')
         self.assertNotIn('advance_amount', cells[key]['budget'])
+
+
+@tagged('post_install', '-at_install')
+class TestBoardAcceptanceData(TransactionCase):
+    """Correcciones del tablero, «Datos de aceptación»: la obra «ZZ TABLERO
+    PRUEBA» da las cifras de los criterios en la semana 8."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        if 'construction_space_task_ids' not in cls.env['mrp.production']._fields:
+            raise SkipTest('Sin el puente de Fabricación')
+        grp = 'al_construction_planner.group_planner_'
+        cls.env.user.group_ids |= cls.env.ref(grp + 'user') | cls.env.ref(
+            grp + 'feature_control') | cls.env.ref(grp + 'amounts')
+        cls.project = board_acceptance_data.load(cls.env)
+        cls.Board = cls.env['construction.installation.board']
+
+    def test_week_8(self):
+        data = self.Board.get_data(self.project.id, 8, 8)
+        indicators = data['indicators']
+        self.assertEqual(indicators['period'], {'done': 3, 'total': 6})
+        late = [(item['floor'], item['number']) for item in indicators['late']['items']]
+        self.assertEqual(sorted(late), [('Piso 09', '2.3'), ('Piso 11', '2.2'),
+                                        ('Piso 13', '2.1')])
+        self.assertEqual((indicators['finished']['done'], indicators['finished']['total']),
+                         (27, 30))
+        self.assertAlmostEqual(indicators['labor']['deviation'], -0.2, delta=0.05)
+        names = [floor['name'] for floor in data['floors']]
+        self.assertEqual((names[0], names[-1]), ('Piso 20', 'Piso 01'))
+        cells = {(f['name'], c['stage']): c for f in data['floors'] for c in f['cells']}
+        floor_07 = cells[('Piso 07', 'installation')]
+        self.assertEqual((floor_07['status'], floor_07['finish_week'], floor_07['delay_weeks']),
+                         ('done', 6, 1))
+        floor_13 = cells[('Piso 13', 'installation')]
+        self.assertEqual(floor_13['status'], 'late')
+        self.assertEqual(floor_13['spaces_done'], 6)
+        self.assertEqual(floor_13['executor'], 'Contrata B')
+        self.assertEqual([s['apartment'] for s in floor_13['spaces'] if s['state'] != 'done'],
+                         ['1307', '1308'])
+        self.assertEqual((floor_13['previous']['status'], floor_13['previous']['finish_week'],
+                          floor_13['previous']['delay_weeks']), ('done', 8, 1))
+        self.assertEqual(floor_13['budget']['state'], 'band')
+        self.assertAlmostEqual(floor_13['budget']['deviation'], 2.0, delta=0.05)
+        self.assertAlmostEqual(floor_13['budget']['floor_amount'], 742.14, delta=0.01)
+        floor = next(f for f in data['floors'] if f['name'] == 'Piso 13')
+        self.assertEqual((floor['spaces'], floor['qty']), (8, 41.23))
+        # Producción prendida: título y cuatro pisos atrasados.
+        both = self.Board.get_data(self.project.id, 8, 8, True, True)
+        self.assertEqual(both['title'], 'Control semanal de producción e instalación')
+        # Las cinco de la obra (la base de pruebas puede tener otras activas).
+        self.assertLessEqual({'production', 'assembly', 'installation', 'finishing', 'cleaning'},
+                             {stage['code'] for stage in both['stages']})
+        self.assertEqual(both['indicators']['late']['count'], 4)
