@@ -424,9 +424,19 @@ function writeKeyed(model, name, spec, keys) {
                 }
             }
         }
-        const formula = col !== undefined && model.getters.getCell({ sheetId, col, row: 1 });
-        if (col === undefined || (formula && formula.isFormula)) {
+        if (col === undefined) {
             continue;
+        }
+        if (spec.calculated) {
+            // Las columnas de fórmula de la plantilla de la hoja.
+            if (spec.calculated.includes(key)) {
+                continue;
+            }
+        } else {
+            const formula = model.getters.getCell({ sheetId, col, row: 1 });
+            if (formula && formula.isFormula) {
+                continue;
+            }
         }
         columns[key] = col;
     }
@@ -450,8 +460,53 @@ function writeKeyed(model, name, spec, keys) {
     dispatchBatch(model, commands);
 }
 
+/**
+ * CREVAL, paquete 5, CR-43: renueva la lista de productos del maestro en
+ * LISTAS (las columnas de su encabezado; una hoja anterior no la tiene).
+ * Devuelve cuántos productos escribió.
+ */
+export function writeProducts(model, products) {
+    const sheetId = products && model.getters.getSheetIdByName("LISTAS");
+    if (!sheetId) {
+        return 0;
+    }
+    const header = (collectSheets(model, ["LISTAS"]).LISTAS || [[]])[0] || [];
+    const start = header.indexOf(products.headers[0]);
+    if (start < 0) {
+        return 0;
+    }
+    const width = products.headers.length;
+    const zone = model.getters.getSheetZone(sheetId);
+    const rows = products.rows.length;
+    if (zone.bottom < rows) {
+        model.dispatch("ADD_COLUMNS_ROWS", {
+            sheetId,
+            sheetName: model.getters.getSheetName(sheetId),
+            dimension: "ROW",
+            base: zone.bottom,
+            quantity: rows - zone.bottom + 1,
+            position: "after",
+        });
+    }
+    clearCells(model, sheetId, [
+        { top: rows + 1, bottom: Math.max(rows + 1, zone.bottom), left: start, right: start + width - 1 },
+    ]);
+    const commands = [];
+    products.rows.forEach((values, index) => {
+        values.forEach((value, offset) => {
+            commands.push([
+                "UPDATE_CELL",
+                { sheetId, col: start + offset, row: index + 1, content: isEmpty(value) ? "" : String(value) },
+            ]);
+        });
+    });
+    dispatchBatch(model, commands);
+    return rows;
+}
+
 async function bringFromOdoo(env) {
     const data = await env.constructionCall("construction_odoo_rows");
+    writeProducts(env.model, data._products);
     // OBRA y PRESUPUESTO llegan con su primera fila (encabezados y fórmulas).
     const fromTop = data._from_top || ["OBRA"];
     const keys = keyColumns(env.model);

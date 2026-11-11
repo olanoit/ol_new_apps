@@ -130,18 +130,20 @@ export function compareBring(model, data) {
         const current = readTab(model, name, spec, keys);
         const items = [];
         const seen = new Set();
-        for (const values of spec.rows) {
+        for (const [position, values] of spec.rows.entries()) {
             const record = Object.fromEntries(spec.keys.map((key, index) => [key, values[index] ?? ""]));
+            // Columnas que solo se muestran en la tabla (CR-45: metrado y APU).
+            const info = spec.info?.[position] || [];
             const id = rowKey(record, spec);
             seen.add(id);
             const existing = current.rows[id];
             if (!existing) {
-                items.push({ id, label: id, kind: "new", marked: true, record });
+                items.push({ id, label: id, kind: "new", marked: true, record, info });
                 continue;
             }
             const differs = spec.keys.filter((key) => norm(existing.values[key]) !== norm(record[key]));
             if (!differs.length) {
-                items.push({ id, label: id, kind: "same", marked: false, record, row: existing.row });
+                items.push({ id, label: id, kind: "same", marked: false, record, row: existing.row, info });
                 continue;
             }
             const before = trace[`${name}|${id}`];
@@ -152,17 +154,24 @@ export function compareBring(model, data) {
             );
             items.push({
                 id, label: `${id}: ${differs.join(", ")}`, kind: "change", marked: !edited, record,
-                row: existing.row,
+                row: existing.row, info, differs,
             });
         }
         if (!spec.keep_extra) {
             for (const [id, existing] of Object.entries(current.rows)) {
                 if (!seen.has(id)) {
-                    items.push({ id, label: id, kind: "extra", marked: false, row: existing.row });
+                    items.push({
+                        id, label: id, kind: "extra", marked: false, row: existing.row,
+                        record: existing.values, info: [],
+                    });
                 }
             }
         }
-        tabs.push({ name, spec, items, last: current.last, columns: current.columns, sheetId: current.sheetId });
+        tabs.push({
+            name, spec, items, last: current.last, columns: current.columns, sheetId: current.sheetId,
+            // La pestaña con tabla (PLAN de construcción) se ve abierta.
+            open: Boolean(spec.table),
+        });
     }
     return tabs;
 }
@@ -186,11 +195,33 @@ export class BringDialog extends Component {
                             <td class="text-end" t-esc="count(tab, 'same')"/>
                             <td class="text-end" t-esc="count(tab, 'extra')"/>
                             <td class="text-end">
-                                <button t-if="selectable(tab).length" class="btn btn-link btn-sm p-0"
+                                <button t-if="selectable(tab).length or tab.spec.table" class="btn btn-link btn-sm p-0"
                                         t-on-click="() => tab.open = !tab.open">Ver filas</button>
                             </td>
                         </tr>
-                        <t t-if="tab.open">
+                        <tr t-if="tab.open and tab.spec.table" class="table-light">
+                            <td colspan="6">
+                                <table class="table table-sm mb-0 o_construction_bring_table">
+                                    <thead><tr><th>Traer</th>
+                                        <th t-foreach="tab.spec.table" t-as="title" t-key="title_index" t-esc="title"/>
+                                        <th>Cambio</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="tab.items" t-as="item" t-key="item.id">
+                                            <td><input type="checkbox" t-att-checked="item.marked"
+                                                       t-att-disabled="item.kind === 'same'"
+                                                       t-on-change="(ev) => item.marked = ev.target.checked"/></td>
+                                            <td t-foreach="tab.spec.keys" t-as="key" t-key="key"
+                                                t-esc="item.record?.[key]"/>
+                                            <td t-foreach="item.info" t-as="extra" t-key="extra_index" t-esc="extra"/>
+                                            <td t-if="!item.info.length"/>
+                                            <td t-if="!item.info.length"/>
+                                            <td t-esc="change(item, tab)"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <t t-if="tab.open and !tab.spec.table">
                             <tr t-foreach="selectable(tab)" t-as="item" t-key="item.id" class="table-light">
                                 <td colspan="5">
                                     <label><input type="checkbox" t-att-checked="item.marked"
@@ -214,6 +245,20 @@ export class BringDialog extends Component {
         this.title = _t("Traer la venta");
         this.labels = { new: _t("Nuevo"), change: _t("Cambia"), extra: _t("Sobra") };
         this.state = useState({ tabs: this.props.tabs });
+    }
+
+    /** «Cambio» de la tabla por partida: qué pasa con la fila. */
+    change(item, tab) {
+        if (item.kind === "same") {
+            return _t("Igual");
+        }
+        if (item.kind === "change") {
+            const names = item.differs.map(
+                (key) => tab.spec.table?.[tab.spec.keys.indexOf(key)] || key
+            );
+            return `${this.labels.change}: ${names.join(", ")}`;
+        }
+        return this.labels[item.kind];
     }
 
     count(tab, kind) {

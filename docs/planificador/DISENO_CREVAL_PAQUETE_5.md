@@ -164,6 +164,40 @@ huella. El recorrido de fórmulas (`budget_formulas_tour.js`) calcula en el
 navegador el código del APU elegido por nombre, la especialidad, la
 sub-especialidad, el costo y el estado.
 
+## 7b. Hecho · últimos pendientes (10-nov, noche)
+
+- CR-43, insumo desde el maestro de productos (plantilla 4 de la hoja): INSUMOS
+  empieza con «Producto (escriba el nombre)», con la lista de LISTAS
+  («Producto (nombre · código)», nombre, código, tipo, unidad, precio vigente,
+  moneda, fecha y fuente del precio). Al elegir, `product_pick.js` escribe en
+  la fila nombre, código, tipo, unidad, precio, moneda, fecha y fuente; el
+  precio se cambia a mano si se cotizó otro y un producto nuevo se escribe a
+  mano como antes. El tipo es el de la última línea de APU que usa el producto
+  (o Servicio o Material por el tipo de producto). «Traer de Odoo» y «Traer la
+  venta» renuevan la lista; el envío no la lleva. Las hojas anteriores
+  (plantillas 0 a 3) no cambian.
+- CR-45, punto 4, APU de obra: el envío del plan desde la hoja de
+  planificación guarda sus APU como recetas de la obra y el plan los usa; la
+  cotización no cambia (ni partidas, ni costo, ni precio). Antes de cambiar
+  una receta de la obra que usa una partida vendida, la partida pasa a una
+  copia del APU vendido (receta de la cotización marcada «APU vendido»). La
+  hoja de venta trae el APU vendido; la de planificación, el de obra.
+- CR-46, punto 3: CONTROL de la hoja de planificación lleva «Costo en el plan
+  de Odoo» y «Hoja menos plan de Odoo». «Actualizar CONTROL con el plan de
+  Odoo» las llena por ítem con el plan en preparación que dejó el envío (o el
+  vigente): la suma del monto planificado de las líneas de la partida.
+
+- CR-45, punto 2, vista previa: la pestaña PLAN de «Traer la venta» se ve
+  abierta como tabla por partida: Traer, Ítem, Partida, Metrado vendido, APU
+  y Cambio. El metrado y el APU se muestran y no se comparan. Las demás
+  pestañas, y mobiliario, siguen con el resumen por pestaña.
+
+Pruebas: `test_insumo_is_picked_from_the_product_master`,
+`test_bring_from_odoo_renews_the_products`, `test_site_plan_keeps_the_sold_apu`
+y `test_control_compares_with_the_odoo_plan`; el recorrido
+`al_construction_plan_bring` elige un producto por nombre en INSUMOS y
+actualiza CONTROL con el plan de Odoo.
+
 ## 8. Diferencias frente al requerimiento
 
 - Fila de TOTAL fija arriba (CR-41, punto 3): no se hace. Toda la hoja (envío,
@@ -176,12 +210,13 @@ sub-especialidad, el costo y el estado.
 - Una hoja anterior con ítems de dos niveles y la Sub-especialidad escrita en
   las filas pierde esa sub-especialidad al actualizarse: la plantilla 3 la
   calcula de un título de segundo nivel que el ítem no tiene.
-- Vista previa de «Traer la venta»: por pestaña (Nuevo, Cambia, Igual, Sobra)
-  con las filas que cambian, como mobiliario, no una tabla por partida con
-  metrado vendido y APU.
 
-Siguen pendientes: elegir el insumo de INSUMOS por nombre de un producto del
-maestro (CR-43; necesita pasar tipo, unidad, código y precio a columnas
-calculadas), los APU de obra como recetas propias de la obra al enviar el plan
-(CR-45, punto 4) y la comparación de CONTROL con el plan de Odoo después del
-envío (CR-46, punto 3).
+- CR-43, insumo desde el maestro: tipo, unidad, código, fecha y fuente no
+  son columnas calculadas grises. Siguen siendo datos amarillos que la hoja
+  llena al elegir el producto: una fórmula en esas columnas rompería «Traer la
+  venta», el pegado de bloques (M118-12) y el alta a mano de un producto
+  nuevo. La fecha del precio es la del día en que se leyó del maestro y la
+  fuente, «Maestro de productos»: el maestro no guarda cuándo cambió el
+  costo.
+- CR-46, punto 3: la comparación con el plan de Odoo se actualiza con el menú
+  «Actualizar CONTROL con el plan de Odoo», no sola al volver del envío.

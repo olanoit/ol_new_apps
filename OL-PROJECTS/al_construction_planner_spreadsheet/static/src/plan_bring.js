@@ -15,9 +15,12 @@ import {
     writeTrace,
 } from "@al_construction_planner_spreadsheet/bring_preview";
 import {
+    clearCells,
+    collectSheets,
     dispatchBatch,
     ensureSheet,
     validate,
+    writeProducts,
     writeRows,
 } from "@al_construction_planner_spreadsheet/send_to_planner";
 
@@ -69,6 +72,8 @@ export function applyPlanBring(model, tabs, data) {
         }
     }
     writeTrace(model, traced);
+    // CR-43: la lista de productos del maestro, al día.
+    writeProducts(model, data.products);
     return counts;
 }
 
@@ -92,6 +97,81 @@ export async function bringPlanSale(env) {
         },
     });
 }
+
+/**
+ * CREVAL, paquete 5, CR-46, punto 3: CONTROL compara también con el plan de
+ * Odoo (después del envío), partida por partida, en «Costo en el plan de
+ * Odoo» y «Hoja menos plan de Odoo». Devuelve {found, missing} o null si la
+ * hoja no tiene esas columnas.
+ */
+export const CONTROL_PLAN_HEADER = "Costo en el plan de Odoo";
+
+export function writePlanControl(model, data) {
+    const sheetId = model.getters.getSheetIdByName("CONTROL");
+    if (!sheetId) {
+        return null;
+    }
+    const rows = collectSheets(model, ["CONTROL"]).CONTROL || [];
+    const col = (rows[1] || []).indexOf(CONTROL_PLAN_HEADER);
+    if (col < 0) {
+        return null;
+    }
+    const zone = model.getters.getSheetZone(sheetId);
+    clearCells(model, sheetId, [{ top: 2, bottom: zone.bottom, left: col, right: col }]);
+    const commands = [
+        [
+            "UPDATE_CELL",
+            {
+                sheetId,
+                col,
+                row: 0,
+                content: data.plan ? _t("Plan de Odoo: %s", data.plan) : _t("Sin plan en Odoo"),
+            },
+        ],
+    ];
+    const counts = { found: 0, missing: 0 };
+    for (let row = 2; row < rows.length; row++) {
+        const item = String(rows[row][0] ?? "");
+        if (!item) {
+            continue;
+        }
+        const cost = data.items[item];
+        if (cost === undefined) {
+            counts.missing++;
+            continue;
+        }
+        counts.found++;
+        commands.push(["UPDATE_CELL", { sheetId, col, row, content: String(cost) }]);
+    }
+    dispatchBatch(model, commands);
+    return counts;
+}
+
+export async function updatePlanControl(env) {
+    const data = await env.constructionCall("construction_plan_control");
+    const counts = writePlanControl(env.model, data);
+    if (!counts) {
+        env.constructionNotify(
+            _t("Esta hoja no tiene las columnas del plan de Odoo en CONTROL (es anterior)."),
+            "warning"
+        );
+        return;
+    }
+    env.constructionNotify(
+        _t("CONTROL comparado con %(plan)s: %(found)s partidas; %(missing)s sin línea en el plan.", {
+            plan: data.plan || _t("ningún plan"),
+            found: counts.found,
+            missing: counts.missing,
+        })
+    );
+}
+
+topbarMenuRegistry.addChild("construction_budget_plan_control", ["construction_planner"], {
+    name: _t("Actualizar CONTROL con el plan de Odoo"),
+    sequence: 15,
+    isVisible: isBudgetPlan,
+    execute: (env) => updatePlanControl(env),
+});
 
 topbarMenuRegistry.addChild("construction_budget_plan_bring", ["construction_planner"], {
     name: _t("Traer la venta…"),

@@ -69,18 +69,18 @@ registry.category("web_tour.tours").add("al_construction_plan_bring", {
         },
         ...bring,
         {
-            content: "Lo cambiado a mano va desmarcado",
-            trigger: ".o_construction_bring_preview tr:has(td:contains('PLAN')) button:contains('Ver filas')",
-            run: "click",
-        },
-        {
-            trigger: ".o_construction_bring_preview label:contains('01.01')",
+            content: "PLAN es una tabla por partida, con metrado vendido y APU; lo cambiado a mano va desmarcado",
+            trigger: ".o_construction_bring_table tr:has(td:contains('01.01')):contains('Cambia: Partida')",
             run: () => {
-                const label = [...document.querySelectorAll(".o_construction_bring_preview label")].find(
+                const row = [...document.querySelectorAll(".o_construction_bring_table tbody tr")].find(
                     (node) => node.textContent.includes("01.01")
                 );
-                if (label.querySelector("input").checked) {
+                if (row.querySelector("input").checked) {
                     throw new Error("La partida editada viene marcada");
+                }
+                const cells = [...row.querySelectorAll("td")].map((td) => td.textContent.trim());
+                if (!cells[3].startsWith("100") || !cells[4].includes("BK-R01")) {
+                    throw new Error(`Fila de 01.01: ${JSON.stringify(cells)}`);
                 }
             },
         },
@@ -93,6 +93,50 @@ registry.category("web_tour.tours").add("al_construction_plan_bring", {
                 const { value } = planCell(1, 1);
                 if (value !== "Muro del eje A (obra)") {
                     throw new Error(`PLAN B2: ${value}`);
+                }
+            },
+        },
+        {
+            content: "CR-43: elegir el producto por su nombre llena la fila de INSUMOS",
+            trigger: "body",
+            run: () => {
+                const model = findModel(odoo.__WOWL_DEBUG__.root.__owl__);
+                const sheetId = model.getters.getSheetIdByName("INSUMOS");
+                const header = (col) => model.getters.getEvaluatedCell({ sheetId, col, row: 0 }).value;
+                const colOf = (text) => {
+                    for (let col = 0; col < model.getters.getNumberCols(sheetId); col++) {
+                        if (header(col) === text) {
+                            return col;
+                        }
+                    }
+                    throw new Error(`INSUMOS sin la columna ${text}`);
+                };
+                const row = 60;
+                model.dispatch("UPDATE_CELL", {
+                    sheetId,
+                    col: colOf("Producto (escriba el nombre)"),
+                    row,
+                    content: 'Tubo PVC SEL 3/4" (test) · BK-TUB',
+                });
+                const value = (text) => model.getters.getEvaluatedCell({ sheetId, col: colOf(text), row }).value;
+                const got = [value("Código"), value("Tipo de insumo"), value("Precio sin IGV")];
+                if (got[0] !== "BK-TUB" || got[1] !== "Material" || Number(got[2]) !== 3.5) {
+                    throw new Error(`INSUMOS fila ${row + 1}: ${JSON.stringify(got)}`);
+                }
+            },
+        },
+        { trigger: ".o-topbar-menu:contains('Planificación de obra')", run: "click" },
+        { trigger: ".o-menu-item[data-name='construction_budget_plan_control']", run: "click" },
+        { trigger: ".o_notification:contains('CONTROL comparado con'):contains('2 partidas')" },
+        {
+            content: "CR-46, punto 3: CONTROL tiene el costo del plan de Odoo",
+            trigger: "body",
+            run: () => {
+                const model = findModel(odoo.__WOWL_DEBUG__.root.__owl__);
+                const sheetId = model.getters.getSheetIdByName("CONTROL");
+                const cost = model.getters.getEvaluatedCell({ sheetId, col: 7, row: 2 }).value;
+                if (!(Number(cost) > 0)) {
+                    throw new Error(`CONTROL H3: ${cost}`);
                 }
             },
         },

@@ -17,6 +17,12 @@ class ConstructionExecutionTemplate(models.Model):
         help='Receta de una cotización sin obra: no es de la biblioteca; se copia a la obra al '
              'crear sus niveles.')
 
+    # CREVAL, paquete 5, CR-45, punto 4.
+    construction_sold_copy = fields.Boolean(
+        string='APU vendido', readonly=True, copy=False,
+        help='Copia del APU con que se vendió la partida: la hoja de planificación cambió la '
+             'receta de la obra y el plan usa esa; la cotización conserva esta.')
+
     # El mismo código puede estar en la biblioteca y en cada cotización.
     _code_company_unique = models.UniqueIndex(
         '(code, company_id, COALESCE(project_id, 0), COALESCE(construction_sale_order_id, 0))',
@@ -78,6 +84,8 @@ class SaleOrder(models.Model):
                     'code': recipe.code, 'name': recipe.name})
         for line in self.order_line.filtered('construction_execution_template_id'):
             recipe = line.construction_execution_template_id
-            if recipe.construction_sale_order_id and recipe.code in own:
+            # El APU vendido que separó la hoja de planificación se queda.
+            if recipe.construction_sale_order_id and not recipe.construction_sold_copy and \
+                    recipe.code in own:
                 line.construction_execution_template_id = own[recipe.code]
         return own

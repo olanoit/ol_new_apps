@@ -83,7 +83,7 @@ class TestPackage116Stage4Budget(TestBudgetBook):
         una banda de color por receta. Las hojas anteriores conservan su
         orden al traer de Odoo."""
         document = self._document()
-        self.assertEqual(document.construction_sheet_layout, 3)
+        self.assertEqual(document.construction_sheet_layout, 4)
         data = json.loads(document.spreadsheet_data)
         sheets = {sheet['name']: sheet for sheet in data['sheets']}
         keys = sheets[KEYS_SHEET]
@@ -94,7 +94,9 @@ class TestPackage116Stage4Budget(TestBudgetBook):
             return re.search(r'!([A-Z]+)1', rows[(sheet, key)]).group(1)
 
         insumos = sheets['INSUMOS']['cells']
-        self.assertEqual(insumos['A1'], 'Tipo de insumo')
+        # CREVAL, paquete 5, CR-43: el producto del maestro por nombre primero.
+        self.assertEqual(insumos['A1'], 'Producto (escriba el nombre)')
+        self.assertEqual(insumos['B1'], 'Tipo de insumo')
         self.assertEqual(insumos['%s1' % letter('INSUMOS', 'code')], 'Código')
         self.assertGreater(letter('INSUMOS', 'code'), letter('INSUMOS', 'worker_category'))
         apu = sheets['APU']['cells']

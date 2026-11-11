@@ -19,8 +19,9 @@ from odoo.exceptions import UserError
 from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import COLUMNS
 
 from .project_project import (
-    BUDGET_LAYOUT, PLAN_COLUMNS, ROW_KEYS, TEMPLATE_LABELS, cell_text, data_keys,
-    presupuesto_headers, presupuesto_row, sheet_digits,
+    BUDGET_LAYOUT, CALCULATED_KEYS, LISTS, PLAN_COLUMNS, PRODUCT_LIST, ROW_KEYS, TEMPLATE_LABELS,
+    calculated, cell_text, data_keys, presupuesto_columns, presupuesto_headers, presupuesto_row,
+    sheet_digits,
 )
 from .sheet_keys import KEYS_SHEET, apply_keys
 
@@ -188,6 +189,12 @@ class DocumentsDocument(models.Model):
         for name, rows in (sheets or {}).items():
             if name not in BOOK_SHEETS:
                 continue
+            if name == 'LISTAS':
+                # CR-43: el envío lee de LISTAS las listas y las unidades, no
+                # la lista de productos de las columnas siguientes.
+                rows = [row[:len(LISTS) * 2 + 2] for row in rows or []]
+                while rows and not any(value not in ('', None, False) for value in rows[-1]):
+                    rows.pop()
             worksheet = workbook.create_sheet(name)
             for row in rows or []:
                 worksheet.append([None if value in ('', False) else value for value in row])
@@ -215,6 +222,8 @@ class DocumentsDocument(models.Model):
             'file': base64.b64encode(self._construction_book(sheets)),
             'filename': '%s.xlsx' % self.name,
             'spreadsheet_id': self.id,
+            # CR-45, punto 4: el plan con los APU de obra, sin tocar la venta.
+            'site_plan': self.construction_budget_role == 'plan',
         })
 
     def action_construction_send_to_planner(self, sheets, target='budget'):
@@ -324,7 +333,8 @@ class DocumentsDocument(models.Model):
         order = self.construction_sale_order_id or \
             self.construction_project_id.construction_sale_order_id
         project = self.construction_project_id or order.project_id
-        rows = self.env['project.project']._construction_budget_rows(order, project)
+        rows = self.env['project.project']._construction_budget_rows(
+            order, project, sold=self.construction_budget_role != 'plan')
         # Todo como texto (CR-18, a); PRESUPUESTO con sus encabezados y sus
         # fórmulas, para que una hoja anterior quede con las columnas A a W.
         keyed = {}
@@ -338,7 +348,14 @@ class DocumentsDocument(models.Model):
             keyed[name] = {'keys': keys, 'aliases': {key: aliases.get(key, [key])
                                                      for key in keys},
                            'rows': [[cell_text(value) for value in row]
-                                    for row in rows.pop(name)]}
+                                    for row in rows.pop(name)],
+                           # Las columnas de fórmula de la plantilla de la
+                           # hoja no se escriben (las demás, aunque tengan
+                           # una fórmula en la fila 2).
+                           'calculated': [
+                               CALCULATED_KEYS[(name, header)] for header, _formula in
+                               calculated(name, self.construction_sheet_layout or 0)
+                               if (name, header) in CALCULATED_KEYS]}
         result = {name: [[cell_text(value) for value in row] for row in sheet_rows]
                   for name, sheet_rows in rows.items() if name != 'PRESUPUESTO'}
         # INSUMOS, APU y APU_DETALLE se escriben por la clave de cada columna
@@ -351,6 +368,12 @@ class DocumentsDocument(models.Model):
                                          or self.construction_sale_order_id.company_id or None))
             for number, values in enumerate(rows['PRESUPUESTO'], start=2)]
         result['_from_top'] = ['OBRA', 'PRESUPUESTO']
+        # CREVAL, paquete 5, CR-43: la lista de productos del maestro de LISTAS.
+        result['_products'] = {
+            'headers': [header for _key, header in PRODUCT_LIST],
+            'rows': [[cell_text(value) for value in row] for row in
+                     self.env['project.project']._construction_product_rows(
+                         project.company_id or order.company_id or self.env.company)]}
         return result
 
     def construction_plan_bring(self):
@@ -381,17 +404,65 @@ class DocumentsDocument(models.Model):
                 'rows': [[row[index[key]] if key in index and index[key] < len(row) else ''
                           for key in keys] for row in spec['rows']],
             }
+        plan_rows = [[row[0], row[1]] for row in rows.get('PLAN', []) if row and row[0]]
+        # CR-45, punto 2: la vista previa de PLAN es una tabla por partida con
+        # el metrado vendido y el APU (se muestran; no se comparan).
+        keys = [key for key, _header, _kind in presupuesto_columns(layout)]
+        sold = {}
+        for values in rows['PRESUPUESTO'][1:]:
+            value = lambda key: values[keys.index(key)] if key in keys and \
+                keys.index(key) < len(values) else ''  # noqa: E731
+            if value('item'):
+                sold[value('item')] = [
+                    ' '.join(filter(None, [cell_text(value('qty_real')), cell_text(value('uom'))])),
+                    value('apu_pick') if 'apu_pick' in keys else value('apu')]
         tabs['PLAN'] = {
             'keys': ['item', 'name'], 'match': ['item'], 'keep_extra': False,
             'headers': {'item': [PLAN_COLUMNS[0]], 'name': [PLAN_COLUMNS[1]]},
-            'rows': [[row[0], row[1]] for row in rows.get('PLAN', []) if row and row[0]],
+            'rows': plan_rows,
+            'table': [self.env._('Ítem'), self.env._('Partida'), self.env._('Metrado vendido'),
+                      self.env._('APU')],
+            'info': [sold.get(row[0], ['', '']) for row in plan_rows],
         }
         warnings = []
         if not tabs['PLAN']['rows']:
             warnings.append(self.env._(
                 'La cotización no tiene partidas con ítem: PLAN no cambia.'))
         return {'tabs': tabs, 'from_top': {name: rows[name] for name in rows['_from_top']},
-                'warnings': warnings}
+                'products': rows['_products'], 'warnings': warnings}
+
+    def construction_plan_control(self):
+        """CREVAL, paquete 5, CR-46, punto 3: «Actualizar CONTROL» de la hoja
+        de planificación de obra compara también con el plan de Odoo, como el
+        CONTROL de mobiliario (M113-09). El plan es el último en preparación
+        (el que dejó el envío) o, si no hay, el vigente; el costo de cada
+        partida es la suma del monto planificado de sus líneas y las de sus
+        sub-niveles.
+
+        :return: ``{'plan': nombre del plan, 'items': {ítem: costo}}``
+        """
+        self.ensure_one()
+        if self.construction_budget_role != 'plan':
+            raise UserError(self.env._('CONTROL con el plan de Odoo es de la hoja de '
+                                       'planificación de obra.'))
+        order = self._construction_order()
+        project = self.construction_project_id or order.project_id
+        Plan = self.env['construction.resource.plan']
+        plan = Plan.search([('project_id', '=', project.id), ('state', '=', 'draft')],
+                           order='id desc', limit=1) or (
+            project._construction_current_plan() if project else Plan)
+        items = {}
+        for line in plan.line_ids:
+            task = line.task_id
+            while task and not task.sale_line_id:
+                task = task.parent_id
+            item = task.sale_line_id.construction_budget_item if task else False
+            if item:
+                items[item] = items.get(item, 0.0) + line.amount_planned
+        self.construction_control_date = fields.Datetime.now()
+        return {'plan': plan.display_name or '',
+                'items': {item: plan.currency_id.round(amount) if plan.currency_id else amount
+                          for item, amount in items.items()}}
 
     def construction_budget_upgrade(self, sheets):
         """CREVAL, paquete 5, CR-38, punto 4 (decisión del 05-nov):

@@ -153,7 +153,14 @@ PRESUPUESTO_UOM_FORMULA = '=IFERROR(XLOOKUP({apu}{r},APU!${apu_code}:${apu_code}
 # 3: CREVAL, paquete 5, CR-41: PRESUPUESTO en el orden del presupuestador, el
 #    APU elegido por nombre, Especialidad y Sub-especialidad calculadas del
 #    título de encima y el grupo plegable «Holguras y margen».
-BUDGET_LAYOUT = 3
+# 4: CREVAL, paquete 5, CR-43: INSUMOS elige el producto del maestro por su
+#    nombre («Producto (escriba el nombre)», lista en LISTAS).
+BUDGET_LAYOUT = 4
+# Primera plantilla con el producto del maestro por nombre en INSUMOS.
+PRODUCT_PICK_LAYOUT = 4
+# CREVAL, paquete 5, CR-46, punto 3: columnas de CONTROL con el plan de Odoo.
+CONTROL_PLAN_TITLE = 'Plan de Odoo'
+CONTROL_PLAN_HEADER = 'Costo en el plan de Odoo'
 # Primera plantilla con la receta por nombre en APU_DETALLE (CR-22 g).
 RECIPE_PICK_LAYOUT = 2
 # CREVAL, paquete 5, CR-41: columnas de PRESUPUESTO desde la plantilla 3,
@@ -360,7 +367,7 @@ def presupuesto_row(values, row, layout=BUDGET_LAYOUT, digits=DEFAULT_DIGITS):
 # (paquete 1.16, CR-22 g): nombre primero y código al final. En APU_DETALLE la
 # receta y el insumo se eligen por nombre y sus códigos son fórmulas.
 TEMPLATE_KEYS = {
-    'INSUMOS': ['kind', 'name', 'uom', 'price', 'currency', 'date', 'source', 'worker_category',
+    'INSUMOS': ['product_pick', 'kind', 'name', 'uom', 'price', 'currency', 'date', 'source', 'worker_category',
                 'code'],
     'APU': ['name', 'uom', 'productivity', 'hours', 'mode', 'stage', 'code'],
     'APU_DETALLE': ['apu_pick', 'pick', 'crew', 'pct', 'qty', 'price', 'stage',
@@ -371,14 +378,23 @@ LEGACY_TEMPLATE_KEYS = {
     'APU_DETALLE': ['apu', 'pick', 'crew', 'pct', 'qty', 'price', 'stage'],
 }
 # Encabezados de las columnas que no son del libro.
-TEMPLATE_LABELS = {'apu_pick': 'Receta (nombre · código)'}
+TEMPLATE_LABELS = {'apu_pick': 'Receta (nombre · código)',
+                   'product_pick': 'Producto (escriba el nombre)'}
+# CREVAL, paquete 5, CR-43: productos del maestro en LISTAS, para elegir el
+# insumo por nombre; (clave de INSUMOS, encabezado). La hoja llena la fila de
+# INSUMOS al elegir (product_pick.js) y «Traer de Odoo» renueva la lista.
+PRODUCT_LIST = [('product_pick', 'Producto (nombre · código)'), ('name', 'Nombre'),
+                ('code', 'Código'), ('kind', 'Tipo'), ('uom', 'Unidad del producto'),
+                ('price', 'Precio vigente'), ('currency', 'Moneda'),
+                ('date', 'Fecha del precio'), ('source', 'Fuente del precio')]
+PRODUCT_LIST_ROWS = 5000
 # Columnas calculadas que el envío lee con una clave.
 CALCULATED_KEYS = {('APU_DETALLE', 'Código de la receta'): 'apu',
                    ('APU_DETALLE', 'Código del insumo'): 'code'}
 
 # Orden de los valores de cada fila de ``_construction_budget_rows``.
 ROW_KEYS = {
-    'INSUMOS': ['code', 'name', 'kind', 'uom', 'price', 'currency'],
+    'INSUMOS': ['code', 'name', 'kind', 'uom', 'price', 'currency', 'product_pick'],
     'APU': ['code', 'name', 'uom', 'productivity', 'hours', 'mode'],
     'APU_DETALLE': ['apu', 'pick', 'crew', 'pct', 'qty', 'price', 'stage', 'code', 'apu_pick',
                     'client_supply'],
@@ -390,7 +406,8 @@ def data_keys(name, layout=BUDGET_LAYOUT):
     if layout < RECIPE_PICK_LAYOUT and name in LEGACY_TEMPLATE_KEYS:
         return list(LEGACY_TEMPLATE_KEYS[name])
     if layout >= RECIPE_PICK_LAYOUT and name in TEMPLATE_KEYS:
-        return list(TEMPLATE_KEYS[name])
+        return [key for key in TEMPLATE_KEYS[name]
+                if key != 'product_pick' or layout >= PRODUCT_PICK_LAYOUT]
     return [key for key, _aliases, _required in COLUMNS[name]
             if (name, key) not in (('APU', 'unit_cost'), ('PRESUPUESTO', 'cost_real'))
             and key != 'pick']
@@ -655,10 +672,13 @@ class ProjectProject(models.Model):
         return [[label, given[label]] for label in OBRA_LABELS if given.get(label) not in (
             None, '')]
 
-    def _construction_budget_rows(self, order, project):
+    def _construction_budget_rows(self, order, project, sold=True):
         """Filas de datos de cada pestaña con lo que hay en Odoo: la
         cotización (OBRA y PRESUPUESTO) y las recetas de la obra (INSUMOS, APU
-        y APU_DETALLE)."""
+        y APU_DETALLE). CREVAL, paquete 5, CR-45, punto 4: con ``sold``, el
+        APU vendido de cada partida manda sobre la receta de la obra del
+        mismo código (la hoja de venta); sin él, la de la obra (la hoja de
+        planificación)."""
         rows = {name: [] for name in ('OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO',
                                       'PLAN')}
         kinds = {'material': 'Material', 'labor': 'Mano de obra', 'equipment': 'Equipo',
@@ -693,8 +713,14 @@ class ProjectProject(models.Model):
         if order:
             tasks = tasks.search([('sale_line_id', 'in', order.order_line.ids)])
             recipes |= tasks.construction_execution_template_id
-            recipes |= order.order_line.construction_execution_template_id.filtered(
+            sold_recipes = order.order_line.construction_execution_template_id.filtered(
                 lambda r: not r.project_id or r.project_id == project)
+            if sold:
+                recipes = sold_recipes | recipes.filtered(
+                    lambda r: r.code not in sold_recipes.mapped('code'))
+            else:
+                recipes |= sold_recipes.filtered(
+                    lambda r: r.code not in recipes.mapped('code'))
         insumos = {}
         # CR-22 g: unidades en español y la etapa por su nombre.
         lang = 'es_PE' if 'es_PE' in dict(self.env['res.lang'].get_installed()) \
@@ -723,9 +749,14 @@ class ProjectProject(models.Model):
                 # El nombre sin el código entre corchetes (CR-22 g).
                 name = record.name or record.display_name
                 uom = line.product_uom_id.name or ''
+                # CR-43: el producto del maestro por su nombre, como en LISTAS.
+                product = line.product_id if not line.activity_id else False
+                pick = '%s · %s' % (product.name, code) if product and \
+                    product.default_code == code else ''
                 insumos.setdefault(code, [code, name, kind, uom,
                                           line.price_unit or line._construction_default_cost(),
-                                          (line.line_currency_id or recipe.currency_id).name])
+                                          (line.line_currency_id or recipe.currency_id).name,
+                                          pick])
                 info = insumos[code]
                 rows['APU_DETALLE'].append([
                     recipe.code, ' · '.join(str(v) for v in (info[2], info[1], info[3], code)),
@@ -757,8 +788,10 @@ class ProjectProject(models.Model):
                 name = (line.name or '').splitlines()[0]
                 if item and name.startswith(item):
                     name = name[len(item):].strip()
-                recipe = task.construction_execution_template_id or \
-                    line.construction_execution_template_id
+                recipe = (line.construction_execution_template_id or
+                          task.construction_execution_template_id) if sold else (
+                    task.construction_execution_template_id or
+                    line.construction_execution_template_id)
                 apu = recipe.code or ''
                 rows['PRESUPUESTO'].append({
                     'item': item, 'specialty': section, 'subspecialty': subsection,
@@ -791,7 +824,6 @@ class ProjectProject(models.Model):
                                          ''])
         return rows
 
-    @api.model
     @api.model
     def _construction_budget_rows_from_sheets(self, sheets):
         """CREVAL, paquete 5, CR-38, punto 4: las filas de una hoja «Presupuesto
@@ -949,12 +981,15 @@ class ProjectProject(models.Model):
         look = lambda key: 'IFERROR(VALUE(XLOOKUP(PLAN!$A{r}&"",PRESUPUESTO!$%s$2:$%s$%s,' \
             'PRESUPUESTO!$%s$2:$%s$%s)),0)' % (p['item'], p['item'], last, p[key], p[key], last)
         threshold = (company.construction_budget_control_pct or 5.0) / 100.0
+        # CR-46, punto 3: H e I, el plan de Odoo después del envío (los
+        # escribe «Actualizar CONTROL»).
         cells = {'A1': 'Vendido frente a planificado', 'A2': 'Ítem', 'B2': 'Partida',
                  'C2': 'Costo vendido (sin margen)', 'D2': 'Costo planificado',
                  'E2': 'Diferencia', 'F2': '%', 'G2': 'Estado',
-                 'I2': 'Umbral', 'J2': str(threshold)}
-        styles = {'A1': TITLE_STYLE}
-        styles.update({'%s2' % c: HEADER_STYLE for c in 'ABCDEFGI'})
+                 'H1': CONTROL_PLAN_TITLE, 'H2': CONTROL_PLAN_HEADER,
+                 'I2': 'Hoja menos plan de Odoo', 'K2': 'Umbral', 'L2': str(threshold)}
+        styles = {'A1': TITLE_STYLE, 'H1': TITLE_STYLE}
+        styles.update({'%s2' % c: HEADER_STYLE for c in 'ABCDEFGHIK'})
         for row in range(3, last + 2):
             r = row - 1  # fila de PLAN
             cells.update({
@@ -967,17 +1002,18 @@ class ProjectProject(models.Model):
                     '{r}', str(r)).replace('{s}', site),
                 'E%s' % row: '=IF($A%s="","",D%s-C%s)' % (row, row, row),
                 'F%s' % row: '=IF(OR($A%s="",C%s=0),"",E%s/C%s)' % (row, row, row, row),
-                'G%s' % row: ('=IF($A{w}="","",IF(ABS(IFERROR(F{w},0))<0.005,"Igual",IF(F{w}<=$J$2,'
+                'G%s' % row: ('=IF($A{w}="","",IF(ABS(IFERROR(F{w},0))<0.005,"Igual",IF(F{w}<=$L$2,'
                               '"Más de lo vendido","Supera el umbral")))').replace('{w}', str(row)),
+                'I%s' % row: '=IF(OR($A%s="",H%s=""),"",D%s-H%s)' % (row, row, row, row),
             })
         del sold_qty
         return {
             'id': 'sheet_control_budget', 'name': 'CONTROL', 'colNumber': 12,
             'rowNumber': last + 10, 'cells': cells, 'styles': styles,
             'formats': {'C3:E%s' % (last + 1): '#,##0.00', 'F3:F%s' % (last + 1): '0.0%',
-                        'J2': '0%'},
+                        'H3:I%s' % (last + 1): '#,##0.00', 'L2': '0%'},
             'cols': {'1': {'size': 320}, '2': {'size': 140}, '3': {'size': 140},
-                     '6': {'size': 150}},
+                     '6': {'size': 150}, '7': {'size': 160}, '8': {'size': 160}},
             'conditionalFormats': [{
                 'id': 'control_over', 'ranges': ['G3:G%s' % (last + 1)], 'stopIfTrue': False,
                 'rule': {'type': 'CellIsRule', 'operator': 'customFormula',
@@ -1205,6 +1241,37 @@ class ProjectProject(models.Model):
         return result
 
     @api.model
+    def _construction_product_rows(self, company):
+        """CREVAL, paquete 5, CR-43: productos del maestro con código para
+        elegir el insumo por nombre (pestaña LISTAS), en el orden de
+        ``PRODUCT_LIST``. El tipo es el de la última línea de APU que usa el
+        producto (o Servicio o Material por el tipo de producto); el precio,
+        el costo vigente del maestro, como «Actualizar insumos», con la fecha
+        en que se leyó."""
+        lang = 'es_PE' if 'es_PE' in dict(self.env['res.lang'].get_installed()) \
+            else self.env.lang
+        products = self.env['product.product'].with_company(company).with_context(
+            lang=lang).search([('default_code', '!=', False),
+                               ('company_id', 'in', (company.id, False))],
+                              order='name, id', limit=PRODUCT_LIST_ROWS - 1)
+        kinds = {'material': 'Material', 'labor': 'Mano de obra', 'equipment': 'Equipo',
+                 'contract': 'Subcontrato', 'service': 'Servicio', 'production': 'Material'}
+        used = {}
+        for line in self.env['construction.execution.template.line'].search(
+                [('product_id', 'in', products.ids)], order='id desc'):
+            used.setdefault(line.product_id.id, 'Herramienta %MO' if line.calc_method ==
+                            'pct_labor' else kinds.get(line.resource_type, 'Material'))
+        today = fields.Date.to_string(fields.Date.context_today(self))
+        source = self.env._('Maestro de productos')
+        return [['%s · %s' % (product.name, product.default_code), product.name,
+                 product.default_code,
+                 used.get(product.id) or ('Servicio' if product.type == 'service'
+                                          else 'Material'),
+                 product.uom_id.name or '', product.standard_price,
+                 company.currency_id.name, today, source]
+                for product in products]
+
+    @api.model
     def _construction_budget_spreadsheet_data(self, order=None, project=None, values=None):
         """Datos de la hoja de presupuesto y plan, con lo que ya hay en Odoo
         (o con ``values``, las filas de una hoja anterior que se actualiza:
@@ -1236,6 +1303,8 @@ class ProjectProject(models.Model):
                        'cells': obra_cells, 'styles': obra_styles,
                        'cols': {'0': {'size': 220}, '1': {'size': 260}}})
         letters_by_sheet = {}
+        # CR-43: la lista de productos va en LISTAS, después de las unidades.
+        product_start = len(LISTS) * 2 + 3
         stage_count = len(self.env['construction.stage']._offered_stages(project))
         key_columns = {}
         for name in ('INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO'):
@@ -1298,6 +1367,16 @@ class ProjectProject(models.Model):
                                   'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
                                                 'values': values_list}})
             conditional = []
+            if 'product_pick' in letters:
+                # CR-43: el producto del maestro, escribiendo parte del nombre;
+                # un producto nuevo se escribe a mano en las otras columnas.
+                pick = _col(product_start)
+                rules.append({'id': 'INSUMOS_product_pick', 'isBlocking': False,
+                              'ranges': ['%s2:%s%s' % (letters['product_pick'],
+                                                       letters['product_pick'], last)],
+                              'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                            'values': ['LISTAS!$%s$2:$%s$%s' % (
+                                                pick, pick, PRODUCT_LIST_ROWS)]}})
             if name == 'APU_DETALLE':
                 # CR-22 g: la receta y el insumo se eligen escribiendo parte
                 # del nombre (el desplegable nativo filtra al escribir).
@@ -1370,9 +1449,19 @@ class ProjectProject(models.Model):
         for number, alias in enumerate(self.env['construction.uom.alias'].search([]), start=2):
             list_cells['%s%s' % (_col(alias_col), number)] = alias.name
             list_cells['%s%s' % (_col(alias_col + 1), number)] = alias.uom_id.name
-        sheets.append({'id': 'sheet_listas', 'name': 'LISTAS', 'colNumber': 12, 'rowNumber': 200,
-                       'cells': list_cells,
-                       'styles': {'%s1' % _col(i): HEADER_STYLE for i in range(alias_col + 2)}})
+        list_styles = {'%s1' % _col(i): HEADER_STYLE for i in range(alias_col + 2)}
+        for offset, (_key, header) in enumerate(PRODUCT_LIST):
+            list_cells['%s1' % _col(product_start + offset)] = header
+            list_styles['%s1' % _col(product_start + offset)] = HEADER_STYLE
+        for number, row in enumerate(self._construction_product_rows(company), start=2):
+            for offset, value in enumerate(row):
+                if value not in (None, '', False):
+                    list_cells['%s%s' % (_col(product_start + offset), number)] = \
+                        cell_text(value)
+        sheets.append({'id': 'sheet_listas', 'name': 'LISTAS',
+                       'colNumber': product_start + len(PRODUCT_LIST) + 1,
+                       'rowNumber': PRODUCT_LIST_ROWS, 'cells': list_cells,
+                       'styles': list_styles})
         # REFERENCIAS: listas vivas de Odoo.
         company = (project.company_id if project else False) or \
             (order.company_id if order else False) or self.env.company

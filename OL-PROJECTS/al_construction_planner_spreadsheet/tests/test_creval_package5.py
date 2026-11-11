@@ -4,6 +4,7 @@ planificación de obra (CR-38), «Pasar a la cotización» y contrato de obra en
 borrador al confirmar (CR-44), grupo «Presupuestador» y entradas (CR-47).
 Datos ficticios."""
 from odoo.exceptions import UserError
+from odoo.addons.al_construction_planner_spreadsheet.models.project_project import _col
 from odoo.addons.al_construction_planner_spreadsheet.models.sheet_migration import (
     col_index as _col_index,
 )
@@ -131,7 +132,7 @@ class TestCrevalPackage5(TestBudgetBook):
             BUDGET_LAYOUT, presupuesto_letters,
         )
         from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import KEYS_SHEET
-        self.assertEqual(BUDGET_LAYOUT, 3)
+        self.assertGreaterEqual(BUDGET_LAYOUT, 3)
         self._send(self._book()).action_import()
         _data, sheets = self._sheets()
         presupuesto = sheets['PRESUPUESTO']
@@ -213,7 +214,7 @@ class TestCrevalPackage5(TestBudgetBook):
             'construction_sheet_layout': 0})
         old.construction_budget_upgrade(sheets)
         self.assertEqual(old.construction_budget_role, 'sale')
-        self.assertEqual(old.construction_sheet_layout, 3)
+        self.assertEqual(old.construction_sheet_layout, 4)
         self.assertTrue(old.name.startswith('Presupuesto de venta · %s' % self.order.name))
         self.assertEqual(self.env['documents.document'].search_count(
             [('construction_source_id', '=', old.id)]), 1, 'versión anterior guardada')
@@ -250,6 +251,12 @@ class TestCrevalPackage5(TestBudgetBook):
         self.assertEqual(data['tabs']['PLAN']['rows'],
                          [['01.01', 'Muro del eje A'], ['01.02', 'Muro del eje B']])
         self.assertFalse(data['tabs']['PLAN']['keep_extra'])
+        # La vista previa de PLAN es una tabla por partida con lo vendido.
+        self.assertEqual(data['tabs']['PLAN']['table'],
+                         ['Ítem', 'Partida', 'Metrado vendido', 'APU'])
+        qty, apu = data['tabs']['PLAN']['info'][0]
+        self.assertTrue(qty.startswith('100'), qty)
+        self.assertEqual(apu, 'Muro de ladrillo KK (test) · BK-R01')
         self.assertEqual(data['tabs']['APU']['match'], ['code'])
         self.assertIn(['BK-R01'], [[row[data['tabs']['APU']['keys'].index('code')]]
                                    for row in data['tabs']['APU']['rows']])
@@ -353,7 +360,154 @@ class TestCrevalPackage5(TestBudgetBook):
         control = sheets['CONTROL']['cells']
         self.assertEqual(control['G2'], 'Estado')
         self.assertIn('Supera el umbral', control['G3'])
-        self.assertEqual(control['J2'], '0.05')
+        self.assertEqual(control['L2'], '0.05')
+        self.assertIn('$L$2', control['G3'])
+        # CR-46, punto 3: el plan de Odoo, que escribe «Actualizar CONTROL».
+        self.assertEqual(control['H2'], 'Costo en el plan de Odoo')
+        self.assertEqual(control['I3'], '=IF(OR($A3="",H3=""),"",D3-H3)')
+
+    # ------------------------------------------------------------------
+    # Pendientes del 11-nov: CR-43, CR-45 punto 4 y CR-46 punto 3
+    # ------------------------------------------------------------------
+    def test_insumo_is_picked_from_the_product_master(self):
+        """CR-43: INSUMOS elige el producto del maestro por su nombre; la
+        lista va en LISTAS con su tipo, unidad, código y precio vigente."""
+        from odoo.addons.al_construction_planner_spreadsheet.models.project_project import (
+            PRODUCT_LIST,
+        )
+        self.env['product.product'].create({
+            'name': 'Tubo PVC SEL 3/4" (test)', 'default_code': 'BK-TUB',
+            'standard_price': 3.5})
+        self._send(self._book()).action_import()
+        _data, sheets = self._sheets()
+        lists = sheets['LISTAS']['cells']
+        start = next(ref[:-1] for ref, value in lists.items()
+                     if ref.endswith('1') and not ref[-2].isdigit()
+                     and value == 'Producto (nombre · código)')
+        index = _col_index(start)
+        headers = [lists.get('%s1' % _col(index + i)) for i in range(len(PRODUCT_LIST))]
+        self.assertEqual(headers, [header for _key, header in PRODUCT_LIST])
+        row = next(n for n in range(2, 6000)
+                   if lists.get('%s%s' % (start, n)) == 'Tubo PVC SEL 3/4" (test) · BK-TUB')
+        values = [lists.get('%s%s' % (_col(index + i), row)) for i in range(len(PRODUCT_LIST))]
+        self.assertEqual((values[2], values[3], values[5]), ('BK-TUB', 'Material', '3.5'))
+        self.assertEqual(values[8], 'Maestro de productos')
+        # El ladrillo del APU es Material y está en la lista.
+        self.assertTrue(any(value == 'Ladrillo KK 18 huecos (test) · BK-LAD'
+                            for value in lists.values()))
+        insumos = sheets['INSUMOS']
+        self.assertEqual(insumos['cells']['A1'], 'Producto (escriba el nombre)')
+        rule = next(rule for rule in insumos['dataValidationRules']
+                    if rule['id'] == 'INSUMOS_product_pick')
+        self.assertFalse(rule['isBlocking'])
+        self.assertEqual(rule['criterion']['values'], ['LISTAS!$%s$2:$%s$5000' % (start, start)])
+        # Lo que ya está en Odoo llega con el producto elegido.
+        self.assertIn('Ladrillo KK 18 huecos (test) · BK-LAD',
+                      [value for ref, value in insumos['cells'].items() if ref[0] == 'A'])
+
+    def test_bring_from_odoo_renews_the_products(self):
+        """CR-43: «Traer de Odoo» trae la lista de productos; el envío no
+        lleva esa lista (solo las listas y las unidades de LISTAS)."""
+        from io import BytesIO
+
+        from openpyxl import load_workbook
+        plan = self._plan_sheet()
+        data = plan.construction_odoo_rows()
+        self.assertEqual(data['_products']['headers'][0], 'Producto (nombre · código)')
+        self.assertIn('Ladrillo KK 18 huecos (test) · BK-LAD',
+                      [row[0] for row in data['_products']['rows']])
+        self.assertCountEqual(data['_keyed']['APU_DETALLE']['calculated'], ['apu', 'code'])
+        self.assertEqual(data['_keyed']['INSUMOS']['calculated'], [])
+        self.assertEqual(data['_keyed']['INSUMOS']['keys'][-1], 'product_pick')
+        row = ['Tipo de insumo', '', 'Modalidad', '', 'Tipo de contrato', '',
+               'Formato de impresión', '', 'Escrito como', 'Unidad', '',
+               'Producto (nombre · código)', 'Nombre', 'Código']
+        book = load_workbook(BytesIO(plan._construction_book({'LISTAS': [row, [''] * 14]})))
+        self.assertEqual(book['LISTAS'].max_column, 10)
+        self.assertEqual(book['LISTAS'].max_row, 1)
+
+    def _site_plan(self, edit=None):
+        """Envía el plan desde la hoja de planificación de obra (CR-45,
+        punto 4): el asistente con ``site_plan``."""
+        wizard = self.env['construction.budget.book.wizard'].create({
+            'sale_order_id': self.order.id, 'target': 'plan', 'site_plan': True,
+            'file': self._edited_book(edit) if edit else self._book(),
+            'filename': 'planificación.xlsx'})
+        wizard.action_preview()
+        wizard.action_import()
+        return wizard
+
+    def test_site_plan_keeps_the_sold_apu(self):
+        """CR-45, punto 4: los APU de la hoja de planificación son los de la
+        obra; cambiar la cuadrilla no toca la venta (la partida queda con una
+        copia del APU vendido) y el plan usa el APU de obra."""
+        plan_sheet = self._plan_sheet()
+        self.assertEqual(plan_sheet._construction_book_wizard(
+            {'OBRA': [['Obra', 'OBR-03']]}, 'plan').site_plan, True)
+        line = self.order.order_line.filtered(lambda l: l.construction_budget_item == '01.02')
+        cost, price = line.construction_cost_apu, line.price_unit
+        sold = line.construction_execution_template_id
+        self.assertEqual(sold.project_id, self.project)
+        crew = sold.line_ids.filtered('activity_id').crew_size
+
+        def two_workers(book):
+            book['APU_DETALLE'].cell(row=2, column=3, value=crew * 2)
+        wizard = self._site_plan(two_workers)
+        self.assertIn('sin cambios', wizard.preview_html)
+        kept = line.construction_execution_template_id
+        self.assertNotEqual(kept, sold)
+        self.assertEqual((kept.code, kept.construction_sale_order_id, kept.project_id),
+                         ('BK-R01', self.order, self.env['project.project']))
+        self.assertEqual(kept.line_ids.filtered('activity_id').crew_size, crew)
+        self.assertEqual(sold.line_ids.filtered('activity_id').crew_size, crew * 2)
+        self.assertEqual((line.construction_cost_apu, line.price_unit), (cost, price))
+        task = self.env['project.task'].search([('sale_line_id', '=', line.id)])
+        self.assertEqual(task.construction_execution_template_id, sold)
+        plan = self.env['construction.resource.plan'].search(
+            [('project_id', '=', self.project.id)])
+        self.assertTrue(plan.line_ids.filtered(lambda l: l.task_id == task))
+        # Un segundo envío no vuelve a copiar.
+        self._site_plan(two_workers)
+        self.assertEqual(line.construction_execution_template_id, kept)
+        Template = self.env['construction.execution.template']
+        self.assertEqual(Template.search_count([('code', '=', 'BK-R01'),
+                                                ('construction_sale_order_id', '=',
+                                                 self.order.id)]), 1)
+        # La hoja de venta trae el APU vendido; la de planificación, el de obra.
+        Project = self.env['project.project']
+        sold_rows = Project._construction_budget_rows(self.order, self.project)
+        site_rows = Project._construction_budget_rows(self.order, self.project, sold=False)
+        # Horas del operario por unidad: con el doble de cuadrilla, el doble.
+        hours = lambda rows: [row[4] for row in rows['APU_DETALLE']  # noqa: E731
+                              if row[0] == 'BK-R01' and row[7] == 'BK-OPE']
+        self.assertEqual(len(hours(sold_rows)), 1)
+        self.assertAlmostEqual(hours(site_rows)[0], hours(sold_rows)[0] * 2, places=5)
+
+    def test_control_compares_with_the_odoo_plan(self):
+        """CR-46, punto 3: después del envío, CONTROL compara con el plan de
+        Odoo: el costo planificado de cada partida, por su ítem."""
+        plan_sheet = self._plan_sheet()
+        empty = plan_sheet.construction_plan_control()
+        self.assertEqual(empty['items'], {})
+        self._site_plan()
+        data = plan_sheet.construction_plan_control()
+        plan = self.env['construction.resource.plan'].search(
+            [('project_id', '=', self.project.id)], order='id desc', limit=1)
+        self.assertEqual(data['plan'], plan.display_name)
+        self.assertEqual(set(data['items']), {'01.01', '01.02'})
+        task = self.env['project.task'].search([
+            ('sale_line_id.construction_budget_item', '=', '01.02'),
+            ('project_id', '=', self.project.id)])
+        expected = sum(plan.line_ids.filtered(
+            lambda l: l.task_id == task or l.task_id.parent_id == task).mapped('amount_planned'))
+        self.assertAlmostEqual(data['items']['01.02'], expected, places=2)
+        self.assertTrue(plan_sheet.construction_control_date)
+        sale = self.env['documents.document'].search(
+            [('construction_sale_order_id', '=', self.order.id),
+             ('construction_budget_role', '=', 'sale')], limit=1)
+        if sale:
+            with self.assertRaises(UserError):
+                sale.construction_plan_control()
 
 
 @tagged('post_install', '-at_install')
@@ -361,7 +515,12 @@ class TestCrevalPackage5PlanBringTour(TestBudgetBook, HttpCase):
 
     def test_plan_bring_keeps_what_the_planner_wrote(self):
         """CR-45, punto 2, en el navegador: vista previa, huella y la partida
-        editada a mano desmarcada."""
+        editada a mano desmarcada. Pendientes del 11-nov: el producto elegido
+        por nombre llena la fila de INSUMOS (CR-43) y CONTROL se compara con el
+        plan de Odoo (CR-46, punto 3)."""
+        self.env['product.product'].create({
+            'name': 'Tubo PVC SEL 3/4" (test)', 'default_code': 'BK-TUB',
+            'standard_price': 3.5})
         self._send(self._book()).action_import()
         self.project.construction_sale_order_id = self.order
         self.project.action_construction_open_plan_sheet()
@@ -373,4 +532,9 @@ class TestCrevalPackage5PlanBringTour(TestBudgetBook, HttpCase):
         admin = self.env.ref('base.user_admin')
         admin.write({'company_ids': [(4, self.order.company_id.id)],
                      'company_id': self.order.company_id.id})
+        wizard = self.env['construction.budget.book.wizard'].create({
+            'sale_order_id': self.order.id, 'target': 'plan', 'site_plan': True,
+            'file': self._book(), 'filename': 'planificación.xlsx'})
+        wizard.action_preview()
+        wizard.action_import()
         self.start_tour('/odoo', 'al_construction_plan_bring', login='admin')

@@ -205,6 +205,10 @@ class ConstructionBudgetBookWizard(models.TransientModel):
     default_stage_id = fields.Many2one(
         'construction.stage', string='Etapa por defecto',
         help='La de los recursos y actividades sin etapa en el libro.')
+    site_plan = fields.Boolean(
+        string='Plan desde la hoja de planificación de obra', readonly=True,
+        help='CREVAL, paquete 5, CR-45, punto 4: los APU de la hoja son los de la obra; la '
+             'cotización, sus partidas y los APU vendidos no cambian.')
     replan_reason = fields.Text(
         string='Motivo de la versión',
         help='Con el plan aprobado, el envío crea una nueva versión del plan con este motivo.')
@@ -863,6 +867,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             uom = self._uom(target)
             if uom and not Alias._find(text, company):
                 Alias.create({'name': text, 'uom_id': uom.id, 'company_id': company.id})
+        if self.site_plan:
+            return self._apply_site_plan(book)
         products, activities = self._apply_insumos(book)
         recipes = self._apply_apus(book, products, activities)
         lines = self._apply_budget(book, recipes)
@@ -888,6 +894,66 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             'Libro de APU y presupuesto importado (%(file)s): %(summary)s',
             file=self.filename or '', summary=' '.join(messages)))
         return Markup('').join(Markup('<p>%s</p>') % message for message in messages)
+
+    def _apply_site_plan(self, book):
+        """CREVAL, paquete 5, CR-45, punto 4: el plan desde la hoja de
+        planificación de obra. Los APU de la hoja se guardan como recetas de
+        la obra y el plan los usa; la cotización no cambia (ni sus partidas, ni
+        su costo, ni el APU vendido de cada partida, que antes se separa de la
+        receta de la obra)."""
+        self.ensure_one()
+        if self.target != 'plan':
+            raise UserError(self.env._('La hoja de planificación envía el plan.'))
+        order = self.sale_order_id
+        products, activities = self._apply_insumos(book)
+        self._keep_sold_recipes(book)
+        recipes = self._apply_apus(book, products, activities)
+        lines = order.order_line.filtered(
+            lambda l: not l.display_type and l.construction_line_role == 'partida')
+        messages = [self.env._(
+            'Cotización %(order)s sin cambios: el plan usa los APU de obra de la hoja '
+            '(%(apus)s).', order=order.name, apus=len(recipes))]
+        messages += self._apply_plan(book, recipes, lines)
+        order.message_post(body=self.env._(
+            'Plan enviado desde la hoja de planificación de obra (%(file)s): %(summary)s',
+            file=self.filename or '', summary=' '.join(messages)))
+        return Markup('').join(Markup('<p>%s</p>') % message for message in messages)
+
+    def _keep_sold_recipes(self, book):
+        """Antes de que la hoja de planificación cambie una receta de la obra
+        que una partida vendida usa, la partida pasa a una copia de lo vendido
+        (receta de la cotización, que no se elige en la obra). Una vez
+        separada, los envíos siguientes ya no la tocan."""
+        order = self.sale_order_id
+        project = self.project_id
+        Template = self.env['construction.execution.template'].with_context(active_test=False)
+        kept = {}
+        for line in order.order_line.filtered('construction_execution_template_id'):
+            recipe = line.construction_execution_template_id
+            if not project or recipe.project_id != project or recipe.code not in book['apus']:
+                continue
+            if recipe.code not in kept:
+                copy = Template.search([
+                    ('code', '=', recipe.code), ('company_id', '=', recipe.company_id.id),
+                    ('project_id', '=', False), ('construction_sale_order_id', '=', order.id)],
+                    limit=1)
+                if copy:
+                    # La copia que dejó la cotización sin obra quedó atrás:
+                    # vale lo vendido de hoy, la receta de la obra.
+                    copy.write({'name': recipe.name, 'uom_id': recipe.uom_id.id,
+                                'construction_sold_copy': True,
+                                'execution_mode': recipe.execution_mode,
+                                'line_ids': [Command.clear()] + [
+                                    Command.create(values) for values in
+                                    recipe.line_ids.copy_data()]})
+                else:
+                    copy = recipe.copy({'project_id': False, 'construction_sale_order_id': order.id,
+                                        'code': recipe.code, 'name': recipe.name,
+                                        'construction_sold_copy': True})
+                kept[recipe.code] = copy
+            line.with_context(construction_keep_offer=True).construction_execution_template_id = \
+                kept[recipe.code]
+        return kept
 
     def _stage_code(self, text):
         Stage = self.env['construction.stage']
