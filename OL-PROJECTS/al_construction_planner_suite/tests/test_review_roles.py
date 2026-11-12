@@ -25,7 +25,8 @@ class TestReviewRoles(TransactionCase):
         # (uso de equipo), ficha de la tarea (roles) y valorización de contrata
         # (su resumen).
         for model in ['construction.task.progress', 'construction.equipment.usage', 'project.role',
-                      'construction.contract.settlement.summary']:
+                      'construction.contract.settlement.summary', 'construction.contract.deduction',
+                      'construction.contract.order.document']:
             if model not in self.env:
                 continue
             with self.subTest(model=model):
