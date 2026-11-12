@@ -81,6 +81,19 @@ class TestSiteSchedule(TransactionCase):
             lambda a: a.dayofweek == '0' and a.day_period == 'afternoon').hour_to = 18
         self.assertEqual(company.construction_workday_hours, 9.0)
 
+    def test_planner_without_hr_reads_schedule(self):
+        """Con hr_work_entry, la franja de trabajo depende del tipo de entrada
+        de trabajo, campo reservado a RR. HH.: un planificador sin ese rol
+        abre el cronograma y asigna cuadrillas igual (revisión del 12-nov-2026)."""
+        from odoo.tests.common import new_test_user
+        self.company.construction_site_calendar_id = self.calendar
+        planner = new_test_user(self.env, login='planner_no_hr_119',
+                                groups='base.group_user,al_construction_planner.group_planner_user')
+        company = self.company.with_user(planner)
+        company.invalidate_recordset()
+        self.assertEqual(company._construction_full_day_hours(), 8.0)
+        self.assertEqual(sum(company._construction_weekday_hours().values()), 45.0)
+
     def test_equivalent_days_and_holiday(self):
         """Ejemplo de Vicente: 30 días calendario desde un lunes son 22 días
         de lunes a viernes y 4 sábados de 5 h: 24.5 días equivalentes. Un

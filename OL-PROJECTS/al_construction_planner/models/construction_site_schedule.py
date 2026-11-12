@@ -64,12 +64,15 @@ class ResCompany(models.Model):
         """Franjas de trabajo del horario de obra (sin refrigerio ni secciones).
         En un horario de dos semanas, las de ``week_type`` (o la primera)."""
         self.ensure_one()
-        calendar = self.construction_site_calendar_id
-        attendances = calendar.attendance_ids.filtered(lambda a: a._is_work_period())
-        if calendar.two_weeks_calendar:
+        # sudo: con hr_work_entry, _is_work_period() lee el tipo de entrada de
+        # trabajo de la franja, campo reservado a RR. HH.; el planificador solo
+        # necesita saber qué franjas son de trabajo.
+        calendar_sudo = self.construction_site_calendar_id.sudo()
+        attendances = calendar_sudo.attendance_ids.filtered(lambda a: a._is_work_period())
+        if calendar_sudo.two_weeks_calendar:
             wanted = week_type if week_type is not None else '0'
             attendances = attendances.filtered(lambda a: a.week_type == wanted)
-        return attendances
+        return attendances.sudo(False)
 
     def _construction_weekday_hours(self, week_type=None):
         """{día de la semana (0 = lunes): horas}. Sin horario de obra, la
