@@ -104,6 +104,25 @@ pasos, la recepción solo existe cuando la salida se validó, así que la salida
 - El aviso «Entrega en camino» lo sigue enviando la acción programada. Al validar la
   salida, la acción corre al momento en lugar de esperar su próxima vuelta.
 
+## Verificación en las instancias (12-nov-2026)
+
+Desplegado en creval_dev_1, newallcenter_dev_1 y newallcenter_dev_2 (vmic_dev_1 no
+tiene estos módulos). En newallcenter-dev1, con el tipo de despacho del almacén
+principal apuntando a «Salida a obra (prueba 1.21)», que queda así:
+
+| Criterio | Resultado |
+|---|---|
+| «Procesar» crea la salida al tránsito, ubicación final la obra | OK: un movimiento, final = ubicación de la obra |
+| Encabezado de la salida: obra, requerimiento, dirección de entrega | OK. «Departamento» vacío: el requerimiento de prueba no tiene departamento |
+| Validar la salida crea la recepción en «Listo» | OK (regla de empuje nativa) |
+| Recepción con obra, requerimiento y origen | OK |
+| Aviso «Entrega en camino» al validar la salida | OK, en el chatter de la recepción |
+| Portal: «Requerimiento de obra · RQO/… · …» | OK, con un residente de prueba (usuario portal) |
+| «Recibido en obra» no cambia con la recepción pendiente | OK: despachado 20, recibido 0, «En tránsito» 1 |
+| Al confirmar en el portal sube lo recibido y el requerimiento pasa a Hecho | OK: recibido 20, Hecho |
+| Sin tránsito, un paso | OK: el otro almacén conserva «Despacho a obra» (destino Proyectos) |
+| Kardex | Las dos transferencias van entre ubicaciones valoradas de la misma compañía: sin valor, como el despacho de un paso |
+
 ## Resultado por código
 
 | Código | Commit | Versión | Pruebas | Diferencias |
