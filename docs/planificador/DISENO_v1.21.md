@@ -2,8 +2,8 @@
 
 Requerimiento: `ALTA_Planificacion_Paquete_1.21_Despacho_y_Recepcion_en_Obra.pdf`
 (versión 2, 11-nov-2026), M121-01 a M121-03. Se entregan M121-01 y M121-02 juntos,
-porque son la misma cadena. M121-03 («Dañado») queda fuera hasta que se decida:
-el requerimiento lo deja como opcional y pendiente.
+porque son la misma cadena. M121-03 («Dañado») no se hace: el requerimiento lo dejaba
+opcional y el 12-nov-2026 se decidió mantener el texto libre.
 
 El paquete se entrega solo. No se despliega el mismo día que el 1.20.
 
@@ -92,8 +92,8 @@ pasos, la recepción solo existe cuando la salida se validó, así que la salida
 
 ## Diferencias frente al requerimiento
 
-- M121-03 («Dañado») no se hace: está pendiente de decisión. Hasta entonces sigue el
-  texto libre «Faltantes o daños» y el retorno manual.
+- M121-03 («Dañado») no se hace (decisión del 12-nov-2026): sigue el texto libre
+  «Faltantes o daños» y el retorno manual.
 - La obra no tiene un campo de dirección. La dirección de entrega de la guía sale de la
   venta de la obra (dirección de entrega) o del cliente del proyecto. Si la guía
   necesita otra, se cambia en la salida antes de generarla.
@@ -110,4 +110,4 @@ pasos, la recepción solo existe cuando la salida se validó, así que la salida
 |---|---|---|---|---|
 | M121-01 | 23be35d5 | material_request 37, furniture 31 | `TestDispatchTransit121` | Dirección de entrega desde la venta o el cliente |
 | M121-02 | 23be35d5 | material_request 37, portal 16, furniture 31 | `TestDispatchTransit121`, `TestPortalReception121` | Aviso por la acción programada al momento |
-| M121-03 | — | — | — | Pendiente de decisión |
+| M121-03 | — | — | — | No se hace (decisión del 12-nov-2026) |
