@@ -66,6 +66,22 @@ class StockPicking(models.Model):
                 subtype_xmlid='mail.mt_note',
             )
 
+    def _construction_chain_header_fields(self):
+        """Campos del encabezado de la salida a obra que pasan a la recepción
+        encadenada (M121-02). Los puentes agregan los suyos."""
+        return ['construction_request_id', 'project_id']
+
+    def _construction_chain_header_vals(self):
+        self.ensure_one()
+        vals = {}
+        for name in self._construction_chain_header_fields():
+            value = self[name]
+            if value:
+                vals[name] = value.id if isinstance(value, models.BaseModel) else value
+        # El portal reconoce la entrega por el requerimiento.
+        vals['origin'] = self.construction_request_id.name or self.origin
+        return vals
+
     def _get_dispatch_slip_user(self):
         """«Despachado por» del vale: quien validó la transferencia o, si
         aún no se valida, quien imprime."""

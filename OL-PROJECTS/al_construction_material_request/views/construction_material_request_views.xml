@@ -39,6 +39,11 @@
                                 icon="fa-truck" invisible="not picking_count">
                             <field name="picking_count" widget="statinfo" string="Transferencias"/>
                         </button>
+                        <!-- Paquete 1.21, M121-02: recepciones en obra pendientes. -->
+                        <button name="action_view_transit" type="object" class="oe_stat_button"
+                                icon="fa-road" invisible="not construction_transit_count">
+                            <field name="construction_transit_count" widget="statinfo" string="En tránsito"/>
+                        </button>
                         <button name="action_view_purchase_requests" type="object" class="oe_stat_button"
                                 icon="fa-file-text-o" invisible="not purchase_request_count">
                             <field name="purchase_request_count" widget="statinfo" string="Req. de compra"/>

@@ -92,3 +92,32 @@ class ConstructionRequestCommon(TransactionCase):
                 for product, qty in ([(self.cement, 100)] if lines is None else lines)
             ],
         })
+
+
+def setup_dispatch_transit(env, warehouse, sites_parent):
+    """Configuración C1 a C5 del paquete 1.21 (sin código): tránsito a obra,
+    salida (tipo Salida) al tránsito, recepción en obra (interno) y la ruta del
+    almacén con la regla de empuje que respeta la ubicación final."""
+    transit = env['stock.location'].create({
+        'name': 'Tránsito a obra (test)', 'usage': 'transit',
+        'location_id': warehouse.view_location_id.id, 'company_id': warehouse.company_id.id})
+    PickingType = env['stock.picking.type']
+    out_type = PickingType.create({
+        'name': 'Salida a obra (test)', 'code': 'outgoing', 'sequence_code': 'SOBT',
+        'warehouse_id': warehouse.id, 'company_id': warehouse.company_id.id,
+        'default_location_src_id': warehouse.lot_stock_id.id,
+        'default_location_dest_id': transit.id})
+    in_type = PickingType.create({
+        'name': 'Recepción en obra (test)', 'code': 'internal', 'sequence_code': 'ROBT',
+        'warehouse_id': warehouse.id, 'company_id': warehouse.company_id.id,
+        'default_location_src_id': transit.id, 'default_location_dest_id': sites_parent.id})
+    route = env['stock.route'].create({
+        'name': 'Despacho a obra en dos pasos (test)', 'warehouse_selectable': True,
+        'product_selectable': False, 'warehouse_ids': [(4, warehouse.id)],
+        'company_id': warehouse.company_id.id,
+        'rule_ids': [(0, 0, {
+            'name': 'Tránsito → obra (test)', 'action': 'push', 'auto': 'manual',
+            'location_src_id': transit.id, 'location_dest_id': sites_parent.id,
+            'picking_type_id': in_type.id, 'company_id': warehouse.company_id.id})]})
+    warehouse.construction_dispatch_type_id = out_type
+    return transit, out_type, in_type, route

@@ -292,7 +292,7 @@ class ConstructionMaterialRequestLine(models.Model):
                 free, line.product_uom_id or line.product_id.uom_id, rounding_method='HALF-UP')
 
     @api.depends('move_ids.state', 'move_ids.quantity', 'move_ids.location_id',
-                 'move_ids.location_dest_id', 'supply_mode',
+                 'move_ids.location_dest_id', 'move_ids.location_final_id', 'supply_mode',
                  'purchase_request_line_ids.purchased_qty',
                  'purchase_request_line_ids.qty_done',
                  'location_dest_id', 'request_id.location_dest_id',
@@ -311,10 +311,19 @@ class ConstructionMaterialRequestLine(models.Model):
                 qty = move._construction_request_line_qty(line.product_uom_id)
                 into_site = move.location_dest_id._child_of(site)
                 out_of_site = move.location_id._child_of(site) and not into_site
+                from_source = source and move.location_id._child_of(source)
                 if into_site and not move.location_id._child_of(site):
+                    # Despacho de un paso o recepción encadenada (M121-02).
                     received += qty
-                    if source and move.location_id._child_of(source):
+                    if from_source:
                         dispatched += qty
+                elif from_source and move._construction_bound_for(site):
+                    # Salida al tránsito (M121-01): despachado, aún no recibido.
+                    dispatched += qty
+                elif source and move.location_dest_id._child_of(source) \
+                        and move.origin_returned_move_id._construction_bound_for(site):
+                    # «Devolver» una salida al tránsito antes de recibirla.
+                    dispatched -= qty
                 elif out_of_site:
                     received -= qty
                     returned += qty

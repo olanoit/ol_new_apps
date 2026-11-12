@@ -28,6 +28,14 @@ class ProjectProject(models.Model):
     construction_request_count = fields.Integer(
         string='Nº de requerimientos de obra', compute='_compute_construction_request_count')
 
+    def _construction_delivery_partner(self):
+        """Dirección de entrega de la obra para la guía de remisión (paquete
+        1.21, M121-01): la de entrega de la venta de la obra o, sin venta, el
+        cliente del proyecto. Se configura en la venta o en el contacto."""
+        self.ensure_one()
+        order = 'sale_line_id' in self._fields and self.sale_line_id.order_id
+        return (order and order.partner_shipping_id) or self.partner_id
+
     @api.depends('construction_request_ids')
     def _compute_construction_request_count(self):
         groups = self.env['construction.material.request']._read_group(

@@ -109,6 +109,21 @@ class StockPicking(models.Model):
         string='Aviso de entrega enviado', copy=False, readonly=True,
         help='El personal del portal de la obra ya recibió el aviso de esta entrega.')
 
+    def _action_done(self):
+        """Paquete 1.21, M121-02: al validar la salida a obra, la recepción
+        encadenada queda lista y el aviso «Entrega en camino» sale enseguida
+        (la acción programada corre al momento). Sale sin hacer nada si la
+        transferencia no es de un requerimiento de obra."""
+        res = super()._action_done()
+        dispatches = self.filtered(lambda p: p.state == 'done' and p.construction_request_id)
+        if dispatches and dispatches.move_ids.move_dest_ids.picking_id.filtered(
+                lambda p: p.state == 'assigned'):
+            # sudo: el almacenero que valida no administra acciones programadas.
+            cron_sudo = self.env.ref(
+                'al_construction_portal.ir_cron_construction_portal_delivery_notice').sudo()
+            cron_sudo._trigger()
+        return res
+
     @api.model
     def _cron_construction_portal_delivery_notice(self):
         """Entregas listas para recibir en la obra: aviso al personal del

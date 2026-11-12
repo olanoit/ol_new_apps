@@ -36,6 +36,28 @@ class StockMove(models.Model):
             return super()._get_analytic_distribution()
         return self.construction_analytic_distribution
 
+    def _construction_bound_for(self, site):
+        """Movimiento hacia un tránsito con la obra como ubicación final
+        (paquete 1.21, M121-01)."""
+        return bool(self) and bool(site) and bool(self.location_final_id) \
+            and not self.location_dest_id._child_of(site) \
+            and self.location_final_id._child_of(site)
+
+    def _assign_picking(self):
+        """Paquete 1.21, M121-02: la recepción en obra que crea la regla de
+        empuje lleva la obra y el requerimiento de la salida a obra. Se escribe
+        después de asignar la transferencia porque otros módulos fijan el
+        proyecto al crearla (sale_project_stock). Sale enseguida si los
+        movimientos no vienen de una salida de requerimiento."""
+        res = super()._assign_picking()
+        chained = self.filtered(lambda m: m.construction_request_line_id and m.move_orig_ids
+                                and m.picking_id and not m.picking_id.construction_request_id)
+        for picking in chained.picking_id:
+            origin = picking.move_ids.move_orig_ids.picking_id.filtered('construction_request_id')[:1]
+            if origin:
+                picking.write(origin._construction_chain_header_vals())
+        return res
+
     def _prepare_merge_moves_distinct_fields(self):
         # Un movimiento por línea del requerimiento: si se fusionan los del
         # mismo producto de dos niveles, lo validado cae entero en la primera

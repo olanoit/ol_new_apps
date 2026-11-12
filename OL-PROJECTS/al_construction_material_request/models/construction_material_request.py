@@ -134,6 +134,10 @@ class ConstructionMaterialRequest(models.Model):
     stock_reference_id = fields.Many2one(
         'stock.reference', string='Referencia de inventario', copy=False, readonly=True)
     picking_count = fields.Integer(string='Nº de transferencias', compute='_compute_counts')
+    # Paquete 1.21, M121-02: lo despachado al tránsito que la obra aún no
+    # recibe (materiales distintos en recepciones pendientes).
+    construction_transit_count = fields.Integer(
+        string='Materiales en tránsito', compute='_compute_construction_transit')
     purchase_request_ids = fields.One2many(
         'purchase.request', 'construction_request_id',
         string='Requerimientos de compra')
@@ -269,6 +273,23 @@ class ConstructionMaterialRequest(models.Model):
         for request in self:
             request.picking_count = len(request.picking_ids)
             request.purchase_request_count = len(request.purchase_request_ids)
+
+    def _construction_transit_pickings(self):
+        self.ensure_one()
+        return self.picking_ids.filtered(
+            lambda p: p.location_id.usage == 'transit' and p.state not in ('done', 'cancel'))
+
+    @api.depends('picking_ids.state', 'picking_ids.move_ids.state')
+    def _compute_construction_transit(self):
+        for request in self:
+            request.construction_transit_count = len(
+                request._construction_transit_pickings().move_ids.filtered(
+                    lambda m: m.state not in ('done', 'cancel')).product_id)
+
+    def action_view_transit(self):
+        self.ensure_one()
+        return self._action_view_records(
+            'stock.action_picking_tree_all', self._construction_transit_pickings())
 
     def _compute_purchase_order_ids(self):
         for request in self:

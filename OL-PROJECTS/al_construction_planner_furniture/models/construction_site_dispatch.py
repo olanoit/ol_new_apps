@@ -374,3 +374,30 @@ class StockPicking(models.Model):
                 'Lotes que no corresponden al departamento %(apartment)s: %(lots)s.',
                 apartment=self.construction_apartment_task_id.display_name,
                 lots=', '.join(sorted(set(wrong_lots)))))
+
+
+class StockPickingChain(models.Model):
+    _inherit = 'stock.picking'
+
+    def _construction_chain_header_fields(self):
+        # Paquete 1.21, M121-02: obra y departamento pasan a la recepción en obra.
+        return super()._construction_chain_header_fields() + [
+            'construction_project_id', 'construction_apartment_task_id']
+
+
+class ConstructionMaterialRequest(models.Model):
+    _inherit = 'construction.material.request'
+
+    def _prepare_picking_vals(self, location_dest=None, location_src=None):
+        """Paquete 1.21, M121-01: la salida al tránsito lleva la obra y el
+        departamento en el encabezado, como el envío de planta a obra."""
+        vals = super()._prepare_picking_vals(location_dest, location_src)
+        location = self.env['stock.location'].browse(vals.get('location_dest_id'))
+        if location.usage == 'transit' and self.project_id:
+            vals['construction_project_id'] = self.project_id.id
+            task = self.task_id
+            apartment = task if task.construction_level == 'apartment' \
+                else task.construction_apartment_task_id
+            if apartment:
+                vals['construction_apartment_task_id'] = apartment.id
+        return vals

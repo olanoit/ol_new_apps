@@ -118,7 +118,29 @@ class ConstructionMaterialRequest(models.Model):
         if self.request_type == 'site' \
                 and 'l10n_pe_edi_reason_for_transfer' in self.env['stock.picking']._fields:
             vals['l10n_pe_edi_reason_for_transfer'] = '04'
+        # Paquete 1.21, M121-01: si el tipo de despacho del almacén tiene un
+        # tránsito como destino, la salida va al tránsito con la dirección de
+        # la obra para la guía; la obra queda como ubicación final de cada
+        # movimiento (_prepare_move_vals) y la regla de empuje del almacén
+        # crea la recepción en obra. Sin tránsito, un paso como antes.
+        transit = self._construction_dispatch_transit(picking_type, location_dest or self.location_dest_id)
+        if transit:
+            vals['location_dest_id'] = transit.id
+            partner = self.project_id._construction_delivery_partner()
+            if partner:
+                vals['partner_id'] = partner.id
         return vals
+
+    def _construction_dispatch_transit(self, picking_type, site):
+        """Tránsito del despacho (M121-01): el destino por defecto del tipo,
+        si es una ubicación de tránsito y la obra no está dentro de él. Solo en
+        los requerimientos de obra: el consumo interno no sale del almacén."""
+        self.ensure_one()
+        transit = picking_type.default_location_dest_id
+        if self.request_type != 'site' or not site or transit.usage != 'transit' \
+                or site._child_of(transit):
+            return self.env['stock.location']
+        return transit
 
     def _get_dispatch_picking_type(self, warehouse=None):
         """Despacho a obra del almacén de origen (o el de la compañía) o, en un
@@ -169,6 +191,10 @@ class ConstructionMaterialRequest(models.Model):
             'sequence': line.sequence,
             'construction_request_line_id': line.id,
             'construction_analytic_distribution': line.analytic_distribution,
+            # M121-01: con tránsito, la obra es la ubicación final.
+            'location_final_id': picking.location_dest_id.usage == 'transit'
+            and line._get_site_location() != picking.location_dest_id
+            and line._get_site_location().id,
         }
 
     def _group_by_destination(self, lines):
