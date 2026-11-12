@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_material_request, al_construction_planner_mrp_request]
+modulos: [al_construction_material_request, al_construction_planner_mrp_request, al_construction_portal]
 ---
 
 # Requerimientos de materiales
@@ -265,6 +265,45 @@ con las filas marcadas, **Imprimir ‣ Vale de despacho** saca un vale por
 transferencia.
 Un traslado interno entre el central y la obra no genera asiento contable: la
 analítica viaja en el movimiento solo como trazabilidad.
+
+### Despacho en dos pasos (con tránsito)
+
+Cuando el material viaja varios días o la obra debe confirmar lo que llega, el
+despacho se hace en dos pasos: el almacén lo saca a una ubicación de tránsito y
+la obra lo recibe. Logística no hace nada distinto: lo decide la configuración
+del almacén.
+
+**Configuración** (una vez por almacén, en Inventario):
+
+1. Cree una ubicación de tipo **Tránsito** del almacén (por ejemplo,
+   `BRE/Tránsito a obra`).
+2. Cree un tipo de operación de salida con esa ubicación como **Ubicación de
+   destino predeterminada**, y uno interno de recepción del tránsito a la
+   ubicación padre de las obras.
+3. Cree una ruta con una regla **Empujar a**: del tránsito a la ubicación padre
+   de las obras, con el tipo de recepción. Márquela para el almacén.
+4. En el almacén, pestaña **Requerimientos de obra**, elija la salida como
+   **Tipo de despacho a obra**.
+
+**Qué pasa:**
+
+1. **Procesar** crea la salida al tránsito. Cada movimiento lleva la obra como
+   ubicación final, y el encabezado lleva la obra, el requerimiento y la
+   **Dirección de entrega** para la guía: la de la venta de la obra o, sin
+   venta, la del cliente del proyecto. En mobiliario lleva también el
+   departamento.
+2. Al validar la salida, Odoo crea la recepción en obra en **Listo**, con el
+   mismo requerimiento, la obra y el origen. Sale el aviso **Entrega en camino**.
+3. Mientras la recepción está pendiente, lo enviado cuenta como **Despachado** y
+   no como **Recibido en obra**. El botón **En tránsito** del requerimiento
+   lleva a esas recepciones.
+4. El residente confirma la recepción en el portal de obra, donde aparece como
+   «Requerimiento de obra · RQO/… · …». Lo recibido sube y, si llegó todo, el
+   requerimiento pasa a **Hecho**. Si falta algo, queda en proceso con la
+   entrega parcial. Los faltantes o daños se anotan en el texto de la recepción.
+
+Si el tipo de despacho del almacén no va a un tránsito, el despacho sigue en un
+paso.
 
 ### Tableros en planchas enteras
 

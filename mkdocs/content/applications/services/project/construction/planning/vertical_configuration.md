@@ -125,6 +125,57 @@ fabricación, requerimientos de compra, OC de servicio, cobranza) son accesos
 directos a esa aplicación, filtrados a la obra: la OC, la OF y la factura se
 gestionan en Compras, Fabricación y Contabilidad.
 
+### Funciones del perfil
+
+Además de **Control**, **Avance** y **Metrado**, el perfil enciende o apaga seis
+funciones que no instalan nada; solo muestran u ocultan sus menús:
+
+| Función | Menús que oculta apagada | Mobiliario | Construcción |
+|---|---|---|---|
+| Valorización por entregas e hitos | Hitos por unidad, Entregas semanales, Plantillas de hitos de cobro | Activa | Apagada |
+| Valorización por avance | Preparar valorización, Valorizaciones, Metas de valorización | Apagada | Activa |
+| Deductivos, intervenciones y fondo de garantía | Deductivos, Intervenciones, Fondos de garantía, Tipos de deductivo, Requisitos de devolución del fondo | Apagada | Activa |
+| Parte diario y tareo del residente | Partes diarios, Tareo de cuadrillas | Apagada | Activa |
+| Recetas por partida | Configuración ‣ Recetas | Apagada | Activa |
+| Control semanal de instalación | Control semanal de instalación y su botón en la obra | Activa | Apagada |
+
+- Ocultar no borra ni bloquea: los registros siguen en la base y se abren desde
+  la obra, la orden de contrata o el portal. Al volver a encender la función, sus
+  menús reaparecen sin reinstalar nada.
+- Una función activa no abre su menú a quien no tiene el rol: los **Tipos de
+  deductivo**, por ejemplo, siguen siendo del **Administrador**.
+- Una carpeta que se queda sin opciones visibles no se muestra (por ejemplo,
+  **Configuración ‣ Cobro al cliente** sin hitos).
+- Antes de aplicar, la tabla **Qué cambia** dice qué menús se ocultan, con su
+  ruta, y cuántos registros quedan detrás de cada uno.
+- En **Ajustes ‣ Funciones**, lo que el perfil de la compañía no usa y otro
+  perfil sí (por ejemplo, **Metrado**, **Producción** y **Rubro mobiliario** en
+  una constructora) pasa al bloque plegado **Funciones de otras verticales**,
+  que se abre con **Ver las funciones de otras verticales**.
+
+!!! note "Nota"
+    Las funciones valen para toda la base: en una base con una compañía de cada
+    rubro, apagar una función la apaga para las dos.
+
+!!! tip "Consejo"
+    Si un administrador aplica el perfil desde la línea de comandos (`odoo
+    shell`) y no desde **Aplicar a la compañía**, los menús no cambian hasta
+    reiniciar el servidor.
+
+### Pantallas según el rubro
+
+- Las columnas y campos que nombran un nivel (piso, departamento, ambiente…)
+  toman el nombre de la plantilla de la obra y se ocultan si la plantilla no
+  tiene ese nivel. El informe de etapas se titula **Etapa actual por partida** o
+  **por ambiente**.
+- El **Cronograma** ofrece las etapas del perfil de la obra y las que la obra ya
+  usa, estas marcadas «(archivada)» si salieron del perfil.
+- Las políticas de exceso, los días de anticipación y los montos por tipo de
+  recurso solo se muestran para los tipos de recurso del perfil.
+- Los campos de mueble de la actividad (**Por módulo**, **Por metro lineal**,
+  **Grupo ML**, **Pasada**) y las categorías de armado e instalación de Ajustes
+  solo aparecen con el puente **Rubro mobiliario**.
+
 ## Etapas y tipos de recurso
 
 Las **etapas** son un catálogo: cada rubro usa las suyas y cada línea del plan,
