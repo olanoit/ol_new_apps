@@ -30,12 +30,92 @@
                     <field name="construction_generate_info" readonly="1" class="d-inline"/>
                 </div>
             </xpath>
-            <xpath expr="//header" position="inside">
-                <button name="%(action_construction_module_dispatch_wizard)d" type="action"
-                        string="Fabricar o enviar módulos"
-                        context="{'default_plan_id': id}"
-                        invisible="state not in ('approved', 'in_progress')"/>
+        </field>
+    </record>
+    <!-- Paquete 1.20, M120-03: la tipología en «Registrar avance» es de
+         mobiliario. -->
+    <record id="construction_plan_progress_wizard_view_form_furniture" model="ir.ui.view">
+        <field name="name">construction.plan.progress.wizard.form.furniture</field>
+        <field name="model">construction.plan.progress.wizard</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_plan_progress_wizard_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/list/field[@name='typology_id']" position="attributes">
+                <attribute name="column_invisible">0</attribute>
             </xpath>
         </field>
     </record>
+
+    <!-- M120-04: los filtros por etapa de mobiliario en Etapas del cronograma. -->
+    <record id="construction_space_stage_view_search_furniture" model="ir.ui.view">
+        <field name="name">construction.space.stage.search.furniture</field>
+        <field name="model">construction.space.stage</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_space_stage_view_search"/>
+        <field name="arch" type="xml">
+            <separator name="stage_filters" position="after">
+                <filter string="Producción" name="production" domain="[('stage', '=', 'production')]"/>
+                <filter string="Armado" name="assembly" domain="[('stage', '=', 'assembly')]"/>
+                <filter string="Instalación" name="installation" domain="[('stage', '=', 'installation')]"/>
+                <filter string="Acabado y entrega" name="finishing" domain="[('stage', '=', 'finishing')]"/>
+            </separator>
+        </field>
+    </record>
+
+    <!-- Paquete 1.20, M120-06: lo de mueble de la actividad de obra y de Ajustes,
+         en el mismo lugar de antes. Los campos siguen en el núcleo (D-02). -->
+    <record id="construction_labor_activity_view_list_measure" model="ir.ui.view">
+        <field name="name">construction.labor.activity.list.measure</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_labor_activity_view_list"/>
+        <field name="arch" type="xml">
+            <field name="driver_source" position="after">
+                <field name="module_level" optional="show"/>
+                <field name="ml_based" optional="show"/>
+                <field name="ml_group" optional="hide"/>
+            </field>
+        </field>
+    </record>
+    <record id="construction_labor_activity_view_form_measure" model="ir.ui.view">
+        <field name="name">construction.labor.activity.form.measure</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_labor_activity_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='how_measured']/field[@name='hang_role']" position="before">
+                <field name="module_level"/>
+                <field name="ml_based"/>
+                <field name="ml_group" invisible="not ml_based"/>
+            </xpath>
+            <xpath expr="//group[@name='how_measured']/field[@name='hang_role']" position="after">
+                <field name="pass_number"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="construction_labor_activity_view_search_measure" model="ir.ui.view">
+        <field name="name">construction.labor.activity.search.measure</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_labor_activity_view_search"/>
+        <field name="arch" type="xml">
+            <separator name="measure_filters" position="before">
+                <filter string="Por módulo" name="module_level" domain="[('module_level', '=', True)]"/>
+                <filter string="Por metro lineal" name="ml_based" domain="[('ml_based', '=', True)]"/>
+            </separator>
+        </field>
+    </record>
+    <record id="res_config_settings_view_form_service_categories" model="ir.ui.view">
+        <field name="name">res.config.settings.form.service.categories</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='service_categories']" position="inside">
+                <div class="row mt-2">
+                    <label for="construction_categ_assembly_id" class="col-lg-5 o_light_label"/>
+                    <field name="construction_categ_assembly_id" options="{'no_create': True}"/>
+                </div>
+                <div class="row">
+                    <label for="construction_categ_installation_id" class="col-lg-5 o_light_label"/>
+                    <field name="construction_categ_installation_id" options="{'no_create': True}"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

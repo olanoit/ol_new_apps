@@ -202,5 +202,14 @@
               groups="group_planner_plan_viewer"/>
     <menuitem id="menu_planner_exec_staff" name="Personal propio" parent="menu_planner_execution" sequence="15"
               groups="group_planner_user"/>
+    <!-- Paquete 1.20, M120-01 y M120-02: más carpetas del menú por momento. -->
+    <menuitem id="menu_planner_exec_control" name="Control semanal" parent="menu_planner_execution" sequence="20"/>
+    <menuitem id="menu_planner_contract_staff" name="Personal de contratas" parent="menu_planner_contracts" sequence="90"/>
+    <menuitem id="menu_planner_config_vertical" name="Vertical y estructura" parent="menu_planner_config" sequence="10"/>
+    <menuitem id="menu_planner_config_recipes" name="Recetas y actividades" parent="menu_planner_config" sequence="20"/>
+    <menuitem id="menu_planner_config_contracts" name="Contratas" parent="menu_planner_config" sequence="30"/>
+    <menuitem id="menu_planner_config_sheets" name="Hojas de trabajo y cobro" parent="menu_planner_config" sequence="40"/>
+    <menuitem id="menu_planner_config_analytic" name="Analítica" parent="menu_planner_config" sequence="50"/>
+    <menuitem id="menu_planner_config_portal" name="Portal y asistencia" parent="menu_planner_config" sequence="60"/>
 
 </odoo>

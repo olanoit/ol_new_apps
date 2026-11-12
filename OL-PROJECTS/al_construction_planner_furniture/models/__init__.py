@@ -15,3 +15,5 @@ from . import construction_stage_bom
 from . import construction_site_dispatch
 from . import construction_rubro
 from . import product_board
+from . import ir_ui_menu
+from . import plan_header

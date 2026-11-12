@@ -15,9 +15,8 @@
                 <field name="execution_mode" optional="show" placeholder="La de la etapa"/>
                 <field name="uom_id"/>
                 <field name="driver_source" optional="show"/>
-                <field name="module_level" optional="show"/>
-                <field name="ml_based" optional="show"/>
-                <field name="ml_group" optional="hide"/>
+                <!-- Paquete 1.20, M120-06: «Se mide por módulo», «Se mide por ML» y
+                     «Grupo ML» los agrega el puente de mobiliario. -->
                 <field name="default_price" optional="show"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="productivity" optional="hide"/>
@@ -49,12 +48,10 @@
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                             <field name="active" invisible="1"/>
                         </group>
-                        <group string="Cómo se mide">
-                            <field name="module_level"/>
-                            <field name="ml_based"/>
-                            <field name="ml_group" invisible="not ml_based"/>
+                        <!-- M120-06: los campos de mueble («Se mide por módulo», «Se mide
+                             por ML», «Grupo ML» y «Pase») los agrega el puente de mobiliario. -->
+                        <group string="Cómo se mide" name="how_measured">
                             <field name="hang_role"/>
-                            <field name="pass_number"/>
                             <field name="default_price"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
@@ -115,9 +112,8 @@
             <search string="Actividades de obra">
                 <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
                 <field name="product_id"/>
-                <filter string="Por módulo" name="module_level" domain="[('module_level', '=', True)]"/>
-                <filter string="Por metro lineal" name="ml_based" domain="[('ml_based', '=', True)]"/>
-                <separator/>
+                <!-- M120-06: «Por módulo» y «Por metro lineal», del puente de mobiliario. -->
+                <separator name="measure_filters"/>
                 <filter string="Archivadas" name="inactive" domain="[('active', '=', False)]"/>
                 <group>
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>

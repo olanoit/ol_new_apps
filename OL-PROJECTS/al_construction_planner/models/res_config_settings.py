@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -24,6 +24,42 @@ class ResConfigSettings(models.TransientModel):
         string='Metrado',
         implied_group='al_construction_planner.group_planner_feature_measurement',
         group='base.group_user', help='Metrado del nivel frente a lo planificado (mobiliario).')
+    # Paquete 1.20, M120-07: funciones que ocultan los menús de una vertical
+    # que la compañía no usa. Apagarlas no borra ni bloquea registros.
+    group_construction_milestones = fields.Boolean(
+        string='Valorización por entregas e hitos',
+        implied_group='al_construction_planner.group_planner_feature_milestones',
+        group='base.group_user',
+        help='Hitos por unidad, entregas semanales y plantillas de hitos de cobro.')
+    group_construction_valuation = fields.Boolean(
+        string='Valorización por avance',
+        implied_group='al_construction_planner.group_planner_feature_valuation',
+        group='base.group_user',
+        help='Preparar valorización, valorizaciones y metas de valorización.')
+    group_construction_deductions = fields.Boolean(
+        string='Deductivos, intervenciones y fondo de garantía',
+        implied_group='al_construction_planner.group_planner_feature_deductions',
+        group='base.group_user',
+        help='Deductivos e intervenciones de contrata, fondos de garantía y su configuración.')
+    group_construction_daily_report = fields.Boolean(
+        string='Parte diario y tareo del residente',
+        implied_group='al_construction_planner.group_planner_feature_daily_report',
+        group='base.group_user', help='Partes diarios y tareo de cuadrillas del residente.')
+    group_construction_recipes = fields.Boolean(
+        string='Recetas por partida',
+        implied_group='al_construction_planner.group_planner_feature_recipes',
+        group='base.group_user', help='El catálogo de recetas de partida.')
+    group_construction_installation_board = fields.Boolean(
+        string='Control semanal de instalación',
+        implied_group='al_construction_planner.group_planner_feature_installation_board',
+        group='base.group_user',
+        help='El tablero de control semanal de instalación y su botón en la obra.')
+    # M120-07, punto 6: lo que activa otra vertical va en un bloque plegado.
+    construction_other_features = fields.Char(compute='_compute_construction_other_features')
+    construction_show_other_features = fields.Boolean(string='Ver las funciones de otras verticales')
+    # M120-05: los tipos de recurso del perfil de la compañía.
+    construction_resource_type_codes = fields.Char(
+        compute='_compute_construction_resource_type_codes')
     # Entradas a la ejecución (CREVAL v1.0, capítulo 4): se construyen las
     # dos y cada una se activa por separado; apagarla no borra datos.
     group_construction_exec_planner = fields.Boolean(
@@ -90,6 +126,41 @@ class ResConfigSettings(models.TransientModel):
     construction_site_week_days = fields.Float(related='company_id.construction_site_week_days')
     construction_categ_installation_id = fields.Many2one(
         related='company_id.construction_categ_installation_id', readonly=False)
+
+    @api.depends('company_id.construction_profile_id')
+    def _compute_construction_resource_type_codes(self):
+        from .construction_vertical_profile import profile_resource_type_codes
+        for settings in self:
+            settings.construction_resource_type_codes = profile_resource_type_codes(
+                self.env, settings.company_id.construction_profile_id)
+
+    @api.depends('company_id.construction_profile_id')
+    def _compute_construction_other_features(self):
+        """Interruptores de Funciones que el perfil de la compañía no usa y otro
+        perfil sí (por ejemplo, «Rubro mobiliario» en una constructora). Sin
+        perfil, ninguno: se ve todo como hoy."""
+        from .construction_vertical_profile import FEATURES
+        Profile = self.env['construction.vertical.profile']
+        for settings in self:
+            profile = settings.company_id.construction_profile_id
+            if not profile:
+                settings.construction_other_features = ''
+                continue
+            others = Profile.search([('id', '!=', profile.id)])
+            names = []
+            for feature in FEATURES:
+                if not profile['feature_%s' % feature] and any(
+                        other['feature_%s' % feature] for other in others):
+                    names.append('group_construction_%s' % feature)
+            for name, field in self._fields.items():
+                if not name.startswith('module_al_construction_planner_'):
+                    continue
+                module = name[len('module_'):]
+                if module not in profile.module_ids.mapped('name') and module in \
+                        others.module_ids.mapped('name'):
+                    names.append(name)
+            # Con espacios a los lados: la vista pregunta por « campo ».
+            settings.construction_other_features = ' %s ' % ' '.join(names) if names else ''
 
     def action_construction_apply_profile(self):
         """Guarda los Ajustes y aplica el perfil elegido a la compañía."""

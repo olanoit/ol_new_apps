@@ -21,3 +21,4 @@ from . import construction_accounting
 from . import construction_valuation_target
 from . import construction_indicators
 from . import construction_portfolio
+from . import ir_ui_menu

@@ -9,3 +9,4 @@ from . import planning_sheets
 from . import res_company
 from . import construction_sale_rate
 from . import sale_order
+from . import ir_ui_menu

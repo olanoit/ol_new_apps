@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="al_construction_planner.ConstructionPlanActions">
+        <t t-foreach="menus" t-as="menu" t-key="menu.key">
+            <t t-set="menuItems" t-value="items(menu.key)"/>
+            <Dropdown t-if="menuItems.length">
+                <button t-att-class="'btn btn-secondary o_construction_plan_menu o_construction_plan_menu_' + menu.key">
+                    <t t-esc="menu.label"/> <i class="fa fa-caret-down ms-1"/>
+                </button>
+                <t t-set-slot="content">
+                    <t t-foreach="menuItems" t-as="item" t-key="item.key">
+                        <DropdownItem class="'o_construction_plan_item'" onSelected="() => this.run(item)">
+                            <t t-esc="item.label"/>
+                        </DropdownItem>
+                    </t>
+                </t>
+            </Dropdown>
+        </t>
+    </t>
+</templates>

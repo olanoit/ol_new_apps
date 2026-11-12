@@ -54,10 +54,11 @@
                         <field name="construction_exceed_tolerance"/>
                     </group>
                     <group>
-                        <field name="construction_exceed_policy_material"/>
-                        <field name="construction_exceed_policy_contract"/>
-                        <field name="construction_exceed_policy_labor"/>
-                        <field name="construction_exceed_policy_production"/>
+                        <field name="construction_exceed_policy_material" invisible="' material ' not in (construction_resource_type_codes or ' material ')"/>
+                        <field name="construction_resource_type_codes" invisible="1"/>
+                        <field name="construction_exceed_policy_contract" invisible="' contract ' not in (construction_resource_type_codes or ' contract ')"/>
+                        <field name="construction_exceed_policy_labor" invisible="' labor ' not in (construction_resource_type_codes or ' labor ')"/>
+                        <field name="construction_exceed_policy_production" invisible="' production ' not in (construction_resource_type_codes or ' production ')"/>
                     </group>
                 </group>
                 <group string="Semana de liquidación de contratas" name="construction_week" invisible="not is_construction_site" groups="al_construction_planner.group_planner_manager">

@@ -11,3 +11,4 @@ from . import task_progress
 from . import resident_records
 from . import site_overview
 from . import portal_notice
+from . import ir_ui_menu

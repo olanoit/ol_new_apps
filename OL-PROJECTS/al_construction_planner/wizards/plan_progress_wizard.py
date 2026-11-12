@@ -14,6 +14,8 @@ class ConstructionPlanProgressWizard(models.TransientModel):
     _inherit = 'construction.plan.supply.mixin'
     _description = 'Registrar avance desde el plan'
 
+    # Paquete 1.20, M120-03: las funciones de nivel de la plantilla de la obra.
+    construction_level_functions = fields.Char(compute='_compute_construction_level_functions')
     available_activity_ids = fields.Many2many(
         'construction.labor.activity', string='Actividades de la selección',
         compute='_compute_available_activity_ids', check_company=True)
@@ -54,6 +56,15 @@ class ConstructionPlanProgressWizard(models.TransientModel):
         if self.partner_id:
             domain.append(('partner_id', '=', self.partner_id.id))
         return self._get_selected_lines(domain)
+
+    @api.depends('plan_id')
+    def _compute_construction_level_functions(self):
+        Labels = self.env['construction.level.labels.mixin']
+        for wizard in self:
+            project = wizard.plan_id.project_id
+            template = project.construction_level_template_id \
+                or (project.company_id or self.env.company).construction_level_template_id
+            wizard.construction_level_functions = Labels._construction_level_functions(template)
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'partner_id')
     def _compute_available_activity_ids(self):
@@ -152,6 +163,7 @@ class ConstructionPlanProgressWizard(models.TransientModel):
 
 class ConstructionPlanProgressWizardLine(models.TransientModel):
     _name = 'construction.plan.progress.wizard.line'
+    _inherit = ['construction.level.labels.mixin']
     _description = 'Fila del registro de avance'
 
     wizard_id = fields.Many2one(
@@ -159,7 +171,8 @@ class ConstructionPlanProgressWizardLine(models.TransientModel):
         ondelete='cascade')
     plan_line_id = fields.Many2one(
         'construction.resource.plan.line', string='Línea del plan', required=True)
-    task_id = fields.Many2one(related='plan_line_id.task_id', string='Módulo o ambiente')
+    # M120-03: «Nivel», sin nombres de mobiliario.
+    task_id = fields.Many2one(related='plan_line_id.task_id', string='Nivel')
     apartment_task_id = fields.Many2one(
         related='plan_line_id.apartment_task_id', string='Departamento')
     typology_id = fields.Many2one(related='plan_line_id.typology_id', string='Tipología')
@@ -178,3 +191,7 @@ class ConstructionPlanProgressWizardLine(models.TransientModel):
         for row in self:
             done = row.qty_executed + row.qty_pending + row.qty_report
             row.progress_pct = min(done / row.qty_planned, 1.0) if row.qty_planned else 0.0
+
+    @api.model
+    def _construction_level_label_fields(self):
+        return {'apartment_task_id': 'apartment'}

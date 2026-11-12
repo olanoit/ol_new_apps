@@ -79,6 +79,9 @@
         <field name="analytic_plan_names">Especialidad (N1), Sub-especialidad (N2), Partida (N3)</field>
         <!-- El metrado es de mobiliario (M18-01): la partida avanza por su driver. -->
         <field name="feature_measurement" eval="False"/>
+        <!-- Paquete 1.20, M120-07: sin las funciones de mobiliario. -->
+        <field name="feature_milestones" eval="False"/>
+        <field name="feature_installation_board" eval="False"/>
         <field name="note">Por decidir con CREVAL y Montegrande: la semana y el día de liquidación de las contratas, la forma de valorizar (por avance de partida) y si la receta sale de los Work Items o de la receta del planificador.</field>
     </record>
     <record id="profile_construction_week_start" model="construction.vertical.profile.parameter">
@@ -110,6 +113,11 @@
         <field name="level_template_id" ref="level_template_building"/>
         <field name="stage_ids" eval="[Command.set([ref('stage_group_production'), ref('stage_production'), ref('stage_assembly'), ref('stage_group_installation'), ref('stage_installation'), ref('stage_finishing'), ref('stage_cleaning')])]"/>
         <field name="resource_type_ids" eval="[Command.set([ref('resource_type_material'), ref('resource_type_service'), ref('resource_type_contract'), ref('resource_type_labor'), ref('resource_type_production')])]"/>
+        <!-- Paquete 1.20, M120-07: sin las funciones de construcción que Allcenter no usa. -->
+        <field name="feature_valuation" eval="False"/>
+        <field name="feature_deductions" eval="False"/>
+        <field name="feature_daily_report" eval="False"/>
+        <field name="feature_recipes" eval="False"/>
         <field name="module_ids" eval="[Command.set(ref('base.module_al_construction_planner_suite', False) and [ref('base.module_al_construction_planner_mrp'), ref('base.module_al_construction_planner_purchase'), ref('base.module_al_construction_planner_subcontract'), ref('base.module_al_construction_planner_crew'), ref('base.module_al_construction_planner_budget'), ref('base.module_al_construction_planner_sale'), ref('base.module_al_construction_planner_furniture')] or [])]"/>
     </record>
     <record id="profile_furniture_week_start" model="construction.vertical.profile.parameter">

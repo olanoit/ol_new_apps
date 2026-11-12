@@ -35,36 +35,112 @@
                             <field name="group_construction_exec_project"/>
                         </setting>
                     </block>
+                    <!-- Paquete 1.20, M120-07: las funciones de la vertical de la compañía;
+                         las que solo usa otra vertical van al bloque plegado de abajo. -->
                     <block title="Funciones" name="construction_planner_features"
                            help="Siempre activos: Proyectos, la planificación (árbol, plan de recursos y línea base) y el cronograma. Lo que no se activa no se instala.">
-                        <setting id="construction_feature_control" help="Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso.">
+                        <setting id="construction_feature_control" help="Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso." invisible="' group_construction_control ' in (construction_other_features or '')">
                             <field name="group_construction_control"/>
+                            <field name="construction_other_features" invisible="1"/>
                         </setting>
-                        <setting id="construction_feature_progress" help="Avance por el driver de cada partida, contrata o actividad, con fotos y validación.">
+                        <setting id="construction_feature_progress" help="Avance por el driver de cada partida, contrata o actividad, con fotos y validación." invisible="' group_construction_progress ' in (construction_other_features or '')">
                             <field name="group_construction_progress"/>
                         </setting>
-                        <setting id="construction_feature_measurement" help="Metrado del mueble: medida del espacio, diseño y despiece frente a lo planificado (vertical Mobiliario).">
+                        <setting id="construction_feature_measurement" help="Metrado del mueble: medida del espacio, diseño y despiece frente a lo planificado (vertical Mobiliario)." invisible="' group_construction_measurement ' in (construction_other_features or '')">
                             <field name="group_construction_measurement"/>
                         </setting>
-                        <setting id="construction_feature_subcontract" help="OC de servicio de la contrata, liquidación semanal y portal (Compras).">
+                        <setting id="construction_feature_milestones" help="Ingresos › Hitos por unidad y Entregas semanales; Configuración › Plantillas de hitos de cobro." invisible="' group_construction_milestones ' in (construction_other_features or '')">
+                            <field name="group_construction_milestones"/>
+                        </setting>
+                        <setting id="construction_feature_valuation" help="Ingresos › Preparar valorización, Valorizaciones y Metas de valorización." invisible="' group_construction_valuation ' in (construction_other_features or '')">
+                            <field name="group_construction_valuation"/>
+                        </setting>
+                        <setting id="construction_feature_deductions" help="Contratas › Deductivos de contrata e Intervenciones; Informes › Fondos de garantía de contratas; Configuración › Tipos de deductivo y Requisitos de devolución del fondo." invisible="' group_construction_deductions ' in (construction_other_features or '')">
+                            <field name="group_construction_deductions"/>
+                        </setting>
+                        <setting id="construction_feature_daily_report" help="Ejecución › Partes diarios y Tareo de cuadrillas." invisible="' group_construction_daily_report ' in (construction_other_features or '')">
+                            <field name="group_construction_daily_report"/>
+                        </setting>
+                        <setting id="construction_feature_recipes" help="Configuración › Recetas." invisible="' group_construction_recipes ' in (construction_other_features or '')">
+                            <field name="group_construction_recipes"/>
+                        </setting>
+                        <setting id="construction_feature_installation_board" help="Ejecución › Control semanal de instalación y su botón en la obra." invisible="' group_construction_installation_board ' in (construction_other_features or '')">
+                            <field name="group_construction_installation_board"/>
+                        </setting>
+                        <setting id="construction_feature_subcontract" help="OC de servicio de la contrata, liquidación semanal y portal (Compras)." invisible="' module_al_construction_planner_subcontract ' in (construction_other_features or '')">
                             <field name="module_al_construction_planner_subcontract"/>
                         </setting>
-                        <setting id="construction_feature_purchase" help="Compra masiva, requerimientos de obra, abastecimiento, precios de compra y material extra.">
+                        <setting id="construction_feature_purchase" help="Compra masiva, requerimientos de obra, abastecimiento, precios de compra y material extra." invisible="' module_al_construction_planner_purchase ' in (construction_other_features or '')">
                             <field name="module_al_construction_planner_purchase"/>
                         </setting>
-                        <setting id="construction_feature_crew" help="Turnos de Planificación y horas de la hoja de horas como real.">
+                        <setting id="construction_feature_crew" help="Turnos de Planificación y horas de la hoja de horas como real." invisible="' module_al_construction_planner_crew ' in (construction_other_features or '')">
                             <field name="module_al_construction_planner_crew"/>
                         </setting>
-                        <setting id="construction_feature_budget" help="Presupuesto analítico al aprobar y control de la OC contra él.">
+                        <setting id="construction_feature_budget" help="Presupuesto analítico al aprobar y control de la OC contra él." invisible="' module_al_construction_planner_budget ' in (construction_other_features or '')">
                             <field name="module_al_construction_planner_budget"/>
                         </setting>
-                        <setting id="construction_feature_sale" help="Calendario e ingresos, contratos, entrega semanal, valorización y cronograma valorizado (Ventas).">
+                        <setting id="construction_feature_sale" help="Calendario e ingresos, contratos, entrega semanal, valorización y cronograma valorizado (Ventas)." invisible="' module_al_construction_planner_sale ' in (construction_other_features or '')">
                             <field name="module_al_construction_planner_sale"/>
                         </setting>
-                        <setting id="construction_feature_mrp" help="Órdenes de fabricación desde el plan (Fabricación).">
+                        <setting id="construction_feature_mrp" help="Órdenes de fabricación desde el plan (Fabricación)." invisible="' module_al_construction_planner_mrp ' in (construction_other_features or '')">
                             <field name="module_al_construction_planner_mrp"/>
                         </setting>
-                        <setting id="construction_feature_furniture" help="Tipologías de mueble, metros lineales, módulos e importación del ETO.">
+                        <setting id="construction_feature_furniture" help="Tipologías de mueble, metros lineales, módulos e importación del ETO." invisible="' module_al_construction_planner_furniture ' in (construction_other_features or '')">
+                            <field name="module_al_construction_planner_furniture"/>
+                        </setting>
+                    </block>
+                    <block title="Funciones de otras verticales" name="construction_planner_other_features"
+                           invisible="not construction_other_features"
+                           help="Las usa otro perfil de vertical, no el de esta compañía. Encenderlas no cambia el perfil.">
+                        <setting id="construction_show_other_features">
+                            <field name="construction_show_other_features"/>
+                        </setting>
+                        <setting id="construction_feature_control_other" help="Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso." invisible="not construction_show_other_features or ' group_construction_control ' not in (construction_other_features or '')">
+                            <field name="group_construction_control"/>
+                        </setting>
+                        <setting id="construction_feature_progress_other" help="Avance por el driver de cada partida, contrata o actividad, con fotos y validación." invisible="not construction_show_other_features or ' group_construction_progress ' not in (construction_other_features or '')">
+                            <field name="group_construction_progress"/>
+                        </setting>
+                        <setting id="construction_feature_measurement_other" help="Metrado del mueble: medida del espacio, diseño y despiece frente a lo planificado (vertical Mobiliario)." invisible="not construction_show_other_features or ' group_construction_measurement ' not in (construction_other_features or '')">
+                            <field name="group_construction_measurement"/>
+                        </setting>
+                        <setting id="construction_feature_milestones_other" help="Ingresos › Hitos por unidad y Entregas semanales; Configuración › Plantillas de hitos de cobro." invisible="not construction_show_other_features or ' group_construction_milestones ' not in (construction_other_features or '')">
+                            <field name="group_construction_milestones"/>
+                        </setting>
+                        <setting id="construction_feature_valuation_other" help="Ingresos › Preparar valorización, Valorizaciones y Metas de valorización." invisible="not construction_show_other_features or ' group_construction_valuation ' not in (construction_other_features or '')">
+                            <field name="group_construction_valuation"/>
+                        </setting>
+                        <setting id="construction_feature_deductions_other" help="Contratas › Deductivos de contrata e Intervenciones; Informes › Fondos de garantía de contratas; Configuración › Tipos de deductivo y Requisitos de devolución del fondo." invisible="not construction_show_other_features or ' group_construction_deductions ' not in (construction_other_features or '')">
+                            <field name="group_construction_deductions"/>
+                        </setting>
+                        <setting id="construction_feature_daily_report_other" help="Ejecución › Partes diarios y Tareo de cuadrillas." invisible="not construction_show_other_features or ' group_construction_daily_report ' not in (construction_other_features or '')">
+                            <field name="group_construction_daily_report"/>
+                        </setting>
+                        <setting id="construction_feature_recipes_other" help="Configuración › Recetas." invisible="not construction_show_other_features or ' group_construction_recipes ' not in (construction_other_features or '')">
+                            <field name="group_construction_recipes"/>
+                        </setting>
+                        <setting id="construction_feature_installation_board_other" help="Ejecución › Control semanal de instalación y su botón en la obra." invisible="not construction_show_other_features or ' group_construction_installation_board ' not in (construction_other_features or '')">
+                            <field name="group_construction_installation_board"/>
+                        </setting>
+                        <setting id="construction_feature_subcontract_other" help="OC de servicio de la contrata, liquidación semanal y portal (Compras)." invisible="not construction_show_other_features or ' module_al_construction_planner_subcontract ' not in (construction_other_features or '')">
+                            <field name="module_al_construction_planner_subcontract"/>
+                        </setting>
+                        <setting id="construction_feature_purchase_other" help="Compra masiva, requerimientos de obra, abastecimiento, precios de compra y material extra." invisible="not construction_show_other_features or ' module_al_construction_planner_purchase ' not in (construction_other_features or '')">
+                            <field name="module_al_construction_planner_purchase"/>
+                        </setting>
+                        <setting id="construction_feature_crew_other" help="Turnos de Planificación y horas de la hoja de horas como real." invisible="not construction_show_other_features or ' module_al_construction_planner_crew ' not in (construction_other_features or '')">
+                            <field name="module_al_construction_planner_crew"/>
+                        </setting>
+                        <setting id="construction_feature_budget_other" help="Presupuesto analítico al aprobar y control de la OC contra él." invisible="not construction_show_other_features or ' module_al_construction_planner_budget ' not in (construction_other_features or '')">
+                            <field name="module_al_construction_planner_budget"/>
+                        </setting>
+                        <setting id="construction_feature_sale_other" help="Calendario e ingresos, contratos, entrega semanal, valorización y cronograma valorizado (Ventas)." invisible="not construction_show_other_features or ' module_al_construction_planner_sale ' not in (construction_other_features or '')">
+                            <field name="module_al_construction_planner_sale"/>
+                        </setting>
+                        <setting id="construction_feature_mrp_other" help="Órdenes de fabricación desde el plan (Fabricación)." invisible="not construction_show_other_features or ' module_al_construction_planner_mrp ' not in (construction_other_features or '')">
+                            <field name="module_al_construction_planner_mrp"/>
+                        </setting>
+                        <setting id="construction_feature_furniture_other" help="Tipologías de mueble, metros lineales, módulos e importación del ETO." invisible="not construction_show_other_features or ' module_al_construction_planner_furniture ' not in (construction_other_features or '')">
                             <field name="module_al_construction_planner_furniture"/>
                         </setting>
                     </block>
@@ -157,37 +233,32 @@
                                 <div class="row">
                                     <label for="construction_exceed_tolerance" class="col-lg-5 o_light_label"/>
                                     <field name="construction_exceed_tolerance"/>
+                                    <field name="construction_resource_type_codes" invisible="1"/>
                                 </div>
-                                <div class="row">
+                                <div class="row" invisible="' material ' not in (construction_resource_type_codes or ' material ')">
                                     <label for="construction_exceed_policy_material" class="col-lg-5 o_light_label"/>
                                     <field name="construction_exceed_policy_material"/>
                                 </div>
-                                <div class="row">
+                                <div class="row" invisible="' contract ' not in (construction_resource_type_codes or ' contract ')">
                                     <label for="construction_exceed_policy_contract" class="col-lg-5 o_light_label"/>
                                     <field name="construction_exceed_policy_contract"/>
                                 </div>
-                                <div class="row">
+                                <div class="row" invisible="' labor ' not in (construction_resource_type_codes or ' labor ')">
                                     <label for="construction_exceed_policy_labor" class="col-lg-5 o_light_label"/>
                                     <field name="construction_exceed_policy_labor"/>
                                 </div>
-                                <div class="row">
+                                <div class="row" invisible="' production ' not in (construction_resource_type_codes or ' production ')">
                                     <label for="construction_exceed_policy_production" class="col-lg-5 o_light_label"/>
                                     <field name="construction_exceed_policy_production"/>
                                 </div>
                             </div>
                         </setting>
+                        <!-- Paquete 1.20, M120-06: las categorías de los servicios de armado
+                             e instalación las agrega el puente de mobiliario; la cuenta de
+                             mano de obra fija (MODF), el de asistencia. -->
                         <setting company_dependent="1" id="construction_service_categories" string="Categorías de los servicios"
                                  help="Categorías de los productos de servicio de las actividades: su modelo de distribución analítica pone la etapa.">
-                            <div class="content-group">
-                                <div class="row mt-2">
-                                    <label for="construction_categ_assembly_id" class="col-lg-5 o_light_label"/>
-                                    <field name="construction_categ_assembly_id" options="{'no_create': True}"/>
-                                </div>
-                                <div class="row">
-                                    <label for="construction_categ_installation_id" class="col-lg-5 o_light_label"/>
-                                    <field name="construction_categ_installation_id" options="{'no_create': True}"/>
-                                </div>
-                            </div>
+                            <div class="content-group" name="service_categories"/>
                         </setting>
                     </block>
                 </app>

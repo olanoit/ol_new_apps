@@ -13,3 +13,4 @@ from . import remnant
 from . import production_date_review
 from . import stock_move
 from . import manufacturing_texts
+from . import plan_header

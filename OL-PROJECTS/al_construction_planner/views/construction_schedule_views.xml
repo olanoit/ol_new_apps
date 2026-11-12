@@ -76,10 +76,9 @@
                 <field name="space_task_id"/>
                 <field name="floor_task_id"/>
                 <field name="project_id"/>
-                <filter string="Producción" name="production" domain="[('stage', '=', 'production')]"/>
-                <filter string="Armado" name="assembly" domain="[('stage', '=', 'assembly')]"/>
-                <filter string="Instalación" name="installation" domain="[('stage', '=', 'installation')]"/>
-                <filter string="Acabado y entrega" name="finishing" domain="[('stage', '=', 'finishing')]"/>
+                <!-- Paquete 1.20, M120-04: sin filtros por código de etapa en el
+                     núcleo; los de mobiliario los agrega su puente. -->
+                <separator name="stage_filters"/>
                 <group>
                     <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>

@@ -17,16 +17,38 @@ from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import SQL
 
-FEATURE_FIELDS = {
-    'control': 'group_construction_control',
-    'progress': 'group_construction_progress',
-    'measurement': 'group_construction_measurement',
+# Funciones del perfil, en su orden en pantalla. Paquete 1.20, M120-07: las
+# seis últimas ocultan los menús de una vertical que la compañía no usa.
+FEATURES = ('control', 'progress', 'measurement', 'milestones', 'valuation', 'deductions',
+            'daily_report', 'recipes', 'installation_board')
+FEATURE_FIELDS = {feature: 'group_construction_%s' % feature for feature in FEATURES}
+FEATURE_GROUPS = {feature: 'al_construction_planner.group_planner_feature_%s' % feature
+                  for feature in FEATURES}
+# Modelos cuyos registros quedan detrás de una función apagada: {función:
+# [(modelo, opción del menú)]}. Los de un puente no instalado no cuentan.
+FEATURE_MODELS = {
+    'milestones': [('construction.unit.milestone', 'Ingresos › Hitos por unidad'),
+                   ('construction.weekly.delivery', 'Ingresos › Entregas semanales')],
+    'valuation': [('construction.valuation', 'Ingresos › Valorizaciones'),
+                  ('construction.valuation.target', 'Ingresos › Metas de valorización')],
+    'deductions': [('construction.contract.deduction', 'Contratas › Deductivos de contrata'),
+                   ('construction.contract.intervention', 'Contratas › Intervenciones'),
+                   ('construction.guarantee.fund', 'Informes › Fondos de garantía de contratas')],
+    'daily_report': [('construction.daily.report', 'Ejecución › Partes diarios'),
+                     ('construction.portal.tareo', 'Ejecución › Tareo de cuadrillas')],
+    'recipes': [('construction.execution.template', 'Configuración › Recetas')],
 }
-FEATURE_GROUPS = {
-    'control': 'al_construction_planner.group_planner_feature_control',
-    'progress': 'al_construction_planner.group_planner_feature_progress',
-    'measurement': 'al_construction_planner.group_planner_feature_measurement',
-}
+
+
+def profile_resource_type_codes(env, profile):
+    """Códigos de los tipos de recurso del perfil, separados por espacios
+    (paquete 1.20, M120-05). Sin perfil o sin tipos en el perfil, todos los del
+    catálogo: se ve todo como hoy."""
+    types = profile.with_context(active_test=False).resource_type_ids if profile else None
+    if not types:
+        types = env['construction.resource.type'].with_context(active_test=False).search([])
+    # Con un espacio a cada lado: las vistas preguntan por « código ».
+    return ' %s ' % ' '.join(types.mapped('code'))
 
 
 class ConstructionVerticalProfile(models.Model):
@@ -63,6 +85,27 @@ class ConstructionVerticalProfile(models.Model):
         string='Metrado', default=True,
         help='Metrados y «Generar metrados» (vertical Mobiliario). Apagado, no aparecen menús, '
              'botones ni etiquetas de metrado.')
+    # Paquete 1.20, M120-07: activas por defecto (sin perfil se ve todo, P4).
+    feature_milestones = fields.Boolean(
+        string='Valorización por entregas e hitos', default=True,
+        help='Ingresos ▸ Hitos por unidad y Entregas semanales; Configuración ▸ Plantillas de '
+             'hitos de cobro.')
+    feature_valuation = fields.Boolean(
+        string='Valorización por avance', default=True,
+        help='Ingresos ▸ Preparar valorización, Valorizaciones y Metas de valorización.')
+    feature_deductions = fields.Boolean(
+        string='Deductivos, intervenciones y fondo de garantía', default=True,
+        help='Contratas ▸ Deductivos de contrata e Intervenciones; Informes ▸ Fondos de garantía '
+             'de contratas; Configuración ▸ Tipos de deductivo y Requisitos de devolución del '
+             'fondo.')
+    feature_daily_report = fields.Boolean(
+        string='Parte diario y tareo del residente', default=True,
+        help='Ejecución ▸ Partes diarios y Tareo de cuadrillas.')
+    feature_recipes = fields.Boolean(
+        string='Recetas por partida', default=True, help='Configuración ▸ Recetas.')
+    feature_installation_board = fields.Boolean(
+        string='Control semanal de instalación', default=True,
+        help='Ejecución ▸ Control semanal de instalación y su botón en la obra.')
     parameter_ids = fields.One2many(
         'construction.vertical.profile.parameter', 'profile_id', string='Parámetros', copy=True,
         help='Valores de la compañía que fija el perfil (semana de contratas, '
@@ -122,8 +165,8 @@ class ConstructionVerticalProfile(models.Model):
         return rows
 
     def _feature_labels(self):
-        return {'control': self.env._('Control'), 'progress': self.env._('Avance'),
-                'measurement': self.env._('Metrado')}
+        return {feature: self._fields['feature_%s' % feature]._description_string(self.env)
+                for feature in FEATURES}
 
     @api.depends_context('company')
     def _compute_deviation_html(self):
@@ -170,7 +213,40 @@ class ConstructionVerticalProfile(models.Model):
                                    '«Registrar avance» del árbol y del cronograma'),
             'measurement': self.env._('Ejecución ▸ Avance ▸ Metrados, Cargar medidas y Generar '
                                       'metrados'),
+            # Paquete 1.20, M120-07: con la ruta completa de cada menú.
+            'milestones': self.env._('Ingresos › Hitos por unidad, Ingresos › Entregas semanales '
+                                     'y Configuración › Plantillas de hitos de cobro'),
+            'valuation': self.env._('Ingresos › Preparar valorización, Ingresos › Valorizaciones '
+                                    'e Ingresos › Metas de valorización'),
+            'deductions': self.env._('Contratas › Deductivos de contrata, Contratas › '
+                                     'Intervenciones, Informes › Fondos de garantía de contratas, '
+                                     'Configuración › Tipos de deductivo y Configuración › '
+                                     'Requisitos de devolución del fondo'),
+            'daily_report': self.env._('Ejecución › Partes diarios y Ejecución › Tareo de '
+                                       'cuadrillas'),
+            'recipes': self.env._('Configuración › Recetas'),
+            'installation_board': self.env._('Ejecución › Control semanal de instalación y su '
+                                             'botón en la obra'),
         }
+
+    def _feature_records_note(self, feature, company):
+        """M120-07, punto 4: los registros que quedan detrás de una función que
+        se apaga («Hay 3 registros en Ingresos › Entregas semanales; siguen en
+        la base»)."""
+        parts = []
+        for model, path in FEATURE_MODELS.get(feature, []):
+            if model not in self.env:
+                continue
+            Model = self.env[model].sudo().with_context(active_test=False)
+            domain = [('company_id', 'in', (company.id, False))] \
+                if 'company_id' in Model._fields else []
+            count = Model.search_count(domain)
+            if count:
+                parts.append(self.env._('%(count)s en %(path)s', count=count, path=path))
+        if not parts:
+            return ''
+        return self.env._('Hay registros: %s; siguen en la base y se abren desde sus enlaces.',
+                          ', '.join(parts))
 
     def _get_apply_changes(self, company=None):
         """[(qué, ahora, después, lo que se ve)] de lo que cambia en la
@@ -186,9 +262,11 @@ class ConstructionVerticalProfile(models.Model):
             active = self.env.ref(xmlid) in internal.implied_ids
             wanted = self['feature_%s' % feature]
             if wanted != active:
+                seen = (self.env._('Aparecen: %s') if wanted else self.env._('Se ocultan: %s')) \
+                    % menus[feature]
+                note = '' if wanted else self._feature_records_note(feature, company)
                 rows.append((labels[feature], yes if active else no, yes if wanted else no,
-                             (self.env._('Aparecen: %s') if wanted else self.env._('Se ocultan: %s'))
-                             % menus[feature]))
+                             '%s. %s' % (seen, note) if note else seen))
         for module in self._modules_to_install():
             rows.append((self.env._('Puente %s', module.shortdesc or module.name),
                          self.env._('No instalado'), self.env._('Instalado'),
@@ -297,6 +375,9 @@ class ConstructionVerticalProfile(models.Model):
                     'resource_type_ids': [Command.set(base.resource_type_ids.ids)] if base else [],
                     'module_ids': [Command.set(base.module_ids.ids)] if base else [],
                     'analytic_plan_names': ', '.join(level for level, _role in levels),
+                    # Las funciones de construcción (M120-07): las del perfil base.
+                    **{'feature_%s' % feature: base['feature_%s' % feature]
+                       for feature in FEATURES if base},
                     'feature_measurement': False,
                     'parameter_ids': [Command.create({'name': param.name, 'value': param.value})
                                       for param in base.parameter_ids] if base else [],

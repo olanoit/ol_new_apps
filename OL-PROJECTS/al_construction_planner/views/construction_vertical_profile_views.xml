@@ -42,6 +42,13 @@
                             <field name="feature_control"/>
                             <field name="feature_progress"/>
                             <field name="feature_measurement"/>
+                            <!-- Paquete 1.20, M120-07 -->
+                            <field name="feature_milestones"/>
+                            <field name="feature_valuation"/>
+                            <field name="feature_deductions"/>
+                            <field name="feature_daily_report"/>
+                            <field name="feature_recipes"/>
+                            <field name="feature_installation_board"/>
                             <field name="module_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                     </group>

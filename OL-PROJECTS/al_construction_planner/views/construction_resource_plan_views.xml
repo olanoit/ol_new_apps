@@ -321,6 +321,10 @@
         <field name="arch" type="xml">
             <form string="Plan de recursos">
                 <header>
+                    <!-- Paquete 1.20, M120-08: «Programar ▾» y «Ejecutar ▾», con las
+                         opciones del núcleo y de cada puente (_construction_header_actions). -->
+                    <field name="construction_header_actions" invisible="1"/>
+                    <widget name="construction_plan_actions"/>
                     <button name="action_open_recipe_wizard" type="object"
                             string="Generar desde la receta" invisible="state != 'draft'"
                             groups="al_construction_planner.group_planner_plan_planner"/>
@@ -333,20 +337,6 @@
                             groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="action_open_replan_wizard" type="object" string="Nueva versión"
                             invisible="state not in ('approved', 'in_progress')"
-                            groups="al_construction_planner.group_planner_plan_planner"/>
-                    <button name="%(action_plan_reschedule_wizard)d" type="action"
-                            string="Cambiar fechas"
-                            invisible="state not in ('approved', 'in_progress')"
-                            context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_plan_planner,al_construction_planner.group_planner_user"/>
-                    <button name="%(action_plan_progress_wizard)d" type="action"
-                            string="Registrar avance"
-                            invisible="state not in ('approved', 'in_progress')"
-                            context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_feature_progress"/>
-                    <button name="action_sync_space_stages" type="object"
-                            string="Crear etapas del cronograma"
-                            invisible="not line_count or state in ('closed', 'replaced', 'cancel')"
                             groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="action_close" type="object" string="Cerrar"
                             invisible="state not in ('approved', 'in_progress')"
@@ -422,12 +412,15 @@
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                         </group>
                         <group>
-                            <field name="amount_material"/>
-                            <field name="amount_service"/>
-                            <field name="amount_contract"/>
-                            <field name="amount_labor"/>
-                            <field name="amount_equipment" invisible="not amount_equipment"/>
-                            <field name="amount_production"/>
+                            <!-- M120-05: el monto de un tipo se ve si el tipo está
+                                 en el perfil de la obra o si tiene monto. -->
+                            <field name="construction_resource_type_codes" invisible="1"/>
+                            <field name="amount_material" invisible="not amount_material and ' material ' not in (construction_resource_type_codes or ' material ')"/>
+                            <field name="amount_service" invisible="not amount_service and ' service ' not in (construction_resource_type_codes or ' service ')"/>
+                            <field name="amount_contract" invisible="not amount_contract and ' contract ' not in (construction_resource_type_codes or ' contract ')"/>
+                            <field name="amount_labor" invisible="not amount_labor and ' labor ' not in (construction_resource_type_codes or ' labor ')"/>
+                            <field name="amount_equipment" invisible="not amount_equipment and ' equipment ' not in (construction_resource_type_codes or ' equipment ')"/>
+                            <field name="amount_production" invisible="not amount_production and ' production ' not in (construction_resource_type_codes or ' production ')"/>
                             <field name="amount_total" class="fw-bold"/>
                             <field name="amount_budgeted" invisible="not date_approved"/>
                             <field name="currency_id" invisible="1"/>
@@ -435,8 +428,9 @@
                     </group>
                     <notebook>
                         <page string="Líneas" name="lines">
+                            <field name="construction_level_functions" invisible="1"/>
                             <field name="line_ids" readonly="state != 'draft'"
-                                   context="{'default_plan_id': id, 'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list'}"/>
+                                   context="{'default_plan_id': id, 'construction_level_functions': construction_level_functions, 'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list'}"/>
                         </page>
                         <page string="Resumen por etapa" name="stage_summary">
                             <field name="stage_summary_html" nolabel="1"/>
@@ -473,15 +467,15 @@
                                     <field name="date_closed" invisible="not date_closed"/>
                                 </group>
                                 <group string="Por tipo de recurso (vacía: la general)">
-                                    <field name="exceed_policy_material" readonly="state != 'draft'"/>
-                                    <field name="exceed_policy_contract" readonly="state != 'draft'"/>
-                                    <field name="exceed_policy_labor" readonly="state != 'draft'"/>
-                                    <field name="exceed_policy_production" readonly="state != 'draft'"/>
+                                    <field name="exceed_policy_material" readonly="state != 'draft'" invisible="' material ' not in (construction_resource_type_codes or ' material ')"/>
+                                    <field name="exceed_policy_contract" readonly="state != 'draft'" invisible="' contract ' not in (construction_resource_type_codes or ' contract ')"/>
+                                    <field name="exceed_policy_labor" readonly="state != 'draft'" invisible="' labor ' not in (construction_resource_type_codes or ' labor ')"/>
+                                    <field name="exceed_policy_production" readonly="state != 'draft'" invisible="' production ' not in (construction_resource_type_codes or ' production ')"/>
                                 </group>
                                 <group string="Anticipación">
-                                    <field name="lead_days_material" readonly="state != 'draft'"/>
-                                    <field name="lead_days_contract" readonly="state != 'draft'"/>
-                                    <field name="lead_days_production" readonly="state != 'draft'"/>
+                                    <field name="lead_days_material" readonly="state != 'draft'" invisible="' material ' not in (construction_resource_type_codes or ' material ')"/>
+                                    <field name="lead_days_contract" readonly="state != 'draft'" invisible="' contract ' not in (construction_resource_type_codes or ' contract ')"/>
+                                    <field name="lead_days_production" readonly="state != 'draft'" invisible="' production ' not in (construction_resource_type_codes or ' production ')"/>
                                 </group>
                             </group>
                         </page>

@@ -185,8 +185,34 @@
             <field name="name">Planificación de obra: ejecución desde Proyectos</field>
             <field name="comment">Sección Obra en el tablero del proyecto y menú Ejecutar en la tarea de Proyectos.</field>
         </record>
+        <!-- Paquete 1.20, M120-07: seis funciones más del perfil de vertical.
+             Activas al instalar (P4); las apaga el perfil o Ajustes. -->
+        <record id="group_planner_feature_milestones" model="res.groups">
+            <field name="name">Planificación de obra: valorización por entregas e hitos</field>
+            <field name="comment">Muestra Hitos por unidad, Entregas semanales y Plantillas de hitos de cobro.</field>
+        </record>
+        <record id="group_planner_feature_valuation" model="res.groups">
+            <field name="name">Planificación de obra: valorización por avance</field>
+            <field name="comment">Muestra Preparar valorización, Valorizaciones y Metas de valorización.</field>
+        </record>
+        <record id="group_planner_feature_deductions" model="res.groups">
+            <field name="name">Planificación de obra: deductivos, intervenciones y fondo de garantía</field>
+            <field name="comment">Muestra los deductivos y las intervenciones de contrata, los fondos de garantía y su configuración.</field>
+        </record>
+        <record id="group_planner_feature_daily_report" model="res.groups">
+            <field name="name">Planificación de obra: parte diario y tareo del residente</field>
+            <field name="comment">Muestra Partes diarios y Tareo de cuadrillas.</field>
+        </record>
+        <record id="group_planner_feature_recipes" model="res.groups">
+            <field name="name">Planificación de obra: recetas por partida</field>
+            <field name="comment">Muestra Configuración ▸ Recetas.</field>
+        </record>
+        <record id="group_planner_feature_installation_board" model="res.groups">
+            <field name="name">Planificación de obra: control semanal de instalación</field>
+            <field name="comment">Muestra el tablero de control semanal de instalación y su botón en la obra.</field>
+        </record>
         <record id="base.group_user" model="res.groups">
-            <field name="implied_ids" eval="[Command.link(ref('group_planner_feature_control')), Command.link(ref('group_planner_feature_progress')), Command.link(ref('group_planner_feature_measurement')), Command.link(ref('group_planner_feature_exec_planner')), Command.link(ref('group_planner_feature_exec_project'))]"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_feature_control')), Command.link(ref('group_planner_feature_progress')), Command.link(ref('group_planner_feature_measurement')), Command.link(ref('group_planner_feature_exec_planner')), Command.link(ref('group_planner_feature_exec_project')), Command.link(ref('group_planner_feature_milestones')), Command.link(ref('group_planner_feature_valuation')), Command.link(ref('group_planner_feature_deductions')), Command.link(ref('group_planner_feature_daily_report')), Command.link(ref('group_planner_feature_recipes')), Command.link(ref('group_planner_feature_installation_board'))]"/>
         </record>
     </data>
 </odoo>

@@ -10,9 +10,21 @@ from odoo import api, models
 # el menú. Con el ajuste apagado se ve el menú de siempre.
 FEATURE_EXEC_PLANNER = 'al_construction_planner.group_planner_feature_exec_planner'
 # Carpetas nuevas: XMLID → (padre, secuencia).
+P = 'al_construction_planner.'
 MOMENT_FOLDERS = {
-    'al_construction_planner.menu_planner_planning': ('al_construction_planner.menu_planner_root', 15),
-    'al_construction_planner.menu_planner_exec_staff': ('al_construction_planner.menu_planner_execution', 15),
+    P + 'menu_planner_planning': (P + 'menu_planner_root', 15),
+    # Paquete 1.20, M120-01: Ejecución en cuatro secciones (Avance, Control
+    # semanal, Personal propio y Cambios); Contratas con su personal.
+    P + 'menu_planner_exec_control': (P + 'menu_planner_execution', 20),
+    P + 'menu_planner_exec_staff': (P + 'menu_planner_execution', 30),
+    P + 'menu_planner_contract_staff': (P + 'menu_planner_contracts', 90),
+    # M120-02: Configuración en siete secciones.
+    P + 'menu_planner_config_vertical': (P + 'menu_planner_config', 10),
+    P + 'menu_planner_config_recipes': (P + 'menu_planner_config', 20),
+    P + 'menu_planner_config_contracts': (P + 'menu_planner_config', 30),
+    P + 'menu_planner_config_sheets': (P + 'menu_planner_config', 40),
+    P + 'menu_planner_config_analytic': (P + 'menu_planner_config', 50),
+    P + 'menu_planner_config_portal': (P + 'menu_planner_config', 60),
 }
 
 
@@ -32,6 +44,31 @@ class IrUiMenu(models.Model):
         return res
 
     @api.model
+    def _construction_feature_menus(self):
+        """[(menú, grupo de la función)] que se ocultan con su función del
+        perfil apagada (paquete 1.20, M120-07). Cada puente suma los suyos. Se
+        ocultan en el código y no con el campo «Grupos» del menú: los grupos de
+        un menú se suman (basta uno), y la función no debe abrirle el menú a
+        quien no tiene su rol."""
+        return [('al_construction_planner.menu_planner_recipes',
+                 'al_construction_planner.group_planner_feature_recipes')]
+
+    @api.model
+    def _visible_menu_ids(self, debug=False):
+        visible = super()._visible_menu_ids(debug)
+        IMD = self.env['ir.model.data']
+        hidden = set()
+        for menu_xmlid, group_xmlid in self._construction_feature_menus():
+            menu_id = IMD._xmlid_to_res_id(menu_xmlid, raise_if_not_found=False)
+            if menu_id in visible and not self.env.user.has_group(group_xmlid):
+                hidden.add(menu_id)
+        if not hidden:
+            return visible
+        # También lo que cuelga de un menú oculto.
+        children = self.sudo().search([('id', 'child_of', list(hidden))]).ids
+        return frozenset(visible) - set(children)
+
+    @api.model
     def _construction_moment_moves(self):
         """[(menú, nuevo padre, secuencia)] del menú por momento. Cada puente
         suma los suyos."""
@@ -41,10 +78,35 @@ class IrUiMenu(models.Model):
             (p + 'menu_planner_lines', p + 'menu_planner_planning', 20),
             (p + 'menu_planner_plan_tree', p + 'menu_planner_planning', 30),
             (p + 'menu_planner_space_stages', p + 'menu_planner_planning', 40),
-            # Pedir y comprar material es ejecutar: Abastecimiento pasa a ser
-            # una sección de Ejecución.
-            (p + 'menu_planner_supply', p + 'menu_planner_execution', 18),
+            # Paquete 1.20, M120-01: la barra en ocho menús. Abastecimiento y
+            # Contratas suben a la barra; Ejecución queda con lo que pasa en obra.
+            (p + 'menu_planner_supply', p + 'menu_planner_root', 30),
+            (p + 'menu_planner_contracts', p + 'menu_planner_root', 35),
+            (p + 'menu_planner_allocations', p + 'menu_planner_supply', 25),
+            (p + 'menu_planner_progress', p + 'menu_planner_execution', 10),
+            (p + 'menu_planner_changes', p + 'menu_planner_execution', 40),
+            # M120-02: Configuración en siete secciones.
+            (p + 'menu_planner_profiles', p + 'menu_planner_config_vertical', 10),
+            (p + 'menu_planner_profile_import', p + 'menu_planner_config_vertical', 20),
+            (p + 'menu_planner_level_templates', p + 'menu_planner_config_vertical', 30),
+            (p + 'menu_planner_stages', p + 'menu_planner_config_vertical', 40),
+            (p + 'menu_planner_resource_types', p + 'menu_planner_config_vertical', 50),
+            (p + 'menu_planner_uom_aliases', p + 'menu_planner_config_vertical', 60),
+            (p + 'menu_planner_recipes', p + 'menu_planner_config_recipes', 10),
+            (p + 'menu_planner_activities', p + 'menu_planner_config_recipes', 20),
+            (p + 'menu_planner_recipe_import', p + 'menu_planner_config_recipes', 30),
+            (p + 'menu_planner_rates', p + 'menu_planner_config_contracts', 10),
+            (p + 'menu_planner_analytic_rules', p + 'menu_planner_config_analytic', 10),
+            (p + 'menu_planner_config_other', p + 'menu_planner_config', 70),
         ]
+
+    @api.model
+    def _construction_moment_hidden(self):
+        """Menús que el menú por momento no muestra; su acción y su código
+        quedan (paquete 1.20, M120-01: los reemplaza «Metrados (receta real)»)."""
+        p = 'al_construction_planner.'
+        return [p + 'menu_planner_measurements', p + 'menu_planner_measurement_lines',
+                p + 'menu_planner_measurement_generate']
 
     @api.model
     def _construction_moment_names(self):
@@ -63,11 +125,17 @@ class IrUiMenu(models.Model):
 
     @api.model
     def load_menus(self, debug):
-        menus = super().load_menus(debug)
+        # El resultado de super() está en caché: se trabaja sobre una copia.
+        menus = copy.deepcopy(super().load_menus(debug))
+        # Paquete 1.20, M120-03: «Etapa actual por partida» (o por el nivel con
+        # etapas de la plantilla de la compañía), con o sin menú por momento.
+        report_id = self.env['ir.model.data']._xmlid_to_res_id(
+            P + 'menu_planner_space_stage_report', raise_if_not_found=False)
+        if report_id in menus:
+            menus[report_id]['name'] = self.env['construction.level.labels.mixin']\
+                ._construction_space_stage_title()
         if not self.env.user.has_group(FEATURE_EXEC_PLANNER):
             return menus
-        # El resultado de super() está en caché: se trabaja sobre una copia.
-        menus = copy.deepcopy(menus)
         self._construction_apply_moments(menus)
         return menus
 
@@ -102,6 +170,12 @@ class IrUiMenu(models.Model):
             for child in entry.get('children', []):
                 set_app(child, app_id)
 
+        # Lo que el menú por momento ya no muestra (M120-01).
+        for xmlid in self._construction_moment_hidden():
+            menu_id = ref(xmlid)
+            if menu_id in menus:
+                detach(menu_id)
+                menus.pop(menu_id, None)
         moves = [(ref(child), ref(parent), sequence)
                  for child, parent, sequence in self._construction_moment_moves()]
         moves = [(child, parent, seq) for child, parent, seq in moves if child in menus and parent]

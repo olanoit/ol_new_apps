@@ -37,5 +37,5 @@ class IrUiMenu(models.Model):
     def _construction_moment_moves(self):
         return super()._construction_moment_moves() + [
             ('al_construction_planner_crew.menu_planner_crew_assign',
-             'al_construction_planner.menu_planner_exec_staff', 5),
+             'al_construction_planner.menu_planner_exec_staff', 10),
         ]

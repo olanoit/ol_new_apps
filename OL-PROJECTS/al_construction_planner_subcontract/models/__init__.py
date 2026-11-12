@@ -19,3 +19,5 @@ from . import construction_planner_home
 from . import construction_amounts
 from . import construction_board
 from . import construction_contract_intervention
+from . import ir_ui_menu
+from . import plan_header

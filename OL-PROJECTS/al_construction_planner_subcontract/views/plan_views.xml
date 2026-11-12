@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Paquete 1.20, M120-08: el botón de este puente pasó a «Programar» o
+         «Ejecutar» de la cabecera (plan_header.py). La vista queda inactiva. -->
     <record id="construction_resource_plan_view_form_subcontract" model="ir.ui.view">
         <field name="name">construction.resource.plan.form.subcontract</field>
         <field name="model">construction.resource.plan</field>
         <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
+        <field name="active" eval="False"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='action_sync_space_stages']" position="before">
-                <button name="%(action_plan_contract_wizard)d" type="action"
-                        string="Asignar contrata"
-                        invisible="state not in ('approved', 'in_progress')"
-                        context="{'default_plan_id': id}"
-                        groups="al_construction_planner.group_planner_user"/>
-            </xpath>
+            <field name="state" position="attributes">
+                <attribute name="statusbar_visible">draft,to_approve,approved,in_progress,closed</attribute>
+            </field>
         </field>
     </record>
 </odoo>

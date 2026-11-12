@@ -144,7 +144,7 @@
                 <button name="action_open_installation_board" type="object" class="oe_stat_button"
                         icon="fa-building" string="Control semanal"
                         invisible="not is_construction_site"
-                        groups="al_construction_planner.group_planner_feature_control"/>
+                        groups="al_construction_planner.group_planner_feature_installation_board"/>
             </xpath>
         </field>
     </record>

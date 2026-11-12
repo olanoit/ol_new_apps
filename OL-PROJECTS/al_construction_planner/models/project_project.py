@@ -16,6 +16,9 @@ class ProjectProject(models.Model):
     is_construction_site = fields.Boolean(
         string='Es obra', help='Habilita el planificador y, con compras, los requerimientos de '
                                'materiales y la ubicación de obra.')
+    # Paquete 1.20, M120-05: los tipos de recurso del perfil de la obra.
+    construction_resource_type_codes = fields.Char(
+        compute='_compute_construction_resource_type_codes')
     construction_profile_id = fields.Many2one(
         'construction.vertical.profile', string='Perfil de vertical',
         help='El rubro de la obra (v1.7, M17-05). Por defecto, el de la compañía; una obra de '
@@ -294,3 +297,11 @@ class ProjectProject(models.Model):
 
     def action_construction_open_schedule(self):
         return self._construction_plan_or_raise().action_open_schedule()
+
+    @api.depends('construction_profile_id', 'company_id.construction_profile_id')
+    def _compute_construction_resource_type_codes(self):
+        from .construction_vertical_profile import profile_resource_type_codes
+        for project in self:
+            profile = project.construction_profile_id or project.company_id.construction_profile_id
+            project.construction_resource_type_codes = profile_resource_type_codes(
+                self.env, profile)

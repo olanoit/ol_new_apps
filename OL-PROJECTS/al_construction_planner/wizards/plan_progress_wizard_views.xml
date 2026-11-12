@@ -29,12 +29,16 @@
                         <field name="attachment_ids" widget="many2many_binary"/>
                     </group>
                 </group>
+                <field name="construction_level_functions" invisible="1"/>
                 <field name="line_ids" nolabel="1" invisible="not activity_id">
                     <list create="0" editable="bottom">
                         <field name="plan_line_id" column_invisible="1"/>
-                        <field name="apartment_task_id"/>
+                        <!-- M120-03: el nivel de la plantilla de la obra; la
+                             tipología la muestra el puente de mobiliario. -->
+                        <field name="apartment_task_id"
+                               column_invisible="'apartment' not in (parent.construction_level_functions or 'apartment')"/>
                         <field name="task_id"/>
-                        <field name="typology_id" optional="show"/>
+                        <field name="typology_id" optional="show" column_invisible="1"/>
                         <field name="partner_id" optional="hide"/>
                         <field name="qty_planned" readonly="1" force_save="1"/>
                         <field name="qty_executed" readonly="1" force_save="1"/>

@@ -59,13 +59,13 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
                         t-att-class="schedule.currentStages.length or schedule.onlyLate ? 'active' : ''"
                         data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
-                        title="Ambientes por su etapa actual y su plazo">
+                        title="Filas por su etapa actual y su plazo">
                     <i class="fa fa-flag me-1"/><t t-esc="currentFilterLabel"/>
                 </button>
                 <div class="dropdown-menu p-2">
                     <div class="dropdown-item o_cp_current_all" t-on-click.stop="() => this.clearCurrentFilters()">
                         <span t-att-class="'o_cp_check o_cp_' + (schedule.currentStages.length or schedule.onlyLate ? 'off' : 'on')"/>
-                        Todos los ambientes
+                        Sin filtro de etapa
                     </div>
                     <div class="dropdown-item o_cp_only_late" t-on-click.stop="() => this.toggleOnlyLate()">
                         <span t-att-class="'o_cp_check o_cp_' + (schedule.onlyLate ? 'on' : 'off')"/>
@@ -130,7 +130,7 @@
                 La obra no tiene plan de recursos: genérelo para ver sus etapas.
             </p>
             <p class="text-muted small" t-elif="!schedule.summary">
-                Marque pisos, ambientes o etapas en la primera columna.
+                Marque filas o etapas en la primera columna.
             </p>
             <t t-else="">
                 <div class="o_cp_schedule_summary small mb-2">

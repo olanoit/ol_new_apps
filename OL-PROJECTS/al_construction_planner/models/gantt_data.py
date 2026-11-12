@@ -149,9 +149,8 @@ class GanttData(models.AbstractModel):
         # Estados del ambiente para la etapa actual (M115-04): sin los de
         # mobiliario si la obra no los usa.
         has_states = bool(plan.project_id._construction_space_state_labels()) if plan else False
-        payload['construction']['space_states'] = [
-            state for state in self.env['project.task']._construction_space_states()
-            if has_states or not state['is_state']]
+        payload['construction']['space_states'] = self._construction_offered_space_states(
+            plan, has_states)
         if not plan:
             return
         tasks = payload['tasks']
@@ -161,6 +160,29 @@ class GanttData(models.AbstractModel):
         self._construction_current_stage_info(tasks, payload['construction']['space_states'])
         if schedule['rows'] == 'stages':
             self._construction_stage_rows(payload, plan, schedule['stages'], stage_labels)
+
+    @api.model
+    def _construction_offered_space_states(self, plan, has_states):
+        """Opciones de «Etapa actual» del Cronograma (paquete 1.20, M120-04): los
+        estados del ambiente (si la obra los usa) y las etapas del perfil de la
+        obra. Una etapa archivada o fuera del perfil que la obra ya tiene en sus
+        etapas del cronograma se muestra con «(archivada)»."""
+        Stage = self.env['construction.stage']
+        project = plan.project_id if plan else self.env['project.project']
+        offered = set(Stage._offered_codes(project))
+        registered = set(self.env['construction.space.stage'].sudo().search(
+            [('project_id', '=', project.id)]).mapped('stage')) if project else set()
+        result = []
+        for state in self.env['project.task']._construction_space_states():
+            if state['is_state']:
+                if has_states:
+                    result.append(state)
+                continue
+            if state['code'] in offered:
+                result.append(state)
+            elif state['code'] in registered:
+                result.append(dict(state, label=self.env._('%s (archivada)', state['label'])))
+        return result
 
     @api.model
     def _construction_task_info(self, tasks, plan, stages):

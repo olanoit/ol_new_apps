@@ -80,3 +80,7 @@ from . import test_package_118_e3
 from . import test_package_118_e4
 from . import test_package_118_e5
 from . import test_creval_package7
+from . import test_package_120_features
+from . import test_package_120_levels
+from . import test_package_120_catalogs
+from . import test_package_120_screens

@@ -72,6 +72,24 @@ class ConstructionLevelLabelsMixin(models.AbstractModel):
         return LEVEL_FIELDS
 
     @api.model
+    def _construction_level_functions(self, template=None):
+        """Funciones de nivel que tiene la plantilla, separadas por espacios
+        (para ``column_invisible`` de las listas, paquete 1.20, M120-03)."""
+        return ' '.join(key for key in self._construction_level_terms(template)
+                        if not key.startswith('level_'))
+
+    @api.model
+    def _construction_space_stage_title(self):
+        """«Etapa actual por partida» o «… por ambiente»: el nombre de la línea
+        de la plantilla de la compañía con la función «nivel con etapas»
+        (paquete 1.20, M120-03). Sin plantilla, el nombre de siempre."""
+        name = self._construction_level_terms(
+            self.env.company.construction_level_template_id).get('space')
+        if not name:
+            return self.env._('Etapa de los ambientes')
+        return self.env._('Etapa actual por %s', name[:1].lower() + name[1:])
+
+    @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super().fields_get(allfields, attributes)
         terms = self._construction_level_terms()
@@ -92,6 +110,9 @@ class ConstructionLevelLabelsMixin(models.AbstractModel):
     def _get_view(self, view_id=None, view_type='form', **options):
         """Filtros y agrupaciones por nivel con el nombre de la plantilla."""
         arch, view = super()._get_view(view_id, view_type, **options)
+        if view_type in ('list', 'form'):
+            self._construction_level_columns(arch, view_type)
+            return arch, view
         if view_type != 'search':
             return arch, view
         terms = self._construction_level_terms()
@@ -124,9 +145,53 @@ class ConstructionLevelLabelsMixin(models.AbstractModel):
         return arch, view
 
 
+    @api.model
+    def _construction_level_columns(self, arch, view_type):
+        """Paquete 1.20, M120-03: una columna o un campo que nombra una función
+        que la plantilla no tiene se oculta; si la tiene, lleva su nombre. Una
+        lista incrustada en un registro (las líneas del plan) recibe en el
+        contexto las funciones de la plantilla de su obra
+        (``construction_level_functions``)."""
+        terms = self._construction_level_terms()
+        if not terms:
+            return
+        fields_map = self._construction_level_label_fields()
+        hide = 'column_invisible' if view_type == 'list' else 'invisible'
+        for node in arch.xpath('//field[@name]'):
+            if node.xpath('ancestor::field'):
+                continue
+            key = fields_map.get(node.get('name'))
+            if not key:
+                continue
+            if key not in terms:
+                node.set(hide, '1')
+                continue
+            if node.get('string'):
+                node.set('string', terms[key])
+            if view_type == 'list' and not key.startswith('level_') \
+                    and not node.get('column_invisible'):
+                node.set('column_invisible',
+                         "'%s' not in (context.get('construction_level_functions') or '%s')"
+                         % (key, key))
+
+
 class ProjectTask(models.Model):
     _name = 'project.task'
     _inherit = ['project.task', 'construction.level.labels.mixin']
+
+    @api.model
+    def _get_view(self, view_id=None, view_type='form', **options):
+        """M120-03: el informe de la etapa actual se titula con el nivel de la
+        plantilla («Etapa actual por partida»)."""
+        arch, view = super()._get_view(view_id, view_type, **options)
+        report_views = {self.env.ref('al_construction_planner.%s' % xmlid,
+                                     raise_if_not_found=False)
+                        for xmlid in ('project_task_view_pivot_construction_space_stage',
+                                      'project_task_view_graph_construction_space_stage',
+                                      'project_task_view_list_construction_space_stage')}
+        if view in report_views and arch.get('string'):
+            arch.set('string', self._construction_space_stage_title())
+        return arch, view
 
     @api.model
     def _construction_level_label_fields(self):
@@ -136,3 +201,18 @@ class ProjectTask(models.Model):
             'construction_space_task_id': 'space',
             'construction_furniture_task_id': 'furniture',
         }
+
+
+class IrActionsActWindow(models.Model):
+    _inherit = 'ir.actions.act_window'
+
+    def _get_action_dict(self):
+        """M120-03: el título del informe de la etapa actual sale de la
+        plantilla de la compañía."""
+        result = super()._get_action_dict()
+        report = self.env.ref('al_construction_planner.action_construction_space_stage_report',
+                              raise_if_not_found=False)
+        if report and self.id == report.id:
+            result['name'] = self.env['construction.level.labels.mixin']\
+                ._construction_space_stage_title()
+        return result

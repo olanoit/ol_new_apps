@@ -67,12 +67,13 @@ class TestExecutionEntries(TransactionCase):
         menus = Menu.load_menus(False)
         root = self._menu_children(menus, 'al_construction_planner.menu_planner_root')
         self.assertIn('al_construction_planner.menu_planner_planning', root)
-        self.assertNotIn('al_construction_planner.menu_planner_supply', root)
+        # Paquete 1.20, M120-01: Abastecimiento es una sección de la barra.
+        self.assertIn('al_construction_planner.menu_planner_supply', root)
         planning = self._menu_children(menus, 'al_construction_planner.menu_planner_planning')
         self.assertEqual(planning[:2], ['al_construction_planner.menu_planner_plans',
                                         'al_construction_planner.menu_planner_lines'])
         execution = self._menu_children(menus, 'al_construction_planner.menu_planner_execution')
-        self.assertIn('al_construction_planner.menu_planner_supply', execution)
+        self.assertNotIn('al_construction_planner.menu_planner_supply', execution)
         # «Obras» abre el tablero de obra.
         sites = menus[self.env.ref('al_construction_planner.menu_planner_sites').id]
         self.assertEqual(sites['action_id'],

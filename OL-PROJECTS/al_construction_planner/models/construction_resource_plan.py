@@ -47,6 +47,14 @@ class ConstructionResourcePlan(models.Model):
     _tier_validation_manual_config = False
 
     name = fields.Char(string='Número', required=True, readonly=True, copy=False, default='/')
+    # Paquete 1.20, M120-03: las funciones de nivel de la plantilla de la obra,
+    # para mostrar en las líneas solo las columnas de los niveles que tiene.
+    construction_level_functions = fields.Char(compute='_compute_construction_level_functions')
+    # M120-08: opciones de «Programar ▾» y «Ejecutar ▾» de la cabecera.
+    construction_header_actions = fields.Json(compute='_compute_construction_header_actions')
+    # M120-05: los tipos de recurso del perfil de la obra (montos y políticas).
+    construction_resource_type_codes = fields.Char(
+        compute='_compute_construction_resource_type_codes')
     project_id = fields.Many2one(
         'project.project', string='Obra', required=True, index=True, check_company=True,
         domain=[('is_construction_site', '=', True)], tracking=True)
@@ -873,6 +881,68 @@ class ConstructionResourcePlan(models.Model):
                 node.getparent().remove(node)
             res['arch'] = etree.tostring(doc, encoding='unicode')
         return res
+
+
+class ConstructionResourcePlanLevelFunctions(models.Model):
+    _inherit = 'construction.resource.plan'
+
+    def _construction_header_actions(self):
+        """Opciones de la cabecera del plan (paquete 1.20, M120-08):
+        [{menu: 'program' o 'execute', sequence, label, kind: 'action' u 'object',
+        target: XMLID de la acción o método, groups: [XMLID] (basta uno),
+        states, lines: si pide líneas}]. Cada puente suma las suyas."""
+        p = 'al_construction_planner.'
+        running = ('approved', 'in_progress')
+        return [
+            {'menu': 'program', 'sequence': 40, 'label': self.env._('Cambiar fechas'),
+             'kind': 'action', 'target': p + 'action_plan_reschedule_wizard',
+             'groups': [p + 'group_planner_plan_planner', p + 'group_planner_user'],
+             'states': running},
+            {'menu': 'program', 'sequence': 50, 'label': self.env._('Crear etapas del cronograma'),
+             'kind': 'object', 'target': 'action_sync_space_stages',
+             'groups': [p + 'group_planner_plan_planner'],
+             'states': ('draft', 'to_approve', 'approved', 'in_progress'), 'lines': True},
+            {'menu': 'execute', 'sequence': 10, 'label': self.env._('Registrar avance'),
+             'kind': 'action', 'target': p + 'action_plan_progress_wizard',
+             'groups': [p + 'group_planner_feature_progress'], 'states': running},
+        ]
+
+    @api.depends('state', 'line_count')
+    def _compute_construction_header_actions(self):
+        user = self.env.user
+        for plan in self:
+            items = []
+            for index, item in enumerate(sorted(plan._construction_header_actions(),
+                                                key=lambda i: (i['menu'], i['sequence']))):
+                if plan.state not in item['states'] or (item.get('lines') and not plan.line_count):
+                    continue
+                if item.get('groups') and not any(user.has_group(g) for g in item['groups']):
+                    continue
+                entry = {'key': '%s_%s' % (item['menu'], index), 'menu': item['menu'],
+                         'label': item['label'], 'kind': item['kind'], 'target': item['target']}
+                if item['kind'] == 'action':
+                    action = self.env.ref(item['target'], raise_if_not_found=False)
+                    if not action:
+                        continue
+                    entry['action_id'] = action.id
+                items.append(entry)
+            plan.construction_header_actions = items
+
+    @api.depends('project_id.construction_profile_id', 'company_id')
+    def _compute_construction_resource_type_codes(self):
+        from .construction_vertical_profile import profile_resource_type_codes
+        for plan in self:
+            profile = plan.project_id.construction_profile_id \
+                or plan.company_id.construction_profile_id
+            plan.construction_resource_type_codes = profile_resource_type_codes(self.env, profile)
+
+    @api.depends('project_id.construction_level_template_id', 'company_id')
+    def _compute_construction_level_functions(self):
+        Labels = self.env['construction.level.labels.mixin']
+        for plan in self:
+            template = plan.project_id.construction_level_template_id \
+                or plan.company_id.construction_level_template_id
+            plan.construction_level_functions = Labels._construction_level_functions(template)
 
 
 class ConstructionResourcePlanLine(models.Model):

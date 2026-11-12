@@ -36,8 +36,9 @@ class L10nPeHrConstructionSite(models.Model):
         help='Ingresos después de esta hora quedan «Fuera de hora» (7:50 por defecto).')
     default_stage_account_id = fields.Many2one(
         'account.analytic.account', string='Etapa por defecto', check_company=True,
-        help='Etapa del costo del personal de la sede: obra → instalación (INS), planta → '
-             'producción (PRD).')
+        # Paquete 1.20, M120-06: sin el ejemplo de mobiliario.
+        help='Cuenta del plan Etapa que recibe el costo del personal de esta sede. Vacía: la '
+             'del perfil.')
     kiosk_token = fields.Char(
         string='Clave del quiosco', copy=False, groups='hr.group_hr_user',
         default=lambda self: secrets.token_urlsafe(16),
