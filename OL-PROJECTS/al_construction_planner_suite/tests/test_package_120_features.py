@@ -68,6 +68,19 @@ class TestProfileFeatures(TransactionCase):
                 self._set(**{feature: True})
                 self.assertTrue(self._visible(self.manager, present), feature)
 
+    def test_folder_left_empty_is_hidden(self):
+        """Sin hitos, la carpeta «Cobro al cliente» de Configuración se queda
+        sin opciones y no se muestra (verificación en creval-dev)."""
+        folder = 'al_construction_planner_sale.menu_planner_config_income'
+        if not self.env.ref(folder, raise_if_not_found=False):
+            self.skipTest('Sin el puente de ventas')
+        self._set(milestones=False)
+        self.assertFalse(self._visible(self.manager, [folder]))
+        # Sin el menú por momento también (la carpeta queda en su lugar de siempre).
+        self._set(exec_planner=False)
+        self.assertFalse(self._visible(self.manager, [folder]))
+        self._set(milestones=True, exec_planner=True)
+
     def test_hidden_menu_does_not_widen_roles(self):
         """Una función activa no abre el menú a quien no tiene su rol: los
         tipos de deductivo son del administrador."""

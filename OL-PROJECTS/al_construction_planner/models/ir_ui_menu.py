@@ -66,7 +66,20 @@ class IrUiMenu(models.Model):
             return visible
         # También lo que cuelga de un menú oculto.
         children = self.sudo().search([('id', 'child_of', list(hidden))]).ids
-        return frozenset(visible) - set(children)
+        result = set(visible) - set(children)
+        # Como Odoo: una carpeta sin acción que se queda sin opciones visibles
+        # no se muestra (p. ej. «Cobro al cliente» sin hitos). Las carpetas del
+        # menú por momento se arman después, en load_menus, si reciben opciones.
+        targets = {IMD._xmlid_to_res_id(parent, raise_if_not_found=False)
+                   for _child, parent, _seq in self._construction_moment_moves()}
+        parents = self.sudo().browse(list(hidden)).parent_id
+        while parents:
+            empty = parents.filtered(
+                lambda m: m.id in result and m.id not in targets and not m.action
+                and not (set(m.child_id.ids) & result))
+            result -= set(empty.ids)
+            parents = empty.parent_id
+        return frozenset(result)
 
     @api.model
     def _construction_moment_moves(self):
