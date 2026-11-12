@@ -171,11 +171,38 @@ de una actividad. Falla si un clic da error.
 - El Cronograma de una obra de mobiliario ya no ofrece etapas que salieron del perfil
   salvo que la obra las tenga registradas (aparecen «(archivada)»).
 
+## Verificación en las instancias (12-nov-2026)
+
+Desplegado en creval_dev_1, newallcenter_dev_1, newallcenter_dev_2 y vmic_dev_1
+(3a93262d y la corrección 9944653a). Perfil «Mobiliario» aplicado en
+newallcenter-dev1 y «Construcción PROF 4» en creval-dev; el tipo «Producción» no se
+archivó. Capturas con un usuario de prueba administrador del planificador:
+
+| Pantalla | newallcenter-dev1 (Mobiliario) | creval-dev (PROF 4) |
+|---|---|---|
+| Barra | Obras · Planificación · Ejecución · Abastecimiento · Contratas · Ingresos · Informes · Configuración | Igual |
+| Ejecución | Avance (con Ambientes medidos y Metrados), Control semanal (instalación y mano de obra), Personal propio, Cambios. Sin Partes diarios ni Tareo | Avance con Partes diarios, Control semanal solo con mano de obra, Personal propio con Tareo, Cambios |
+| Contratas | Sin deductivos ni intervenciones | Con deductivos e intervenciones |
+| Ingresos | Contratos, Hitos por unidad, Entregas semanales | Contratos, Preparar valorización, Valorizaciones, Metas |
+| Configuración | Siete secciones con las opciones M | Siete secciones sin las M; sin «Hojas de trabajo y cobro» (sus opciones son M o de hitos) |
+| Cabecera del plan | Programar: compra masiva, requerimientos de materiales y de fabricación, Cambiar fechas, Crear etapas. Ejecutar: Registrar avance, Asignar contrata, Asignar cuadrilla, Fabricar o enviar módulos | Igual, sin lo de fabricación |
+| Ficha de la actividad | Con «Por módulo», ML y pasada | Sin los campos de mueble |
+
+Hallazgos:
+
+- Aplicar el perfil desde `odoo shell` no renueva la caché de menús de los procesos web:
+  hubo que reiniciar el contenedor. Desde la pantalla «Aplicar a la compañía» no pasa.
+- En creval-dev, sin hitos, «Cobro al cliente» quedaba en Configuración sin opciones.
+  Corregido en 9944653a (planificador 80): la carpeta que una función deja vacía no se
+  muestra.
+- «Sedes de obra» y «Colores del Gantt» no salen al usuario de prueba porque no tiene
+  acceso a sus modelos (nómina de construcción y Gantt). El administrador las ve.
+
 ## Resultado por código
 
 | Código | Entrega | Versiones | Pruebas | Diferencias |
 |---|---|---|---|---|
-| M120-07 | 1 | planner 79, sale 29, subcontract 21, portal 15, attendance 13 | `TestProfileFeatures`, `TestProfileFeaturesTour` | Botón «Control semanal» con su función |
+| M120-07 | 1 | planner 79 (80 con la corrección), sale 29, subcontract 21, portal 15, attendance 13 | `TestProfileFeatures`, `TestProfileFeaturesTour` | Botón «Control semanal» con su función |
 | M120-01 | 2 | planner 79, puentes con `_construction_moment_moves` | `TestMomentMenus120` | Carpeta de una opción en construcción |
 | M120-02 | 2 | planner 79, furniture 30, spreadsheet_furniture 25, crew 9 | `TestMomentMenus120` | Ninguna |
 | M120-03 | 3 | planner 79 | `TestLevelNames120` | Plantilla de la compañía sin obra |
