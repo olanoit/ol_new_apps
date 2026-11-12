@@ -195,6 +195,16 @@ Hallazgos:
 - En creval-dev, sin hitos, «Cobro al cliente» quedaba en Configuración sin opciones.
   Corregido en 9944653a (planificador 80): la carpeta que una función deja vacía no se
   muestra.
+- Revisión del 12-nov-2026 (recorrido de todas las opciones del menú con un
+  planificador sin RR. HH.: 78 en newallcenter-dev1 y 68 en creval-dev). «Cronograma
+  de la obra» y «Asignar cuadrilla» fallaban en newallcenter-dev1. Con
+  `hr_work_entry`, la franja del horario lee el tipo de entrada de trabajo, que es
+  de RR. HH. Corregido en d6a18c42 (planificador 81), desplegado en las cuatro dev;
+  después, 0 opciones con error. El defecto venía del horario de obra del 1.19, no
+  del 1.20.
+- Conteos con el administrador: Ejecución con 13 opciones en newallcenter-dev1 y 12
+  en creval-dev, como pide M120-01. El usuario de prueba ve una menos, «Asistencia de
+  personal propio», porque no tiene el rol nativo de asistencias.
 - «Sedes de obra» y «Colores del Gantt» no salen al usuario de prueba porque no tiene
   acceso a sus modelos (nómina de construcción y Gantt). El administrador las ve.
 
