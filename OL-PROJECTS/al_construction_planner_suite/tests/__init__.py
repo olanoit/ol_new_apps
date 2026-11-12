@@ -84,3 +84,4 @@ from . import test_package_120_features
 from . import test_package_120_levels
 from . import test_package_120_catalogs
 from . import test_package_120_screens
+from . import test_review_roles

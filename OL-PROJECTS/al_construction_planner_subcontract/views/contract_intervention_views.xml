@@ -75,7 +75,7 @@
                 <field name="date"/>
                 <field name="project_id"/>
                 <field name="partner_id"/>
-                <field name="purchase_order_id"/>
+                <field name="purchase_order_id" groups="purchase.group_purchase_user,account.group_account_invoice,account.group_account_readonly"/>
                 <field name="amount_valued" sum="Total"/>
                 <field name="amount_released" sum="Total"/>
                 <field name="user_id" optional="show"/>
@@ -96,7 +96,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="purchase_order_id"/>
+                            <field name="purchase_order_id" groups="purchase.group_purchase_user,account.group_account_invoice,account.group_account_readonly"/>
                             <field name="partner_id"/>
                             <field name="project_id"/>
                         </group>
@@ -159,7 +159,7 @@
                 <field name="name"/>
                 <field name="project_id"/>
                 <field name="partner_id"/>
-                <field name="purchase_order_id"/>
+                <field name="purchase_order_id" groups="purchase.group_purchase_user,account.group_account_invoice,account.group_account_readonly"/>
                 <group>
                     <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
                     <filter string="Contratista" name="group_partner" context="{'group_by': 'partner_id'}"/>

@@ -397,6 +397,17 @@ class TestPricesSupply(PlannerCommon):
             'price': 239.42})
         return week0
 
+    def test_supply_board_for_executor(self):
+        """Quien ejecuta abre «Abastecimiento de la obra» aunque el informe de
+        precios sea de quien planifica; sin «Ve montos» no ve los precios
+        (revisión por roles del 12-nov-2026)."""
+        self._supply_setup()
+        executor = new_test_user(self.env, login='supply_executor_120',
+                                 groups='base.group_user,al_construction_planner.group_planner_user')
+        data = self.env['construction.supply.board'].with_user(executor).get_board(self.project.id)
+        self.assertTrue(data['rows'])
+        self.assertFalse(data['show_amounts'])
+
     def test_supply_board(self):
         week0 = self._supply_setup()
         Board = self.env['construction.supply.board']

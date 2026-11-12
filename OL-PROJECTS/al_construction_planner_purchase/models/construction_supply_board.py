@@ -112,8 +112,10 @@ class ConstructionSupplyBoard(models.AbstractModel):
 
         stock = self._get_free_stock(project, company, products)
         on_order = self._get_on_order(project, company, products)
-        last_prices = self.env['construction.purchase.price.report']._get_last_prices(
-            products, company, today)
+        # sudo: el informe de precios es de quien planifica o valida; el
+        # tablero lo usa quien ejecuta y oculta los montos sin «Ve montos».
+        report_sudo = self.env['construction.purchase.price.report'].sudo()
+        last_prices = report_sudo._get_last_prices(products, company, today)
         threshold = company.construction_price_alert_pct
         Mixin = self.env['construction.plan.supply.mixin']
         for product in products.sorted('display_name'):
