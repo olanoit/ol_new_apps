@@ -108,6 +108,6 @@ pasos, la recepción solo existe cuando la salida se validó, así que la salida
 
 | Código | Commit | Versión | Pruebas | Diferencias |
 |---|---|---|---|---|
-| M121-01 | (este commit) | material_request 37, furniture 31 | `TestDispatchTransit121` | Dirección de entrega desde la venta o el cliente |
-| M121-02 | (este commit) | material_request 37, portal 16, furniture 31 | `TestDispatchTransit121`, `TestPortalReception121` | Aviso por la acción programada al momento |
+| M121-01 | 23be35d5 | material_request 37, furniture 31 | `TestDispatchTransit121` | Dirección de entrega desde la venta o el cliente |
+| M121-02 | 23be35d5 | material_request 37, portal 16, furniture 31 | `TestDispatchTransit121`, `TestPortalReception121` | Aviso por la acción programada al momento |
 | M121-03 | — | — | — | Pendiente de decisión |
