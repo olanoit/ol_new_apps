@@ -334,6 +334,7 @@ módulo | versión | licencia | resumen
 [purchase_request](OL-THIRD-PARTY/purchase_request/) | 20.0.1.0.3 | LGPL-3 | Use this module to have notification of requirements of materials and/or external services and keep track of such requirements.
 [purchase_tier_validation](OL-THIRD-PARTY/purchase_tier_validation/) | 20.0.1.0.0 | AGPL-3 | Extends the functionality of Purchase Orders to support a tier validation process.
 [queue_job](OL-THIRD-PARTY/queue_job/) | 20.0.2.1.0 | LGPL-3 | Job Queue
+[zxs_entp_theme](OL-THIRD-PARTY/zxs_entp_theme/) | 20.0.1.0.0 | LGPL-3 | Enterprise-style Odoo 20 web client for Community — home menu, purple theme, global search, and dark mode.
 [//]: # (end addons-all)
 
 Licencias
