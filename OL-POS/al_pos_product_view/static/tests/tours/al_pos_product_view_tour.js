@@ -3,12 +3,16 @@
 import { registry } from "@web/core/registry";
 import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
 import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
-import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
 
 // Selectores de los elementos introducidos por al_pos_product_view.
 const GridOption = ".alpv-view-switch__option:eq(0)";
 const ListOption = ".alpv-view-switch__option:eq(1)";
-const SearchInput = ".pos-rightheader .form-control > input";
+// El buscador nativo va en `.pos-rightheader`; con al_pos_theme instalado, en
+// escritorio pasa a la izquierda de la barra (`.alpt-navbar-search`). El
+// selector cubre las dos ubicaciones, por eso no se usa
+// ProductScreen.searchProduct, que solo busca la nativa.
+const SearchInput =
+    ".pos-rightheader .form-control > input, .alpt-navbar-search .form-control > input";
 const FiltersBtn = ".alpv-catalog-filter__toggle";
 const StockFacet = ".alpv-filter-facet[data-facet='stock']";
 const ListRow = ".pos-product-list-row";
@@ -98,7 +102,18 @@ registry.category("web_tour.tours").add("al_pos_product_view_tour", {
             },
 
             // ----- Stock en vivo en la fila (Desk Pad: almacenable con 5) -----
-            ProductScreen.searchProduct("Desk Pad"),
+            {
+                content: "Buscar Desk Pad en el buscador",
+                trigger: SearchInput,
+                run: "edit Desk Pad",
+            },
+            {
+                // El buscador aplica el texto tras 500 ms (debounce). Si se
+                // hace clic antes, el texto pendiente vuelve a llenarlo
+                // después de vaciarlo.
+                content: "La búsqueda ya filtró el catálogo",
+                trigger: `.product-list--rows:not(:has(${ListRowName}:contains(Desk Organizer)))`,
+            },
             {
                 content: "La fila de Desk Pad muestra su stock en verde",
                 trigger: `${ListRow}:has(.pos-product-list-row__name:contains(Desk Pad)) .pos-product-list-row__stock.text-bg-success`,
@@ -112,7 +127,7 @@ registry.category("web_tour.tours").add("al_pos_product_view_tour", {
             },
             {
                 content: "El buscador vuelve a estar vacío",
-                trigger: `body:not(:has(${SearchInput}:value(Desk Pad)))`,
+                trigger: "body:not(:has(.pos-rightheader .form-control > input:value(Desk Pad))):not(:has(.alpt-navbar-search .form-control > input:value(Desk Pad)))",
             },
 
             // ----- Filtro de stock y su faceta -----
