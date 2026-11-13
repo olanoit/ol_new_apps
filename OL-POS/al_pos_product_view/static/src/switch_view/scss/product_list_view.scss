@@ -26,6 +26,61 @@
     }
 }
 
+// --- Control segmentado «Cuadrícula | Lista» y «Actualizar stock» ---------
+.alpv-view-switch__option.active {
+    background-color: rgba($primary, 0.1);
+    border-color: $primary;
+    color: $primary;
+    font-weight: $font-weight-bold;
+    // El botón activo queda por encima para que su borde no lo tape el vecino.
+    z-index: 1;
+}
+
+// Botón redondo de solo icono, del tamaño del botón de información de las filas.
+.alpv-view-switch__refresh-stock {
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+// Mensaje cuando los filtros del catálogo lo dejan vacío.
+.alpv-no-match {
+    color: $o-gray-600;
+}
+
+// --- Badge de stock de las tarjetas de la cuadrícula -----------------------
+.alpv-card-stock {
+    z-index: 2;
+    font-size: 0.7rem;
+    font-weight: 500;
+    max-width: calc(100% - 2.5rem); // deja sitio al botón de información
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+// --- Precio y desglose de la tarifa en las filas ---------------------------
+.alpv-list-row__price-block {
+    flex-shrink: 0;
+    min-width: 5rem;
+    max-width: 45%;
+
+    @media (max-width: 575.98px) {
+        min-width: 4rem;
+    }
+}
+
+// Envuelve a una segunda línea en vez de recortarse; el pequeño margen final
+// deja dentro de la caja el saliente del último glifo en cursiva.
+.alpv-list-row__price-detail {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    padding-inline-end: 0.15em;
+}
+
 // --- Contenedor de la lista de productos -------------------------------
 .product-list--rows {
     display: flex;
@@ -101,7 +156,6 @@
     }
 
     &__price {
-        min-width: 5rem;
         white-space: nowrap;
     }
 
@@ -111,6 +165,7 @@
     }
 
     &__info-btn {
+        flex-shrink: 0;
         width: 2rem;
         height: 2rem;
         display: inline-flex;
@@ -138,7 +193,6 @@
         }
 
         &__price {
-            min-width: 4rem;
             font-size: 0.9rem;
         }
 

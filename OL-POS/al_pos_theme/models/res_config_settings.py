@@ -15,3 +15,7 @@ class ResConfigSettings(models.TransientModel):
     pos_al_theme_color_background = fields.Char(related="pos_config_id.al_theme_color_background", readonly=False)
     pos_al_theme_category_toggle = fields.Boolean(
         related="pos_config_id.al_theme_category_toggle", readonly=False)
+    pos_al_theme_numpad_mode = fields.Selection(
+        related="pos_config_id.al_theme_numpad_mode", readonly=False)
+    pos_al_theme_qty_edit_mode = fields.Selection(
+        related="pos_config_id.al_theme_qty_edit_mode", readonly=False)

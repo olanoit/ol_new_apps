@@ -31,4 +31,21 @@
 
     </t>
 
+    <!--
+        Badge de stock en las tarjetas de la cuadrícula: la misma píldora que
+        las filas de la lista, verde con stock en la caja y rojo sin él.
+        Arriba a la izquierda (el botón de información va a la derecha y la
+        cantidad en carrito abajo). No sale en el configurador de combos.
+    -->
+    <t t-name="al_pos_product_view.ProductCardStock"
+       t-inherit="point_of_sale.ProductCard"
+       t-inherit-mode="extension">
+        <xpath expr="//article" position="inside">
+            <span t-if="!props.isComboPopup and showStock"
+                  t-attf-class="alpv-card-stock badge rounded-pill position-absolute top-0 start-0 m-1 {{ outOfStock ? 'text-bg-danger' : 'text-bg-success' }}"
+                  t-att-title="stockTitle"
+                  t-esc="stockLabel"/>
+        </xpath>
+    </t>
+
 </templates>

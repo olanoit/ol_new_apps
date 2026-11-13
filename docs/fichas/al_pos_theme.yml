@@ -135,6 +135,27 @@ pasos:
       - "Los botones de otros módulos siguen ahí: vendedor (`al_pos_vendedor`) y boleta o factura (`al_l10n_pe_edi_pos`)."
       - En teléfono y tablet vertical el pago sigue en su propia pantalla, como en el TPV estándar.
     imagen: screenshots/05-pago.png
+  - titulo: Medios de pago y montos rápidos
+    ruta: Pantalla de venta ▸ Pago
+    texto: >-
+      Los medios de pago van en una sola fila de tarjetas compactas. Al tocar
+      uno se agrega su línea de pago y la tarjeta se marca con «✓ monto»;
+      tocarlo otra vez (o su **×**) quita los pagos sin procesar de ese medio.
+      Con efectivo aparecen montos rápidos: **Exacto** y los redondeos a los
+      billetes de la caja.
+    puntos:
+      - "Un cobro ya procesado por un terminal no se quita desde la tarjeta: se usan las acciones de la línea de pago."
+      - "Si queda saldo después de un cobro procesado, tocar el medio agrega una línea por el saldo."
+      - "Los montos rápidos usan Punto de venta ▸ Configuración ▸ Monedas/billetes; sin billetes cargados no se muestran."
+  - titulo: Teclado y cantidades en la línea
+    ruta: Pantalla de venta
+    texto: >-
+      La línea seleccionada del ticket muestra el basurero y los botones -/+;
+      al tocar la cantidad se puede escribir. Sobre el teclado se indica qué
+      se está editando y el botón **Ocultar teclado**; plegado, un botón lo
+      vuelve a abrir.
+    puntos:
+      - "Ajustes ▸ Apariencia ▸ Teclado numérico y Edición de cantidad, por caja."
   - titulo: Órdenes
     ruta: Punto de venta ▸ Abrir caja ▸ Órdenes
     texto: La lista de órdenes y su detalle con el mismo diseño.
@@ -185,6 +206,8 @@ campos:
       - [Secundario, Títulos e inicio del degradado de la pantalla de bloqueo., "#1E293B", "Conviene un tono oscuro"]
       - [Acento, "Descuentos, avisos y filo de las tarjetas.", "#0EA5E9", "—"]
       - [Fondo, Fondo general en modo claro., "#F8FAFC", En modo oscuro se usa el fondo oscuro del tema]
+      - [Teclado numérico, "Teclado bajo el ticket y en el pago: visible, oculto con botón para abrirlo o sin teclado.", Visible, "Sin teclado, la cantidad se cambia con -/+ en la línea"]
+      - [Edición de cantidad, "Qué pasa al tocar la cantidad de la línea seleccionada: escribirla en la línea o abrir el teclado en pantalla.", Automático, "Automático: en la línea si el equipo tiene mouse"]
 
 funcionalidades:
   - grupo: Marca
@@ -202,6 +225,14 @@ funcionalidades:
       - Modo claro y oscuro.
       - Pantalla de venta en tres columnas en escritorio y tablet horizontal.
       - Pago dentro del panel de la orden.
+  - grupo: Venta y pago
+    items:
+      - "Teclado numérico visible, plegable u oculto, por caja; el mismo estado en la venta y en el pago."
+      - "En la línea seleccionada: quitar, -/+ y cantidad editable (en la línea o con el teclado en pantalla)."
+      - "Medios de pago en una fila compacta; se marcan al usarse («✓ monto») y otro clic los quita."
+      - "Saldo pendiente tras un cobro con tarjeta ya procesado: otro clic en el medio agrega la línea por el saldo."
+      - "Montos rápidos de efectivo (exacto y redondeos) según las monedas y billetes de la caja."
+      - "Categorías con el botón «Todas» y la categoría actual marcada."
   - grupo: Compatibilidad
     items:
       - Solo depende del Punto de venta estándar.
@@ -234,6 +265,19 @@ faq:
       nombre, logo y colores.
 
 novedades:
+  - version: '8.20261027'
+    fecha: 13/11/2026
+    cambios:
+      - "Teclado numérico por caja (Ajustes ▸ Apariencia): visible, oculto con botón para abrirlo o sin teclado; el mismo estado en la venta y en el pago, y sin línea seleccionada queda deshabilitado en vez de desaparecer."
+      - "Línea seleccionada del ticket con quitar, -/+ y cantidad editable; «Edición de cantidad» elige entre escribir en la línea, teclado en pantalla o automático."
+      - "El ticket ya no salta al cambiar cantidades: sólo se desplaza si la línea seleccionada no se ve y la selección no parpadea."
+      - "Medios de pago en una fila compacta con desplazamiento horizontal; los que tienen pago se marcan con «✓ monto» y otro clic (o la ×) quita sus pagos sin procesar."
+      - "Tras un cobro ya procesado con saldo pendiente, tocar el medio agrega una línea por el saldo sin tocar lo cobrado."
+      - "Montos rápidos de efectivo en el pago: exacto y redondeos a los billetes de la caja."
+      - "Colores de la marca en los filtros del catálogo, las facetas, el control Cuadrícula | Lista y las fichas de stock por almacén de la vista de productos."
+      - "Categorías con el botón «Todas», marca en la categoría actual y borde en sus ancestros."
+      - "El indicador de sincronización de la barra superior ya no parpadea con cada llamada corta al servidor."
+      - "La pantalla del cliente muestra el cambio sin signo menos."
   - version: '7.20261027'
     fecha: 27/10/2026
     cambios:

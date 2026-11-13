@@ -21,7 +21,8 @@ cliente.
 
 | # | Prueba | Cómo | Esperado |
 |---|---|---|---|
-| A1 | Tests del módulo | `odoo-bin -c cfg/my/pe.cfg -d ol_pe_v19 -u al_pos_theme --test-enable --test-tags /al_pos_theme --stop-after-init --http-port=18069` | `0 failed, 0 error(s) of 9 tests` |
+| A1 | Tests del módulo | `odoo-bin -c cfg/my/pe.cfg -d ol_pe_v19 -u al_pos_theme --test-enable --test-tags /al_pos_theme --stop-after-init --http-port=18069` | `0 failed, 0 error(s) of 15 tests` |
+| A1b | Medios de pago y montos rápidos sin Odoo | `node --experimental-vm-modules --test OL-POS/al_pos_theme/tests/test_payment_controls.mjs` (desde la raíz del repositorio) | `pass 50`, `fail 0` |
 | A2 | Instalación limpia | `-i al_pos_theme` en una base desechable con `point_of_sale` | Sin errores; campos `al_theme_*` creados |
 | A3 | Desinstalación limpia | Desinstalar desde Aplicaciones en la base desechable | 0 campos, 0 vistas, 0 columnas `al_theme_*`; el PdV vuelve al aspecto original |
 
@@ -54,6 +55,11 @@ cliente.
 | C6 | Pagar en efectivo con +10/+20/+50 | "Cambio" en verde con el monto correcto |
 | C7 | Pago múltiple: parte efectivo + parte Transbank/tarjeta | "Restante" en rojo hasta completar; luego se habilita *Validar* |
 | C8 | **(CPE)** Validar | "Pago exitoso", recibo con la serie y número del comprobante y su QR; impresión ESC/POS en blanco y negro legible |
+| C5d | Tocar *Efectivo*, luego otra vez *Efectivo* | Primer toque: línea de pago y tarjeta marcada «✓ monto»; segundo toque: se quita la línea (no se agrega otra) |
+| C5e | Pago dividido: *Efectivo* y *Tarjeta*; luego la × de *Efectivo* | Quedan sólo los pagos con tarjeta; la × no aparece en cobros ya procesados por un terminal |
+| C5f | Cobro con terminal procesado (`done`) por menos del total; tocar el mismo medio | Agrega una línea por el saldo; el cobro hecho no cambia. Sin saldo: aviso, no agrega ni quita |
+| C5g | Con 5 o más métodos de pago en la caja | Una sola fila de tarjetas que se desliza en horizontal; las líneas de pago conservan su altura |
+| C5h | Efectivo con S/ 37.50 por cobrar | Montos rápidos «Exacto · S/ 40.00 · S/ 50.00 · S/ 100.00» (según Monedas/billetes); al tocar uno, el cambio se calcula |
 | C9 | Nueva orden | Vuelve a la pantalla de productos con la orden vacía ("La orden está vacía") |
 
 ## D. Cliente, notas y acciones
@@ -99,6 +105,12 @@ cliente.
 | H2 | Recargar `/pos/ui/<id TPV 2>` | Nueva marca aplicada sin actualizar el módulo; `TPV 1` no cambia |
 | H3 | Primario muy claro (p.ej. `#A7F3D0`) | Texto de los botones primarios pasa a oscuro automáticamente (contraste AA) |
 | H4 | Modo oscuro con primario oscuro (p.ej. `#1E293B`) | El primario se aclara en oscuro hasta ser legible |
+| H5 | Teclado numérico = *Oculto, se puede abrir*; abrir el TPV | Bajo el ticket, botón «Teclado: cantidad, % de descuento y precio»; al abrirlo en la venta queda abierto también en el pago (y al ocultarlo, al revés) |
+| H6 | Teclado numérico = *Sin teclado* | No hay teclado en la venta ni en el pago; la cantidad se cambia con -/+ de la línea seleccionada |
+| H7 | Línea seleccionada: −, +, basurero; tocar la cantidad con *Edición de cantidad* = *Escribir en la línea* y luego *Teclado en pantalla* | −/+ cambian la cantidad (0 quita la línea); en la línea: Enter aplica, Escape cancela; en pantalla: teclado del TPV. Las líneas no seleccionadas no muestran controles |
+| H8 | Ticket largo: cambiar la cantidad de una línea visible | La lista no se desplaza ni parpadea; la línea sigue en su lugar |
+| H9 | Categorías: elegir una subcategoría y luego *Todas* | ✓ en la categoría actual, borde en sus ancestros; *Todas* vuelve al catálogo completo sin borrar la búsqueda. Sin categorías PdV no aparece *Todas* ni el riel |
+| H10 | Pantalla del cliente pagando de más en efectivo | El cambio se ve sin signo menos |
 
 ## I. Diseño responsivo y accesibilidad
 
@@ -113,12 +125,12 @@ cliente.
 
 | Bloque | Pruebas | Resultado | Observaciones |
 |---|---|---|---|
-| A. Automáticas | 3 | | |
+| A. Automáticas | 4 | | |
 | B. Marca blanca | 10 | | |
-| C. Venta y pagos | 9 | | |
+| C. Venta y pagos | 14 | | |
 | D. Cliente y acciones | 4 | | |
 | E. Devoluciones | 3 | | |
 | F. Sesión de caja | 4 | | |
 | G. Offline | 4 | | |
-| H. Configuración | 4 | | |
+| H. Configuración | 10 | | |
 | I. Responsivo / accesibilidad | 4 | | |

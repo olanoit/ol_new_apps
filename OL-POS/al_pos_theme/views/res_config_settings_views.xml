@@ -33,6 +33,28 @@
                              help="Botón en la caja para mostrar u ocultar la barra de categorías de productos. Vuelva a abrir el TPV para aplicar el cambio.">
                         <field name="pos_al_theme_category_toggle"/>
                     </setting>
+                    <setting id="al_theme_numpad_mode" string="Teclado numérico"
+                             help="Teclado bajo el ticket (cantidad, % de descuento y precio) y en el pago. Vuelva a abrir el TPV para aplicar el cambio.">
+                        <div class="content-group">
+                            <div class="mt8">
+                                <field name="pos_al_theme_numpad_mode" widget="radio"/>
+                            </div>
+                            <div class="text-muted mt8" invisible="pos_al_theme_numpad_mode != 'none'">
+                                Sin teclado, las cantidades se cambian con los botones -/+ de la línea seleccionada; el descuento y el precio manuales no se editan desde el ticket.
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="al_theme_qty_edit_mode" string="Edición de cantidad"
+                             help="Qué pasa al tocar la cantidad de la línea seleccionada del ticket. Vuelva a abrir el TPV para aplicar el cambio.">
+                        <div class="content-group">
+                            <div class="mt8">
+                                <field name="pos_al_theme_qty_edit_mode" widget="radio"/>
+                            </div>
+                            <div class="text-muted mt8">
+                                Automático: en la línea si el equipo tiene mouse; teclado en pantalla si es solo táctil.
+                            </div>
+                        </div>
+                    </setting>
                     <setting id="al_theme_colors" string="Colores"
                              help="El contraste del texto sobre los botones se ajusta solo. Vuelva a abrir el TPV para aplicar los cambios.">
                         <div class="content-group">

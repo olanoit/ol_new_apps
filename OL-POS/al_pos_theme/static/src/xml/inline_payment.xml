@@ -35,7 +35,31 @@
                 <t t-call="point_of_sale.PaymentScreenButtons"/>
             </div>
             <div class="alpt-inline-payment__footer d-flex flex-column">
-                <Numpad buttons="getNumpadButtons()"/>
+                <!-- Montos rápidos de efectivo según las monedas y billetes de la caja. -->
+                <div t-if="alptQuickAmounts.length" class="alpt-quick-amounts">
+                    <button t-foreach="alptQuickAmounts" t-as="quick" t-key="quick.value"
+                            type="button" class="alpt-quick-amount btn btn-secondary"
+                            t-on-click="() => this.alptSetQuickAmount(quick.value)"
+                            t-esc="quick.label"/>
+                </div>
+                <!-- Teclado de montos: mismo estado plegado/abierto y misma
+                     configuración de la caja que el de la venta. -->
+                <t t-if="alptNumpadMode !== 'none'">
+                    <t t-if="alptNumpadOpen">
+                        <div class="alpt-numpad-bar justify-content-end">
+                            <button type="button" class="alpt-numpad-toggle btn btn-link"
+                                    aria-expanded="true" t-on-click="() => this.alptToggleNumpad()">
+                                Ocultar teclado
+                            </button>
+                        </div>
+                        <Numpad buttons="getNumpadButtons()"/>
+                    </t>
+                    <button t-else="" type="button" class="alpt-numpad-open btn btn-secondary"
+                            aria-expanded="false" t-on-click="() => this.alptToggleNumpad()">
+                        <i class="fa fa-keyboard-o" aria-hidden="true"/>
+                        <span>Teclado: monto</span>
+                    </button>
+                </t>
                 <t t-call="point_of_sale.PaymentScreenValidate"/>
             </div>
         </div>

@@ -83,6 +83,37 @@ class TestPosThemeConfig(TransactionCase):
         records = self.env["pos.config"]._load_pos_data_read(self.config, self.config)
         self.assertTrue(records[0]["al_theme_category_toggle"])
 
+    def test_numpad_and_qty_edit_defaults(self):
+        # Sin configurar: teclado visible y edición de cantidad automática.
+        self.assertEqual(self.config.al_theme_numpad_mode, "visible")
+        self.assertEqual(self.config.al_theme_qty_edit_mode, "auto")
+
+    def test_numpad_and_qty_edit_reach_the_pos(self):
+        """js/sale_screen.js lee ambos campos de pos.config en la caja."""
+        self.config.write({
+            "al_theme_numpad_mode": "collapsed",
+            "al_theme_qty_edit_mode": "inline",
+        })
+        records = self.env["pos.config"]._load_pos_data_read(self.config, self.config)
+        self.assertEqual(records[0]["al_theme_numpad_mode"], "collapsed")
+        self.assertEqual(records[0]["al_theme_qty_edit_mode"], "inline")
+
+    def test_numpad_and_qty_edit_from_settings(self):
+        """Ajustes ▸ Apariencia escribe en la caja seleccionada (campos relacionados)."""
+        settings = self.env["res.config.settings"].create({"pos_config_id": self.config.id})
+        settings.write({
+            "pos_al_theme_numpad_mode": "none",
+            "pos_al_theme_qty_edit_mode": "popup",
+        })
+        self.assertEqual(self.config.al_theme_numpad_mode, "none")
+        self.assertEqual(self.config.al_theme_qty_edit_mode, "popup")
+
+    def test_numpad_mode_labels_in_spanish(self):
+        selection = dict(self.env["pos.config"]._fields["al_theme_numpad_mode"].selection)
+        self.assertEqual(selection["collapsed"], "Oculto, se puede abrir")
+        selection = dict(self.env["pos.config"]._fields["al_theme_qty_edit_mode"].selection)
+        self.assertEqual(selection["inline"], "Escribir en la línea")
+
     def test_theme_fields_not_in_pos_payload(self):
         records = self.env["pos.config"]._load_pos_data_read(self.config, self.config)
         for fname in AL_THEME_PAYLOAD_EXCLUDED:

@@ -41,6 +41,21 @@ sin dependencias externas.
 * Vista por defecto configurable por TPV y **preferencia persistente
   por cajero** (cascada usuario → configuración → cuadrícula),
   editable también desde las preferencias del usuario.
+
+**Stock y filtros del catálogo**
+
+* **Stock al día** de la ubicación de la caja en filas y tarjetas
+  (badge verde o rojo), refrescado al buscar, al cambiar de categoría o
+  de vista y al añadir un producto, con botón *Actualizar stock*.
+* Desplegable **Filtros** con la disponibilidad de stock (todos, con
+  stock, sin stock) y **facetas** de los filtros aplicados (stock y
+  etiquetas) que se quitan con un clic; los productos que el filtro
+  necesita y la caja no había cargado se traen del servidor.
+* Desglose de la tarifa bajo el precio de la lista (descuento o
+  recargo sobre el precio de venta) y precio correcto con reglas de
+  tarifa por variante.
+* Tarjetas de inventario por almacén en la ficha del producto.
+* Opción por caja para **limpiar la búsqueda al añadir** un producto.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -48,7 +63,7 @@ sin dependencias externas.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_pos_product_view/static/description/icon.png',
-    'version': '8.20261027',
+    'version': '9.20261027',
     'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->
     # stock_account -> stock; se declara explícito porque
@@ -81,8 +96,15 @@ sin dependencias externas.
             # --- Conmutador de vista cuadrícula/lista ---
             'al_pos_product_view/static/src/switch_view/scss/product_list_view.scss',
             'al_pos_product_view/static/src/switch_view/utils/product_price.js',
+            'al_pos_product_view/static/src/switch_view/utils/stock_badge.js',
+            # Stock en vivo y filtro de stock (antes que los componentes que
+            # leen su estado).
+            'al_pos_product_view/static/src/switch_view/overrides/pos_store/pos_store.js',
             'al_pos_product_view/static/src/switch_view/components/product_list_row/product_list_row.js',
             'al_pos_product_view/static/src/switch_view/components/product_list_row/product_list_row.xml',
+            'al_pos_product_view/static/src/switch_view/components/catalog_filter/catalog_filter.scss',
+            'al_pos_product_view/static/src/switch_view/components/catalog_filter/catalog_filter.js',
+            'al_pos_product_view/static/src/switch_view/components/catalog_filter/catalog_filter.xml',
             'al_pos_product_view/static/src/switch_view/overrides/product_screen/product_screen.js',
             'al_pos_product_view/static/src/switch_view/overrides/product_screen/product_screen.xml',
             'al_pos_product_view/static/src/switch_view/overrides/product_card/product_card.scss',

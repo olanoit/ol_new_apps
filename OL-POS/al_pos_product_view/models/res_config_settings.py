@@ -16,3 +16,9 @@ class ResConfigSettings(models.TransientModel):
         related="pos_config_id.default_product_view",
         readonly=False,
     )
+
+    # --- Catálogo -------------------------------------------------------------
+    pos_iface_clear_search_on_add = fields.Boolean(
+        related="pos_config_id.iface_clear_search_on_add",
+        readonly=False,
+    )

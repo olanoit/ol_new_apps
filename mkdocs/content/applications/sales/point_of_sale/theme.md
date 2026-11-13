@@ -31,7 +31,10 @@ contenido fiscal del ticket lo pone
    principio activo), y el catálogo gana espacio; un segundo toque la vuelve a
    mostrar. Cada dispositivo recuerda la última elección. Sin la opción, las
    categorías se ven siempre.
-4. Cierre y vuelva a abrir el TPV para ver los cambios. No hace falta
+4. Opcional: **Teclado numérico** (visible, oculto con un botón para abrirlo o
+   sin teclado) y **Edición de cantidad** (escribir en la línea, teclado en
+   pantalla o automático), descritos en [Venta y cantidades](#venta-y-cantidades).
+5. Cierre y vuelva a abrir el TPV para ver los cambios. No hace falta
    actualizar el módulo.
 
 ![Sección Apariencia con el nombre, el logo y los cuatro colores de la caja](theme/appearance-settings.png)
@@ -75,6 +78,37 @@ pantalla, como en el TPV estándar.
 
 ![Pago dentro del panel de la orden con métodos de pago, cliente, vendedor y comprobante](theme/payment-panel.png)
 
+### Medios de pago y montos rápidos
+
+Los medios de pago van en una sola fila de tarjetas compactas; con muchos
+medios, la fila se desliza en horizontal. Al tocar un medio se agrega su línea
+de pago y la tarjeta se marca con **✓ monto**. Tocarlo otra vez, o su **×**,
+quita los pagos todavía sin procesar de ese medio; los medios distintos siguen
+permitiendo dividir el pago.
+
+Un cobro ya procesado por un terminal no se quita desde la tarjeta: se anula o
+revierte con las acciones de la línea de pago. Si después de ese cobro queda
+saldo, tocar el medio agrega una línea nueva por el saldo.
+
+Con efectivo aparecen montos rápidos sobre el teclado: **Exacto** y hasta tres
+redondeos hacia arriba a las monedas y billetes de la caja (**Punto de venta ‣
+Configuración ‣ Monedas/billetes**; Odoo trae una lista por defecto). Sin
+billetes cargados no se muestran.
+
+## Venta y cantidades
+
+- La **línea seleccionada** del ticket muestra el basurero, los botones **−** y
+  **+** y la cantidad. Al tocar la cantidad, según **Edición de cantidad**, se
+  escribe en la misma línea (Enter aplica, Escape cancela) o se abre el teclado
+  en pantalla. **Automático** escribe en la línea si el equipo tiene mouse y abre
+  el teclado si la pantalla es solo táctil. Las demás líneas no cambian.
+- Con el **teclado numérico** visible, sobre él se indica qué se edita
+  (cantidad, % de descuento o precio) y de qué producto. **Ocultar teclado** lo
+  pliega en la venta y en el pago a la vez. Sin línea seleccionada, el teclado
+  queda deshabilitado en vez de desaparecer.
+- En las **categorías**, **Todas** vuelve al catálogo completo; la categoría
+  actual lleva una marca ✓.
+
 ## Modo oscuro
 
 Abra el menú ☰ de la caja y elija **Cambiar al modo oscuro** (Odoo
@@ -87,6 +121,8 @@ primario se lee mal sobre el fondo oscuro, el tema lo aclara solo.
 |---|---|---|
 | Color primario poco legible en modo oscuro | Se aclara solo | Nada |
 | Teléfono o tablet vertical | El pago sigue en su propia pantalla | Es el comportamiento estándar |
+| Tocar de nuevo un medio que ya tiene un cobro procesado y sin saldo | Aviso: no se quita | Usar las acciones de la línea de pago |
+| Caja sin monedas ni billetes | No hay montos rápidos | Cargarlos en Configuración ‣ Monedas/billetes |
 | No se ven los cambios | El TPV tiene cargada la versión anterior | Cerrar y volver a abrir la caja |
 
 !!! info "Ver también"

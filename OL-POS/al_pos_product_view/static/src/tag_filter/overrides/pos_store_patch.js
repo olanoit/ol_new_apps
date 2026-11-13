@@ -81,6 +81,33 @@ patch(PosStore.prototype, {
         this.selectedPosTagIds = this.isPosTagSelected(tagId)
             ? this.selectedPosTagIds.filter((id) => id !== tagId)
             : [...this.selectedPosTagIds, tagId];
+        // Sin await: el filtro se aplica ya sobre lo cargado y los productos
+        // que falten aparecen cuando llegan.
+        this.loadPosTagTemplates(this.selectedPosTagIds);
+    },
+
+    /**
+     * El TPV no carga todo el catálogo (`limited_product_count`): pide al
+     * servidor los productos de la caja con esas etiquetas y carga los que
+     * falten (hasta el tope de 100 visibles; ver
+     * switch_view/overrides/pos_store/pos_store.js). Solo cuenta la
+     * respuesta a la última selección. Sin conexión no hace nada: el filtro
+     * sigue sobre lo cargado.
+     */
+    async loadPosTagTemplates(tagIds) {
+        const requestId = (this._posTagLoadRequestId = (this._posTagLoadRequestId || 0) + 1);
+        if (!tagIds.length || !this.config.iface_filter_products_by_tag) {
+            return;
+        }
+        const templateIds = await this.data.silentCall(
+            "product.template",
+            "get_pos_tag_template_ids",
+            [tagIds, this.config.id]
+        );
+        if (!templateIds || requestId !== this._posTagLoadRequestId) {
+            return;
+        }
+        await this.alpvLoadMissingTemplates(templateIds);
     },
 
     clearPosTagFilter() {

@@ -27,4 +27,38 @@
         </xpath>
     </t>
 
+    <!--
+        Medios de pago (pantalla nativa y pago en el panel): el clic alterna
+        entre agregar y quitar los pagos sin procesar de ese medio; medios
+        distintos permiten pagos divididos. Se marca qué medios tienen pago
+        («✓ monto») y cuál es el de la línea seleccionada con atributos
+        `data-*` propios: el `class` lo pueden reescribir los módulos de
+        terminales y pasarelas.
+    -->
+    <t t-name="al_pos_theme.PaymentScreenMethods" t-inherit="point_of_sale.PaymentScreenMethods" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('paymentmethod')]" position="attributes">
+            <attribute name="t-on-click">() => this.alptTogglePaymentMethod(paymentMethod)</attribute>
+            <attribute name="tabindex">0</attribute>
+            <attribute name="t-on-keydown">(event) => this.alptPaymentMethodKeydown(event, paymentMethod)</attribute>
+            <attribute name="t-att-aria-pressed">alptMethodState(paymentMethod) ? 'true' : 'false'</attribute>
+            <attribute name="t-att-data-alpt-state">alptMethodState(paymentMethod)</attribute>
+            <attribute name="t-att-data-alpt-clearable">alptCanClearMethod(paymentMethod) ? 'true' : undefined</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('paymentmethod')]" position="inside">
+            <button t-if="alptCanClearMethod(paymentMethod)" type="button"
+                    class="alpt-method-clear btn btn-link"
+                    t-att-title="alptClearMethodLabel(paymentMethod)"
+                    t-att-aria-label="alptClearMethodLabel(paymentMethod)"
+                    t-on-click.stop.prevent="() => this.alptClearMethod(paymentMethod)">
+                <i class="fa fa-times" aria-hidden="true"/>
+            </button>
+        </xpath>
+        <xpath expr="//span[hasclass('payment-name')]" position="after">
+            <span t-if="alptMethodState(paymentMethod)" class="alpt-method-used">
+                <i class="fa fa-check" aria-hidden="true"/>
+                <t t-esc="alptMethodAmountLabel(paymentMethod)"/>
+            </span>
+        </xpath>
+    </t>
+
 </templates>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="al_pos_product_view.CatalogFilter">
+        <div class="alpv-catalog-filter d-flex align-items-center flex-wrap gap-1 me-auto">
+            <div class="alpv-catalog-filter__dropdown position-relative flex-shrink-0">
+                <button type="button"
+                        class="btn btn-sm btn-light pos-view-switch__btn alpv-catalog-filter__toggle d-flex align-items-center gap-2"
+                        t-att-class="{ 'alpv-catalog-filter__toggle--active': pos.alpvHasCatalogFilter }"
+                        t-att-aria-expanded="pos.alpvFiltersOpen ? 'true' : 'false'"
+                        t-on-click.stop="toggleMenu">
+                    <i class="fa fa-fw fa-filter" aria-hidden="true"/>
+                    <span class="d-none d-md-inline">Filtros</span>
+                    <span t-if="ui.isSmall and activeFilterCount"
+                          class="alpv-catalog-filter__count badge"
+                          t-esc="activeFilterCount"/>
+                </button>
+                <!-- Sigue abierto mientras se elige: los filtros se combinan. -->
+                <ul t-if="pos.alpvFiltersOpen"
+                    class="alpv-catalog-filter__menu dropdown-menu show py-2"
+                    t-on-click.stop="">
+                    <li class="dropdown-header">Disponibilidad de stock</li>
+                    <t t-foreach="optionKeys" t-as="key" t-key="key">
+                        <li class="alpv-catalog-filter__option dropdown-item cursor-pointer"
+                            t-att-class="{ 'alpv-catalog-filter__option--selected': key === pos.alpvStockFilter }"
+                            t-att-data-option="key"
+                            t-on-click="() => this.selectStock(key)">
+                            <i t-attf-class="fa fa-fw me-1 {{ key === pos.alpvStockFilter ? 'fa-dot-circle-o' : 'fa-circle-o' }}" aria-hidden="true"/>
+                            <t t-esc="options.get(key).text"/>
+                        </li>
+                    </t>
+                    <li class="px-3 pt-2">
+                        <button type="button"
+                                class="alpv-catalog-filter__clear btn btn-secondary btn-sm w-100"
+                                t-att-disabled="!pos.alpvHasCatalogFilter"
+                                t-on-click="() => pos.alpvClearCatalogFilters()">
+                            Limpiar filtros
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Facetas: un filtro aplicado por tipo, con su aspa para quitarlo. -->
+            <t t-if="!ui.isSmall">
+                <div t-foreach="facets" t-as="facet" t-key="facet.id"
+                     class="alpv-filter-facet d-flex align-items-center rounded-2 text-nowrap"
+                     t-att-data-facet="facet.id"
+                     t-att-title="facet.title">
+                    <button type="button"
+                            class="alpv-filter-facet__label d-flex align-items-center gap-1 ps-2"
+                            t-on-click.stop="() => { pos.alpvFiltersOpen = true; }">
+                        <i t-attf-class="fa {{ facet.icon }}" aria-hidden="true"/>
+                        <span class="text-truncate" t-esc="facet.text"/>
+                    </button>
+                    <button type="button"
+                            class="alpv-filter-facet__remove oi oi-close px-2"
+                            t-att-aria-label="removeLabel"
+                            t-att-title="removeLabel"
+                            t-on-click.stop="() => facet.remove()"/>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

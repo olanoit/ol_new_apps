@@ -36,3 +36,14 @@ class PosConfig(models.Model):
             "El cajero puede cambiar de vista en cualquier momento."
         ),
     )
+
+    # --- Catálogo -------------------------------------------------------------
+    iface_clear_search_on_add = fields.Boolean(
+        string="Limpiar la búsqueda al añadir",
+        default=True,
+        help=(
+            "Vacía el buscador de productos del TPV en cuanto un producto "
+            "entra al pedido (clic o lector de códigos), para buscar el "
+            "siguiente sin borrar el texto a mano."
+        ),
+    )

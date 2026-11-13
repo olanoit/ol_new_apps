@@ -6,30 +6,63 @@
        t-inherit-mode="extension">
 
         <!--
-            Añade el botón conmutador arriba del panel del catálogo, justo
-            después del selector de categorías. El icono cambia según la
-            vista activa.
+            Barra del catálogo, justo después del selector de categorías: a
+            la izquierda los filtros (desplegable «Filtros» y facetas); a la
+            derecha el control segmentado «Cuadrícula | Lista» y el botón
+            «Actualizar stock».
         -->
         <xpath expr="//CategorySelector" position="after">
             <!--
-                Envuelto en una sub-barra con su propio margen inferior y un
-                borde sutil para que el botón conmutador quede visualmente
-                separado de la lista de productos / filas que siguen.
+                Sub-barra con su propio margen inferior y un borde sutil para
+                separarla de la lista de productos / filas que siguen.
             -->
-            <div class="pos-view-switch d-flex justify-content-end align-items-center px-2 py-2 mb-2 mb-md-3 border-bottom"
+            <div class="pos-view-switch d-flex justify-content-end align-items-center gap-2 px-2 py-2 mb-2 mb-md-3 border-bottom"
                  t-if="!pos.scanning">
+                <AlpvCatalogFilter/>
+                <!-- Control segmentado (semántica de radio). -->
+                <div class="alpv-view-switch__group btn-group flex-shrink-0" role="radiogroup" aria-label="Vista de productos">
+                    <button type="button" role="radio"
+                            class="btn btn-sm btn-light pos-view-switch__btn alpv-view-switch__option d-flex align-items-center gap-2"
+                            t-att-class="{ 'active': state.viewMode !== 'list' }"
+                            t-att-aria-checked="state.viewMode !== 'list' ? 'true' : 'false'"
+                            title="Cuadrícula"
+                            t-on-click="() => this.setProductView('grid')">
+                        <i class="fa fa-fw fa-th-large" aria-hidden="true"/>
+                        <span class="d-none d-md-inline">Cuadrícula</span>
+                    </button>
+                    <button type="button" role="radio"
+                            class="btn btn-sm btn-light pos-view-switch__btn alpv-view-switch__option d-flex align-items-center gap-2"
+                            t-att-class="{ 'active': state.viewMode === 'list' }"
+                            t-att-aria-checked="state.viewMode === 'list' ? 'true' : 'false'"
+                            title="Lista"
+                            t-on-click="() => this.setProductView('list')">
+                        <i class="fa fa-fw fa-list" aria-hidden="true"/>
+                        <span class="d-none d-md-inline">Lista</span>
+                    </button>
+                </div>
+                <!--
+                    Actualizar stock ya (filas y tarjetas muestran el badge):
+                    misma petición que el refresco automático, sin esperar a
+                    que cambie el catálogo.
+                -->
                 <button type="button"
-                        class="btn btn-sm btn-light pos-view-switch__btn d-flex align-items-center gap-2"
-                        t-on-click="toggleProductView"
-                        t-att-title="switchViewLabel"
-                        t-att-aria-label="switchViewLabel">
-                    <i t-attf-class="fa fa-fw {{ state.viewMode === 'list' ? 'fa-th-large' : 'fa-list' }}"/>
-                    <span class="d-none d-md-inline">
-                        <t t-if="state.viewMode === 'list'">Cuadrícula</t>
-                        <t t-else="">Lista</t>
-                    </span>
+                        class="btn btn-sm btn-light pos-view-switch__btn alpv-view-switch__refresh-stock rounded-circle flex-shrink-0"
+                        t-att-disabled="state.refreshingStock"
+                        t-on-click="refreshStockNow"
+                        t-att-title="refreshStockLabel"
+                        t-att-aria-label="refreshStockLabel">
+                    <i t-attf-class="fa fa-refresh {{ state.refreshingStock ? 'fa-spin' : '' }}"/>
                 </button>
             </div>
+        </xpath>
+
+        <!--
+            El estado nativo «¿Aún no hay productos?» (con su botón de cargar
+            datos de ejemplo) no corresponde cuando son los filtros del
+            catálogo los que lo vacían.
+        -->
+        <xpath expr="//div[hasclass('o_view_nocontent')]" position="before">
+            <p t-elif="pos.alpvHasCatalogFilter" class="alpv-no-match">Ningún producto cumple los filtros seleccionados.</p>
         </xpath>
 
         <!--
@@ -74,6 +107,7 @@
                 product="product"
                 name="getProductName(product)"
                 priceLabel="getProductListPrice(product)"
+                priceDetail="getProductListPriceDetail(product)"
                 imageUrl="pos.config.show_product_images and this.getProductImage(product)"
                 productCartQty="this.state.quantityByProductTmplId[product.id]"
                 onClick="() => this.addProductToOrder(product)"

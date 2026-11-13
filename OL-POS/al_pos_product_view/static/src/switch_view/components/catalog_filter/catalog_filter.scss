@@ -1,0 +1,59 @@
+// =====================================================================
+// Filtros del catálogo (barra del conmutador de vista): desplegable
+// «Filtros» y facetas de los filtros aplicados.
+// =====================================================================
+
+.alpv-catalog-filter {
+    min-width: 0;
+
+    &__toggle--active {
+        border-color: $primary !important;
+        color: $primary;
+        font-weight: $font-weight-bold;
+    }
+
+    &__menu {
+        // Sobre la lista de productos que sigue a la barra.
+        top: 100%;
+        left: 0;
+        margin-top: 0.25rem;
+        z-index: $zindex-dropdown;
+        white-space: nowrap;
+    }
+
+    // Mismo color de selección que el resto del TPV, también al pasar el
+    // cursor.
+    &__option--selected {
+        &,
+        &:hover,
+        &:focus {
+            background-color: rgba($primary, 0.1);
+            color: $primary;
+            font-weight: $font-weight-bold;
+        }
+    }
+
+    &__count {
+        background-color: rgba($primary, 0.15);
+        color: $primary;
+    }
+}
+
+// Faceta de un filtro aplicado, como las del buscador del backend.
+.alpv-filter-facet {
+    min-width: 0;
+    max-width: 14rem;
+    background-color: rgba($primary, 0.1);
+    color: $primary;
+    box-shadow: inset 0 0 0 $border-width rgba($primary, 0.35);
+    font-size: 0.85rem;
+
+    &__label,
+    &__remove {
+        min-width: 0;
+        border: 0;
+        background: none;
+        color: inherit;
+        line-height: 1.8;
+    }
+}

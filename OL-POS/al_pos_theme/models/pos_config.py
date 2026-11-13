@@ -60,6 +60,19 @@ def _contrast(a, b):
     return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
 
 
+# Teclado numérico de la venta y del pago (js/sale_screen.js).
+NUMPAD_MODES = [
+    ("visible", "Visible"),
+    ("collapsed", "Oculto, se puede abrir"),
+    ("none", "Sin teclado"),
+]
+# Qué pasa al tocar la cantidad de una línea del ticket (js/sale_screen.js).
+QTY_EDIT_MODES = [
+    ("auto", "Automático"),
+    ("inline", "Escribir en la línea"),
+    ("popup", "Teclado en pantalla"),
+]
+
 DARK_BG = "#0F172A"  # $alpt-dark-bg en _variables.scss
 
 
@@ -124,6 +137,27 @@ class PosConfig(models.Model):
         string="Mostrar u ocultar categorías",
         help="Agrega en la caja un botón para mostrar u ocultar la barra de categorías de "
              "productos; cada dispositivo recuerda la última elección del cajero.",
+    )
+
+    # Estos dos sí viajan en el payload del TPV: los lee js/sale_screen.js.
+    al_theme_numpad_mode = fields.Selection(
+        NUMPAD_MODES,
+        string="Teclado numérico",
+        default="visible",
+        required=True,
+        help="Visible: siempre bajo el ticket y en el pago. Oculto, se puede abrir: empieza "
+             "plegado y el cajero lo abre con un botón. Sin teclado: no se muestra; las "
+             "cantidades se cambian con los botones -/+ de la línea seleccionada.",
+    )
+    al_theme_qty_edit_mode = fields.Selection(
+        QTY_EDIT_MODES,
+        string="Edición de cantidad",
+        default="auto",
+        required=True,
+        help="Qué pasa al tocar la cantidad de la línea seleccionada. Escribir en la línea: "
+             "el número se vuelve un campo para el teclado físico. Teclado en pantalla: se "
+             "abre el teclado numérico del TPV. Automático: en la línea si el equipo tiene "
+             "mouse; teclado en pantalla si es solo táctil.",
     )
 
     @api.constrains(*AL_THEME_DEFAULTS)

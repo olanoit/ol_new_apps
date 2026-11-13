@@ -22,4 +22,22 @@ patch(ProductInfoPopup.prototype, {
     getDisplayPrice(product) {
         return getTaxAwareProductPrice(this.pos, product);
     },
+
+    // --- Tarjetas de inventario (una por almacén) ---------------------------
+    formatStockQty(qty) {
+        return this.env.utils.formatProductQty(qty ?? 0, false);
+    },
+
+    /** Solo los almacenables pueden estar «sin stock» (misma regla que el
+     * badge de filas y tarjetas). */
+    isOutOfStock(warehouse) {
+        return !!this.props.productTemplate?.is_storable && warehouse.free_qty <= 0;
+    },
+
+    /** Almacén de esta caja: el core lo pone primero en la lista cuando el
+     * tipo de operación de la caja tiene almacén. */
+    isCurrentWarehouse(warehouse, index) {
+        const warehouseId = this.pos.config.picking_type_id?.warehouse_id?.id;
+        return warehouseId ? warehouse.id === warehouseId : index === 0;
+    },
 });

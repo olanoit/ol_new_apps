@@ -1,23 +1,84 @@
 // =====================================================================
 // ProductInfoPopup enriquecido — estilos del layout reorganizado de
-// al_pos_product_view: un banner superior (stock por almacén), un panel
+// al_pos_product_view: un banner superior (tarjetas de stock por almacén), un panel
 // unificado "Información General" a dos columnas (Categorización +
 // Identificación a la izquierda, Finanzas + Pedido a la derecha) y los
 // Productos opcionales (grilla de tarjetas) después — todo al final,
 // antes del pie.
 // =====================================================================
 
-// --- Banner superior: stock por almacén ---------------------------------
-.pos-info-banner {
-    background-color: $o-view-background-color;
-    border: 1px solid $o-gray-200;
+// --- Banner superior: una tarjeta de stock por almacén -------------------
+// Tarjetas compactas, con la cantidad como cifra más grande. `auto-fit` las
+// deja lado a lado mientras caben y las apila en popups estrechos, sea cual
+// sea el número de almacenes.
+.alpv-info-stock-grid {
+    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
 }
 
-.pos-info-banner__stock-chip {
-    font-weight: 500;
+.alpv-info-stock-card {
+    background-color: $o-view-background-color;
+    border-color: $o-gray-200 !important;
 
-    b {
-        margin: 0 0.2rem;
+    &__header {
+        font-size: 0.85rem;
+        font-weight: 600;
+        line-height: 1.3;
+
+        .fa {
+            color: $o-gray-500;
+        }
+    }
+
+    &__name {
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    &__qty {
+        margin-top: 0.35rem;
+    }
+
+    &__qty-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    &__uom {
+        font-size: 0.8rem;
+        color: $o-gray-600;
+    }
+
+    &__status {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $success;
+    }
+
+    &__forecast {
+        margin-top: 0.25rem;
+        padding-top: 0.25rem;
+        border-top: 1px solid $o-gray-200;
+        font-size: 0.8rem;
+        color: $o-gray-600;
+    }
+
+    // Almacén de esta caja: borde de color más grueso, para reconocerlo sin
+    // leer todos los nombres.
+    &--current {
+        border-color: $primary !important;
+        box-shadow: inset 0 0 0 1px $primary;
+
+        .alpv-info-stock-card__header .fa {
+            color: $primary;
+        }
+    }
+
+    &--empty {
+        .alpv-info-stock-card__qty-value,
+        .alpv-info-stock-card__status {
+            color: $danger;
+        }
     }
 }
 
@@ -52,6 +113,11 @@
     .fa {
         color: $primary;
     }
+}
+
+// Título del inventario, algo mayor que el de los demás paneles.
+.alpv-info-panel__title--large {
+    font-size: 1rem;
 }
 
 .pos-info-grid {

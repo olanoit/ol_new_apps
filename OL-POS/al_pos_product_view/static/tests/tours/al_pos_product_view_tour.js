@@ -3,9 +3,14 @@
 import { registry } from "@web/core/registry";
 import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
 import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
+import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
 
 // Selectores de los elementos introducidos por al_pos_product_view.
-const SwitchBtn = ".pos-view-switch__btn";
+const GridOption = ".alpv-view-switch__option:eq(0)";
+const ListOption = ".alpv-view-switch__option:eq(1)";
+const SearchInput = ".pos-rightheader .form-control > input";
+const FiltersBtn = ".alpv-catalog-filter__toggle";
+const StockFacet = ".alpv-filter-facet[data-facet='stock']";
 const ListRow = ".pos-product-list-row";
 const ListRowName = `${ListRow} .pos-product-list-row__name`;
 const InfoBtn = `${ListRow} .pos-product-list-row__info-btn`;
@@ -32,8 +37,8 @@ registry.category("web_tour.tours").add("al_pos_product_view_tour", {
 
             // ----- Cambio a vista de lista -----
             {
-                content: "Clic en el botón conmutador de vista",
-                trigger: SwitchBtn,
+                content: "Clic en «Lista» del control segmentado",
+                trigger: ListOption,
                 run: "click",
             },
             {
@@ -92,10 +97,61 @@ registry.category("web_tour.tours").add("al_pos_product_view_tour", {
                 trigger: ".order-container .orderline .product-name",
             },
 
+            // ----- Stock en vivo en la fila (Desk Pad: almacenable con 5) -----
+            ProductScreen.searchProduct("Desk Pad"),
+            {
+                content: "La fila de Desk Pad muestra su stock en verde",
+                trigger: `${ListRow}:has(.pos-product-list-row__name:contains(Desk Pad)) .pos-product-list-row__stock.text-bg-success`,
+            },
+
+            // ----- Añadir un producto buscado vacía el buscador -----
+            {
+                content: "Clic en la fila de Desk Pad",
+                trigger: `${ListRow}:has(.pos-product-list-row__name:contains(Desk Pad))`,
+                run: "click",
+            },
+            {
+                content: "El buscador vuelve a estar vacío",
+                trigger: `body:not(:has(${SearchInput}:value(Desk Pad)))`,
+            },
+
+            // ----- Filtro de stock y su faceta -----
+            {
+                content: "Abrir el desplegable «Filtros»",
+                trigger: FiltersBtn,
+                run: "click",
+            },
+            {
+                content: "Elegir «Con stock»",
+                trigger: ".alpv-catalog-filter__option[data-option='in_stock']",
+                run: "click",
+            },
+            {
+                content: "Aparece la faceta del filtro de stock",
+                trigger: StockFacet,
+            },
+            {
+                content: "Desk Pad (con stock) sigue en el catálogo",
+                trigger: `${ListRowName}:contains(Desk Pad)`,
+            },
+            {
+                content: "Desk Organizer (no almacenable) ya no se ve",
+                trigger: `.product-list--rows:not(:has(${ListRowName}:contains(Desk Organizer)))`,
+            },
+            {
+                content: "Quitar la faceta",
+                trigger: `${StockFacet} .alpv-filter-facet__remove`,
+                run: "click",
+            },
+            {
+                content: "Sin faceta, el catálogo vuelve a mostrar Desk Organizer",
+                trigger: `${ListRowName}:contains(Desk Organizer)`,
+            },
+
             // ----- Vuelta a la vista de cuadrícula -----
             {
-                content: "Clic de nuevo en el botón conmutador de vista",
-                trigger: SwitchBtn,
+                content: "Clic en «Cuadrícula» del control segmentado",
+                trigger: GridOption,
                 run: "click",
             },
             {
@@ -105,6 +161,10 @@ registry.category("web_tour.tours").add("al_pos_product_view_tour", {
             {
                 content: "El contenedor del modo lista desapareció de nuevo",
                 trigger: "body:not(:has(.product-list--rows))",
+            },
+            {
+                content: "La tarjeta de Desk Pad lleva el badge de stock",
+                trigger: `${GridCard}:has(.product-name:contains(Desk Pad)) .alpv-card-stock.text-bg-success`,
             },
         ].flat(),
 });

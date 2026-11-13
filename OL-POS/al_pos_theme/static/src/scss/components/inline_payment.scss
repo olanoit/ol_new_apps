@@ -46,18 +46,82 @@
         font-size: 20px;
     }
 
-    // Métodos en 2 columnas. El template nativo le pone `flex-grow-1` en
-    // escritorio (llenaba la pantalla completa); en el panel dejaba un hueco
-    // entre los métodos y las líneas de pago.
+    // El template nativo le pone `flex-grow-1` en escritorio (llenaba la
+    // pantalla completa); en el panel dejaba un hueco entre los métodos y
+    // las líneas de pago.
     .paymentmethods-container {
         flex-grow: 0 !important;     // `flex-grow-1` (!important)
         margin-bottom: 0 !important; // `mb-3` (!important)
     }
 
+    // Métodos en una sola fila de tarjetas compactas: con pocos se reparten
+    // el ancho; con muchos la fila se desplaza en horizontal (deslizar,
+    // trackpad o barra fina), así el bloque no crece con cada método y las
+    // líneas de pago conservan su altura.
     .paymentmethods {
-        display: grid !important; // `d-flex flex-column` (!important)
-        grid-template-columns: 1fr 1fr;
+        display: flex !important;        // `d-flex flex-column` (!important)
+        flex-direction: row !important;  // `flex-column` (!important)
+        flex-wrap: nowrap !important;
         gap: 6px !important;
+        padding: 2px 2px 6px !important; // aire para el borde marcado y la barra
+        margin: -2px -2px 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+        scrollbar-color: var(--alpt-border-strong) transparent;
+
+        .paymentmethod {
+            flex: 1 0 132px;
+            max-width: 200px;
+            flex-direction: column;
+            align-items: flex-start !important;    // `align-items-center` (!important)
+            justify-content: center !important;    // `justify-content-between` (!important)
+            gap: 2px;
+            padding: 8px 10px;
+            scroll-snap-align: start;
+
+            .payment-method-display {
+                flex-wrap: wrap;
+                gap: 4px 8px !important; // `gap-2` (!important)
+            }
+
+            .payment-method-icon {
+                width: 26px;
+                height: 26px;
+                padding: 5px;
+            }
+
+            .payment-name {
+                line-height: 1.2;
+            }
+
+            // «✓ monto» bajo el nombre.
+            .alpt-method-used {
+                flex-basis: auto;
+                order: 3;
+            }
+        }
+    }
+
+    // Montos rápidos de efectivo, sobre el teclado.
+    .alpt-quick-amounts {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .alpt-quick-amount {
+        min-height: $alpt-touch-min;
+        padding: 0 4px !important;
+        border-radius: var(--alpt-radius-sm);
+        font-size: $alpt-font-size-sm;
+        font-weight: $alpt-fw-strong;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .paymentlines {

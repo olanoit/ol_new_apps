@@ -130,3 +130,43 @@
 .pos .payment-screen {
     @include alpt-numpad($alpt-touch-lg);
 }
+
+// --- Barra del teclado (venta desde tablet y pago en el panel) ---------------
+// Teclado configurable por caja (Ajustes ▸ Apariencia ▸ Teclado numérico):
+// sobre el teclado abierto, qué edita y «Ocultar teclado»; plegado, un botón
+// a todo el ancho para abrirlo (js/sale_screen.js).
+.pos .alpt-numpad-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    font-size: $alpt-font-size-xs;
+    color: var(--alpt-text-muted);
+}
+
+.pos .alpt-numpad-toggle {
+    flex: none;
+    min-height: $alpt-control-sm;
+    padding: 0 6px !important;
+    font-size: $alpt-font-size-xs;
+    font-weight: $alpt-fw-medium;
+    color: var(--alpt-primary);
+    text-decoration: underline;
+}
+
+.pos .alpt-numpad-open {
+    width: 100%;
+    min-height: $alpt-touch-min;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--alpt-radius-sm);
+    font-size: $alpt-font-size-sm;
+    font-weight: $alpt-fw-medium;
+
+    .fa {
+        font-size: 16px;
+    }
+}

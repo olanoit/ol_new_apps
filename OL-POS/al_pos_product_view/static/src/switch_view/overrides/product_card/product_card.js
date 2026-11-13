@@ -4,6 +4,7 @@ import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
 import { usePos } from "@point_of_sale/app/hooks/pos_hook";
 import { ProductCard } from "@point_of_sale/app/components/product_card/product_card";
+import { StockBadgeMixin } from "@al_pos_product_view/switch_view/utils/stock_badge";
 
 /**
  * Patch de ProductCard para mostrar un pequeño botón de "información" en
@@ -32,3 +33,7 @@ patch(ProductCard.prototype, {
         this.pos.onProductInfoClick(this.props.product);
     },
 });
+
+// Mismo badge de stock que las filas de la lista (verde con stock en la
+// caja, rojo sin él), pintado en product_card.xml.
+patch(ProductCard.prototype, StockBadgeMixin);

@@ -404,3 +404,54 @@
         background: var(--alpt-primary-subtle, #eef2ff);
     }
 }
+
+// --- Indicador de sincronización del core (`.oe_status`) ---------------------
+// Con cada llamada al servidor (p. ej. al cambiar una cantidad) el core
+// inserta un botón con spinner al comienzo de la zona derecha de la barra:
+// aparecía y desaparecía en ~25ms, un «parpadeo». Desde tablet, mientras
+// sincroniza, va fuera del flujo (en el hueco libre a la izquierda de esa
+// zona) y sólo se ve si la llamada dura más de 0,6s. Sin conexión (ícono
+// rojo) no cambia. En teléfono, comportamiento del core.
+@include media-breakpoint-up(md) {
+    .pos .pos-topheader .status-buttons {
+        position: relative;
+    }
+
+    .pos .pos-topheader .status-buttons > .oe_status:has(.fa-spin) {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        width: 18px;
+        min-width: 0 !important;
+        height: 18px !important;   // `h-100` (!important)
+        min-height: 0 !important;
+        padding: 0 !important;     // `btn-lg` (!important)
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none;
+        opacity: 0;
+        animation: alpt-status-in .2s ease-out .6s forwards;
+
+        > span {
+            display: none; // órdenes sin sincronizar: sólo se cuentan sin conexión
+        }
+
+        .fa-spin {
+            font-size: 14px;
+            color: var(--alpt-text-muted) !important; // `text-warning` (!important)
+        }
+    }
+}
+
+@keyframes alpt-status-in {
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pos .pos-topheader .status-buttons > .oe_status:has(.fa-spin) {
+        animation-duration: 0s;
+    }
+}

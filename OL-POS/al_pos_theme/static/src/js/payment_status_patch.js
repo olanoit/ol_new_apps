@@ -1,5 +1,7 @@
 import { patch } from "@web/core/utils/patch";
 import { PaymentScreenStatus } from "@point_of_sale/app/screens/payment_screen/payment_status/payment_status";
+import { CustomerDisplayPosAdapter } from "@point_of_sale/app/customer_display/customer_display_adapter";
+import { formatCurrency } from "@point_of_sale/app/models/utils/currency";
 
 /**
  * "Cambio" sin signo menos.
@@ -16,5 +18,18 @@ patch(PaymentScreenStatus.prototype, {
             return this.env.utils.formatCurrency(Math.abs(this.order.change));
         }
         return super.amountText;
+    },
+});
+
+/**
+ * Pantalla del cliente: el mismo cambio sin signo menos («Cambio  $ 50» en
+ * vez de «$ -50»). Los datos de esa pantalla se arman en la caja.
+ */
+patch(CustomerDisplayPosAdapter.prototype, {
+    formatOrderData(order) {
+        super.formatOrderData(...arguments);
+        if (order.change) {
+            this.data.change = formatCurrency(Math.abs(order.change), order.currency);
+        }
     },
 });

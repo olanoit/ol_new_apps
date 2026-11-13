@@ -673,3 +673,77 @@ $alpt-dark-edge: rgba(255, 255, 255, .10);
         border: 1px solid var(--alpt-primary) !important;
     }
 }
+
+// --- Medios de pago en uso (xml/payment_screen.xml) --------------------------
+// Va al final para mandar sobre los esquemas de arriba (panel, teléfono,
+// pantalla completa y oscuro). El borde ya es del color primario: con pago en
+// la orden se engrosa (sombra interna, el contenido no se corre) y aparece
+// «✓ monto»; el de la línea seleccionada además lleva fondo suave.
+.pos .payment-screen .paymentmethod {
+    position: relative;
+
+    &[data-alpt-clearable="true"] {
+        padding-inline-end: $alpt-touch-min + 8px !important;
+    }
+
+    &[data-alpt-state="used"],
+    &[data-alpt-state="selected"] {
+        box-shadow: inset 0 0 0 1px var(--alpt-primary) !important;
+    }
+
+    &[data-alpt-state="selected"] {
+        background-color: var(--alpt-primary-subtle) !important;
+
+        .payment-method-icon {
+            background-color: var(--alpt-surface);
+        }
+    }
+
+    &:focus-visible {
+        outline: 0;
+        box-shadow: var(--alpt-focus-ring) !important;
+    }
+
+    .alpt-method-used {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        width: fit-content;
+        padding: 1px 7px;
+        border-radius: var(--alpt-radius-sm);
+        background-color: var(--alpt-primary);
+        color: var(--alpt-on-primary);
+        font-size: $alpt-font-size-xs;
+        font-weight: $alpt-fw-strong;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+
+        .fa {
+            font-size: 10px;
+        }
+    }
+
+    // × para quitar los pagos sin procesar de ese medio.
+    .alpt-method-clear {
+        position: absolute;
+        inset-inline-end: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: $alpt-touch-min;
+        height: $alpt-touch-min;
+        padding: 0;
+        border: 0 !important; // regla de bordes primarios de los botones del pago
+        border-radius: var(--alpt-radius-sm);
+        color: var(--alpt-text-muted);
+        text-decoration: none;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--alpt-danger);
+            background-color: var(--alpt-danger-subtle);
+        }
+    }
+}

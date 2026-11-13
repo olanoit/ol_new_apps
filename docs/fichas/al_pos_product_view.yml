@@ -4,7 +4,7 @@ subtitulo: >-
   catálogo del Punto de Venta y un conmutador entre las tarjetas de siempre y
   una lista compacta con código, etiquetas, stock y precio.
 categoria: Punto de venta · Catálogo
-etiquetas: [Filtro por etiquetas, Vista de lista, Stock en la fila, Precio con impuestos, Preferencia por cajero]
+etiquetas: [Filtro por etiquetas, Filtro de stock, Vista de lista, Stock al día, Precio con impuestos, Preferencia por cajero]
 portada: screenshots/05-lista.png
 
 destacados_intro: >-
@@ -135,13 +135,23 @@ funcionalidades:
       - Recarga de etiquetas desde el backend sin salir de la sesión, con aviso si no hay conexión.
       - Casilla **Mostrar en la barra de filtros del TPV** por etiqueta, editable en bloque en la lista.
       - Activación por punto de venta y etiquetas de ejemplo al instalar.
+      - Los productos de las etiquetas marcadas que la caja no había cargado se traen del servidor.
+  - grupo: Stock y filtros del catálogo
+    items:
+      - "Stock de la ubicación de la caja en filas y tarjetas, refrescado al buscar, al cambiar de categoría o de vista y al añadir un producto."
+      - Botón «Actualizar stock» en la barra del catálogo.
+      - "Desplegable «Filtros»: todos los productos, con stock o sin stock."
+      - Facetas de los filtros aplicados (stock y etiquetas) que se quitan con un clic.
+      - Mensaje propio cuando los filtros dejan el catálogo vacío.
+      - Opción por caja para limpiar la búsqueda al añadir un producto.
   - grupo: Vista de lista y cuadrícula
     items:
-      - Botón para alternar entre tarjetas y filas compactas.
+      - "Control segmentado «Cuadrícula | Lista» para alternar entre tarjetas y filas compactas."
+      - Desglose de la tarifa bajo el precio de la lista (descuento o recargo sobre el precio de venta).
       - "Fila con miniatura (si la caja muestra imágenes), código interno, código de barras, etiquetas, stock, cantidad en carrito y precio."
       - Precio con tarifa del pedido e impuestos incluidos o no según la configuración de la caja.
       - Botón de información en filas y tarjetas (no en el configurador de combos).
-      - "Ventana de información reorganizada: inventario por almacén arriba, productos opcionales como tarjetas y panel «Información General» en dos columnas."
+      - "Ventana de información reorganizada: una tarjeta de inventario por almacén arriba (la de la caja resaltada), productos opcionales como tarjetas y panel «Información General» en dos columnas."
   - grupo: Preferencias
     items:
       - Vista por defecto por punto de venta.
@@ -175,11 +185,11 @@ configuracion:
   - Asigne etiquetas a los productos del TPV desde la ficha del producto.
   - "En **Punto de venta ▸ Configuración ▸ Ajustes** elija la caja, la **Vista de productos por defecto** y deje marcado **Filtrar productos por etiqueta**."
   - "Si hay muchas etiquetas, desmarque **Mostrar en la barra de filtros del TPV** en las que no deban salir como chip."
+  - "Desmarque **Limpiar la búsqueda al añadir** si los cajeros prefieren conservar el texto buscado tras añadir un producto."
   - Abra o recargue la sesión del TPV.
 requisitos_nota: >-
-  Funciona en Community y Enterprise. En esta versión la ventana de
-  información del producto falla al abrirse si también está instalada la
-  integración de empleados con el TPV (`pos_hr`).
+  Funciona en Community y Enterprise, también con la integración de
+  empleados con el TPV (`pos_hr`).
 
 faq:
   - pregunta: ¿Por qué no aparece un chip para una etiqueta?
@@ -195,6 +205,12 @@ faq:
     respuesta: >-
       Solo se muestra para productos almacenables. Servicios y consumibles sin
       control de inventario siempre tendrían cero, lo que confundiría.
+  - pregunta: ¿De dónde sale el stock de filas y tarjetas?
+    respuesta: >-
+      De la ubicación de origen del tipo de operación de la caja (o de su
+      almacén si no tiene). Se pide al servidor cada vez que cambia lo que se
+      ve y al añadir un producto; el botón «Actualizar stock» lo pide al
+      momento.
   - pregunta: ¿El precio de la lista incluye IGV?
     respuesta: >-
       Depende de la configuración de impuestos de la caja: muestra el mismo
@@ -205,6 +221,16 @@ faq:
       manda la última que eligió cada usuario.
 
 novedades:
+  - version: '9.20261027'
+    fecha: 13/11/2026
+    cambios:
+      - "Stock al día de la ubicación de la caja en las filas y también en las tarjetas de la cuadrícula (badge verde o rojo), con botón «Actualizar stock»."
+      - "Desplegable «Filtros» con la disponibilidad de stock (todos, con stock, sin stock) y facetas de los filtros aplicados, también de las etiquetas, que se quitan con un clic."
+      - "El filtro por etiquetas y el de stock traen del servidor los productos que la caja aún no había cargado."
+      - "Control segmentado «Cuadrícula | Lista» y mensaje propio cuando los filtros dejan el catálogo vacío."
+      - "Bajo el precio de la lista, el descuento o recargo de la tarifa sobre el precio de venta; las reglas de tarifa por variante ya se aplican."
+      - "Ficha del producto: una tarjeta de inventario por almacén, con el de la caja resaltado."
+      - "Opción por caja «Limpiar la búsqueda al añadir» (activada por defecto)."
   - version: '8.20261027'
     fecha: 27/10/2026
     cambios:

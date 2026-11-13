@@ -161,3 +161,99 @@
     --btn-disabled-border-color: rgba(var(--alpt-primary-rgb), .35);
     border: 1px solid var(--btn-border-color) !important; // `border-0` / reglas de tarjeta (!important)
 }
+
+// --- Ticket de la venta sin parpadeo ---------------------------------------
+// El core anima `all` en la línea: al seleccionarla con −/+ el fondo pasaba
+// por el gris de hover. El cambio de selección es instantáneo, como un botón.
+.pos .product-screen .leftpane .orderline {
+    transition: none !important;
+}
+
+// --- Controles de la línea seleccionada (xml/order_summary.xml) -------------
+// Basurero y −/+ con la cantidad en medio (tocarla permite escribirla). Sólo
+// en la línea seleccionada: las demás conservan el diseño del core.
+.pos .alpt-line-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 6px 0 2px;
+    cursor: default;
+}
+
+.pos .alpt-line-remove {
+    width: $alpt-touch-min;
+    height: $alpt-touch-min;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--alpt-border-strong);
+    border-radius: var(--alpt-radius-sm);
+    background-color: var(--alpt-surface);
+    color: var(--alpt-danger);
+    font-size: 15px;
+    transition: background-color .15s, border-color .15s;
+
+    &:hover,
+    &:active {
+        background-color: var(--alpt-danger-subtle);
+        border-color: rgba(var(--alpt-danger-rgb), .45);
+    }
+}
+
+.pos .alpt-qty-stepper {
+    display: flex;
+    align-items: center;
+    flex: none;
+    border: 1px solid var(--alpt-border-strong);
+    border-radius: var(--alpt-radius-sm);
+    overflow: hidden;
+    background-color: var(--alpt-surface);
+}
+
+.pos .alpt-qty-stepper__btn {
+    width: $alpt-touch-min;
+    height: $alpt-touch-min;
+    border: 0;
+    background-color: var(--alpt-surface);
+    color: var(--alpt-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: background-color .15s;
+
+    &:hover {
+        background-color: var(--alpt-surface-2);
+    }
+
+    &:active {
+        background-color: var(--alpt-primary-subtle);
+    }
+}
+
+// La cantidad es un botón: abre el teclado (o un campo) para escribirla.
+.pos .alpt-qty-stepper__qty {
+    min-width: 44px;
+    height: $alpt-touch-min;
+    padding: 0 6px;
+    border: 0;
+    border-inline: 1px solid var(--alpt-border);
+    background-color: var(--alpt-surface-2);
+    color: var(--alpt-text);
+    cursor: text;
+    text-align: center;
+    font-size: $alpt-font-size-md;
+    font-weight: $alpt-fw-strong;
+    font-variant-numeric: tabular-nums;
+}
+
+// Cantidad en edición (modo «Escribir en la línea»): mismo tamaño, con foco.
+.pos input.alpt-qty-stepper__input {
+    width: 56px;
+    min-width: 0;
+    background-color: var(--alpt-surface);
+    outline: 2px solid var(--alpt-primary);
+    outline-offset: -2px;
+}

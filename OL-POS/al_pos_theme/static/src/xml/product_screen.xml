@@ -16,16 +16,66 @@
         <xpath expr="//CategorySelector" position="attributes">
             <attribute name="t-if">!pos.alptCategoriesHidden and pos.productsToDisplay.length > 0 and (!this.pos.isSmallProductScreen || !pos.scanning)</attribute>
         </xpath>
+
+        <!-- Teclado numérico configurable por caja (pos.config.al_theme_numpad_mode):
+             visible / oculto con botón para abrirlo / sin teclado. -->
+        <xpath expr="//Numpad" position="before">
+            <t t-if="alptNumpadMode !== 'none' and !pos.isSmallProductScreen">
+                <div t-if="alptNumpadOpen" class="alpt-numpad-bar">
+                    <span class="alpt-numpad-hint text-truncate" t-esc="alptNumpadHint"/>
+                    <button type="button" class="alpt-numpad-toggle btn btn-link"
+                            aria-expanded="true" t-on-click="() => this.alptToggleNumpad()">
+                        Ocultar teclado
+                    </button>
+                </div>
+                <button t-else="" type="button" class="alpt-numpad-open btn btn-secondary"
+                        aria-expanded="false" t-on-click="() => this.alptToggleNumpad()">
+                    <i class="fa fa-keyboard-o" aria-hidden="true"/>
+                    <span>Teclado: cantidad, % de descuento y precio</span>
+                </button>
+            </t>
+        </xpath>
+        <!-- Desde tablet el teclado abierto se ve siempre (sin línea
+             seleccionada, deshabilitado) para que el panel no cambie de alto;
+             en teléfono, condición del core. -->
+        <xpath expr="//Numpad" position="attributes">
+            <attribute name="t-if">alptNumpadOpen and (!pos.isSmallProductScreen or (!currentOrder?.isEmpty() and pos.getOrder()?.uiState.selected_orderline_uuid))</attribute>
+            <attribute name="buttons">alptNumpadButtons()</attribute>
+        </xpath>
     </t>
 
     <!--
-        Categorías: se expone el estado seleccionado como `aria-pressed`
-        (accesibilidad para lectores de pantalla + gancho CSS estable, en vez
-        de inferirlo de la combinación de clases `opacity-75 border-0`).
+        Categorías: «Todas» para volver al catálogo completo desde cualquier
+        nivel y selección inequívoca (marca ✓ y `aria-pressed` sólo en la
+        categoría actual; los ancestros, con `data-alpt-ancestor`, conservan
+        un borde para navegar la jerarquía). Lista, jerarquía y filtrado son
+        los nativos; «Todas» no borra la búsqueda.
     -->
     <t t-name="al_pos_theme.CategorySelector" t-inherit="point_of_sale.CategorySelector" t-inherit-mode="extension">
-        <xpath expr="//button[hasclass('category-button')]" position="attributes">
-            <attribute name="t-att-aria-pressed">category.isSelected ? 'true' : 'false'</attribute>
+        <xpath expr="//div[contains(@t-attf-class, 'category-list')]" position="attributes">
+            <attribute name="role">group</attribute>
+            <attribute name="aria-label">Categorías de productos</attribute>
+        </xpath>
+        <!-- Sólo con categorías: sin ellas la lista queda vacía y se oculta
+             (category_selector.scss, layout.scss). -->
+        <xpath expr="//t[@t-foreach='this.getCategoriesAndSub()']" position="before">
+            <button t-if="this.getCategoriesAndSub().length" type="button"
+                    class="category-button alpt-category-all btn btn-light d-flex align-items-center gap-2 p-1 rounded-3"
+                    t-att-aria-pressed="!pos.selectedCategory?.id ? 'true' : 'false'"
+                    title="Ver los productos de todas las categorías"
+                    t-on-click="() => this.pos.setSelectedCategory(0)">
+                <i class="fa fa-th-large" aria-hidden="true"/>
+                <span>Todas</span>
+                <i t-if="!pos.selectedCategory?.id" class="fa fa-check alpt-category-check" aria-hidden="true"/>
+            </button>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.pos.setSelectedCategory(category.id)']" position="attributes">
+            <attribute name="type">button</attribute>
+            <attribute name="t-att-aria-pressed">category.id === pos.selectedCategory?.id ? 'true' : 'false'</attribute>
+            <attribute name="t-att-data-alpt-ancestor">category.id !== pos.selectedCategory?.id and this.isAncestorOrSelected(category) ? 'true' : undefined</attribute>
+        </xpath>
+        <xpath expr="//button[@t-on-click='() => this.pos.setSelectedCategory(category.id)']" position="inside">
+            <i t-if="category.id === pos.selectedCategory?.id" class="fa fa-check alpt-category-check" aria-hidden="true"/>
         </xpath>
     </t>
 

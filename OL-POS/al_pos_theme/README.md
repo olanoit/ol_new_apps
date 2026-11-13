@@ -93,6 +93,41 @@ Desde tablet horizontal / escritorio (`lg`, ≥ 992px):
   también lo usa `pos_settle_due`. Tras validar se pasa al recibo como
   siempre.
 - En teléfono y tablet vertical se mantiene el flujo nativo por pantallas.
+- **Medios de pago** en una sola fila de tarjetas compactas (se desliza en
+  horizontal con muchos medios). El clic alterna: agrega la línea del medio o
+  quita sus pagos sin procesar (también con la **×**); medios distintos
+  permiten pagos divididos. Los medios en uso se marcan con «✓ monto» y el de
+  la línea seleccionada con fondo suave (atributos `data-alpt-state`, porque
+  los módulos de terminales reescriben el `class`). Un cobro procesado
+  (`done`) no se quita desde la tarjeta; si queda saldo, el clic agrega otra
+  línea con `addNewPaymentLine` nativo. Enter y Espacio hacen lo mismo que
+  el clic. Vale también en la pantalla de pago del teléfono.
+- **Montos rápidos de efectivo** sobre el teclado del panel: «Exacto» y hasta
+  tres redondeos hacia arriba a las monedas y billetes cargados (`pos.bill`),
+  sólo denominaciones de al menos un décimo del saldo.
+
+### Teclado numérico y cantidades
+
+Ajustes por caja en **Apariencia** (viajan en el payload del TPV; volver a
+abrir la caja para aplicarlos):
+
+| Campo | Valores | Efecto |
+|---|---|---|
+| **Teclado numérico** (`al_theme_numpad_mode`) | Visible · Oculto, se puede abrir · Sin teclado | Teclado de la venta y del pago en el panel. El estado plegado/abierto es uno solo para ambos. Sin línea seleccionada el teclado queda deshabilitado (no desaparece). En teléfono, comportamiento del core salvo *Sin teclado* |
+| **Edición de cantidad** (`al_theme_qty_edit_mode`) | Automático · Escribir en la línea · Teclado en pantalla | Al tocar la cantidad de la línea seleccionada: campo en la línea (Enter aplica, Escape cancela) o `NumberPopup`. Automático: en la línea si hay puntero fino (`any-pointer: fine`) |
+
+- La **línea seleccionada** del ticket muestra basurero, −/+ y la cantidad;
+  todo pasa por `OrderSummary.updateSelectedOrderline` (el camino del
+  teclado), así se respetan devoluciones, combos y parches de otros módulos.
+  Las demás líneas conservan el diseño del core.
+- El ticket sólo se desplaza si la línea seleccionada no se ve
+  (`block: "nearest"`) y la selección no se anima (sin parpadeo).
+- Al volver a la venta con productos y sin selección, se selecciona la última
+  línea.
+- **Categorías:** botón «Todas», ✓ en la categoría actual y borde en sus
+  ancestros (`data-alpt-ancestor`).
+- El indicador de sincronización de la barra (`.oe_status`) sólo aparece si la
+  llamada dura más de 0,6 s y fuera del flujo (desde tablet).
 
 ## 4. Personalización avanzada (desarrolladores)
 
@@ -108,13 +143,20 @@ Desde tablet horizontal / escritorio (`lg`, ≥ 992px):
 
 ## 5. Pruebas
 
-- **Automáticas** (9 tests: validación de colores, CSS seguro, contraste AA
+- **Automáticas** (15 tests: validación de colores, CSS seguro, contraste AA,
+  teclado y edición de cantidad por caja,
   en oscuro, payload, manifest PWA):
 
   ```bash
   .venv/bin/python odoo-bin -c cfg/my/pe.cfg -d ol_pe_v19 -u al_pos_theme \
       --test-enable --test-tags /al_pos_theme --stop-after-init \
       --workers=0 --http-port=18069 --gevent-port=18072
+  ```
+
+- **Medios de pago y montos rápidos, sin Odoo** (50 casos con `node`):
+
+  ```bash
+  node --experimental-vm-modules --test OL-POS/al_pos_theme/tests/test_payment_controls.mjs
   ```
 
 - **Funcionales:** [`docs/PLAN_DE_PRUEBAS.md`](docs/PLAN_DE_PRUEBAS.md)
@@ -153,6 +195,9 @@ Desde tablet horizontal / escritorio (`lg`, ≥ 992px):
 | `point_of_sale.Navbar` | Herencia OWL (logo siempre visible a la izquierda) + SCSS |
 | `point_of_sale.ProductScreen`, `CategorySelector`, `ProductCard` | Herencia OWL (`bg-secondary` → `alpt-catalog`, `aria-pressed`, imagen `contain`, precio) + SCSS |
 | `point_of_sale.OrderSummary` | Herencia OWL (slot `emptyCart`: orden vacía) |
+| `PosStore`, `ProductScreen`, `OrderSummary`, `Orderline`, `OrderDisplay` (`js/sale_screen.js`) | `patch()` JS + herencia OWL de `Orderline` y `ProductScreen` (`Numpad`): teclado por caja, controles de la línea seleccionada, desplazamiento `nearest` |
+| `point_of_sale.PaymentScreenMethods`, `PaymentScreen` (medios en uso, montos rápidos) | Herencia OWL + `patch()` JS |
+| `CustomerDisplayPosAdapter.formatOrderData` | `patch()` JS: cambio sin signo en la pantalla del cliente |
 | `PosStore.navigate`, `ProductScreen` (barcode), `AlptInlinePayment` (subclase de `PaymentScreen`) | `patch()` JS + herencia OWL de `ProductScreen`: pago en el panel derecho |
 | Distribución de 3 columnas | Sólo SCSS (`layout.scss`): `row-reverse` + CSS grid sobre los hijos existentes |
 | `Orderline`, `OrderDisplay`, `ControlButtons`, `Numpad`, `ActionpadWidget` | SCSS acotado a `.leftpane` de ProductScreen/TicketScreen (el recibo usa los mismos componentes y queda monocromo) |

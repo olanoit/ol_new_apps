@@ -20,4 +20,45 @@
         </xpath>
     </t>
 
+    <!--
+        Línea seleccionada del ticket de la venta: quitar (basurero), −/+ y
+        tocar la cantidad para escribirla (OrderSummary publica
+        `env.alptStepLine`; en Órdenes y en los recibos la línea queda como en
+        el core). Las líneas no seleccionadas conservan el diseño del core.
+        Los botones frenan los eventos de puntero para no disparar el «tocar
+        línea» (selección) ni la pulsación larga del core.
+    -->
+    <t t-name="al_pos_theme.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <xpath expr="//ul[hasclass('info-list')]" position="after">
+            <div t-if="alptShowLineActions" class="alpt-line-actions"
+                 t-on-pointerdown.stop="() => {}" t-on-pointerup.stop="() => {}">
+                <button type="button" class="alpt-line-remove" t-att-aria-label="alptRemoveLabel"
+                        t-att-title="alptRemoveLabel" t-on-click.stop="() => this.alptRemove()">
+                    <i class="fa fa-trash-o" aria-hidden="true"/>
+                </button>
+                <div class="alpt-qty-stepper" role="group" t-att-aria-label="alptStepperLabel">
+                    <button type="button" class="alpt-qty-stepper__btn" aria-label="Uno menos" title="Uno menos"
+                            t-on-click.stop="() => this.alptStep(-1)">
+                        <i class="fa fa-minus" aria-hidden="true"/>
+                    </button>
+                    <!-- Tocar la cantidad: campo en la línea (teclado físico) o
+                         teclado del TPV, según pos.config.al_theme_qty_edit_mode. -->
+                    <input t-if="alptQtyState.editing" t-ref="alptQtyInput"
+                           type="text" inputmode="decimal" autocomplete="off"
+                           class="alpt-qty-stepper__qty alpt-qty-stepper__input"
+                           aria-label="Escribir la cantidad" t-att-value="alptQtyLabel"
+                           t-on-keydown="alptOnQtyKeydown" t-on-blur="alptCommitQty"
+                           t-on-click.stop="() => {}"/>
+                    <button t-else="" type="button" class="alpt-qty-stepper__qty" aria-label="Escribir la cantidad"
+                            title="Escribir la cantidad" t-on-click.stop="() => this.alptEditQty()"
+                            t-esc="alptQtyLabel"/>
+                    <button type="button" class="alpt-qty-stepper__btn" aria-label="Uno más" title="Uno más"
+                            t-on-click.stop="() => this.alptStep(1)">
+                        <i class="fa fa-plus" aria-hidden="true"/>
+                    </button>
+                </div>
+            </div>
+        </xpath>
+    </t>
+
 </templates>

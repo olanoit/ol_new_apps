@@ -17,6 +17,11 @@ Adaptación a la suite AL del tema del TPV de Mobilize
 * **Sin rastros de Odoo**: título y favicon del TPV, app instalable con el
   nombre de la caja, recibo sin «Powered by Odoo» y mensajes del sistema con
   el nombre de la marca.
+* **Venta y pago más ágiles**: teclado numérico visible, plegable u oculto
+  por caja; −/+, cantidad editable y quitar en la línea seleccionada; medios
+  de pago en una fila compacta que se marcan al usarse y se quitan con otro
+  clic; montos rápidos de efectivo según los billetes de la caja; filtro
+  «Todas» en las categorías.
 * **Pago en el panel de la orden** (sin cambiar de pantalla), pantalla del
   cliente con la marca y compatibilidad con los módulos TPV de la suite
   (``al_pos_product_view``, ``al_pos_vendedor``, ``al_l10n_pe_edi_pos``).
@@ -27,7 +32,7 @@ Adaptación a la suite AL del tema del TPV de Mobilize
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_pos_theme/static/description/icon.png',
-    'version': '7.20261027',
+    'version': '8.20261027',
     'license': 'OPL-1',
     # Solo point_of_sale: convive con los demás módulos TPV usando selectores
     # genéricos del core (ver compat_al.scss).

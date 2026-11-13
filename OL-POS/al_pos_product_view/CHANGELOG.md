@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_product_view.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261027 — 13/11/2026
+
+- Stock al día de la ubicación de la caja en las filas y también en las tarjetas de la cuadrícula (badge verde o rojo), con botón «Actualizar stock».
+- Desplegable «Filtros» con la disponibilidad de stock (todos, con stock, sin stock) y facetas de los filtros aplicados, también de las etiquetas, que se quitan con un clic.
+- El filtro por etiquetas y el de stock traen del servidor los productos que la caja aún no había cargado.
+- Control segmentado «Cuadrícula | Lista» y mensaje propio cuando los filtros dejan el catálogo vacío.
+- Bajo el precio de la lista, el descuento o recargo de la tarifa sobre el precio de venta; las reglas de tarifa por variante ya se aplican.
+- Ficha del producto: una tarjeta de inventario por almacén, con el de la caja resaltado.
+- Opción por caja «Limpiar la búsqueda al añadir» (activada por defecto).
+
 ## 8.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

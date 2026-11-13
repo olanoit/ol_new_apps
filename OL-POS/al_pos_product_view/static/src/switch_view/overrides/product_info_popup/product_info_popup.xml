@@ -5,7 +5,7 @@
         Reorganiza el ProductInfoPopup nativo en tres áreas:
 
         1. BANNER SUPERIOR (nuevo, justo tras la cabecera, antes de la
-           Descripción) — solo stock por almacén. Movido arriba porque es lo
+           Descripción) — stock por almacén, una tarjeta por almacén. Movido arriba porque es lo
            primero que un cajero necesita ver de un vistazo.
 
         2. Justo después del banner (posición nueva, v1.4.0) — Productos
@@ -64,22 +64,39 @@
        t-inherit="point_of_sale.ProductInfoPopup"
        t-inherit-mode="extension">
 
-        <!-- ===== 1. Banner superior: stock por almacén ===== -->
+        <!-- ===== 1. Banner superior: una tarjeta de stock por almacén ===== -->
         <xpath expr="//div[hasclass('section-public-description')]" position="before">
-            <div class="pos-info-banner rounded-3 p-3 mb-3 text-start"
+            <div class="pos-info-banner mb-3 text-start"
                  t-if="props.info?.productInfo?.warehouses?.length > 0">
-                <span class="pos-info-panel__title">
+                <span class="pos-info-panel__title alpv-info-panel__title--large d-block">
                     <i class="fa fa-cubes me-1"/>
                     Inventario
                     <t t-if="pos.session.update_stock_at_closing">(al momento de apertura)</t>
                 </span>
-                <div class="d-flex flex-wrap gap-2">
-                    <span t-foreach="props.info.productInfo.warehouses" t-as="warehouse" t-key="warehouse.name"
-                          class="pos-info-banner__stock-chip badge rounded-pill text-bg-light border">
-                        <t t-esc="warehouse.name"/>:
-                        <b><t t-esc="warehouse.free_qty"/> <t t-esc="warehouse.uom"/></b>
-                        <span class="text-muted">(<t t-esc="warehouse.forecasted_quantity"/> previsto)</span>
-                    </span>
+                <div class="alpv-info-stock-grid d-grid gap-2">
+                    <t t-foreach="props.info.productInfo.warehouses" t-as="warehouse" t-key="warehouse.id or warehouse.name">
+                        <t t-set="isCurrent" t-value="isCurrentWarehouse(warehouse, warehouse_index)"/>
+                        <article t-attf-class="alpv-info-stock-card rounded-3 border p-2 {{ isCurrent ? 'alpv-info-stock-card--current' : '' }} {{ isOutOfStock(warehouse) ? 'alpv-info-stock-card--empty' : '' }}"
+                                 t-att-title="isCurrent ? 'Esta caja vende desde este almacén' : 'Otro almacén, no es el de esta caja'">
+                            <div class="alpv-info-stock-card__header d-flex align-items-start gap-2">
+                                <i t-attf-class="fa {{ isCurrent ? 'fa-map-marker' : 'fa-building-o' }} mt-1"/>
+                                <span class="alpv-info-stock-card__name flex-grow-1" t-esc="warehouse.name"/>
+                                <span t-if="isCurrent" class="alpv-info-stock-card__badge badge text-bg-primary">Esta caja</span>
+                            </div>
+                            <div class="alpv-info-stock-card__qty d-flex align-items-baseline flex-wrap gap-2">
+                                <span class="alpv-info-stock-card__qty-value" t-esc="formatStockQty(warehouse.free_qty)"/>
+                                <span class="alpv-info-stock-card__uom" t-esc="warehouse.uom"/>
+                            </div>
+                            <div class="alpv-info-stock-card__status">
+                                <t t-if="isOutOfStock(warehouse)">Sin stock</t>
+                                <t t-else="">Disponible</t>
+                            </div>
+                            <div class="alpv-info-stock-card__forecast">
+                                <i class="fa fa-line-chart me-1"/>
+                                Previsto: <b t-esc="formatStockQty(warehouse.forecasted_quantity)"/>
+                            </div>
+                        </article>
+                    </t>
                 </div>
             </div>
         </xpath>

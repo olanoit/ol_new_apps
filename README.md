@@ -238,8 +238,8 @@ módulo | versión | licencia | resumen
 [al_pos_payment_gateway](OL-POS/al_pos_payment_gateway/) | 7.20261027 | OPL-1 | Cada pasarela (Izipay, Niubiz, Culqi…) como método de pago propio del TPV: el cliente paga con el QR en su teléfono y las devoluciones vuelven a su tarjeta.
 [al_pos_pe_partner_lookup](OL-POS/al_pos_pe_partner_lookup/) | 3.20261027 | OPL-1 | En la lista de clientes del TPV, un RUC o DNI que no está registrado se crea en un clic con los datos de SUNAT/RENIEC y queda elegido para la venta.
 [al_pos_pe_wallet_qr](OL-POS/al_pos_pe_wallet_qr/) | 2.20261027 | OPL-1 | El QR de cobro de Yape, Plin u otra billetera como método de pago QR del TPV: se muestra en la caja y en la pantalla del cliente, y el cajero confirma el pago.
-[al_pos_product_view](OL-POS/al_pos_product_view/) | 8.20261027 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
-[al_pos_theme](OL-POS/al_pos_theme/) | 7.20261027 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
+[al_pos_product_view](OL-POS/al_pos_product_view/) | 9.20261027 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
+[al_pos_theme](OL-POS/al_pos_theme/) | 8.20261027 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
 [al_pos_vendedor](OL-POS/al_pos_vendedor/) | 5.20261027 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
 
 ### OL-INVENTORY
@@ -320,7 +320,7 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_base_module_info](OL-TOOLS/al_base_module_info/) | 5.20261027 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
-[al_docs_help](OL-TOOLS/al_docs_help/) | 13.20261027 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
+[al_docs_help](OL-TOOLS/al_docs_help/) | 14.20261027 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
 [al_mcp_server](OL-TOOLS/al_mcp_server/) | 11.20261027 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
 [al_report_base](OL-TOOLS/al_report_base/) | 3.20261027 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
 [al_user_role](OL-TOOLS/al_user_role/) | 1.20261113 | LGPL-3 | Administra los permisos y menús de los usuarios por roles (perfiles) con vigencia, compañía e historial

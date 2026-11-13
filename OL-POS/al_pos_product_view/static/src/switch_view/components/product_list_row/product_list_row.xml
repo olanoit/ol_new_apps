@@ -40,19 +40,26 @@
                 </small>
             </div>
 
-            <!-- Stock disponible (solo productos almacenables). -->
-            <span t-if="showStock"
-                  t-attf-class="pos-product-list-row__stock badge rounded-pill me-2 {{ outOfStock ? 'text-bg-danger' : 'text-bg-success' }}"
-                  t-esc="uom ? stockQty + ' ' + uom : stockQty"/>
+            <!-- Precio y, debajo, el desglose de la tarifa (descuento o recargo). -->
+            <div class="alpv-list-row__price-block text-end me-3">
+                <div class="pos-product-list-row__price fw-bolder" t-esc="props.priceLabel"/>
+                <small t-if="props.priceDetail"
+                       class="alpv-list-row__price-detail d-block fst-italic text-muted">
+                    <i class="fa fa-tag me-1" aria-hidden="true"/>
+                    <t t-esc="props.priceDetail"/>
+                </small>
+            </div>
 
             <!-- Badge de cantidad en carrito (replica el comportamiento de la tarjeta). -->
             <span t-if="props.productCartQty"
                   class="pos-product-list-row__qty badge bg-black text-white fs-6 me-2"
                   t-esc="props.productCartQty"/>
 
-            <!-- Precio -->
-            <div class="pos-product-list-row__price fw-bolder text-end me-2"
-                 t-esc="props.priceLabel"/>
+            <!-- Stock de la caja (solo productos almacenables), al día. -->
+            <span t-if="showStock"
+                  t-attf-class="pos-product-list-row__stock badge rounded-pill me-2 {{ outOfStock ? 'text-bg-danger' : 'text-bg-success' }}"
+                  t-att-title="stockTitle"
+                  t-esc="stockLabel"/>
 
             <!-- Botón de información -->
             <button type="button"
