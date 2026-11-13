@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_groups_form_al_user_role" model="ir.ui.view">
+        <field name="name">res.groups.form.al.user.role</field>
+        <field name="model">res.groups</field>
+        <field name="inherit_id" ref="base.view_groups_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_al_view_roles" type="object" class="oe_stat_button"
+                        icon="fa-id-badge" invisible="not al_role_count"
+                        groups="base.group_erp_manager">
+                    <field name="al_role_count" widget="statinfo" string="Roles"/>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

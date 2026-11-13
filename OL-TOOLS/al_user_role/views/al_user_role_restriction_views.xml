@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Formulario de una restricción (se abre en ventana desde el rol). -->
+    <record id="view_al_user_role_restriction_form" model="ir.ui.view">
+        <field name="name">al.user.role.restriction.form</field>
+        <field name="model">al.user.role.restriction</field>
+        <field name="arch" type="xml">
+            <form string="Restricción por modelo">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="role_id" invisible="1"/>
+                            <field name="model" invisible="1"/>
+                            <field name="model_id" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <group>
+                            <button name="action_al_sync_elements" type="object" icon="fa-refresh"
+                                    string="Releer botones, pestañas y filtros" class="btn-link"
+                                    invisible="not id or not model_id" colspan="2"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="status">
+                        La <strong>solo lectura</strong> y el <strong>dominio de registros</strong> se
+                        aplican también en el servidor, y los campos ocultos salen de los filtros
+                        personalizados y de Exportar. Lo demás es visual: oculta en pantalla, pero no
+                        quita permisos (eso lo dan los grupos). Con varios roles, aplica solo lo que
+                        tengan todos.
+                    </div>
+                    <notebook invisible="not model_id">
+                        <page string="Acciones" name="actions">
+                            <group>
+                                <group>
+                                    <field name="is_readonly"/>
+                                    <field name="hide_create"/>
+                                    <field name="hide_delete"/>
+                                </group>
+                                <group>
+                                    <field name="hide_duplicate"/>
+                                    <field name="hide_archive"/>
+                                    <field name="hide_export"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="hidden_report_ids" widget="many2many_tags"
+                                       options="{'no_create': True}"/>
+                                <field name="hidden_server_action_ids" widget="many2many_tags"
+                                       options="{'no_create': True}"/>
+                            </group>
+                        </page>
+                        <page string="Campos" name="fields">
+                            <group>
+                                <field name="hidden_field_ids" widget="many2many_tags" context="{'hide_model': True}"
+                                       options="{'no_create': True}"/>
+                                <field name="readonly_field_ids" widget="many2many_tags" context="{'hide_model': True}"
+                                       options="{'no_create': True}"/>
+                                <field name="required_field_ids" widget="many2many_tags" context="{'hide_model': True}"
+                                       options="{'no_create': True}"/>
+                                <field name="no_open_field_ids" widget="many2many_tags" context="{'hide_model': True}"
+                                       options="{'no_create': True}"/>
+                            </group>
+                        </page>
+                        <page string="Botones, pestañas y filtros" name="elements">
+                            <group>
+                                <field name="hidden_button_ids" widget="many2many_tags"
+                                       context="{'al_element_label_only': True}"
+                                       options="{'no_create': True}"/>
+                                <field name="hidden_page_ids" widget="many2many_tags"
+                                       context="{'al_element_label_only': True}"
+                                       options="{'no_create': True}"/>
+                                <field name="hidden_filter_ids" widget="many2many_tags"
+                                       context="{'al_element_label_only': True}"
+                                       options="{'no_create': True}"/>
+                            </group>
+                        </page>
+                        <page string="Dominio de registros" name="domain">
+                            <field name="domain" widget="domain" options="{'model': 'model'}"
+                                   nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

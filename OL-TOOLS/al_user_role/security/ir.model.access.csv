@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_al_user_role_manager,al.user.role administrador de permisos,model_al_user_role,base.group_erp_manager,1,1,1,1
+access_al_user_role_line_manager,al.user.role.line administrador de permisos,model_al_user_role_line,base.group_erp_manager,1,1,1,1
+access_al_user_role_history_manager,al.user.role.history administrador de permisos,model_al_user_role_history,base.group_erp_manager,1,0,0,0
+access_al_user_role_from_user_wizard_manager,al.user.role.from.user.wizard administrador de permisos,model_al_user_role_from_user_wizard,base.group_erp_manager,1,1,1,1
+access_al_user_role_from_groups_wizard_manager,al.user.role.from.groups.wizard administrador de permisos,model_al_user_role_from_groups_wizard,base.group_erp_manager,1,1,1,1
+access_al_user_role_add_users_wizard_manager,al.user.role.add.users.wizard administrador de permisos,model_al_user_role_add_users_wizard,base.group_erp_manager,1,1,1,1
+access_al_user_role_restriction_manager,al.user.role.restriction administrador de permisos,model_al_user_role_restriction,base.group_erp_manager,1,1,1,1
+access_al_user_role_view_element_manager,al.user.role.view.element administrador de permisos,model_al_user_role_view_element,base.group_erp_manager,1,1,1,1

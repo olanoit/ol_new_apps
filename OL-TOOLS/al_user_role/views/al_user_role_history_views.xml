@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_al_user_role_history_list" model="ir.ui.view">
+        <field name="name">al.user.role.history.list</field>
+        <field name="model">al.user.role.history</field>
+        <field name="arch" type="xml">
+            <list string="Historial de roles" create="0" edit="0" delete="0"
+                  decoration-success="action == 'add'" decoration-danger="action == 'unlink'">
+                <field name="create_date" string="Fecha"/>
+                <field name="create_uid" string="Modificado por"/>
+                <field name="user_id"/>
+                <field name="action"/>
+                <field name="old_role_name" string="Rol anterior"/>
+                <field name="new_role_name" string="Rol nuevo"/>
+                <field name="old_date_from" optional="hide"/>
+                <field name="new_date_from" optional="show"/>
+                <field name="old_date_to" optional="hide"/>
+                <field name="new_date_to" optional="show"/>
+                <field name="old_company_id" optional="hide" groups="base.group_multi_company"/>
+                <field name="new_company_id" optional="show" groups="base.group_multi_company"/>
+                <field name="new_is_enabled" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_al_user_role_history_form" model="ir.ui.view">
+        <field name="name">al.user.role.history.form</field>
+        <field name="model">al.user.role.history</field>
+        <field name="arch" type="xml">
+            <form string="Historial de roles" create="0" edit="0" delete="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="action"/>
+                        </group>
+                        <group>
+                            <field name="create_uid" string="Modificado por"/>
+                            <field name="create_date" string="Fecha"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Antes">
+                            <field name="old_role_id"/>
+                            <field name="old_role_name"/>
+                            <field name="old_date_from"/>
+                            <field name="old_date_to"/>
+                            <field name="old_company_id" groups="base.group_multi_company"/>
+                            <field name="old_is_enabled"/>
+                        </group>
+                        <group string="Después">
+                            <field name="new_role_id"/>
+                            <field name="new_role_name"/>
+                            <field name="new_date_from"/>
+                            <field name="new_date_to"/>
+                            <field name="new_company_id" groups="base.group_multi_company"/>
+                            <field name="new_is_enabled"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_al_user_role_history_search" model="ir.ui.view">
+        <field name="name">al.user.role.history.search</field>
+        <field name="model">al.user.role.history</field>
+        <field name="arch" type="xml">
+            <search string="Historial de roles">
+                <field name="user_id"/>
+                <field name="old_role_name" string="Rol"
+                       filter_domain="['|', ('old_role_name', 'ilike', self), ('new_role_name', 'ilike', self)]"/>
+                <field name="create_uid" string="Modificado por"/>
+                <filter name="add" string="Altas" domain="[('action', '=', 'add')]"/>
+                <filter name="edit" string="Cambios" domain="[('action', '=', 'edit')]"/>
+                <filter name="unlink" string="Bajas" domain="[('action', '=', 'unlink')]"/>
+                <separator/>
+                <filter name="create_date" string="Fecha" date="create_date"/>
+                <group>
+                    <filter name="group_user" string="Usuario" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_action" string="Acción" context="{'group_by': 'action'}"/>
+                    <filter name="group_editor" string="Modificado por" context="{'group_by': 'create_uid'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_al_user_role_history" model="ir.actions.act_window">
+        <field name="name">Historial de roles</field>
+        <field name="res_model">al.user.role.history</field>
+        <field name="path">al-user-role-history</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_al_user_role_history" name="Historial de roles"
+              parent="menu_al_user_role_root" action="action_al_user_role_history"
+              groups="base.group_erp_manager" sequence="2"/>
+</odoo>

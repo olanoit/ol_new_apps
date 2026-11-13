@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Reaplica los roles: activa o desactiva los que empiezan o vencen por fecha.
+         Diario, poco después de la medianoche (hora del administrador). -->
+    <record id="ir_cron_al_user_role_update_users" model="ir.cron">
+        <field name="name">Roles de usuario: actualizar grupos por vigencia</field>
+        <field name="model_id" ref="model_al_user_role"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_update_users()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <function model="al.user.role" name="_al_reset_cron_schedule"/>
+</odoo>

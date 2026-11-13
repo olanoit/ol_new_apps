@@ -7,6 +7,7 @@ usar el sistema, a conocer los módulos y a conectarlo con asistentes de IA.
 |---|---|
 | [Ayuda contextual](contextual_help.md) | Botón **?** en cada pantalla y asistente de la suite que abre su página de esta documentación |
 | [Ficha completa del módulo](module_info.md) | Botón en **Aplicaciones** que abre la ficha de cada módulo de la suite con su diseño, y control multicompañía de la suite |
+| [Roles de usuario](user_roles.md) | Permisos por perfiles con vigencia, compañía e historial; menús ocultos y restricciones de la interfaz y de los registros por rol |
 | [Servidor MCP](mcp_server.md) | Asistentes de IA (Claude, ChatGPT, Cursor, n8n) conectados a los datos de Odoo con los permisos del usuario, tokens con alcance y auditoría |
 
 ## Documentos impresos y modo oscuro

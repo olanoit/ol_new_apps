@@ -26,7 +26,7 @@ Una ficha cuenta como tal cuando la ha preparado
     'category': 'OL-TOOLS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_base_module_info/static/description/icon.png',
-    'version': '4.20261027',
+    'version': '5.20261027',
     'license': 'OPL-1',
     'depends': ['base'],
     'data': [

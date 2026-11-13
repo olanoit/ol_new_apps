@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_al_user_role_view_element_list" model="ir.ui.view">
+        <field name="name">al.user.role.view.element.list</field>
+        <field name="model">al.user.role.view.element</field>
+        <field name="arch" type="xml">
+            <list string="Elementos de vista" create="false" editable="bottom">
+                <header>
+                    <button name="action_al_resync" type="object" string="Releer vistas"
+                            icon="fa-refresh"/>
+                </header>
+                <field name="model_id" readonly="1"/>
+                <field name="kind" readonly="1"/>
+                <field name="label"/>
+                <field name="technical_name"/>
+                <field name="name" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_al_user_role_view_element_form" model="ir.ui.view">
+        <field name="name">al.user.role.view.element.form</field>
+        <field name="model">al.user.role.view.element</field>
+        <field name="arch" type="xml">
+            <form string="Elemento de vista" create="false">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="label"/>
+                        <h1><field name="label" placeholder="Etiqueta visible"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="model_id" readonly="1"/>
+                            <field name="kind" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="technical_name"/>
+                            <field name="name" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_al_user_role_view_element_search" model="ir.ui.view">
+        <field name="name">al.user.role.view.element.search</field>
+        <field name="model">al.user.role.view.element</field>
+        <field name="arch" type="xml">
+            <search string="Elementos de vista">
+                <field name="label"/>
+                <field name="technical_name"/>
+                <field name="model_id"/>
+                <filter name="buttons" string="Botones" domain="[('kind', '=', 'button')]"/>
+                <filter name="pages" string="Pestañas" domain="[('kind', '=', 'page')]"/>
+                <filter name="filters" string="Filtros / agrupar por" domain="[('kind', '=', 'filter')]"/>
+                <separator/>
+                <filter name="group_model" string="Modelo" context="{'group_by': 'model_id'}"/>
+                <filter name="group_kind" string="Tipo" context="{'group_by': 'kind'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_al_user_role_view_element" model="ir.actions.act_window">
+        <field name="name">Elementos de vista</field>
+        <field name="res_model">al.user.role.view.element</field>
+        <field name="path">al-user-role-view-elements</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_model': 1, 'al_element_label_only': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay elementos de vista</p>
+            <p>
+                Se registran solos al elegir un modelo en las Restricciones de un rol: son los
+                botones, pestañas y filtros que se pueden ocultar.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_al_user_role_view_element" name="Elementos de vista"
+              parent="menu_al_user_role_root" action="action_al_user_role_view_element"
+              groups="base.group_system" sequence="4"/>
+</odoo>

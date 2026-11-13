@@ -34,6 +34,13 @@ EXEMPT_FIELDS = ('l10n_pe.sire.rce.line.move_id', 'l10n_pe.sire.rvie.line.move_i
                  'l10n_pe.sire.rce.nd.line.move_id', 'l10n_pe.sire.action.wizard.move_ids',
                  'l10n_pe.hr.shift.cycle.assignment.template_id',
                  'l10n_pe.cash.forecast.line.move_line_id', 'l10n_pe.cash.closing.line.move_id')
+# Modelos cuya compañía no es la dueña del registro sino un alcance que se
+# elige: la asignación de un rol (al_user_role) dice en qué compañía aplica,
+# como company_ids en res.users. No lleva regla por compañía (el cálculo de
+# grupos debe ver todas las asignaciones del usuario) y se edita en la vista.
+EXEMPT_MODELS = ('al.user.role.line',)
+EXEMPT_VIEWS = ('al_user_role.view_al_user_role_form', 'al_user_role.view_users_form_al_user_role',
+                'al_user_role.view_al_user_role_add_users_wizard_form')
 
 
 @tagged('post_install', '-at_install')
@@ -62,7 +69,7 @@ class TestMulticompany(TransactionCase):
         with_rule = {rule.model_id.model for rule in rules if 'company' in (rule.domain_force or '')}
         missing_rule, missing_auto = [], []
         for name, model in self._own_models():
-            if 'company_id' not in model._fields:
+            if 'company_id' not in model._fields or name in EXEMPT_MODELS:
                 continue
             if name not in with_rule:
                 missing_rule.append(name)
@@ -93,7 +100,8 @@ class TestMulticompany(TransactionCase):
         for view in views:
             xmlid = view.get_external_id().get(view.id) or ''
             module = xmlid.split('.')[0]
-            if module not in self.own or view.model == 'res.config.settings':
+            if module not in self.own or view.model == 'res.config.settings' \
+                    or xmlid in EXEMPT_VIEWS:
                 continue
             for node in etree.fromstring(view.arch_db).xpath("//field[@name='company_id']"):
                 if node.getparent() is not None and node.getparent().tag == 'search':

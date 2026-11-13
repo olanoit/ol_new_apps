@@ -54,6 +54,9 @@ LICENSE_EXCEPTIONS = {
     # Paquetes de industria que instalan el planificador (LGPL-3 por él).
     'al_industry_construction': 'LGPL-3',
     'al_industry_furniture': 'LGPL-3',
+    # Adapta base_user_role, base_user_role_company y base_user_role_history
+    # (OCA, LGPL-3) y hide_menu_user / access_roles (Cybrosys, LGPL-3).
+    'al_user_role': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
 # backups/ es local (ignorada en .gitignore) y guarda respaldos de despliegue.

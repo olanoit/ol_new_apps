@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_al_user_role_form" model="ir.ui.view">
+        <field name="name">al.user.role.form</field>
+        <field name="model">al.user.role</field>
+        <field name="arch" type="xml">
+            <form string="Rol de usuario">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_users" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="role_user_count" widget="statinfo" string="Usuarios"/>
+                        </button>
+                        <button name="action_view_model_access" type="object" class="oe_stat_button" icon="fa-book">
+                            <field name="model_access_count" widget="statinfo" string="Permisos de acceso"/>
+                        </button>
+                        <button name="action_view_rules" type="object" class="oe_stat_button" icon="fa-server">
+                            <field name="rule_count" widget="statinfo" string="Reglas de registro"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Rol"/>
+                        <h1><field name="name" placeholder="p. ej. Químico farmacéutico"
+                                       help="Nombre del rol. También es el nombre de su grupo asociado."/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="exclusive_permissions"/>
+                            <field name="is_default"/>
+                            <field name="privilege_id" options="{'no_create': True}"
+                                   help="Privilegio (aplicación) bajo el que aparece el grupo del rol en la ficha del usuario. Opcional: solo ordena la pantalla, no da permisos."/>
+                        </group>
+                        <group>
+                            <!-- Oculto al crear: el grupo lo crea _inherits al guardar, y el
+                                 cliente web exige los campos requeridos visibles (aunque
+                                 sean de solo lectura). -->
+                            <field name="group_id" readonly="1" invisible="not id"
+                                   groups="base.group_no_one"/>
+                            <field name="sequence" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Grupos" name="groups">
+                            <p class="text-muted">
+                                Grupos de seguridad que otorga directamente el rol. Use
+                                <em>Agregar una línea</em> para buscarlos por nombre o por privilegio.
+                            </p>
+                            <field name="implied_ids" nolabel="1" options="{'no_create': True, 'create': False}"
+                                   help="Grupos de seguridad que otorga directamente el rol.">
+                                <list>
+                                    <field name="privilege_id" string="Privilegio"/>
+                                    <field name="name" string="Grupo"/>
+                                    <field name="comment" string="Descripción" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Usuarios" name="users">
+                            <button name="%(action_al_user_role_add_users_wizard)d" type="action"
+                                    string="Agregar usuarios" icon="fa-user-plus" class="btn-primary mb-3"
+                                    invisible="not id"/>
+                            <field name="line_ids" nolabel="1">
+                                <list editable="bottom" decoration-muted="not is_enabled">
+                                    <field name="user_id" options="{'no_create': True}"/>
+                                    <field name="allowed_company_ids" column_invisible="1"/>
+                                    <field name="company_id" groups="base.group_multi_company"
+                                           options="{'no_create': True}"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="is_enabled"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Grupos efectivos" name="effective_groups">
+                            <div class="alert alert-info" role="status">
+                                <strong>Grupos efectivos:</strong> todo lo que recibe el usuario, es
+                                decir, los de <em>Grupos</em> más los que estos incluyen (p. ej.
+                                <em>Punto de venta / Administrador</em> trae <em>Inventario / Usuario</em>).
+                                Solo de consulta.
+                            </div>
+                            <field name="effective_group_ids" nolabel="1" readonly="1">
+                                <list>
+                                    <field name="privilege_id" string="Privilegio"/>
+                                    <field name="name" string="Grupo"/>
+                                    <field name="comment" string="Descripción" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Menús ocultos" name="hidden_menus">
+                            <p class="text-muted">
+                                Los usuarios con este rol no ven estos menús ni sus submenús,
+                                salvo que otro de sus roles no los oculte. Es solo visual: los
+                                permisos los dan los grupos. El Administrador del sistema ve todos.
+                            </p>
+                            <field name="hidden_menu_ids" nolabel="1" options="{'no_create': True}">
+                                <list>
+                                    <field name="complete_name" string="Menú"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Restricciones" name="restrictions">
+                            <p class="text-muted">
+                                Qué ocultar o bloquear al usuario, en general y por modelo. La solo
+                                lectura, el dominio de registros y Enviar mensaje se aplican también en
+                                el servidor; lo demás es visual (los permisos los dan los grupos). Con
+                                varios roles, aplica solo lo que tengan todos. El Administrador del
+                                sistema no tiene restricciones.
+                            </p>
+                            <group>
+                                <group>
+                                    <field name="block_debug"/>
+                                    <field name="hide_chatter"/>
+                                    <field name="hide_send_message" invisible="hide_chatter"/>
+                                </group>
+                                <group>
+                                    <field name="readonly_all"/>
+                                </group>
+                            </group>
+                            <field name="restriction_ids" nolabel="1">
+                                <list>
+                                    <field name="model_id"/>
+                                    <field name="is_readonly" optional="show"/>
+                                    <field name="hide_create" optional="show"/>
+                                    <field name="hide_delete" optional="show"/>
+                                    <field name="hide_archive" optional="hide"/>
+                                    <field name="hide_export" optional="show"/>
+                                    <!-- Resumen: solo el nombre. El nombre técnico se ve
+                                         en los selectores al abrir la línea. -->
+                                    <field name="hidden_field_ids" widget="many2many_tags" optional="show"
+                                           context="{'hide_model': True}"/>
+                                    <field name="hidden_button_ids" widget="many2many_tags" optional="hide"
+                                           context="{'al_element_label_only': True}"/>
+                                    <field name="domain" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="comment" placeholder="Descripción del rol..."
+                                   help="Descripción libre del rol: para qué puesto es, qué permite, etc."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_al_user_role_list" model="ir.ui.view">
+        <field name="name">al.user.role.list</field>
+        <field name="model">al.user.role</field>
+        <field name="arch" type="xml">
+            <list string="Roles de usuario">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="exclusive_permissions" string="Reemplaza permisos"/>
+                <field name="is_default"/>
+                <field name="role_user_count"/>
+                <field name="role_user_ids" widget="many2many_tags" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_al_user_role_search" model="ir.ui.view">
+        <field name="name">al.user.role.search</field>
+        <field name="model">al.user.role</field>
+        <field name="arch" type="xml">
+            <search string="Roles de usuario">
+                <field name="name"/>
+                <field name="role_user_ids" string="Usuario"/>
+                <field name="implied_ids" string="Grupo"/>
+                <filter name="is_default" string="Por defecto" domain="[('is_default', '=', True)]"/>
+                <filter name="exclusive_permissions" string="Reemplazan permisos"
+                        domain="[('exclusive_permissions', '=', True)]"/>
+                <filter name="additive" string="Agregan permisos"
+                        domain="[('exclusive_permissions', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_al_user_role" model="ir.actions.act_window">
+        <field name="name">Roles de usuario</field>
+        <field name="res_model">al.user.role</field>
+        <field name="path">al-user-roles</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree el primer rol de usuario</p>
+            <p>
+                Un rol agrupa grupos de seguridad. Los usuarios con el rol reciben esos
+                grupos mientras el rol esté vigente.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú padre en Ajustes > Usuarios y compañías, justo después de
+         Privilegios (sequence 5). Agrupa los menús del módulo. -->
+    <menuitem id="menu_al_user_role_root" name="Roles de usuario"
+              parent="base.menu_users" groups="base.group_erp_manager" sequence="6"/>
+
+    <menuitem id="menu_al_user_role" name="Roles"
+              parent="menu_al_user_role_root" action="action_al_user_role"
+              groups="base.group_erp_manager" sequence="1"/>
+</odoo>

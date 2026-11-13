@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_al_user_role_from_user_wizard_form" model="ir.ui.view">
+        <field name="name">al.user.role.from.user.wizard.form</field>
+        <field name="model">al.user.role.from.user.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Crear rol desde usuario">
+                <p class="text-muted">
+                    El rol nuevo implica todos los grupos que el usuario tiene hoy.
+                </p>
+                <group>
+                    <field name="name"/>
+                    <field name="user_id" readonly="1"/>
+                    <field name="assign_to_user"/>
+                </group>
+                <footer>
+                    <button name="action_create_role" string="Crear rol" type="object" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- En Acción de la lista/ficha de usuarios. -->
+    <record id="action_al_user_role_from_user_wizard" model="ir.actions.act_window">
+        <field name="name">Crear rol desde usuario</field>
+        <field name="res_model">al.user.role.from.user.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_res_users"/>
+        <field name="binding_view_types">form</field>
+        <field name="group_ids" eval="[(4, ref('base.group_erp_manager'))]"/>
+    </record>
+</odoo>

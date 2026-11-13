@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ficha del menú (modo desarrollador): pestaña con los roles que lo ocultan. -->
+    <record id="edit_menu_access_al_user_role" model="ir.ui.view">
+        <field name="name">ir.ui.menu.form.al.user.role</field>
+        <field name="model">ir.ui.menu</field>
+        <field name="inherit_id" ref="base.edit_menu_access"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Roles que lo ocultan" name="al_hiding_roles">
+                    <field name="al_hiding_role_ids" widget="many2many_tags"
+                           options="{'no_create': True}"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Pantalla central: todos los menús y los roles que los ocultan. -->
+    <record id="view_ir_ui_menu_list_al_hidden" model="ir.ui.view">
+        <field name="name">ir.ui.menu.list.al.hidden</field>
+        <field name="model">ir.ui.menu</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Menús ocultos por rol" editable="bottom" create="0" delete="0">
+                <field name="complete_name" string="Menú" readonly="1"/>
+                <field name="al_hiding_role_ids" widget="many2many_tags"
+                       options="{'no_create': True}"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ir_ui_menu_search_al_hidden" model="ir.ui.view">
+        <field name="name">ir.ui.menu.search.al.hidden</field>
+        <field name="model">ir.ui.menu</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="Menús ocultos por rol">
+                <field name="complete_name" string="Menú"/>
+                <field name="al_hiding_role_ids" string="Rol"/>
+                <filter name="hidden" string="Ocultos por algún rol"
+                        domain="[('al_hiding_role_ids', '!=', False)]"/>
+                <group>
+                    <filter name="group_parent" string="Menú padre" context="{'group_by': 'parent_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ir_ui_menu_al_hidden" model="ir.actions.act_window">
+        <field name="name">Menús ocultos por rol</field>
+        <field name="res_model">ir.ui.menu</field>
+        <field name="path">al-hidden-menus</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_ir_ui_menu_list_al_hidden"/>
+        <field name="search_view_id" ref="view_ir_ui_menu_search_al_hidden"/>
+        <field name="context">{'search_default_hidden': 1}</field>
+    </record>
+
+    <!-- Escribe en ir.ui.menu: solo el Administrador del sistema. Los
+         Administradores de permisos lo hacen desde la ficha del rol. -->
+    <menuitem id="menu_ir_ui_menu_al_hidden" name="Menús ocultos por rol"
+              parent="menu_al_user_role_root" action="action_ir_ui_menu_al_hidden"
+              groups="base.group_system" sequence="3"/>
+</odoo>

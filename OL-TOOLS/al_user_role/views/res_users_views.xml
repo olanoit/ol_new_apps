@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_al_user_role" model="ir.ui.view">
+        <field name="name">res.users.form.al.user.role</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_al_view_roles" type="object" class="oe_stat_button"
+                        icon="fa-id-badge" groups="base.group_erp_manager"
+                        invisible="not al_role_count">
+                    <field name="al_role_count" widget="statinfo" string="Roles"/>
+                </button>
+                <button name="action_al_role_history" type="object" class="oe_stat_button"
+                        icon="fa-history" groups="base.group_erp_manager" invisible="not id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Historial de roles</span>
+                        <field name="al_role_last_change" class="o_stat_value" widget="date"/>
+                    </div>
+                </button>
+            </div>
+            <xpath expr="//page[@name='access_rights']" position="before">
+                <page string="Roles" name="al_roles" groups="base.group_erp_manager">
+                    <field name="al_role_line_ids" nolabel="1">
+                        <list editable="bottom" decoration-muted="not is_enabled">
+                            <field name="role_id" options="{'no_create': True}"/>
+                            <field name="allowed_company_ids" column_invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   options="{'no_create': True}"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="is_enabled"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='access_rights']/group" position="before">
+                <field name="al_show_role_alert" invisible="1"/>
+                <field name="al_show_role_info" invisible="1"/>
+                <div class="alert alert-info text-center mb-3" role="alert"
+                     invisible="not al_show_role_alert" groups="base.group_erp_manager">
+                    <strong>Los permisos de este usuario se administran por roles.</strong>
+                    Los cambios que haga aquí se reemplazan por los grupos de sus roles.
+                </div>
+                <div class="alert alert-secondary text-center mb-3" role="status"
+                     invisible="not al_show_role_info" groups="base.group_erp_manager">
+                    <strong>Este usuario tiene roles asignados.</strong>
+                    Los grupos de sus roles se agregan a su configuración propia, que puede
+                    editar aquí.
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_tree_al_user_role" model="ir.ui.view">
+        <field name="name">res.users.list.al.user.role</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <field name="role" position="after">
+                <field name="al_role_ids" widget="many2many_tags" optional="show"
+                       groups="base.group_erp_manager"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_users_search_al_user_role" model="ir.ui.view">
+        <field name="name">res.users.search.al.user.role</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_search"/>
+        <field name="arch" type="xml">
+            <field name="company_ids" position="after">
+                <field name="al_role_ids" string="Rol" groups="base.group_erp_manager"/>
+            </field>
+        </field>
+    </record>
+</odoo>

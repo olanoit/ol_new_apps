@@ -43,6 +43,14 @@
         <field name="path">applications/finance/fiscal_localizations/peru/payment_methods/</field>
         <field name="section">Medios de pago SUNAT</field>
     </record>
+    <record id="help_account_pe_worksheet_report_handler" model="al.docs.help">
+        <field name="key">account.pe.worksheet.report.handler</field>
+        <field name="kind">model</field>
+        <field name="name">Hoja de trabajo (Perú)</field>
+        <field name="module">al_l10n_pe_financial_reports</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/financial_statements/#hoja-de-trabajo</field>
+        <field name="section">Hoja de trabajo</field>
+    </record>
     <record id="help_account_report" model="al.docs.help">
         <field name="key">account_report</field>
         <field name="kind">tag</field>
@@ -202,6 +210,78 @@
         <field name="module">al_account_base</field>
         <field name="path">applications/finance/fiscal_localizations/peru/accounting_base/</field>
         <field name="section">Configuración contable básica</field>
+    </record>
+    <record id="help_al_user_role" model="al.docs.help">
+        <field name="key">al.user.role</field>
+        <field name="kind">model</field>
+        <field name="name">Rol de usuario</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_user_role_add_users_wizard" model="al.docs.help">
+        <field name="key">al.user.role.add.users.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Agregar usuarios a un rol</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_user_role_from_groups_wizard" model="al.docs.help">
+        <field name="key">al.user.role.from.groups.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Crear rol desde grupos</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_user_role_from_user_wizard" model="al.docs.help">
+        <field name="key">al.user.role.from.user.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Crear rol desde un usuario</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_user_role_history" model="al.docs.help">
+        <field name="key">al.user.role.history</field>
+        <field name="kind">model</field>
+        <field name="name">Historial de roles de usuario</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_user_role_line" model="al.docs.help">
+        <field name="key">al.user.role.line</field>
+        <field name="kind">model</field>
+        <field name="name">Asignación de rol de usuario</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_user_role_restriction" model="al.docs.help">
+        <field name="key">al.user.role.restriction</field>
+        <field name="kind">model</field>
+        <field name="name">Restricción de rol por modelo</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_user_role_view_element" model="al.docs.help">
+        <field name="key">al.user.role.view.element</field>
+        <field name="kind">model</field>
+        <field name="name">Elemento de vista ocultable por rol</field>
+        <field name="module">al_user_role</field>
+        <field name="path">applications/general/user_roles/</field>
+        <field name="section">Roles de usuario</field>
+    </record>
+    <record id="help_al_construction_installation_board" model="al.docs.help">
+        <field name="key">al_construction_installation_board</field>
+        <field name="kind">tag</field>
+        <field name="name">Control semanal de instalación</field>
+        <field name="module">al_construction_attendance</field>
+        <field name="path">applications/services/project/construction/planning/control/</field>
+        <field name="section">Control y personal propio</field>
     </record>
     <record id="help_al_construction_planner_home" model="al.docs.help">
         <field name="key">al_construction_planner.home</field>
@@ -403,6 +483,38 @@
         <field name="path">applications/services/project/construction/planning/contractors/</field>
         <field name="section">Condiciones y valorización de contratas</field>
     </record>
+    <record id="help_construction_contract_intervention" model="al.docs.help">
+        <field name="key">construction.contract.intervention</field>
+        <field name="kind">model</field>
+        <field name="name">Intervención de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_intervention_line" model="al.docs.help">
+        <field name="key">construction.contract.intervention.line</field>
+        <field name="kind">model</field>
+        <field name="name">Partida de la preliquidación de la intervención</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_intervention_wizard" model="al.docs.help">
+        <field name="key">construction.contract.intervention.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Intervenir contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_intervention_wizard_line" model="al.docs.help">
+        <field name="key">construction.contract.intervention.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Partida de la preliquidación de la intervención</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
     <record id="help_construction_contract_opening_wizard" model="al.docs.help">
         <field name="key">construction.contract.opening.wizard</field>
         <field name="kind">model</field>
@@ -529,7 +641,7 @@
         <field name="name">Retazo declarado</field>
         <field name="module">al_construction_planner_mrp</field>
         <field name="path">applications/services/project/construction/planning/production_order/</field>
-        <field name="section">Mobiliario: módulos, productos y envíos</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_cut_closing_wizard" model="al.docs.help">
         <field name="key">construction.cut.closing.wizard</field>
@@ -545,15 +657,15 @@
         <field name="name">Sobrantes por tablero</field>
         <field name="module">al_construction_planner_mrp</field>
         <field name="path">applications/services/project/construction/planning/production_order/</field>
-        <field name="section">Mobiliario: módulos, productos y envíos</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_daily_report" model="al.docs.help">
         <field name="key">construction.daily.report</field>
         <field name="kind">model</field>
         <field name="name">Parte diario de obra</field>
         <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="path">applications/services/project/construction/planning/field_app/#partes-del-día-y-cerrar-el-día</field>
+        <field name="section">Partes del día y «Cerrar el día»</field>
     </record>
     <record id="help_construction_daily_report_staff" model="al.docs.help">
         <field name="key">construction.daily.report.staff</field>
@@ -561,7 +673,7 @@
         <field name="name">Personal del parte diario</field>
         <field name="module">al_construction_portal</field>
         <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_dependency" model="al.docs.help">
         <field name="key">construction.dependency</field>
@@ -611,6 +723,14 @@
         <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Grupos de acceso en dos ejes</field>
     </record>
+    <record id="help_construction_furniture_type" model="al.docs.help">
+        <field name="key">construction.furniture.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de mueble o de módulo</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/#tipos-de-mueble-y-de-módulo</field>
+        <field name="section">Tipos de mueble y de módulo</field>
+    </record>
     <record id="help_construction_guarantee_fund" model="al.docs.help">
         <field name="key">construction.guarantee.fund</field>
         <field name="kind">model</field>
@@ -618,6 +738,14 @@
         <field name="module">al_construction_planner_subcontract</field>
         <field name="path">applications/services/project/construction/planning/contract_terms/#fondos-de-garantía-y-reportes</field>
         <field name="section">Fondos de garantía y reportes</field>
+    </record>
+    <record id="help_construction_installation_board" model="al.docs.help">
+        <field name="key">construction.installation.board</field>
+        <field name="kind">model</field>
+        <field name="name">Control semanal de instalación</field>
+        <field name="module">al_construction_attendance</field>
+        <field name="path">applications/services/project/construction/planning/control/</field>
+        <field name="section">Control y personal propio</field>
     </record>
     <record id="help_construction_join_rule" model="al.docs.help">
         <field name="key">construction.join.rule</field>
@@ -631,6 +759,30 @@
         <field name="key">construction.labor.activity</field>
         <field name="kind">model</field>
         <field name="name">Actividad de obra (driver de pago)</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
+    </record>
+    <record id="help_construction_labor_budget" model="al.docs.help">
+        <field name="key">construction.labor.budget</field>
+        <field name="kind">model</field>
+        <field name="name">Presupuesto de mano de obra de la sub etapa</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/#presupuesto-por-obra--etapa--partida</field>
+        <field name="section">Presupuesto por obra › etapa › partida</field>
+    </record>
+    <record id="help_construction_labor_budget_line" model="al.docs.help">
+        <field name="key">construction.labor.budget.line</field>
+        <field name="kind">model</field>
+        <field name="name">Actividad del presupuesto de mano de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
+    </record>
+    <record id="help_construction_labor_budget_week" model="al.docs.help">
+        <field name="key">construction.labor.budget.week</field>
+        <field name="kind">model</field>
+        <field name="name">Semana del presupuesto de mano de obra</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
         <field name="section">Grupos de acceso en dos ejes</field>
@@ -658,6 +810,14 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/catalog/</field>
         <field name="section">Grupos de acceso en dos ejes</field>
+    </record>
+    <record id="help_construction_labor_weekly_control" model="al.docs.help">
+        <field name="key">construction.labor.weekly.control</field>
+        <field name="kind">model</field>
+        <field name="name">Control semanal de mano de obra</field>
+        <field name="module">al_construction_attendance</field>
+        <field name="path">applications/services/project/construction/planning/control/</field>
+        <field name="section">Control y personal propio</field>
     </record>
     <record id="help_construction_level_labels_mixin" model="al.docs.help">
         <field name="key">construction.level.labels.mixin</field>
@@ -819,6 +979,14 @@
         <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Grupos de acceso en dos ejes</field>
     </record>
+    <record id="help_construction_plan_generate_stage_day" model="al.docs.help">
+        <field name="key">construction.plan.generate.stage.day</field>
+        <field name="kind">model</field>
+        <field name="name">Días por sub etapa al generar el plan</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/generate_plan/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
+    </record>
     <record id="help_construction_plan_generate_wizard" model="al.docs.help">
         <field name="key">construction.plan.generate.wizard</field>
         <field name="kind">model</field>
@@ -826,6 +994,22 @@
         <field name="module">al_construction_planner_furniture</field>
         <field name="path">applications/services/project/construction/planning/generate_plan/</field>
         <field name="section">Generar el plan</field>
+    </record>
+    <record id="help_construction_plan_price_group_line" model="al.docs.help">
+        <field name="key">construction.plan.price.group.line</field>
+        <field name="kind">model</field>
+        <field name="name">Producto de «Aplicar costo» por grupo</field>
+        <field name="module">al_construction_planner_purchase</field>
+        <field name="path">applications/services/project/construction/planning/prices_supply/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
+    </record>
+    <record id="help_construction_plan_price_group_wizard" model="al.docs.help">
+        <field name="key">construction.plan.price.group.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Aplicar costo por grupo de productos</field>
+        <field name="module">al_construction_planner_purchase</field>
+        <field name="path">applications/services/project/construction/planning/prices_supply/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
     </record>
     <record id="help_construction_plan_price_wizard" model="al.docs.help">
         <field name="key">construction.plan.price.wizard</field>
@@ -841,7 +1025,7 @@
         <field name="name">Orden de fabricación desde el plan</field>
         <field name="module">al_construction_planner_mrp</field>
         <field name="path">applications/services/project/construction/planning/measurement/</field>
-        <field name="section">Mobiliario: módulos, productos y envíos</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_production_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.production.wizard.line</field>
@@ -849,7 +1033,7 @@
         <field name="name">OF propuesta desde el plan</field>
         <field name="module">al_construction_planner_mrp</field>
         <field name="path">applications/services/project/construction/planning/furniture/</field>
-        <field name="section">Mobiliario: módulos, productos y envíos</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_progress_wizard" model="al.docs.help">
         <field name="key">construction.plan.progress.wizard</field>
@@ -952,48 +1136,64 @@
         <field name="kind">model</field>
         <field name="name">Kit del portal de obra</field>
         <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_portal_kit_line" model="al.docs.help">
         <field name="key">construction.portal.kit.line</field>
         <field name="kind">model</field>
         <field name="name">Producto del kit del portal</field>
         <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_portal_member" model="al.docs.help">
         <field name="key">construction.portal.member</field>
         <field name="kind">model</field>
         <field name="name">Personal del portal de obra</field>
         <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
+    </record>
+    <record id="help_construction_portal_notice_rule" model="al.docs.help">
+        <field name="key">construction.portal.notice.rule</field>
+        <field name="kind">model</field>
+        <field name="name">Aviso al celular del portal de obra</field>
+        <field name="module">al_construction_portal</field>
         <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_portal_pin_wizard" model="al.docs.help">
         <field name="key">construction.portal.pin.wizard</field>
         <field name="kind">model</field>
         <field name="name">PIN del portal de obra</field>
         <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
+    </record>
+    <record id="help_construction_portal_reason" model="al.docs.help">
+        <field name="key">construction.portal.reason</field>
+        <field name="kind">model</field>
+        <field name="name">Motivo del residente en el portal de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_portal_service" model="al.docs.help">
         <field name="key">construction.portal.service</field>
         <field name="kind">model</field>
         <field name="name">Servicios del portal de obra</field>
         <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_portal_submission" model="al.docs.help">
         <field name="key">construction.portal.submission</field>
         <field name="kind">model</field>
         <field name="name">Envío del portal de obra</field>
         <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_portal_tareo" model="al.docs.help">
         <field name="key">construction.portal.tareo</field>
@@ -1008,8 +1208,8 @@
         <field name="kind">model</field>
         <field name="name">Sesión del portal de obra</field>
         <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/planning/field_app/</field>
-        <field name="section">Aplicación de obra en el celular</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
     </record>
     <record id="help_construction_product_create_wizard" model="al.docs.help">
         <field name="key">construction.product.create.wizard</field>
@@ -1041,7 +1241,7 @@
         <field name="name">Motivo de fabricación</field>
         <field name="module">al_construction_planner_mrp</field>
         <field name="path">applications/services/project/construction/planning/furniture/</field>
-        <field name="section">Mobiliario: módulos, productos y envíos</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_production_versus" model="al.docs.help">
         <field name="key">construction.production.versus</field>
@@ -1066,6 +1266,22 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/vertical_configuration/#perfil-de-vertical</field>
         <field name="section">Perfil de vertical</field>
+    </record>
+    <record id="help_construction_project_indicators" model="al.docs.help">
+        <field name="key">construction.project.indicators</field>
+        <field name="kind">model</field>
+        <field name="name">Ficha de indicadores de la obra</field>
+        <field name="module">al_construction_planner_sale</field>
+        <field name="path">applications/services/project/construction/planning/client_contracts/</field>
+        <field name="section">Adicionales, deductivos y dependencias</field>
+    </record>
+    <record id="help_construction_project_productivity" model="al.docs.help">
+        <field name="key">construction.project.productivity</field>
+        <field name="kind">model</field>
+        <field name="name">Rendimiento de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_projection_import_column" model="al.docs.help">
         <field name="key">construction.projection.import.column</field>
@@ -1187,6 +1403,22 @@
         <field name="path">applications/services/project/construction/material_requests/#pedir-reposición-a-planta</field>
         <field name="section">Pedir reposición a planta</field>
     </record>
+    <record id="help_construction_request_close_wizard" model="al.docs.help">
+        <field name="key">construction.request.close.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Cerrar el requerimiento con lo recibido</field>
+        <field name="module">al_construction_material_request</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
+    </record>
+    <record id="help_construction_request_close_wizard_line" model="al.docs.help">
+        <field name="key">construction.request.close.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea para cerrar con lo recibido</field>
+        <field name="module">al_construction_material_request</field>
+        <field name="path">applications/services/project/construction/material_requests/</field>
+        <field name="section">Requerimientos de materiales</field>
+    </record>
     <record id="help_construction_resource_plan" model="al.docs.help">
         <field name="key">construction.resource.plan</field>
         <field name="kind">model</field>
@@ -1227,6 +1459,30 @@
         <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Grupos de acceso en dos ejes</field>
     </record>
+    <record id="help_construction_rubro_account" model="al.docs.help">
+        <field name="key">construction.rubro.account</field>
+        <field name="kind">model</field>
+        <field name="name">Cuenta Rubro por familia de tipología</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/catalog/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
+    </record>
+    <record id="help_construction_sale_rate" model="al.docs.help">
+        <field name="key">construction.sale.rate</field>
+        <field name="kind">model</field>
+        <field name="name">Tarifario de venta de mobiliario</field>
+        <field name="module">al_construction_planner_spreadsheet_furniture</field>
+        <field name="path">applications/services/project/construction/planning/sale_worksheet/</field>
+        <field name="section">Hoja de venta de mobiliario</field>
+    </record>
+    <record id="help_construction_sale_sheet_copy_wizard" model="al.docs.help">
+        <field name="key">construction.sale.sheet.copy.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Hoja de venta de una cotización duplicada</field>
+        <field name="module">al_construction_planner_spreadsheet_furniture</field>
+        <field name="path">applications/services/project/construction/planning/sale_worksheet/</field>
+        <field name="section">Pestaña Planificación y hoja de trabajo</field>
+    </record>
     <record id="help_construction_schedule_report" model="al.docs.help">
         <field name="key">construction.schedule.report</field>
         <field name="kind">model</field>
@@ -1242,6 +1498,14 @@
         <field name="module">al_construction_planner_subcontract</field>
         <field name="path">applications/services/project/construction/planning/contract_terms/</field>
         <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_sheet_parameter" model="al.docs.help">
+        <field name="key">construction.sheet.parameter</field>
+        <field name="kind">model</field>
+        <field name="name">Parámetro de las hojas de trabajo</field>
+        <field name="module">al_construction_planner_spreadsheet_furniture</field>
+        <field name="path">applications/services/project/construction/planning/planning_worksheet/</field>
+        <field name="section">Pestaña Planificación y hoja de trabajo</field>
     </record>
     <record id="help_construction_sign_mixin" model="al.docs.help">
         <field name="key">construction.sign.mixin</field>
@@ -1267,10 +1531,26 @@
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
         <field name="section">Grupos de acceso en dos ejes</field>
     </record>
+    <record id="help_construction_spreadsheet_import_wizard" model="al.docs.help">
+        <field name="key">construction.spreadsheet.import.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar Excel a la hoja de trabajo</field>
+        <field name="module">al_construction_planner_spreadsheet_furniture</field>
+        <field name="path">applications/services/project/construction/planning/planning_worksheet/</field>
+        <field name="section">Pestaña Planificación y hoja de trabajo</field>
+    </record>
     <record id="help_construction_stage" model="al.docs.help">
         <field name="key">construction.stage</field>
         <field name="kind">model</field>
         <field name="name">Etapa de ejecución</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
+    </record>
+    <record id="help_construction_stage_offer_mixin" model="al.docs.help">
+        <field name="key">construction.stage.offer.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Etapas que se ofrecen según la obra</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
         <field name="section">Grupos de acceso en dos ejes</field>
@@ -1411,6 +1691,22 @@
         <field name="path">applications/services/project/construction/planning/client_contracts/</field>
         <field name="section">Adicionales, deductivos y dependencias</field>
     </record>
+    <record id="help_construction_valuation_invoice_wizard" model="al.docs.help">
+        <field name="key">construction.valuation.invoice.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Vista previa de la factura de la valorización</field>
+        <field name="module">al_construction_planner_sale</field>
+        <field name="path">applications/services/project/construction/planning/client_contracts/</field>
+        <field name="section">Adicionales, deductivos y dependencias</field>
+    </record>
+    <record id="help_construction_valuation_invoiced" model="al.docs.help">
+        <field name="key">construction.valuation.invoiced</field>
+        <field name="kind">model</field>
+        <field name="name">Facturado por partida de la valorización</field>
+        <field name="module">al_construction_planner_sale</field>
+        <field name="path">applications/services/project/construction/planning/client_contracts/</field>
+        <field name="section">Adicionales, deductivos y dependencias</field>
+    </record>
     <record id="help_construction_valuation_line" model="al.docs.help">
         <field name="key">construction.valuation.line</field>
         <field name="kind">model</field>
@@ -1439,6 +1735,14 @@
         <field name="key">construction.valuation.prepare.wizard.line</field>
         <field name="kind">model</field>
         <field name="name">Partida de la valorización por preparar</field>
+        <field name="module">al_construction_planner_sale</field>
+        <field name="path">applications/services/project/construction/planning/client_contracts/</field>
+        <field name="section">Adicionales, deductivos y dependencias</field>
+    </record>
+    <record id="help_construction_valuation_target" model="al.docs.help">
+        <field name="key">construction.valuation.target</field>
+        <field name="kind">model</field>
+        <field name="name">Meta de valorización del mes</field>
         <field name="module">al_construction_planner_sale</field>
         <field name="path">applications/services/project/construction/planning/client_contracts/</field>
         <field name="section">Adicionales, deductivos y dependencias</field>
@@ -2307,6 +2611,14 @@
         <field name="path">applications/finance/accounting/checks/#configurar-el-formato-de-la-chequera</field>
         <field name="section">Configurar el formato de la chequera</field>
     </record>
+    <record id="help_l10n_pe_closing_rule" model="al.docs.help">
+        <field name="key">l10n_pe.closing.rule</field>
+        <field name="kind">model</field>
+        <field name="name">Regla del cierre del ejercicio (Perú)</field>
+        <field name="module">al_l10n_pe_financial_reports</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/financial_statements/#cierre-del-ejercicio</field>
+        <field name="section">Cierre del ejercicio</field>
+    </record>
     <record id="help_l10n_pe_collection_action" model="al.docs.help">
         <field name="key">l10n_pe.collection.action</field>
         <field name="kind">model</field>
@@ -2875,6 +3187,22 @@
         <field name="path">applications/hr/payroll/peru/construction/</field>
         <field name="section">Construcción civil</field>
     </record>
+    <record id="help_l10n_pe_hr_construction_wage_check" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.wage.check</field>
+        <field name="kind">model</field>
+        <field name="name">Búsqueda de la tabla salarial</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/#búsqueda-automática-de-la-tabla</field>
+        <field name="section">Búsqueda automática de la tabla</field>
+    </record>
+    <record id="help_l10n_pe_hr_construction_wage_check_line" model="al.docs.help">
+        <field name="key">l10n_pe.hr.construction.wage.check.line</field>
+        <field name="kind">model</field>
+        <field name="name">Dirección revisada en la búsqueda de la tabla salarial</field>
+        <field name="module">al_hr_pe_construction</field>
+        <field name="path">applications/hr/payroll/peru/construction/</field>
+        <field name="section">Construcción civil</field>
+    </record>
     <record id="help_l10n_pe_hr_construction_wage_import" model="al.docs.help">
         <field name="key">l10n_pe.hr.construction.wage.import</field>
         <field name="kind">model</field>
@@ -3107,6 +3435,14 @@
         <field name="path">applications/inventory_and_mrp/inventory/kardex/</field>
         <field name="section">Kárdex valorizado (SUNAT)</field>
     </record>
+    <record id="help_l10n_pe_kardex_wh_cost" model="al.docs.help">
+        <field name="key">l10n_pe.kardex.wh.cost</field>
+        <field name="kind">model</field>
+        <field name="name">Costo por almacén (kardex)</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/#costo-promedio-por-almacén</field>
+        <field name="section">Costo promedio por almacén</field>
+    </record>
     <record id="help_l10n_pe_lease" model="al.docs.help">
         <field name="key">l10n_pe.lease</field>
         <field name="kind">model</field>
@@ -3282,6 +3618,62 @@
         <field name="module">al_l10n_pe_monthly_tax</field>
         <field name="path">applications/finance/fiscal_localizations/peru/monthly_tax/</field>
         <field name="section">Declaración mensual IGV y renta (621)</field>
+    </record>
+    <record id="help_l10n_pe_mrp_cost_analysis" model="al.docs.help">
+        <field name="key">l10n_pe.mrp.cost.analysis</field>
+        <field name="kind">model</field>
+        <field name="name">Costo de fabricación por elemento</field>
+        <field name="module">al_l10n_pe_mrp_cost</field>
+        <field name="path">applications/inventory_and_mrp/mrp/production_costing/#costo-por-elemento</field>
+        <field name="section">Costo por elemento</field>
+    </record>
+    <record id="help_l10n_pe_mrp_cost_close" model="al.docs.help">
+        <field name="key">l10n_pe.mrp.cost.close</field>
+        <field name="kind">model</field>
+        <field name="name">Cierre de costos de fabricación</field>
+        <field name="module">al_l10n_pe_mrp_cost</field>
+        <field name="path">applications/inventory_and_mrp/mrp/production_costing/#cierre-de-costos-del-mes</field>
+        <field name="section">Cierre de costos del mes</field>
+    </record>
+    <record id="help_l10n_pe_mrp_cost_close_line" model="al.docs.help">
+        <field name="key">l10n_pe.mrp.cost.close.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cargo del cierre de costos</field>
+        <field name="module">al_l10n_pe_mrp_cost</field>
+        <field name="path">applications/inventory_and_mrp/mrp/production_costing/#cierre-de-costos-del-mes</field>
+        <field name="section">Cierre de costos del mes</field>
+    </record>
+    <record id="help_l10n_pe_mrp_cost_pool" model="al.docs.help">
+        <field name="key">l10n_pe.mrp.cost.pool</field>
+        <field name="kind">model</field>
+        <field name="name">Bolsa de CIF</field>
+        <field name="module">al_l10n_pe_mrp_cost</field>
+        <field name="path">applications/inventory_and_mrp/mrp/production_costing/</field>
+        <field name="section">Costeo de órdenes de fabricación</field>
+    </record>
+    <record id="help_l10n_pe_mrp_labor_rate" model="al.docs.help">
+        <field name="key">l10n_pe.mrp.labor.rate</field>
+        <field name="kind">model</field>
+        <field name="name">Costo hora desde la planilla</field>
+        <field name="module">al_l10n_pe_mrp_cost</field>
+        <field name="path">applications/inventory_and_mrp/mrp/production_costing/#costo-hora-desde-la-planilla</field>
+        <field name="section">Costo hora desde la planilla</field>
+    </record>
+    <record id="help_l10n_pe_mrp_labor_rate_line" model="al.docs.help">
+        <field name="key">l10n_pe.mrp.labor.rate.line</field>
+        <field name="kind">model</field>
+        <field name="name">Costo hora de un empleado</field>
+        <field name="module">al_l10n_pe_mrp_cost</field>
+        <field name="path">applications/inventory_and_mrp/mrp/production_costing/#costo-hora-desde-la-planilla</field>
+        <field name="section">Costo hora desde la planilla</field>
+    </record>
+    <record id="help_l10n_pe_mrp_timesheet_import" model="al.docs.help">
+        <field name="key">l10n_pe.mrp.timesheet.import</field>
+        <field name="kind">model</field>
+        <field name="name">Importar tareo de fabricación</field>
+        <field name="module">al_l10n_pe_mrp_cost</field>
+        <field name="path">applications/inventory_and_mrp/mrp/production_costing/#importar-el-tareo</field>
+        <field name="section">Importar el tareo</field>
     </record>
     <record id="help_l10n_pe_negotiable_event" model="al.docs.help">
         <field name="key">l10n_pe.negotiable.event</field>
@@ -3635,6 +4027,14 @@
         <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
         <field name="section">Registros SIRE</field>
     </record>
+    <record id="help_l10n_pe_stock_cost_close" model="al.docs.help">
+        <field name="key">l10n_pe.stock.cost.close</field>
+        <field name="kind">model</field>
+        <field name="name">Cierre mensual de almacén</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/#cierre-mensual-de-almacén</field>
+        <field name="section">Cierre mensual de almacén</field>
+    </record>
     <record id="help_l10n_pe_sunat_padron" model="al.docs.help">
         <field name="key">l10n_pe.sunat.padron</field>
         <field name="kind">model</field>
@@ -3730,6 +4130,22 @@
         <field name="module">al_l10n_pe_treasury</field>
         <field name="path">applications/finance/treasury/</field>
         <field name="section">Tesorería</field>
+    </record>
+    <record id="help_l10n_pe_wh_cost_recompute_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.wh.cost.recompute.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Revalorizar costo por almacén</field>
+        <field name="module">ol_stock_kardex_pe</field>
+        <field name="path">applications/inventory_and_mrp/inventory/kardex/#costo-promedio-por-almacén</field>
+        <field name="section">Costo promedio por almacén</field>
+    </record>
+    <record id="help_l10n_pe_year_closing_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.year.closing.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Cierre del ejercicio (Perú)</field>
+        <field name="module">al_l10n_pe_financial_reports</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/financial_statements/#cierre-del-ejercicio</field>
+        <field name="section">Cierre del ejercicio</field>
     </record>
     <record id="help_mcp_auth_code" model="al.docs.help">
         <field name="key">mcp.auth.code</field>
