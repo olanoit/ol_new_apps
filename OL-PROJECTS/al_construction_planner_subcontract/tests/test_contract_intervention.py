@@ -45,6 +45,14 @@ class TestContractIntervention(ContractTermsCommon):
         order = self._first_valuation()
         fund = order.construction_guarantee_fund_ids
         self.assertEqual(len(fund), 1)
+        # Quien ejecuta sin el rol de Compras ve el estado del fondo (revisión
+        # por roles del 12-nov-2026).
+        from odoo.tests.common import new_test_user
+        executor = new_test_user(self.env, login='fund_executor_121',
+                                 groups='base.group_user,al_construction_planner.group_planner_user')
+        self.assertFalse(self.env['purchase.order'].with_user(executor).has_access('read'))
+        fund.invalidate_recordset()
+        self.assertTrue(fund.with_user(executor).state)
         wall_po = order.order_line.filtered(lambda l: l.construction_task_id == self.partida)
         plan_wall = self.plan.line_ids.filtered(lambda l: l.task_id == self.partida)
         old_progress = self.env['construction.task.progress'].search(

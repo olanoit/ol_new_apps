@@ -53,3 +53,22 @@ class TestReviewRoles(TransactionCase):
             Menu = self.env['ir.ui.menu']
             self.assertNotIn(menu.id, Menu.with_user(executor)._visible_menu_ids())
             self.assertIn(menu.id, Menu.with_user(buyer)._visible_menu_ids())
+
+    def test_viewer_home_with_sale_order(self):
+        """Inicio muestra el nombre de la venta de la obra a quien consulta el
+        plan, sin el rol de Ventas."""
+        if 'construction_sale_order_id' not in self.env['project.project']._fields:
+            self.skipTest('Sin el puente de ventas')
+        viewer = new_test_user(self.env, login='review_home_viewer_120',
+                               groups='base.group_user,' + P + 'group_planner_plan_viewer')
+        partner = self.env['res.partner'].create({'name': 'Cliente revisión 1.20 (test)'})
+        order = self.env['sale.order'].create({'partner_id': partner.id})
+        project = self.env['project.project'].create({
+            'name': 'Obra con venta (test revisión)', 'is_construction_site': True,
+            'construction_sale_order_id': order.id})
+        self.assertFalse(self.env['sale.order'].with_user(viewer).has_access('read'))
+        self.env.invalidate_all()
+        data = self.env['construction.planner.home'].with_user(viewer).get_home_data()
+        rows = [row for key in ('works', 'unplanned') for row in data.get(key) or []
+                if row.get('project_id') == project.id]
+        self.assertTrue(rows)

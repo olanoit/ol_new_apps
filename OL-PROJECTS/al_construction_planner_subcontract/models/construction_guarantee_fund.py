@@ -78,7 +78,10 @@ class ConstructionGuaranteeFund(models.Model):
         cumple con la fecha; los demás, con la marca de administración."""
         self.ensure_one()
         result = []
-        for status in self.purchase_order_id.construction_requirement_ids:
+        # sudo: el estado del fondo se calcula con los requisitos de la orden de
+        # contrata; quien ejecuta ve el fondo sin el rol de Compras.
+        order_sudo = self.purchase_order_id.sudo()
+        for status in order_sudo.construction_requirement_ids:
             done = status.done
             if status.requirement_id.code == 'term':
                 done = bool(self.date_maturity and self.date_maturity <= today)

@@ -73,7 +73,10 @@ class ProjectProject(models.Model):
     def _construction_home_extra(self):
         """M117-09: la venta de la obra en Inicio."""
         result = super()._construction_home_extra()
-        result['sale'] = self.construction_sale_order_id.display_name or ''
+        # sudo: Inicio muestra solo el nombre de la venta de la obra; quien
+        # consulta el plan no necesita el rol de Ventas para verlo.
+        sale_sudo = self.construction_sale_order_id.sudo()
+        result['sale'] = sale_sudo.display_name or ''
         return result
 
     def _construction_link_sale_order(self):
