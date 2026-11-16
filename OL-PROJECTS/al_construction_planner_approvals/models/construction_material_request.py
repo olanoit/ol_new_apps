@@ -99,7 +99,7 @@ class ConstructionMaterialRequest(models.Model):
         ).sudo(False) - self.env.user
 
     def _write_approved(self):
-        if not self.env.context.get('construction_approval_granted'):
+        if not self._construction_is_approval_granted():
             submitted = self._construction_uses_approvals()._construction_submit_approval()
             return super(ConstructionMaterialRequest, self - submitted)._write_approved()
         res = super()._write_approved()

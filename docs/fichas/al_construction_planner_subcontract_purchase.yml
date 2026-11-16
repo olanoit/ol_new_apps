@@ -19,6 +19,10 @@ configuracion:
 requisitos_nota: Se instala automáticamente con `al_construction_planner_subcontract` y `al_construction_planner_purchase`.
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261027'
+  fecha: 16/11/2026
+  cambios:
+    - "Seguridad: «Descontado en» del material extra lo pone el sistema al preparar o anular la liquidación; ya no se puede escribir a mano para que el extra figure como descontado o vaya a la liquidación de otra contrata."
 - version: '3.20261027'
   fecha: 27/10/2026
   cambios:

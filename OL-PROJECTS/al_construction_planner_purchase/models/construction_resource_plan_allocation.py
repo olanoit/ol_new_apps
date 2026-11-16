@@ -111,6 +111,25 @@ class ConstructionResourcePlanAllocation(models.Model):
             result.setdefault(allocation, {})['consumed'] = qty
         return result
 
+    @api.model
+    def _construction_done_qty(self, product, domain):
+        """Suma de lo hecho de los movimientos de ``domain`` en la unidad del
+        producto. Suma la base, por unidad: esto corre al validar cada
+        movimiento de un producto del plan y el historial de la obra solo
+        crece. Los movimientos en otra unidad (pocos) se leen para convertirlos
+        uno a uno, con el mismo redondeo de siempre."""
+        Move = self.env['stock.move']
+        total = 0.0
+        for uom, qty in Move._read_group(domain, ['product_uom'], ['quantity:sum']):
+            if uom == product.uom_id:
+                total += qty or 0.0
+                continue
+            total += sum(
+                move.product_uom._compute_quantity(move.quantity, product.uom_id,
+                                                   rounding_method='HALF-UP')
+                for move in Move.search(domain + [('product_uom', '=', uom.id)]))
+        return total
+
     def _get_site_consumption(self):
         """Consumo en obra de las asignaciones de requerimientos de obra:
         movimientos hechos desde la ubicación de la obra hacia una ubicación
@@ -126,7 +145,6 @@ class ConstructionResourcePlanAllocation(models.Model):
             product = allocation.plan_line_id.product_id
             if site and product:
                 groups[(site, product)] |= allocation
-        Move = self.env['stock.move']
         date_to = self._construction_date_to()
         date_domain = [('date', '<=', date_to)] if date_to else []
         for (site, product), _group in groups.items():
@@ -135,21 +153,14 @@ class ConstructionResourcePlanAllocation(models.Model):
                 ('material_request_line_id.request_id.location_dest_id', '=', site.id),
                 ('plan_line_id.product_id', '=', product.id),
             ]) | _group
-            consumed = 0.0
-            for moves, sign in (
-                (Move.search([('state', '=', 'done'), ('product_id', '=', product.id),
-                              ('location_id', 'child_of', site.id),
-                              ('location_dest_id.usage', 'in', CONSUMPTION_USAGES)]
-                             + date_domain), 1),
-                (Move.search([('state', '=', 'done'), ('product_id', '=', product.id),
-                              ('location_dest_id', 'child_of', site.id),
-                              ('location_id.usage', 'in', CONSUMPTION_USAGES)]
-                             + date_domain), -1),
-            ):
-                consumed += sign * sum(
-                    m.product_uom._compute_quantity(m.quantity, product.uom_id,
-                                                    rounding_method='HALF-UP')
-                    for m in moves)
+            consumed = self._construction_done_qty(product, [
+                ('state', '=', 'done'), ('product_id', '=', product.id),
+                ('location_id', 'child_of', site.id),
+                ('location_dest_id.usage', 'in', CONSUMPTION_USAGES)] + date_domain)
+            consumed -= self._construction_done_qty(product, [
+                ('state', '=', 'done'), ('product_id', '=', product.id),
+                ('location_dest_id', 'child_of', site.id),
+                ('location_id.usage', 'in', CONSUMPTION_USAGES)] + date_domain)
             ordered = siblings.sorted(lambda a: (a.date_needed or date.max, a.id))
             shares = distribute(consumed, [(a, a._to_product_uom(a.qty_allocated))
                                            for a in ordered])

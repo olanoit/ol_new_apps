@@ -135,6 +135,26 @@ class TestControl(PlannerCommon):
         self.assertEqual(order.construction_exceed_reason,
                          'Melamina adicional por cambio de diseño')
 
+    def test_purchase_order_client_context_does_not_skip_control(self):
+        """Auditoría del 16-nov-2026: la marca con que el asistente confirma
+        la OC ya revisada no vale si la envía el cliente; con política
+        «aprobación» la OC sigue pidiendo a la jefatura."""
+        self._set_policy('approval')
+        order = self._order(self.plan.amount_total + 50.0)
+        action = order.with_user(self.buyer).with_context(
+            construction_exceed_checked=True).button_confirm()
+        self.assertEqual(order.state, 'draft')
+        self.assertEqual(action['res_model'], 'construction.plan.exceed.wizard')
+        # El resultado del control tampoco se escribe a mano.
+        with self.assertRaises(UserError):
+            order.with_user(self.buyer).write({'construction_exceed_state': 'approved'})
+        # El asistente sigue confirmándola con la jefatura.
+        wizard = self.env['construction.plan.exceed.wizard'].browse(action['res_id'])
+        wizard.reason = 'Compra adicional autorizada (test)'
+        wizard.with_user(self.manager).action_confirm()
+        self.assertEqual(order.state, 'purchase')
+        self.assertEqual(order.construction_exceed_state, 'approved')
+
     def test_purchase_order_without_project_analytic(self):
         """Una OC sin la analítica de la obra no se controla."""
         self._set_policy('block')

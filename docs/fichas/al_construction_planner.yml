@@ -1220,6 +1220,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '83.20261112'
+    fecha: 16/11/2026
+    cambios:
+      - "Seguridad: validar, rechazar o revertir un avance es de quien valida la ejecución también con una escritura directa; antes quien reportaba podía dejar su avance «Validado» y entraba al ejecutado y a la valorización."
+      - "Las marcas de contexto que abren un control de exceso son objetos del servidor (EXCEED_CHECKED, FROM_PROCUREMENT, SKIP_RECIPE_AUTHORIZATION): enviadas por el cliente ya no valen."
   - version: '71.20261104'
     fecha: 04/11/2026
     cambios:

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 83.20261112 — 16/11/2026
+
+- Seguridad: validar, rechazar o revertir un avance es de quien valida la ejecución también con una escritura directa; antes quien reportaba podía dejar su avance «Validado» y entraba al ejecutado y a la valorización.
+- Las marcas de contexto que abren un control de exceso son objetos del servidor (EXCEED_CHECKED, FROM_PROCUREMENT, SKIP_RECIPE_AUTHORIZATION): enviadas por el cliente ya no valen.
+
 ## 71.20261104 — 04/11/2026
 
 - M117-09: Inicio muestra las obras sin plan en «Por planificar», la más antigua primero; lo que aporta cada puente sale del gancho _construction_home_extra.

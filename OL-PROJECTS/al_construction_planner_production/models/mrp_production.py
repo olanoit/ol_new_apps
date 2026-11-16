@@ -61,7 +61,9 @@ class MrpProduction(models.Model):
         self._construction_check_accessories_user()
         request = self.construction_accessory_request_ids.filtered(lambda r: r.state == 'draft')[:1]
         if not request:
-            request = self.env['construction.accessory.request'].create({
+            # sudo: lo propuesto (accesorio del plan, saldo y costo) lo arma
+            # el sistema; quien pide ya pasó su control justo arriba.
+            request = self.env['construction.accessory.request'].sudo().create({
                 'production_id': self.id,
                 'line_ids': [fields.Command.create(vals)
                              for vals in self._construction_proposed_accessories()],

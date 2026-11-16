@@ -56,6 +56,13 @@ class ConstructionMaterialRequest(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
+        # «Descontado en» lo pone el sistema al preparar o anular la
+        # liquidación (con sudo). Solo es de lectura en la vista: escrito a
+        # mano, el extra figuraría como ya descontado y nunca se cobraría, o
+        # iría a la liquidación de otra contrata.
+        if 'construction_discount_settlement_id' in vals and not self.env.su:
+            raise UserError(self.env._(
+                'En qué liquidación se descuenta el extra lo decide el sistema al prepararla.'))
         discount_fields = {'construction_discount', 'construction_discount_partner_id',
                            'construction_discount_amount'}
         if discount_fields & set(vals):

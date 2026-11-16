@@ -17,6 +17,12 @@ PROGRESS_STATES = [
 # Campos que solo cambian mientras el avance está reportado.
 LOCKED_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'date', 'qty', 'attachment_ids',
                  'is_rework', 'rework_reason'}
+# Campos de la validación: los escribe quien valida la ejecución (o el
+# sistema, con sudo). Quien reporta tiene permiso de escritura sobre sus
+# avances y el estado solo es de lectura en la vista: escrito a mano, un avance
+# quedaría validado sin el validador y entraría al ejecutado y a la
+# valorización de la contrata.
+VALIDATION_FIELDS = {'state', 'validator_id', 'validation_date'}
 # Campos que cambian el saldo de la línea: un exceso aprobado vuelve a revisarse.
 BALANCE_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'qty', 'tranche_id', 'is_rework'}
 
@@ -382,6 +388,10 @@ class ConstructionTaskProgress(models.Model):
             if vals.get('name', '/') == '/':
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'construction.task.progress') or '/'
+        if not self.env.su and any(
+                vals.get('state', 'draft') != 'draft' or vals.get('validator_id')
+                or vals.get('validation_date') for vals in vals_list):
+            self._check_validator()
         progresses = super().create(vals_list)
         # La restricción de fotos solo corre si el campo viene en los valores.
         progresses._check_photos()
@@ -411,6 +421,8 @@ class ConstructionTaskProgress(models.Model):
                 message_type='comment', subtype_xmlid='mail.mt_note')
 
     def write(self, vals):
+        if VALIDATION_FIELDS & set(vals) and not self.env.su:
+            self._check_validator()
         if LOCKED_FIELDS & set(vals) and not self.env.context.get('construction_progress_force'):
             locked = self.filtered(lambda p: p.state != 'draft')
             if locked:

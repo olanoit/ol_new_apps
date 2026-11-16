@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261112 — 16/11/2026
+
+- Tareo: los jornales del tareo se rehacen solo para las personas de la marcación (acompaña el cambio de la asistencia de obra).
+
 ## 18.20261112 — 16/11/2026
 
 - La contrata recibe en su parte diario solo su empresa y sus avances del día, no los de las demás contratas de la obra.

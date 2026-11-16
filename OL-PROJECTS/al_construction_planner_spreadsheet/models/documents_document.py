@@ -211,6 +211,9 @@ class DocumentsDocument(models.Model):
     def _construction_book_wizard(self, sheets, target='budget'):
         self.ensure_one()
         if target == 'budget' and self._construction_budgeter_only() and not self.env.su:
+            # La cotización de la hoja es un campo del documento: antes de
+            # correr como el sistema, el presupuestador debe poder verla.
+            self._construction_order().check_access('read')
             # sudo: el presupuestador revisa y pasa su presupuesto; la
             # revisión lee recetas, etapas y cuentas que él no administra.
             return self.sudo()._construction_book_wizard(sheets, target)
@@ -611,6 +614,10 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         if self.target == 'budget' and \
                 user.has_group('al_construction_planner_spreadsheet.group_construction_budgeter') \
                 and not user.has_group('al_construction_planner.group_planner_plan_planner'):
+            # La cotización del asistente es un campo que el usuario puede
+            # escribir: sin esta comprobación, el presupuestador pasaría un
+            # presupuesto a cualquier cotización, también a las que no ve.
+            self.sale_order_id.check_access('read')
             # sudo: ver el docstring; el destino Presupuesto no toca el plan.
             return super(ConstructionBudgetBookWizard, self.sudo()).action_import()
         return super().action_import()

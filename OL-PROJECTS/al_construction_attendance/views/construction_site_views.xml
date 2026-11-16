@@ -20,6 +20,7 @@
                     </group>
                     <group groups="hr.group_hr_user">
                         <field name="kiosk_url" widget="CopyClipboardChar"/>
+                        <field name="kiosk_paused_until" invisible="not kiosk_paused_until"/>
                         <button name="action_new_kiosk_token" type="object" string="Cambiar la clave del quiosco"
                                 class="btn-link" colspan="2"
                                 confirm="El enlace actual de la tablet deja de funcionar. ¿Continuar?"/>

@@ -19,6 +19,10 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang
 
+from odoo.addons.al_construction_planner.models.common import (
+    EXCEED_CHECKED, SKIP_RECIPE_AUTHORIZATION,
+)
+
 PRODUCTION_HEAD_GROUP = 'al_construction_planner_approvals_mrp.group_planner_production_head'
 
 
@@ -54,6 +58,13 @@ class MrpProduction(models.Model):
         compute='_compute_construction_excess_action',
         help='Qué hace el usuario con el exceso pendiente: aprobarlo dentro de su margen o '
              'pedirlo en Aprobaciones.')
+
+    @api.model
+    def _construction_control_fields(self):
+        return super()._construction_control_fields() | {
+            'construction_excess_amount', 'construction_excess_pct',
+            'construction_excess_material', 'construction_excess_approved_amount',
+            'construction_excess_approved_by', 'construction_excess_approved_date'}
 
     def _construction_excess_pending(self):
         self.ensure_one()
@@ -175,7 +186,8 @@ class MrpProduction(models.Model):
             elif state != 'approved' or currency.compare_amounts(
                     amount, production.construction_excess_approved_amount) > 0:
                 state = 'exceeded'
-            production.write({
+            # sudo: las cifras y el estado del exceso los escribe el sistema.
+            production.sudo().write({
                 'construction_excess_amount': max(amount, 0.0),
                 'construction_excess_pct': max(percent, 0.0),
                 'construction_excess_material': material,
@@ -199,8 +211,8 @@ class MrpProduction(models.Model):
         # El exceso no pasa por el asistente de la política ni por la
         # autorización de la receta real: lo controla la orden.
         res = super(MrpProduction, self.with_context(
-            construction_exceed_checked=True,
-            construction_skip_recipe_authorization=True)).action_confirm()
+            construction_exceed_checked=EXCEED_CHECKED,
+            construction_skip_recipe_authorization=SKIP_RECIPE_AUTHORIZATION)).action_confirm()
         approvals._construction_refresh_versus()
         for production in approvals.filtered(lambda p: p._construction_excess_pending()):
             production.message_post(body=self.env._(
@@ -241,7 +253,9 @@ class MrpProduction(models.Model):
         }
         if reason:
             values['construction_exceed_reason'] = reason
-        self.write(values)
+        # sudo: la aprobación la registra el sistema; quien aprueba ya pasó su
+        # control (su margen, o la solicitud de Aprobaciones).
+        self.sudo().write(values)
         plan_sudo = self.sudo().construction_plan_id
         self.env['construction.exceed.log']._log([{
             'kind': 'excess', 'plan_id': plan_sudo.id, 'project_id': plan_sudo.project_id.id,

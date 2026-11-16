@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_production.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261101 — 16/11/2026
+
+- Seguridad: en el pedido de accesorios, el accesorio del plan, su saldo y su costo los pone el sistema, y lo enviado a aprobación ya no se cambia. Antes se podía subir el saldo a mano para que el pedido entrara a la orden sin aprobación, o subir la cantidad con el pedido en aprobación.
+
 ## 7.20261101 — 01/11/2026
 
 - M116-08: el cuadro dinámico «Presupuestado frente a real de fabricación» parte los nombres largos con el ancho máximo de Ajustes.

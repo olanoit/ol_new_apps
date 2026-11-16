@@ -3,7 +3,7 @@
 planificación de obra (CR-38), «Pasar a la cotización» y contrato de obra en
 borrador al confirmar (CR-44), grupo «Presupuestador» y entradas (CR-47).
 Datos ficticios."""
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 from odoo.addons.al_construction_planner_spreadsheet.models.project_project import _col
 from odoo.addons.al_construction_planner_spreadsheet.models.sheet_migration import (
     col_index as _col_index,
@@ -58,6 +58,8 @@ class TestCrevalPackage5(TestBudgetBook):
             plan.action_construction_send_to_planner({}, 'budget')
 
     def test_budgeter_passes_the_budget(self):
+        # La cotización que presupuesta es una que él puede abrir (16-nov-2026).
+        self.order.user_id = self.budgeter
         wizard = self.env['construction.budget.book.wizard'].with_user(self.budgeter).create({
             'sale_order_id': self.order.id, 'target': 'budget', 'file': self._book(),
             'filename': 'libro.xlsx'})
@@ -68,6 +70,24 @@ class TestCrevalPackage5(TestBudgetBook):
         self.assertEqual(self.order.state, 'draft')
         self.assertFalse(self.env['construction.resource.plan'].search(
             [('project_id', '=', self.project.id)]))
+
+    def test_budgeter_only_passes_to_quotations_he_sees(self):
+        """Auditoría del 16-nov-2026: «Pasar a la cotización» corre como el
+        sistema, y la cotización del asistente es un campo que el usuario
+        escribe: el presupuestador no pasa un presupuesto a una que no ve."""
+        seller = new_test_user(self.env, 'vendedor_ajeno_p5',
+                               groups='sales_team.group_sale_salesman',
+                               name='Otro vendedor (test)')
+        foreign = self.order.copy({'user_id': seller.id})
+        with self.assertRaises(AccessError):
+            foreign.with_user(self.budgeter).read(['name'])
+        wizard = self.env['construction.budget.book.wizard'].with_user(self.budgeter).create({
+            'sale_order_id': foreign.id, 'target': 'budget', 'file': self._book(),
+            'filename': 'libro.xlsx'})
+        with self.assertRaises(AccessError):
+            wizard.action_import()
+        self.assertFalse(foreign.order_line.filtered(
+            lambda l: l.construction_line_role == 'partida'))
 
     def test_confirm_creates_a_draft_contract(self):
         self._send(self._book()).action_import()

@@ -14,6 +14,12 @@ from odoo.exceptions import UserError
 
 from .res_company import APPROVAL_ENGINES
 
+#: Marca con que la solicitud ya aprobada libera su documento. Es un objeto
+#: del servidor y se compara por identidad: un contexto enviado por el cliente
+#: (JSON) no puede reproducirlo, así que pedir la aprobación con
+#: ``construction_approval_granted`` en el contexto no se salta la ruta.
+APPROVAL_GRANTED = object()
+
 
 class ConstructionApprovalMixin(models.AbstractModel):
     _name = 'construction.approval.mixin'
@@ -84,6 +90,10 @@ class ConstructionApprovalMixin(models.AbstractModel):
             record.construction_approval_engine = record.company_id.construction_approval_engine
         if 'need_validation' in self._fields:
             self.invalidate_recordset(['need_validation'])
+
+    def _construction_is_approval_granted(self):
+        """La llamada viene de la solicitud ya aprobada (no del cliente)."""
+        return self.env.context.get('construction_approval_granted') is APPROVAL_GRANTED
 
     def _construction_uses_approvals(self):
         return self.filtered(lambda r: r.construction_approval_engine == 'approvals')
@@ -224,7 +234,7 @@ class ConstructionApprovalMixin(models.AbstractModel):
         if self.state != 'to_approve':
             return
         self.message_post(body=self.env._('Aprobado en %s.', request.name))
-        self.with_context(construction_approval_granted=True)._write_approved()
+        self.with_context(construction_approval_granted=APPROVAL_GRANTED)._write_approved()
 
     def _construction_approval_refused(self, request):
         """Rechazada o cancelada: el documento vuelve a borrador con el motivo."""

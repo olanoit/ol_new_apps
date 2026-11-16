@@ -115,6 +115,33 @@ class TestModuleProductsV18(PlannerCommon):
         self.assertEqual(module.construction_unit_state, 'on_site')
         self.assertEqual(module.construction_shipment_state, 'on_site')
 
+    def test_recipe_authorization_cannot_be_forged(self):
+        """Auditoría del 16-nov-2026: la autorización de la jefatura sobre la
+        receta real no se salta con un contexto del cliente ni escribiendo
+        «Autorizado por» a mano."""
+        module = self._module_task()
+        recipe = self.env['construction.real.recipe'].create({'task_id': module.id, 'line_ids': [
+            Command.create({'product_id': self.board.id, 'qty': 1.0}),
+            Command.create({'product_id': self.hinge.id, 'qty': 4.0 + 14.4 / 5})]})
+        recipe.action_confirm()
+        self.assertTrue(recipe.needs_authorization)
+        action = self.plan.action_create_module_productions(self.apt_502)
+        production = self.env['mrp.production'].search(action['domain'])
+        with self.assertRaises(UserError):
+            production.with_context(construction_skip_recipe_authorization=True).action_confirm()
+        executor = new_test_user(
+            self.env, 'plan18_ejecuta_receta', name='Quien ejecuta (test receta)',
+            groups='al_construction_planner.group_planner_user')
+        with self.assertRaises(UserError):
+            recipe.with_user(executor).write({'authorized_by': executor.id})
+        recipe.invalidate_recordset(['needs_authorization'])
+        self.assertTrue(recipe.needs_authorization)
+        self.assertNotEqual(production.state, 'confirmed')
+        # La jefatura sigue autorizando.
+        recipe.with_user(self.head).action_authorize()
+        production.action_confirm()
+        self.assertEqual(production.state, 'confirmed')
+
     def test_real_recipe_versus_and_threshold(self):
         """M17-15 y criterio de M17-20: planificado y real lado a lado; con 8 %
         sobre lo planificado producción sigue, con 12 % espera a la jefatura."""

@@ -88,6 +88,15 @@ class ConstructionAccessoryRequest(models.Model):
     # ------------------------------------------------------------------
     # Flujo
     # ------------------------------------------------------------------
+    def write(self, vals):
+        # «Agregado a la orden» lo escribe el sistema al aplicar el pedido
+        # (sin cambios, o aprobado en Aprobaciones): escrito a mano lo daría
+        # por atendido sin agregar nada.
+        if vals.get('state') == 'done' and not self.env.su:
+            raise UserError(self.env._(
+                'El pedido pasa a «Agregado a la orden» al enviarlo o al aprobarse.'))
+        return super().write(vals)
+
     def action_submit(self):
         """Sin cambios va directo a la orden; con cambios, a Aprobaciones."""
         for request in self:
@@ -119,7 +128,8 @@ class ConstructionAccessoryRequest(models.Model):
                 qty = line.uom_id._compute_quantity(line.qty, line.product_id.uom_id)
                 quantities[line.product_id] = quantities.get(line.product_id, 0.0) + qty
             request.production_id._construction_add_components(quantities)
-            request.state = 'done'
+            # sudo: el estado final lo escribe el sistema al agregar lo pedido.
+            request.sudo().state = 'done'
             request.production_id.message_post(body=Markup('%s <a href="#" data-oe-model="%s" '
                                                            'data-oe-id="%s">%s</a>') % (
                 self.env._('Accesorios agregados desde'), request._name, request.id,
@@ -244,6 +254,43 @@ class ConstructionAccessoryRequestLine(models.Model):
             line.change_type = change
             line.diff_pct = pct
             line.amount_diff = amount
+
+    #: Lo que pone el sistema al proponer el pedido: el accesorio del plan,
+    #: su saldo y su costo. De ellos sale si la línea es un cambio y va a
+    #: Aprobaciones; solo son de lectura en la vista.
+    _SYSTEM_FIELDS = frozenset({'request_id', 'planned_product_id', 'qty_balance', 'price_unit'})
+
+    def _construction_check_editable(self, requests=None, fields_written=()):
+        if self.env.su:
+            return
+        if self._SYSTEM_FIELDS & set(fields_written):
+            raise UserError(self.env._(
+                'El accesorio del plan, su saldo y su costo los pone el sistema al proponer '
+                'el pedido.'))
+        requests = self.request_id if requests is None else requests
+        sent = requests.filtered(lambda r: r.state != 'draft')
+        if sent:
+            raise UserError(self.env._(
+                'Los accesorios de %s ya no se cambian: el pedido salió de borrador.',
+                ', '.join(sent.mapped('name'))))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        if not self.env.su:
+            requests = self.env['construction.accessory.request'].browse(
+                {vals['request_id'] for vals in vals_list if vals.get('request_id')})
+            # Una línea agregada a mano no trae saldo ni costo del plan.
+            written = set().union(*(set(vals) for vals in vals_list)) - {'request_id'}
+            self._construction_check_editable(requests, written)
+        return super().create(vals_list)
+
+    def write(self, vals):
+        self._construction_check_editable(fields_written=vals)
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_only_in_draft(self):
+        self._construction_check_editable()
 
     def _construction_excess_qty(self):
         """Lo pedido sobre el saldo, nunca más que lo pedido (M110-08)."""

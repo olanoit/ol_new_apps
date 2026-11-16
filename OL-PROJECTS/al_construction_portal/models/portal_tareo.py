@@ -42,8 +42,8 @@ class ConstructionCrewDay(models.Model):
     _inherit = 'construction.crew.day'
 
     @api.model
-    def _refresh_executed(self, projects, date_from, date_to):
-        days = super()._refresh_executed(projects, date_from, date_to)
+    def _refresh_executed(self, projects, date_from, date_to, employees=None):
+        days = super()._refresh_executed(projects, date_from, date_to, employees=employees)
         if not days:
             return days
         # sudo: el tareo y los jornales los rehace el sistema.

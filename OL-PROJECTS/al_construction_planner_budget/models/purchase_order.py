@@ -9,7 +9,7 @@ from odoo import fields, models
 from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang
 
-from odoo.addons.al_construction_planner.models.common import EXCEED_STATES
+from odoo.addons.al_construction_planner.models.common import EXCEED_CHECKED, EXCEED_STATES
 from odoo.addons.al_construction_planner.models.construction_resource_plan import OPEN_STATES
 
 # De la política más estricta a la más laxa: si una OC toca varias obras se
@@ -94,8 +94,18 @@ class PurchaseOrder(models.Model):
             formatLang(self.env, excess, currency_obj=self.company_id.currency_id))
             for plan, budget_line, _budget, _used, _amount, excess in rows)
 
+    def write(self, vals):
+        # El resultado del control solo es de lectura en la vista: lo escribe
+        # el sistema (sudo), nunca una llamada directa.
+        if 'construction_exceed_state' in vals and not self.env.su:
+            raise UserError(self.env._(
+                'El control de presupuesto de la orden lo lleva el sistema: no se escribe a '
+                'mano.'))
+        return super().write(vals)
+
     def button_confirm(self):
-        checked = self.env.context.get('construction_exceed_checked')
+        # Marca del servidor: enviada por el cliente no se salta el control.
+        checked = self.env.context.get('construction_exceed_checked') is EXCEED_CHECKED
         # Las OC de servicio (puente de contratas) se controlan al asignar la
         # contrata y al liquidar.
         for order in self.filtered(lambda o: o.state in ('draft', 'sent') and not getattr(
@@ -106,7 +116,7 @@ class PurchaseOrder(models.Model):
             rows = order_sudo._construction_budget_excess()
             if not rows:
                 if order.construction_exceed_state != 'ok':
-                    order.construction_exceed_state = 'ok'
+                    order_sudo.construction_exceed_state = 'ok'
                 continue
             policy = max((row[0]._exceed_policy_for('material') for row in rows),
                          key=POLICY_RANK.get)

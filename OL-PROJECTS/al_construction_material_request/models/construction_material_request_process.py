@@ -400,7 +400,9 @@ class ConstructionMaterialRequest(models.Model):
         for request in self.filtered(lambda r: r.state == 'in_progress'):
             open_lines = request.line_ids.filtered(lambda l: not l.cancelled)
             if open_lines and all(l.line_state == 'done' for l in open_lines):
-                request.state = 'done'
+                # sudo: «Hecho» lo decide el sistema al completarse las líneas,
+                # sea quien sea el que validó la recepción o cerró la línea.
+                request.sudo().state = 'done'
 
     def _construction_notify_return(self):
         """Una actividad por requerimiento, mientras no se atienda la anterior."""
@@ -429,6 +431,7 @@ class ConstructionMaterialRequest(models.Model):
 
     def action_cancel(self):
         self._check_state(('draft', 'to_approve', 'approved', 'rejected', 'in_progress'))
+        self._construction_check_state_change('cancel')
         for request in self.filtered(lambda r: r.state == 'in_progress'):
             request._cancel_pending_supply()
         return super().action_cancel()

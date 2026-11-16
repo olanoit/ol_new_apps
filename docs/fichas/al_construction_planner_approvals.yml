@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere Aprobaciones (Enterprise) y el puente de compras (`al_construction_planner_purchase`).
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '12.20261104'
+  fecha: 16/11/2026
+  cambios:
+    - "Seguridad: pedir la aprobación de un requerimiento o de un plan con la marca de «ya aprobado» en el contexto ya no se salta la ruta de Aprobaciones; la marca es un objeto del servidor."
 - version: '11.20261104'
   fecha: 07/11/2026
   cambios:

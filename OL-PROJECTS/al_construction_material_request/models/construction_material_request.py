@@ -307,6 +307,38 @@ class ConstructionMaterialRequest(models.Model):
                     company).next_by_code('construction.material.request') or _('Nuevo')
         return super().create(vals_list)
 
+    #: Pasos de estado que da quien no es Logística (solicitante, revisor):
+    #: enviar, aprobar o rechazar (OCA comprueba las revisiones), volver a
+    #: borrador y descartar lo que aún no se aprobó. Procesar, terminar y
+    #: cancelar lo aprobado es de Logística o del sistema.
+    _construction_user_transitions = {
+        'draft': {'to_approve', 'approved', 'cancel'},
+        'to_approve': {'approved', 'rejected', 'draft'},
+        'rejected': {'draft', 'cancel'},
+        'cancel': {'draft'},
+    }
+
+    def _construction_check_state_change(self, state):
+        """El estado solo cambia por el flujo: el campo es de solo lectura en
+        la vista, pero una escritura directa lo movería (p. ej. de borrador a
+        «En proceso», sin aprobación)."""
+        if self.env.su or self.env.user.has_group(
+                'al_construction_material_request.group_construction_logistics'):
+            return
+        labels = dict(self._fields['state']._description_selection(self.env))
+        for request in self:
+            if state != request.state and state not in self._construction_user_transitions.get(
+                    request.state, ()):
+                raise UserError(_(
+                    '%(name)s no pasa de «%(old)s» a «%(new)s»: eso lo hace Logística.',
+                    name=request.name, old=labels.get(request.state, request.state),
+                    new=labels.get(state, state)))
+
+    def write(self, vals):
+        if 'state' in vals:
+            self._construction_check_state_change(vals['state'])
+        return super().write(vals)
+
     @api.ondelete(at_uninstall=False)
     def _unlink_only_draft(self):
         if any(request.state not in ('draft', 'cancel') for request in self):
@@ -447,6 +479,7 @@ class ConstructionMaterialRequest(models.Model):
 
     def action_cancel(self):
         self._check_state(('draft', 'to_approve', 'approved', 'rejected', 'in_progress'))
+        self._construction_check_state_change('cancel')
         self.write({'state': 'cancel'})
 
     # ------------------------------------------------------------------

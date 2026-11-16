@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261027 — 16/11/2026
+
+- Seguridad: «Descontado en» del material extra lo pone el sistema al preparar o anular la liquidación; ya no se puede escribir a mano para que el extra figure como descontado o vaya a la liquidación de otra contrata.
+
 ## 3.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

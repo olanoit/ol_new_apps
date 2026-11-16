@@ -31,6 +31,11 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '28.20261112'
+  fecha: 16/11/2026
+  cambios:
+    - "Rendimiento: al validar una entrega de venta, una recepción de compra o un ticket del punto de venta, la obra se busca una vez por ubicación y no una vez por movimiento."
+    - "Rendimiento: el consumo en obra de las líneas del plan se suma en la base de datos en vez de leer todo el historial de movimientos de la obra."
 - version: '23.20261104'
   fecha: 04/11/2026
   cambios:

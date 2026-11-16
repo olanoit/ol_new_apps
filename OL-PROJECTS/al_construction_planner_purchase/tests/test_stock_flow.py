@@ -3,6 +3,8 @@
 de proveedor, despacho a obra, devolución y ajuste de inventario. El puente no
 depende de Fabricación y ninguno de estos pasos puede leer sus campos. Datos
 ficticios."""
+from unittest.mock import patch
+
 from odoo.tests import TransactionCase, tagged
 
 
@@ -94,3 +96,69 @@ class TestStockFlow(TransactionCase):
         self._validate(self.warehouse.in_type_id, self.supplier_location, self.stock, 5)
         self._validate(self.warehouse.int_type_id, self.stock, self.site, 2)
         self.assertEqual(line.qty_client_received, 2.0)
+
+    def test_site_lookup_once_per_location(self):
+        """Una recepción o una entrega que no es de obra busca la obra una vez
+        por ubicación, no una vez por movimiento (comparte la base con ventas,
+        farmacia y punto de venta)."""
+        products = self.product | self.env['product.product'].create([
+            {'name': 'Producto sin obra %s (test)' % index, 'is_storable': True}
+            for index in range(3)])
+        picking = self.env['stock.picking'].create({
+            'picking_type_id': self.warehouse.in_type_id.id,
+            'location_id': self.supplier_location.id, 'location_dest_id': self.stock.id,
+            'move_ids': [(0, 0, {
+                'product_id': product.id, 'product_uom_qty': 2,
+                'product_uom': product.uom_id.id, 'location_id': self.supplier_location.id,
+                'location_dest_id': self.stock.id}) for product in products]})
+        picking.action_confirm()
+        picking.move_ids.quantity = 2
+        picking.move_ids.picked = True
+        picking.button_validate()
+        moves = picking.move_ids
+        self.assertEqual(set(moves.mapped('state')), {'done'})
+        Project = self.env.registry['project.project']
+        original = Project.search
+        lookups = []
+
+        def counting_search(records, domain, *args, **kwargs):
+            if 'construction_location_id' in str(domain):
+                lookups.append(domain)
+            return original(records, domain, *args, **kwargs)
+
+        with patch.object(Project, 'search', counting_search):
+            moves._construction_client_supply_received()
+        self.assertEqual(len(moves), 4)
+        self.assertEqual(len(lookups), 1)
+
+    def test_done_qty_sums_in_the_database(self):
+        """Lo hecho se suma en la base; solo los movimientos en otra unidad se
+        leen para convertirlos, con el mismo resultado que uno por uno."""
+        dozen = self.env.ref('uom.product_uom_dozen')
+        self._validate(self.warehouse.in_type_id, self.supplier_location, self.stock, 100)
+        for qty in (3, 4.5):
+            self._validate(self.warehouse.int_type_id, self.stock, self.site, qty)
+        Allocation = self.env['construction.resource.plan.allocation']
+        Move = self.env.registry['stock.move']
+        domain = [('state', '=', 'done'), ('product_id', '=', self.product.id),
+                  ('location_dest_id', 'child_of', self.site.id)]
+        with patch.object(Move, 'search', side_effect=AssertionError('lee los movimientos')):
+            self.assertAlmostEqual(Allocation._construction_done_qty(self.product, domain), 7.5)
+        # Un despacho en docenas: se convierte a la unidad del producto.
+        picking = self.env['stock.picking'].create({
+            'picking_type_id': self.warehouse.int_type_id.id,
+            'location_id': self.stock.id, 'location_dest_id': self.site.id,
+            'move_ids': [(0, 0, {
+                'product_id': self.product.id, 'product_uom_qty': 2, 'product_uom': dozen.id,
+                'location_id': self.stock.id, 'location_dest_id': self.site.id})]})
+        picking.action_confirm()
+        picking.action_assign()
+        picking.move_ids.picked = True
+        picking.button_validate()
+        self.assertEqual(picking.state, 'done')
+        moves = self.env['stock.move'].search(domain)
+        one_by_one = sum(move.product_uom._compute_quantity(
+            move.quantity, self.product.uom_id, rounding_method='HALF-UP') for move in moves)
+        self.assertAlmostEqual(one_by_one, 31.5)
+        self.assertAlmostEqual(Allocation._construction_done_qty(self.product, domain), 31.5)
+

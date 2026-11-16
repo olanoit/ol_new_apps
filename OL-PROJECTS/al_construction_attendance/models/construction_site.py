@@ -2,13 +2,19 @@
 """Sede de obra con ubicación y horario (v1.5, fase 17)."""
 import math
 import secrets
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 
 from odoo import api, fields, models
 
 EARTH_RADIUS_M = 6371000.0
+#: Quiosco: documentos o PIN errados seguidos que lo pausan, en qué ventana y
+#: por cuánto. El enlace de la tablet es su única protección: sin este tope,
+#: quien lo tenga prueba documentos o PIN hasta dar con el de cada persona.
+KIOSK_MAX_FAILURES = 5
+KIOSK_FAILURE_WINDOW = timedelta(minutes=10)
+KIOSK_PAUSE = timedelta(minutes=10)
 
 
 def haversine_m(lat1, lon1, lat2, lon2):
@@ -46,6 +52,42 @@ class L10nPeHrConstructionSite(models.Model):
     kiosk_url = fields.Char(string='Enlace del quiosco', compute='_compute_kiosk_url',
                             groups='hr.group_hr_user')
 
+    kiosk_failed_count = fields.Integer(
+        string='Intentos errados del quiosco', copy=False, readonly=True,
+        groups='hr.group_hr_user')
+    kiosk_failed_since = fields.Datetime(
+        string='Primer intento errado', copy=False, readonly=True, groups='hr.group_hr_user')
+    kiosk_paused_until = fields.Datetime(
+        string='Quiosco en pausa hasta', copy=False, readonly=True, groups='hr.group_hr_user',
+        help='Tras varios documentos o PIN errados seguidos, el quiosco deja de marcar unos '
+             'minutos. Si el enlace se filtró, cambie la clave del quiosco.')
+
+    def _kiosk_paused_minutes(self):
+        """Minutos que le quedan a la pausa del quiosco (0 si marca)."""
+        self.ensure_one()
+        now = fields.Datetime.now()
+        if not self.kiosk_paused_until or self.kiosk_paused_until <= now:
+            return 0
+        return max(1, int((self.kiosk_paused_until - now).total_seconds() // 60) + 1)
+
+    def _kiosk_register_attempt(self, found):
+        """Cuenta los intentos errados seguidos: un acierto pone el contador
+        en cero; al llegar al tope en la ventana, el quiosco entra en pausa."""
+        self.ensure_one()
+        now = fields.Datetime.now()
+        if found:
+            if self.kiosk_failed_count:
+                self.write({'kiosk_failed_count': 0, 'kiosk_failed_since': False})
+            return
+        fresh = not self.kiosk_failed_since or now - self.kiosk_failed_since > KIOSK_FAILURE_WINDOW
+        count = 1 if fresh else self.kiosk_failed_count + 1
+        vals = {'kiosk_failed_count': count,
+                'kiosk_failed_since': now if fresh else self.kiosk_failed_since}
+        if count >= KIOSK_MAX_FAILURES:
+            vals.update({'kiosk_failed_count': 0, 'kiosk_failed_since': False,
+                         'kiosk_paused_until': now + KIOSK_PAUSE})
+        self.write(vals)
+
     def _compute_kiosk_url(self):
         base = self.get_base_url()
         for site in self:
@@ -54,7 +96,8 @@ class L10nPeHrConstructionSite(models.Model):
 
     def action_new_kiosk_token(self):
         for site in self:
-            site.kiosk_token = secrets.token_urlsafe(16)
+            site.write({'kiosk_token': secrets.token_urlsafe(16), 'kiosk_failed_count': 0,
+                        'kiosk_failed_since': False, 'kiosk_paused_until': False})
 
     def _distance_to(self, latitude, longitude):
         self.ensure_one()

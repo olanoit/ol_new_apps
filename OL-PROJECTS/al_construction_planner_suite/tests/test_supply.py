@@ -301,6 +301,29 @@ class TestSupply(PlannerCommon):
         self.assertEqual(line_501.qty_requested, 25.0)
         self.assertEqual(line_501.line_state, 'exceeded')
 
+    def test_production_client_context_does_not_skip_control(self):
+        """Auditoría del 16-nov-2026: las marcas con que el asistente y el
+        abastecimiento confirman la OF no valen si las envía el cliente."""
+        wizard = self.env['construction.plan.production.wizard'].with_context(
+            default_plan_id=self.plan.id, construction_selection_task_ids=[self.apt_501.id],
+        ).create({'group_by': 'selection'})
+        production = self.env['mrp.production'].browse(wizard.action_create()['res_id'])
+        hinge_move = production.move_raw_ids.filtered(lambda m: m.product_id == self.p_hinge)
+        hinge_move.product_uom_qty = 25  # el plan del Dpto 501 tiene 10
+        as_buyer = production.with_user(self.buyer)
+        self._set_policy('block')
+        for context in ({'construction_from_procurement': True},
+                        {'construction_exceed_checked': True}):
+            with self.assertRaises(UserError):
+                as_buyer.with_context(**context).action_confirm()
+            self.assertEqual(production.state, 'draft')
+        self._set_policy('approval')
+        for context in ({'construction_from_procurement': True},
+                        {'construction_exceed_checked': True}):
+            action = as_buyer.with_context(**context).action_confirm()
+            self.assertEqual(production.state, 'draft')
+            self.assertEqual(action['res_model'], 'construction.plan.exceed.wizard')
+
     # ------------------------------------------------------------------
     # Versiones, cierre y multicompañía
     # ------------------------------------------------------------------

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 31.20261112 — 16/11/2026
+
+- Multicompañía: la meta de valorización del mes y lo facturado por partida solo se ven en las compañías del usuario (les faltaba la regla de registro).
+
 ## 21.20261104 — 04/11/2026
 
 - M117-25: factura de valorización por partida o con una línea; forma, producto y texto por contrato y compañía; vista previa antes de crearla; anexo con el detalle y registro de lo facturado por partida.

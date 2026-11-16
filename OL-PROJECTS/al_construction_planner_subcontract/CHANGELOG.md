@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 25.20261112 — 16/11/2026
+
+- Seguridad: el estado de la valorización solo cambia por sus acciones. Quien prepara ya no puede validarla ni aprobarla con una escritura directa; «Aprobada» y «Pagada» las escribe el sistema.
+- Seguridad: las líneas de la valorización (partida, avance del periodo, tarifa y retención) las arma el sistema; las personas solo escriben sus decisiones (porcentaje manual, pago del re-trabajo y sus motivos).
+- Seguridad: un deductivo en una valorización o aplicado no se reabre cambiándole el estado ni con una llamada directa; solo se anula uno pendiente o se retoma uno anulado.
+
 ## 18.20261101 — 01/11/2026
 
 - CR-20 e I-13: asistente «Intervenir contrata» en la OC de contrata confirmada y en el Cronograma: preliquidación por partida, la línea del plan queda libre para otra contrata y las cuotas del fondo se retienen con el motivo «Contrata intervenida».

@@ -35,6 +35,10 @@ class StockMove(models.Model):
         de las líneas de suministro del cliente del plan; lo que se le
         devuelve, resta (CR-06)."""
         Project = self.env['project.project'].sudo()
+        # Esto corre con cada entrega de venta, recepción de compra y ticket
+        # del punto de venta: la obra se busca una vez por ubicación, no por
+        # movimiento.
+        project_by_location = {}
         for move in self:
             partner = move.picking_id.partner_id.commercial_partner_id
             if move.location_id.usage in ('customer', 'supplier'):
@@ -43,9 +47,11 @@ class StockMove(models.Model):
                 site_location, sign = move.location_id, -1
             else:
                 continue
-            # sudo: quien valida en el almacén no ve las obras ni el plan.
-            project = Project.search([
-                ('construction_location_id', 'parent_of', site_location.id)], limit=1)
+            if site_location not in project_by_location:
+                # sudo: quien valida en el almacén no ve las obras ni el plan.
+                project_by_location[site_location] = Project.search([
+                    ('construction_location_id', 'parent_of', site_location.id)], limit=1)
+            project = project_by_location[site_location]
             if not project:
                 continue
             from_client = (move.location_id if sign > 0 else move.location_dest_id).usage \

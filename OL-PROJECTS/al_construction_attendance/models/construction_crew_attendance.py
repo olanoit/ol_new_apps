@@ -86,9 +86,11 @@ class ConstructionCrewDay(models.Model):
         string='Marcaciones')
 
     @api.model
-    def _refresh_executed(self, projects, date_from, date_to):
+    def _refresh_executed(self, projects, date_from, date_to, employees=None):
         """Rehace los jornales ejecutados de ``projects`` entre esas fechas
-        desde la marcación en sus sedes de obra."""
+        desde la marcación en sus sedes de obra. Con ``employees``, solo los
+        de esas personas: cada marcación rehace lo de quien marca, no los
+        jornales de toda la obra."""
         projects = projects.filtered('is_construction_site')
         if not projects or not date_from or not date_to:
             return self.browse()
@@ -97,8 +99,9 @@ class ConstructionCrewDay(models.Model):
         Attendance = self.env['hr.attendance'].sudo()
         sites = self.env['l10n_pe.hr.construction.site'].sudo().search(
             [('project_id', 'in', projects.ids)])
+        scope = [('employee_id', 'in', employees.ids)] if employees is not None else []
         old = self.sudo().search([('kind', '=', 'executed'), ('project_id', 'in', projects.ids),
-                                  ('date', '>=', date_from), ('date', '<=', date_to)])
+                                  ('date', '>=', date_from), ('date', '<=', date_to)] + scope)
         old.unlink()
         if not sites:
             return self.browse()
@@ -106,7 +109,7 @@ class ConstructionCrewDay(models.Model):
         end = datetime.combine(date_to + timedelta(days=1), time.max)
         attendances = Attendance.search([
             ('l10n_pe_construction_site_id', 'in', sites.ids), ('check_in', '>=', start),
-            ('check_in', '<=', end), ('check_out', '!=', False)])
+            ('check_in', '<=', end), ('check_out', '!=', False)] + scope)
         days = defaultdict(lambda: {'hours': 0.0, 'attendances': Attendance})
         for attendance in attendances:
             site = attendance.l10n_pe_construction_site_id
@@ -161,17 +164,31 @@ class ConstructionCrewDay(models.Model):
 class HrAttendance(models.Model):
     _inherit = 'hr.attendance'
 
-    def _construction_refresh_crew_days(self):
-        """Los jornales ejecutados siguen a la marcación de la obra."""
-        by_project = defaultdict(set)
+    def _construction_crew_day_scope(self):
+        """{obra: (días, empleados)} de estas marcaciones de sede de obra."""
+        scope = {}
+        # sudo: la sede y el empleado son de RR. HH.; solo se leen para saber
+        # qué jornales rehacer.
         for attendance in self.sudo():
             project = attendance.l10n_pe_construction_site_id.project_id
             if project and attendance.check_in:
                 day = fields.Date.to_date(attendance.check_in)
-                by_project[project].update({day - timedelta(days=1), day, day + timedelta(days=1)})
+                days, employees = scope.get(project, (set(), attendance.employee_id.browse()))
+                days.update({day - timedelta(days=1), day, day + timedelta(days=1)})
+                scope[project] = (days, employees | attendance.employee_id)
+        return scope
+
+    def _construction_refresh_crew_days(self, previous=None):
+        """Los jornales ejecutados siguen a la marcación de la obra: se rehacen
+        los de las personas que marcan (y, si la marcación cambió de persona,
+        de obra o de día, los de antes: ``previous``)."""
+        scope = self._construction_crew_day_scope()
+        for project, (days, employees) in (previous or {}).items():
+            current_days, current_employees = scope.get(project, (set(), employees.browse()))
+            scope[project] = (current_days | days, current_employees | employees)
         CrewDay = self.env['construction.crew.day']
-        for project, days in by_project.items():
-            CrewDay._refresh_executed(project, min(days), max(days))
+        for project, (days, employees) in scope.items():
+            CrewDay._refresh_executed(project, min(days), max(days), employees=employees)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -180,10 +197,12 @@ class HrAttendance(models.Model):
         return attendances
 
     def write(self, vals):
-        before = self.sudo().filtered(lambda a: a.l10n_pe_construction_site_id.project_id)
+        tracked = {'check_in', 'check_out', 'l10n_pe_construction_site_id', 'employee_id'} \
+            & set(vals)
+        previous = self._construction_crew_day_scope() if tracked else None
         res = super().write(vals)
-        if {'check_in', 'check_out', 'l10n_pe_construction_site_id', 'employee_id'} & set(vals):
-            (before | self)._construction_refresh_crew_days()
+        if tracked:
+            self._construction_refresh_crew_days(previous)
         return res
 
 

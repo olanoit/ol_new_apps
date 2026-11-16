@@ -80,5 +80,17 @@
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
 
+    <record id="rule_construction_valuation_target_company" model="ir.rule">
+            <field name="name">Meta de valorización: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_valuation_target"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    <record id="rule_construction_valuation_invoiced_company" model="ir.rule">
+            <field name="name">Facturado por partida: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_valuation_invoiced"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
     </data>
 </odoo>

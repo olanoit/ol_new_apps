@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 28.20261111 — 16/11/2026
+
+- Seguridad: «Pasar a la cotización» del presupuestador comprueba que pueda ver la cotización antes de escribirla; antes podía pasar un presupuesto a una cotización de otro vendedor.
+
 ## 17.20261104 — 04/11/2026
 
 - M117-08: un lote grande recalcula el libro una sola vez, y agregar reglas de validación sin solape deja de copiar todas las reglas de la pestaña. Una ampliación de 1,700 filas pasa de más de 6 min a unos 40 s.

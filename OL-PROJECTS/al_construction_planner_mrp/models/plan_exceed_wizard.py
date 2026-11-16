@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
+from odoo.addons.al_construction_planner.models.common import EXCEED_CHECKED
+
 
 class ConstructionPlanExceedWizard(models.TransientModel):
     _inherit = 'construction.plan.exceed.wizard'
@@ -33,8 +35,10 @@ class ConstructionPlanExceedWizard(models.TransientModel):
         self._check_head_approval(self.production_id)
         production = self.production_id
         rows = production.sudo()._construction_get_excess()
-        production.write(self._exceed_values(reason))
-        res = production.with_context(construction_exceed_checked=True).action_confirm()
+        # sudo: el resultado del control lo escribe el sistema; la jefatura ya
+        # pasó su comprobación arriba.
+        production.sudo().write(self._exceed_values(reason))
+        res = production.with_context(construction_exceed_checked=EXCEED_CHECKED).action_confirm()
         if self.policy == 'approval':
             # Registro del exceso autorizado por la jefatura (M18-05).
             plan = production.sudo().construction_plan_id

@@ -25,6 +25,12 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '25.20261112'
+  fecha: 16/11/2026
+  cambios:
+    - "Seguridad: el estado de la valorización solo cambia por sus acciones. Quien prepara ya no puede validarla ni aprobarla con una escritura directa; «Aprobada» y «Pagada» las escribe el sistema."
+    - "Seguridad: las líneas de la valorización (partida, avance del periodo, tarifa y retención) las arma el sistema; las personas solo escriben sus decisiones (porcentaje manual, pago del re-trabajo y sus motivos)."
+    - "Seguridad: un deductivo en una valorización o aplicado no se reabre cambiándole el estado ni con una llamada directa; solo se anula uno pendiente o se retoma uno anulado."
 - version: '18.20261101'
   fecha: 01/11/2026
   cambios:

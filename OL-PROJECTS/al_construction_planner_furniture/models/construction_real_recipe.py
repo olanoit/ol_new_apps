@@ -26,7 +26,9 @@ from markupsafe import Markup
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
-from odoo.addons.al_construction_planner.models.common import PROJECT_HEAD_GROUPS, stage_selection
+from odoo.addons.al_construction_planner.models.common import (
+    PROJECT_HEAD_GROUPS, SKIP_RECIPE_AUTHORIZATION, stage_selection,
+)
 
 
 class ConstructionRealRecipe(models.Model):
@@ -175,6 +177,15 @@ class ConstructionRealRecipe(models.Model):
                     'la autorización de la jefatura de proyectos.', round(recipe.difference_pct, 2)))
         return True
 
+    def write(self, vals):
+        # «Autorizado por» solo es de lectura en la vista y quien ejecuta tiene
+        # permiso de escritura: escrito a mano liberaría la orden de
+        # fabricación sin la jefatura. Quitar la autorización sí se permite.
+        if not self.env.su and (vals.get('authorized_by') or vals.get('authorized_on')):
+            raise UserError(self.env._(
+                'La autorización de la receta real la da la jefatura de proyectos con «Autorizar».'))
+        return super().write(vals)
+
     def action_draft(self):
         self.filtered(lambda r: r.state == 'confirmed').write(
             {'state': 'draft', 'authorized_by': False, 'authorized_on': False})
@@ -182,7 +193,9 @@ class ConstructionRealRecipe(models.Model):
     def action_authorize(self):
         if not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
             raise UserError(self.env._('Autoriza la jefatura de proyectos.'))
-        self.write({'authorized_by': self.env.user.id, 'authorized_on': fields.Datetime.now()})
+        # sudo: la autorización la escribe el sistema, ya comprobada la jefatura.
+        self.sudo().write({'authorized_by': self.env.user.id,
+                           'authorized_on': fields.Datetime.now()})
         for recipe in self:
             recipe.message_post(body=self.env._(
                 'Autorizado: la orden de fabricación puede seguir con %s %% sobre lo '
@@ -321,7 +334,9 @@ class MrpProduction(models.Model):
         """La OF de un módulo con metrado sobre el umbral espera a la jefatura.
         Con el exceso en la orden (paquete 1.9, M19-04) lo controla la orden
         misma y este bloqueo no aplica."""
-        if self.env.context.get('construction_skip_recipe_authorization'):
+        # Marca del servidor: enviada por el cliente no se salta la autorización.
+        if self.env.context.get(
+                'construction_skip_recipe_authorization') is SKIP_RECIPE_AUTHORIZATION:
             return super().action_confirm()
         recipes = self.env['construction.real.recipe'].sudo()._blocking_for(
             self.construction_module_task_ids)

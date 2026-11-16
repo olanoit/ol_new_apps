@@ -13,11 +13,13 @@ from collections import defaultdict
 
 from markupsafe import Markup
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang
 
-from odoo.addons.al_construction_planner.models.common import EXCEED_STATES
+from odoo.addons.al_construction_planner.models.common import (
+    EXCEED_CHECKED, EXCEED_STATES, FROM_PROCUREMENT,
+)
 
 # Las etapas que consume la OF son las de fabricación y las marcadas «Consume
 # en la orden de fabricación» del catálogo (en mobiliario, producción y
@@ -45,7 +47,17 @@ class MrpProduction(models.Model):
         help='La orden del plan de la que viene esta por las rutas (paquete 1.10, M110-04): '
              'el corte que abastece al armado.')
 
+    @api.model
+    def _construction_control_fields(self):
+        """Campos con el resultado del control de exceso: solo son de lectura
+        en la vista y de ellos depende que la orden pueda empezar, así que
+        los escribe el sistema (sudo), nunca una llamada directa."""
+        return {'construction_exceed_state'}
+
     def write(self, vals):
+        if not self.env.su and self._construction_control_fields() & set(vals):
+            raise UserError(self.env._(
+                'El control de exceso de la orden lo lleva el sistema: no se escribe a mano.'))
         res = super().write(vals)
         if 'state' in vals:
             self.env['construction.resource.plan.allocation']._refresh_for_documents(
@@ -206,8 +218,10 @@ class MrpProduction(models.Model):
             self.construction_parent_id.message_post(body=body)
 
     def action_confirm(self):
-        checked = self.env.context.get('construction_exceed_checked')
-        from_procurement = self.env.context.get('construction_from_procurement')
+        # Marcas del servidor: enviadas por el cliente no se saltan el control.
+        checked = self.env.context.get('construction_exceed_checked') is EXCEED_CHECKED
+        from_procurement = self.env.context.get(
+            'construction_from_procurement') is FROM_PROCUREMENT
         planned = self.filtered(lambda p: p.construction_plan_id and p.state == 'draft')
         for production in planned:
             # Quien confirma en planta puede no tener acceso al plan: las
@@ -217,7 +231,7 @@ class MrpProduction(models.Model):
             production_sudo._construction_sync_allocations()
             rows = production_sudo._construction_get_excess()
             if not rows:
-                production.construction_exceed_state = 'ok'
+                production_sudo.construction_exceed_state = 'ok'
                 continue
             if from_procurement:
                 production_sudo._construction_procurement_excess(rows)

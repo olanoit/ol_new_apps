@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
+from odoo.addons.al_construction_planner.models.common import EXCEED_CHECKED
+
 from .purchase_order import POLICY_RANK
 
 
@@ -40,8 +42,9 @@ class ConstructionPlanExceedWizard(models.TransientModel):
         if self.policy == 'approval':
             # sudo: la jefatura del planificador aprueba el exceso sin ser
             # compradora; solo confirma la OC que Compras ya preparó.
-            order_sudo = order.sudo().with_context(construction_exceed_checked=True)
+            order_sudo = order.sudo().with_context(construction_exceed_checked=EXCEED_CHECKED)
             order_sudo.write(values)
             return order_sudo.button_confirm()
-        order.write(values)
-        return order.with_context(construction_exceed_checked=True).button_confirm()
+        # sudo: el resultado del control lo escribe el sistema.
+        order.sudo().write(values)
+        return order.with_context(construction_exceed_checked=EXCEED_CHECKED).button_confirm()

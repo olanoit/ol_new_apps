@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 32.20261112 — 16/11/2026
+
+- Seguridad: la autorización de la jefatura sobre la receta real ya no se salta con un contexto del cliente ni escribiendo «Autorizado por» a mano.
+- Multicompañía: la receta real del mueble, sus materiales y su comparación, las piezas y materiales de la tipología y las líneas de la lista de tarifas solo se ven en las compañías del usuario (les faltaba la regla de registro).
+
 ## 24.20261104 — 04/11/2026
 
 - M117-24: catálogo «Tipos de mueble y de módulo», con clase, grupo de ML, palabras clave y actividad de armado; se pueden agregar tipos sin programar.

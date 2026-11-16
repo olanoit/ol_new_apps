@@ -265,7 +265,8 @@ class TestPackage116Stage2a(PlannerCommon):
         self._setting('approve')
         request = self._request(self.p_screw, 100)
         request.with_user(self.requester).action_request_approval()
-        request.state = 'in_progress'
+        # (atajo del test: «En proceso» lo escribe Logística al procesar)
+        request.sudo().state = 'in_progress'
         self._return_from_site(request, 10)
         action = request.action_close_with_received()
         wizard = self.env[action['res_model']].browse(action['res_id'])

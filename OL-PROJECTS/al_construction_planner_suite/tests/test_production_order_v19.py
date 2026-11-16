@@ -111,6 +111,40 @@ class TestProductionOrder(PlannerCommon):
         self.assertEqual(request.state, 'done')
         self.assertIn(self.other_hinge, production.move_raw_ids.product_id)
 
+    def test_accessory_lines_cannot_dodge_the_approval(self):
+        """Auditoría del 16-nov-2026: el saldo y el costo de la línea los pone
+        el sistema, y lo enviado a aprobación ya no cambia. Antes, subir el
+        saldo a mano dejaba el pedido «sin cambios» y entraba directo a la
+        orden; y se podía subir la cantidad con el pedido en aprobación."""
+        production = self._production()
+        self._without_bom_hinges(production)
+        production.action_confirm()
+        before = self._hinges(production)
+        request = self._request(production)
+        line = request.line_ids[:1].with_user(self.head)
+        line.qty = line.qty_balance + 50
+        self.assertTrue(request.has_changes)
+        for vals in ({'qty_balance': 1000.0}, {'price_unit': 0.0},
+                     {'planned_product_id': self.other_hinge.id}):
+            with self.assertRaises(UserError):
+                line.write(vals)
+        self.assertTrue(request.has_changes)
+        request.note = 'Bisagras adicionales (test)'
+        request.with_user(self.head).action_submit()
+        self.assertEqual(request.state, 'to_approve')
+        self.assertEqual(self._hinges(production), before)
+        asked = line.qty
+        with self.assertRaises(UserError):
+            line.write({'qty': asked + 500})
+        with self.assertRaises(UserError):
+            request.with_user(self.head).write({'line_ids': [(0, 0, {
+                'product_id': self.other_hinge.id, 'qty': 99})]})
+        with self.assertRaises(UserError):
+            request.with_user(self.head).write({'state': 'done'})
+        self.assertEqual(line.qty, asked)
+        request.with_user(self.technical).action_construction_approve()
+        self.assertEqual(request.state, 'done')
+
     def test_quantity_over_balance_is_a_change(self):
         production = self._production()
         self._without_bom_hinges(production)

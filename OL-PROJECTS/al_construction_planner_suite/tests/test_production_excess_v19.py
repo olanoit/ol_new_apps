@@ -95,6 +95,25 @@ class TestProductionExcess(PlannerCommon):
         self.assertEqual(logs.user_id, self.head)
         self._start(production)
 
+    def test_excess_control_is_written_by_the_system(self):
+        """Auditoría del 16-nov-2026: el estado y las cifras del exceso solo
+        eran de lectura en la vista; escritos a mano, la orden empezaba sin
+        la aprobación."""
+        production = self._production()
+        self._move(production, self.p_hinge).product_uom_qty += 10
+        production.action_confirm()
+        self.assertEqual(production.construction_exceed_state, 'exceeded')
+        as_head = production.with_user(self.head)
+        for vals in ({'construction_exceed_state': 'approved'},
+                     {'construction_exceed_state': 'ok'},
+                     {'construction_excess_pct': 0.0},
+                     {'construction_excess_approved_by': self.head.id}):
+            with self.assertRaises(UserError):
+                as_head.write(vals)
+        self.assertEqual(production.construction_exceed_state, 'exceeded')
+        with self.assertRaises(UserError):
+            self._start(production)
+
     def test_large_excess_goes_to_approvals(self):
         production = self._production()
         self._move(production, self.p_hinge).product_uom_qty += 10

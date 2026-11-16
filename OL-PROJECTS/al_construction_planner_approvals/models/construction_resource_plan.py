@@ -19,7 +19,7 @@ class ConstructionResourcePlan(models.Model):
         return super().action_request_approval()
 
     def _write_approved(self):
-        if self.env.context.get('construction_approval_granted'):
+        if self._construction_is_approval_granted():
             return super()._write_approved()
         submitted = self._construction_uses_approvals()._construction_submit_approval()
         return super(ConstructionResourcePlan, self - submitted)._write_approved()

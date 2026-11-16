@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261027 — 16/11/2026
+
+- Seguridad: el estado, el porcentaje y el «aprobado por» del exceso de la orden de fabricación los escribe el sistema; antes, escritos a mano, la orden empezaba sin la aprobación.
+
 ## 8.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

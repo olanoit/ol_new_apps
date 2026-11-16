@@ -73,6 +73,10 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '19.20261112'
+    fecha: 16/11/2026
+    cambios:
+      - "Tareo: los jornales del tareo se rehacen solo para las personas de la marcación (acompaña el cambio de la asistencia de obra)."
   - version: '18.20261112'
     fecha: 16/11/2026
     cambios:

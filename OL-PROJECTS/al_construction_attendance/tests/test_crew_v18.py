@@ -125,3 +125,46 @@ class TestCrewDays(PlannerCommon):
         self.assertEqual(self.project._construction_round_days(7.0 / 8), 1.0)
         self.project.construction_crew_time_unit = 'NO'
         self.assertAlmostEqual(self.project._construction_round_days(6.0 / 8), 0.75)
+
+    def test_marking_rebuilds_only_who_marks(self):
+        """Una marcación rehace los jornales de quien marca, no los de toda la
+        obra (antes, cada ingreso del quiosco borraba y volvía a crear los de
+        todos)."""
+        sede = self.project.construction_hr_site_ids[:1] or self.env[
+            'l10n_pe.hr.construction.site'].create({
+                'name': 'Sede MOMEN v18 (test)', 'project_id': self.project.id,
+                'company_id': self.company.id})
+        CrewDay = self.env['construction.crew.day']
+        first, second = self.crew[0], self.crew[1]
+
+        def mark(employee, day=MONDAY, hours=8):
+            start = datetime.combine(day, datetime.min.time()) + timedelta(hours=13)
+            return self.env['hr.attendance'].create({
+                'employee_id': employee.id, 'l10n_pe_construction_site_id': sede.id,
+                'check_in': start, 'check_out': start + timedelta(hours=hours)})
+
+        def executed(employee):
+            return CrewDay.search([('project_id', '=', self.project.id), ('kind', '=', 'executed'),
+                                   ('employee_id', '=', employee.id)])
+        mark(first)
+        kept = executed(first)
+        self.assertEqual(len(kept), 1)
+        attendance = mark(second)
+        self.assertEqual(executed(first), kept)
+        self.assertTrue(kept.exists())
+        self.assertAlmostEqual(executed(second).days, 1.0)
+        # Corregir la salida rehace solo el jornal de esa persona.
+        attendance.check_out -= timedelta(hours=4)
+        self.assertEqual(executed(first), kept)
+        # (medio día: según el redondeo de la obra queda en 4 h o sin jornal)
+        self.assertIn(sum(executed(second).mapped('hours')), (0.0, 4.0))
+        # Si la marcación pasa a otra persona, se rehacen los de las dos.
+        attendance.employee_id = self.crew[2]
+        self.assertFalse(executed(second))
+        self.assertIn(sum(executed(self.crew[2]).mapped('hours')), (0.0, 4.0))
+        self.assertEqual(executed(first), kept)
+        # La acción programada sigue rehaciendo toda la obra.
+        CrewDay._refresh_executed(self.project, MONDAY, MONDAY)
+        self.assertFalse(kept.exists())
+        self.assertEqual(len(executed(first)), 1)
+

@@ -38,6 +38,10 @@ funcionalidades:
   - "Las obras de mobiliario llenan su maestro con el puente de mobiliario."
 
 novedades:
+  - version: '28.20261111'
+    fecha: 16/11/2026
+    cambios:
+      - "Seguridad: «Pasar a la cotización» del presupuestador comprueba que pueda ver la cotización antes de escribirla; antes podía pasar un presupuesto a una cotización de otro vendedor."
   - version: '17.20261104'
     fecha: 04/11/2026
     cambios:

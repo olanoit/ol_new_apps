@@ -328,3 +328,23 @@ def budget_code_levels(code):
             prefix = '%s.%s' % (prefix, segment)
             levels.append(prefix)
     return levels
+
+
+# ---------------------------------------------------------------------------
+# Marcas del servidor (auditoría del 16-nov-2026)
+# ---------------------------------------------------------------------------
+# Un contexto lo puede enviar el cliente en cualquier llamada. Cuando una marca
+# de contexto abre una aprobación o un control (confirmar una OC que pasa el
+# presupuesto, una OF que pasa el plan), su valor es uno de estos objetos y se
+# compara por identidad: el JSON de una llamada no puede reproducirlos.
+
+#: El asistente de exceso ya mostró el exceso (y, con política «aprobación»,
+#: la jefatura ya lo autorizó): el documento se confirma sin volver a pedirlo.
+EXCEED_CHECKED = object()
+#: El documento lo confirma Odoo dentro de un abastecimiento (una OF hija):
+#: no hay usuario frente a la pantalla.
+FROM_PROCUREMENT = object()
+#: El exceso de la OF lo controla la orden misma (motor «Aprobaciones»): no
+#: aplica el bloqueo de la receta real sobre el umbral.
+SKIP_RECIPE_AUTHORIZATION = object()
+

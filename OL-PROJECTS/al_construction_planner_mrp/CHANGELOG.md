@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261112 — 16/11/2026
+
+- Seguridad: confirmar una orden de fabricación que pide más que el plan con las marcas de «ya revisado» o «desde abastecimiento» en el contexto ya no se salta la política (tampoco «bloquear»).
+- Seguridad: el resultado del control de exceso de la orden lo escribe el sistema; ya no se puede escribir a mano.
+
 ## 17.20261101 — 01/11/2026
 
 - D1: el apunte de una orden de obra reparte cada etapa entre las cuentas Rubro, en proporción al material planificado de los ambientes de la orden por familia.

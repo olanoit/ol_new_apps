@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261104 — 16/11/2026
+
+- Seguridad: pedir la aprobación de un requerimiento o de un plan con la marca de «ya aprobado» en el contexto ya no se salta la ruta de Aprobaciones; la marca es un objeto del servidor.
+
 ## 11.20261104 — 07/11/2026
 
 - Paquete 6, CR-50: la regla 7.4 con Aprobaciones usa el revisor de la opción de la compañía (jefe o residente de la obra). Corrige el envío a Aprobaciones de un requerimiento pedido desde el portal de obra (el nombre del tipo de aprobación se leía con el usuario de portal).

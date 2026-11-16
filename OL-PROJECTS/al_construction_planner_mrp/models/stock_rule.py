@@ -9,6 +9,8 @@ plan y sus ambientes. El enlace madre-hija nativo no sirve aquí: Odoo lo
 escribe después de confirmar la hija (``_post_run_manufacture``)."""
 from odoo import Command, api, models
 
+from odoo.addons.al_construction_planner.models.common import FROM_PROCUREMENT
+
 
 class StockRule(models.Model):
     _inherit = 'stock.rule'
@@ -18,7 +20,7 @@ class StockRule(models.Model):
         # La hija se confirma dentro de la confirmación de la madre: sin
         # asistente de exceso ni error que la cancele.
         return super(StockRule, self.with_context(
-            construction_from_procurement=True))._run_manufacture(procurements)
+            construction_from_procurement=FROM_PROCUREMENT))._run_manufacture(procurements)
 
     def _prepare_mo_vals(self, product_id, product_qty, product_uom, location_dest_id, name,
                          origin, company_id, values, bom):

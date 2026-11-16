@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals_mrp`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '8.20261101'
+  fecha: 16/11/2026
+  cambios:
+    - "Seguridad: en el pedido de accesorios, el accesorio del plan, su saldo y su costo los pone el sistema, y lo enviado a aprobación ya no se cambia. Antes se podía subir el saldo a mano para que el pedido entrara a la orden sin aprobación, o subir la cantidad con el pedido en aprobación."
 - version: '7.20261101'
   fecha: 01/11/2026
   cambios:

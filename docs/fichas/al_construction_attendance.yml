@@ -65,6 +65,12 @@ pasos:
       personal propio; al publicarlo crea los apuntes analíticos.
 
 novedades:
+  - version: '14.20261111'
+    fecha: 16/11/2026
+    cambios:
+      - "Quiosco: cinco documentos o PIN errados seguidos lo pausan 10 minutos; la sede muestra hasta cuándo, y cambiar la clave del quiosco levanta la pausa."
+      - "Rendimiento: «Con asistencia» de los avances consulta solo las contratas, obras y fechas que se muestran, y su filtro se resuelve en la base de datos."
+      - "Rendimiento: cada marcación rehace los jornales ejecutados de quien marca, no los de toda la obra."
   - version: '7.20261101'
     fecha: 01/11/2026
     cambios:

@@ -20,6 +20,11 @@ configuracion:
 requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '9.20261101'
+  fecha: 16/11/2026
+  cambios:
+    - "Seguridad: confirmar una orden de compra que pasa el presupuesto con la marca de «ya revisado» en el contexto ya no se salta el asistente ni la autorización de la jefatura."
+    - "Seguridad: el resultado del control de presupuesto de la orden lo escribe el sistema; ya no se puede escribir a mano."
 - version: '8.20261101'
   fecha: 01/11/2026
   cambios:

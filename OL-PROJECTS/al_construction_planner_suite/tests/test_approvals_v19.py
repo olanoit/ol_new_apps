@@ -77,6 +77,23 @@ class TestApprovalsRequest(ApprovalRoutesMixin, TestRequestScope):
             'task_id': self.space_501.id, 'construction_stage': 'assembly'})]})
         return self._submit(request)
 
+    def test_client_context_does_not_skip_the_route(self):
+        """Auditoría del 16-nov-2026: la marca con que el sistema libera el
+        documento ya aprobado no vale si la envía el cliente al pedir la
+        aprobación; el requerimiento sigue su ruta."""
+        request = self._fetched()
+        request.write({'line_ids': [Command.create({
+            'product_id': self.p_silicone.id, 'product_qty': 3,
+            'task_id': self.space_501.id, 'construction_stage': 'assembly'})]})
+        request.with_user(self.requester).with_context(
+            construction_approval_granted=True).action_request_approval()
+        self.assertEqual(request.state, 'to_approve')
+        self.assertEqual(request.construction_approval_id.approver_ids.user_id, self.technical)
+        self.assertNotEqual(request.construction_exceed_state, 'approved')
+        # La ruta sigue liberándolo.
+        request.with_user(self.technical).action_construction_approve()
+        self.assertEqual(request.state, 'approved')
+
     def test_without_changes_goes_to_warehouse(self):
         # Sin cambios y con la compañía que aprueba al enviar (7.4); con
         # «Pasar al jefe de la obra», el valor por defecto desde M116-03, lo
@@ -244,6 +261,18 @@ class TestApprovalsPlan(ApprovalRoutesMixin, PlannerCommon):
         cls._route('Plan: jefatura (test)', 'plan', basis='amount', users=cls.head)
         cls._route('Plan sobre un millón: gerencia (test)', 'plan', basis='amount',
                    threshold=1000000.0, users=cls.boss)
+
+    def test_plan_client_context_does_not_skip_the_route(self):
+        self._generate()
+        lines = self.plan.line_ids
+        lines.filtered(lambda l: not l.stage).stage = 'production'
+        for line in lines.filtered(lambda l: not l.price_unit_planned):
+            line.price_unit_planned = 10.0
+        self.plan.with_context(construction_approval_granted=True).action_request_approval()
+        self.assertEqual(self.plan.state, 'to_approve')
+        self.assertEqual(self.plan.construction_approval_id.approver_ids.user_id, self.head)
+        self.plan.with_user(self.head).action_construction_approve()
+        self.assertEqual(self.plan.state, 'approved')
 
     def test_plan_approved_in_approvals(self):
         self._generate()

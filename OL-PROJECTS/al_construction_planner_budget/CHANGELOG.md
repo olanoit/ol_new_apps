@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_budget.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261101 — 16/11/2026
+
+- Seguridad: confirmar una orden de compra que pasa el presupuesto con la marca de «ya revisado» en el contexto ya no se salta el asistente ni la autorización de la jefatura.
+- Seguridad: el resultado del control de presupuesto de la orden lo escribe el sistema; ya no se puede escribir a mano.
+
 ## 8.20261101 — 01/11/2026
 
 - D3: ajuste «Planes que controla el presupuesto»: la compra se compara solo con las líneas del presupuesto que coinciden en esos planes; vacío, como antes.

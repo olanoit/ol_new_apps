@@ -39,6 +39,12 @@ class ConstructionKiosk(http.Controller):
     def _kiosk_mark(self, site, document, post):
         if not document:
             return {'ok': False, 'message': _('Escriba su documento o PIN.')}
+        # ``site`` viene con sudo de ``_site``: la tablet no tiene usuario.
+        paused = site._kiosk_paused_minutes()
+        if paused:
+            return {'ok': False, 'message': _(
+                'Demasiados documentos o PIN errados: el quiosco vuelve a marcar en %s min. '
+                'Avise al supervisor.', paused)}
         try:
             latitude = float(post.get('latitude') or 0.0)
             longitude = float(post.get('longitude') or 0.0)
@@ -57,6 +63,7 @@ class ConstructionKiosk(http.Controller):
             ('company_id', '=', company.id), '|', ('identification_id', '=', document),
             ('pin', '=', document)], limit=1)
         if employee:
+            site._kiosk_register_attempt(True)
             Attendance_sudo = request.env['hr.attendance'].sudo()
             open_attendance = Attendance_sudo.search([
                 ('employee_id', '=', employee.id), ('check_out', '=', False)], limit=1)
@@ -77,6 +84,7 @@ class ConstructionKiosk(http.Controller):
         worker = Worker_sudo.search([
             ('company_id', '=', company.id), '|', ('document_number', '=', document),
             ('pin', '=', document)], limit=1)
+        site._kiosk_register_attempt(bool(worker))
         if not worker:
             return {'ok': False, 'message': _('No se encontró a nadie con ese documento o PIN.')}
         Attendance_sudo = request.env['construction.contractor.attendance'].sudo()

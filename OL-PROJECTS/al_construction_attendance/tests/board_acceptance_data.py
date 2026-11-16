@@ -222,9 +222,12 @@ def load(env):
         if plan.state != 'approved':
             # Con la app Aprobaciones, la solicitud abierta se cancela y el plan
             # se aprueba como si la hubieran concedido.
+            granted = True
             if hasattr(plan, '_construction_cancel_open_approvals'):
                 plan.sudo()._construction_cancel_open_approvals()
-            plan.sudo().with_context(construction_approval_granted=True)._write_approved()
+                # La marca es un objeto del servidor (no vale un True).
+                from odoo.addons.al_construction_planner_approvals.models                     .construction_approval_mixin import APPROVAL_GRANTED as granted
+            plan.sudo().with_context(construction_approval_granted=granted)._write_approved()
 
     # Avances validados de las contratas y la cuadrilla propia.
     photo = env['ir.attachment'].create({'name': 'avance.png', 'datas': b'eA=='})

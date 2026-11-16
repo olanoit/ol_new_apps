@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
+
+LOGISTICS_GROUP = 'al_construction_material_request.group_construction_logistics'
+#: Campos de la línea que definen lo pedido y su atención: fuera del borrador
+#: solo los cambia Logística o el sistema. La vista ya lo impide; el control
+#: está aquí porque el Solicitante tiene permiso de escritura sobre sus líneas
+#: y una llamada directa cambiaría lo aprobado.
+LOCKED_FIELDS = frozenset({
+    'request_id', 'product_id', 'product_qty', 'product_uom_id', 'task_id',
+    'location_dest_id', 'location_src_id', 'warehouse_src_id', 'supply_mode',
+    'analytic_distribution', 'cancelled', 'closed_with_received',
+    'qty_to_dispatch', 'qty_to_purchase', 'qty_available_at_approval', 'qty_rounding',
+})
 
 LINE_STATES = [
     ('pending', 'Pendiente'),
@@ -156,10 +168,43 @@ class ConstructionMaterialRequestLine(models.Model):
     def _construction_moves_done(self):
         """Gancho: terminó un movimiento de estas líneas."""
 
+    def _construction_check_request_open(self, requests=None):
+        """El pedido solo cambia en borrador. Después lo ajustan Logística
+        (al procesar) y el sistema (sudo): ni el contexto ni la vista lo
+        deciden."""
+        if self.env.su or self.env.user.has_group(LOGISTICS_GROUP):
+            return
+        requests = self.request_id if requests is None else requests
+        locked = requests.filtered(lambda r: r.state != 'draft')
+        if locked:
+            raise UserError(_(
+                'Los materiales de %s ya no se cambian: el requerimiento salió de borrador. '
+                'Vuelva a borrador para corregirlo o pídalo a Logística.',
+                ', '.join(locked.mapped('name'))))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        requests = self.env['construction.material.request'].browse(
+            {vals['request_id'] for vals in vals_list if vals.get('request_id')})
+        self._construction_check_request_open(requests)
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if LOCKED_FIELDS & set(vals):
+            self._construction_check_request_open()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_only_in_draft(self):
+        self._construction_check_request_open()
+
     def _construction_close_with_received(self):
         """Da las líneas por terminadas con lo que hay en la obra."""
+        self.check_access('write')
         self.move_ids.filtered(lambda m: m.state not in ('done', 'cancel'))._action_cancel()
-        self.write({'closed_with_received': True})
+        # sudo: la marca de cierre es del sistema; quien cierra ya pasó el
+        # control de acceso a la línea y el de inventario al cancelar lo pendiente.
+        self.sudo().write({'closed_with_received': True})
         self._construction_moves_done()
         self.request_id._check_done()
 

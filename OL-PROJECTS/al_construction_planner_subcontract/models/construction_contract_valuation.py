@@ -347,10 +347,8 @@ class ConstructionContractSettlement(models.Model):
             '&', ('state', '=', 'in_valuation'), ('settlement_id', '=', self.id)])
         released = (self.sudo().deduction_ids - current).filtered(
             lambda d: d.state == 'in_valuation')
-        released.with_context(construction_deduction_sync=True).write(
-            {'state': 'pending', 'settlement_id': False})
-        current.filtered(lambda d: d.state == 'pending').with_context(
-            construction_deduction_sync=True).write(
+        released.write({'state': 'pending', 'settlement_id': False})
+        current.filtered(lambda d: d.state == 'pending').write(
             {'state': 'in_valuation', 'settlement_id': self.id})
 
     # ------------------------------------------------------------------
@@ -660,14 +658,14 @@ class ConstructionContractSettlement(models.Model):
             settlement_sudo = settlement.sudo()
             settlement_sudo._terms_recompute()
         res = super()._action_approve()
-        terms.deduction_ids.with_context(construction_deduction_sync=True).write(
-            {'state': 'applied'})
+        # sudo: «Aplicado» lo escribe el sistema al aprobarse la valorización.
+        terms.sudo().deduction_ids.write({'state': 'applied'})
         return res
 
     def action_cancel(self):
         res = super().action_cancel()
-        self.sudo().deduction_ids.with_context(construction_deduction_sync=True).write(
-            {'state': 'pending', 'settlement_id': False})
+        # sudo: al anular la valorización, sus deductivos vuelven a pendientes.
+        self.sudo().deduction_ids.write({'state': 'pending', 'settlement_id': False})
         return res
 
     # ------------------------------------------------------------------

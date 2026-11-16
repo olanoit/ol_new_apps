@@ -223,6 +223,34 @@ class TestPackage111V3Request(TestProcess):
         self._validate(picking.with_user(self.logistics).sudo())
         self.assertEqual(replacement.state, 'done')
 
+    def test_replacement_links_are_written_by_the_system(self):
+        """Auditoría del 16-nov-2026: la orden y el despacho de la reposición
+        solo eran de lectura en la vista. Escritos a mano, un solicitante
+        apuntaba su reposición a una orden de fabricación ajena y la cancelaba
+        (la cancelación corre sin sus permisos)."""
+        head = new_test_user(self.env, 'm11123_planta_g', groups='mrp.group_mrp_user',
+                             name='Jefe de planta (test controles)')
+        replacement = self._replacement(head)[0]
+        victim = replacement.sudo().production_id
+        self.assertEqual(victim.state, 'draft')
+        Replacement = self.env['construction.replacement.request'].with_user(self.requester)
+        vals = {'project_id': self.site_a.id, 'product_id': replacement.product_id.id,
+                'product_qty': 1, 'reason_id': replacement.reason_id.id,
+                'reason_note': 'Otra pieza.'}
+        other = Replacement.create(vals)
+        for forged in ({'production_id': victim.id}, {'cancelled': True},
+                       {'picking_id': False, 'state': 'done'}):
+            with self.assertRaises(UserError):
+                other.write(forged)
+        with self.assertRaises(UserError):
+            Replacement.create(dict(vals, production_id=victim.id))
+        self.assertEqual(other.state, 'draft')
+        self.assertEqual(victim.state, 'draft')
+        # Cancelar la propia sigue funcionando.
+        replacement.action_cancel()
+        self.assertEqual(replacement.state, 'cancel')
+        self.assertEqual(victim.state, 'cancel')
+
 
 # Las pruebas heredadas ya corren en su clase.
 for _name in dir(TestProcess):

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 28.20261112 — 16/11/2026
+
+- Rendimiento: al validar una entrega de venta, una recepción de compra o un ticket del punto de venta, la obra se busca una vez por ubicación y no una vez por movimiento.
+- Rendimiento: el consumo en obra de las líneas del plan se suma en la base de datos en vez de leer todo el historial de movimientos de la obra.
+
 ## 23.20261104 — 04/11/2026
 
 - M117-11: lo pedido en el plan descuenta lo devuelto por la asignación de cada plan, y se refresca al validar el movimiento.

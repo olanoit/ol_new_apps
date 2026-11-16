@@ -29,6 +29,11 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '32.20261112'
+  fecha: 16/11/2026
+  cambios:
+    - "Seguridad: la autorización de la jefatura sobre la receta real ya no se salta con un contexto del cliente ni escribiendo «Autorizado por» a mano."
+    - "Multicompañía: la receta real del mueble, sus materiales y su comparación, las piezas y materiales de la tipología y las líneas de la lista de tarifas solo se ven en las compañías del usuario (les faltaba la regla de registro)."
 - version: '24.20261104'
   fecha: 04/11/2026
   cambios:

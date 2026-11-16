@@ -139,9 +139,26 @@ class ConstructionReplacementRequest(models.Model):
             request.state = state
 
     # ------------------------------------------------------------------
+    #: Enlaces que pone el sistema al pedir, fabricar y cancelar. Solo son de
+    #: lectura en la vista, y de ellos salen el estado, el nombre de la orden
+    #: que se muestra sin permisos y la orden que «Cancelar» anula con sudo:
+    #: escritos a mano, un solicitante apuntaría a una orden de fabricación
+    #: ajena y la cancelaría.
+    _SYSTEM_FIELDS = frozenset({'production_id', 'picking_id', 'cancelled', 'state'})
+
+    def _construction_check_system_fields(self, fields_written):
+        if not self.env.su and self._SYSTEM_FIELDS & set(fields_written):
+            raise UserError(self.env._(
+                'La orden, el despacho y el estado de la reposición los pone el sistema.'))
+
+    def write(self, vals):
+        self._construction_check_system_fields(vals)
+        return super().write(vals)
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            self._construction_check_system_fields(vals)
             if vals.get('name', self.env._('Nueva')) == self.env._('Nueva'):
                 # La secuencia es configuración: la usa quien pide.
                 vals['name'] = self.env['ir.sequence'].sudo().next_by_code(
@@ -196,7 +213,8 @@ class ConstructionReplacementRequest(models.Model):
                         product=request.product_id.display_name,
                         project=request.project_id.display_name, reason=request.reason_id.name),
                     date_deadline=request.date_required or fields.Date.context_today(request))
-            request.write({'production_id': production_sudo.id,
+            # sudo: el enlace con la orden lo pone el sistema.
+            request.sudo().write({'production_id': production_sudo.id,
                            'picking_type_id': picking_type.id})
             request.message_post(body=self.env._(
                 'Pedida a la planta %(plant)s: orden %(order)s.',
@@ -248,7 +266,10 @@ class ConstructionReplacementRequest(models.Model):
                     '%s ya está en fabricación: la cancela la planta.', request.name))
             # La orden en borrador la cancela el sistema por quien pide.
             request.production_id.sudo().action_cancel()
-        self.write({'cancelled': True})
+        self.check_access('write')
+        # sudo: la marca de cancelada la pone el sistema; quien cancela ya
+        # pasó el control de acceso y el de estado.
+        self.sudo().write({'cancelled': True})
         return True
 
     def _construction_dispatch_to_site(self):

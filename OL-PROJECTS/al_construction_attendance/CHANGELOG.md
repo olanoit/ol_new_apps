@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261111 — 16/11/2026
+
+- Quiosco: cinco documentos o PIN errados seguidos lo pausan 10 minutos; la sede muestra hasta cuándo, y cambiar la clave del quiosco levanta la pausa.
+- Rendimiento: «Con asistencia» de los avances consulta solo las contratas, obras y fechas que se muestran, y su filtro se resuelve en la base de datos.
+- Rendimiento: cada marcación rehace los jornales ejecutados de quien marca, no los de toda la obra.
+
 ## 7.20261101 — 01/11/2026
 
 - D2: el cierre de costo de mano de obra reparte el costo de cada persona entre las líneas del plan donde trabajó, por sus jornales ejecutados de cuadrilla y con la analítica de cada línea; lo que no tiene turno queda como antes.

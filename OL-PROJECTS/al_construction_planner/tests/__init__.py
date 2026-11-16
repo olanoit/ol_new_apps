@@ -7,3 +7,4 @@ from . import test_execution_creval
 from . import test_recipe_calc_creval
 from . import test_package_119_schedule
 from . import test_package_119_budget
+from . import test_server_guards

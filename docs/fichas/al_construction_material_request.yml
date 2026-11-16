@@ -429,6 +429,11 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '38.20261112'
+    fecha: 16/11/2026
+    cambios:
+      - "Seguridad: fuera del borrador, los materiales del requerimiento (producto, cantidad, unidad, partida, origen y destino) solo los cambia Logística; antes una llamada directa podía cambiar lo ya aprobado."
+      - "Seguridad: el estado solo cambia por el flujo. Procesar, terminar y cancelar un requerimiento aprobado es de Logística; el solicitante descarta su borrador o su rechazado, y para corregir uno en aprobación lo vuelve a borrador."
   - version: '35.20261104'
     fecha: 07/11/2026
     cambios:

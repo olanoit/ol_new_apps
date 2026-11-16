@@ -212,6 +212,38 @@ class ConstructionContractSettlement(models.Model):
                     'construction.contract.settlement') or '/'
         return super().create(vals_list)
 
+    #: Pasos de estado de quien valida la ejecución o aprueba. Presentar es de
+    #: quien prepara. «Aprobada», «Pagada» y la vuelta a «Presentada» tras un
+    #: rechazo los escribe el sistema (sudo) al cumplirse su condición.
+    _construction_supervisor_steps = frozenset({
+        ('submitted', 'draft'), ('submitted', 'validated'), ('draft', 'cancel'),
+        ('submitted', 'cancel'), ('validated', 'cancel'), ('cancel', 'draft')})
+
+    def _construction_check_state_change(self, state):
+        """El estado solo cambia por el flujo. Quien prepara tiene permiso de
+        escritura y el campo solo es de lectura en la vista: una escritura
+        directa validaría la valorización sin el supervisor."""
+        if self.env.su:
+            return
+        user = self.env.user
+        supervisor = user.has_group(EXEC_VALIDATOR_GROUP) or user.has_groups(PROJECT_HEAD_GROUPS)
+        labels = dict(SETTLEMENT_STATES)
+        for settlement in self:
+            step = (settlement.state, state)
+            if state == settlement.state or step == ('draft', 'submitted') \
+                    or supervisor and step in self._construction_supervisor_steps:
+                continue
+            raise UserError(self.env._(
+                '%(name)s no pasa de «%(old)s» a «%(new)s» con una escritura directa: use las '
+                'acciones de la valorización.', name=settlement.display_name,
+                old=labels.get(settlement.state, settlement.state),
+                new=labels.get(state, state)))
+
+    def write(self, vals):
+        if 'state' in vals:
+            self._construction_check_state_change(vals['state'])
+        return super().write(vals)
+
     @api.ondelete(at_uninstall=False)
     def _unlink_only_draft(self):
         if self.filtered(lambda s: s.state not in ('draft', 'cancel')):
@@ -575,9 +607,11 @@ class ConstructionContractSettlement(models.Model):
         res = super()._rejected_tier(tiers)
         for settlement in self:
             if settlement.state == 'validated' and settlement.validation_status == 'rejected':
-                # Lo escribe el revisor, que no puede editar la liquidación en
-                # revisión: se omite ese control solo para el estado.
-                settlement.with_context(skip_validation_check=True).write({'state': 'submitted'})
+                # sudo: lo escribe el sistema al rechazar el revisor, que no
+                # edita la liquidación en revisión; se omite ese control de
+                # OCA solo para el estado.
+                settlement.sudo().with_context(skip_validation_check=True).write(
+                    {'state': 'submitted'})
                 settlement.message_post(body=self.env._(
                     'Rechazada por la jefatura: vuelve a presentada.'))
         return res
@@ -595,7 +629,9 @@ class ConstructionContractSettlement(models.Model):
             settlement_sudo = settlement.sudo()
             settlement_sudo._receive_on_purchase_order()
             invoice_sudo = settlement_sudo._create_invoice()
-            settlement.with_context(al_construction_approving=True).write({
+            # sudo: «Aprobada» la escribe el sistema al cumplirse la última
+            # aprobación (del supervisor sin reglas, o del último revisor).
+            settlement.sudo().with_context(al_construction_approving=True).write({
                 'state': 'approved',
                 'invoice_id': invoice_sudo.id,
                 'date_approved': fields.Datetime.now(),
@@ -974,11 +1010,31 @@ class ConstructionContractSettlementLine(models.Model):
             amount = line.qty_settle * line.price_unit
             line.amount = currency.round(amount) if currency else amount
 
+    @api.model
+    def _construction_user_fields(self):
+        """Lo único que las personas escriben en la línea: sus decisiones y
+        el motivo. Lo demás (partida, avance del periodo, tarifa, retención)
+        lo arma el sistema desde los avances validados y la orden."""
+        return self._decision_fields() | {'manual_reason', 'rework_pay_reason'}
+
+    def _construction_check_system_line(self, fields_written=None):
+        if self.env.su:
+            return
+        if fields_written is None or set(fields_written) - self._construction_user_fields():
+            raise UserError(self.env._(
+                'Las líneas de la valorización las arma el sistema con los avances validados '
+                'y la tarifa de la orden: no se crean, borran ni cambian a mano.'))
+
     @api.model_create_multi
     def create(self, vals_list):
+        self._construction_check_system_line()
         lines = super().create(vals_list)
         lines._set_settled_before()
         return lines
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_only_by_system(self):
+        self._construction_check_system_line()
 
     def _set_settled_before(self):
         Progress = self.env['construction.task.progress'].sudo()
@@ -993,6 +1049,7 @@ class ConstructionContractSettlementLine(models.Model):
             line.qty_settled_before = before
 
     def write(self, vals):
+        self._construction_check_system_line(vals)
         if 'pct_manual' in vals:
             if any(line.settlement_id.state not in ('draft', 'submitted') for line in self):
                 raise UserError(self.env._(

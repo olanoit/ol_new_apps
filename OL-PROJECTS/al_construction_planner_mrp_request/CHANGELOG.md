@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261031 — 16/11/2026
+
+- Seguridad: la orden, el despacho y el estado de la reposición a planta los pone el sistema. Antes solo eran de lectura en la vista, y un solicitante podía apuntar su reposición a una orden de fabricación ajena y cancelarla.
+
 ## 6.20261031 — 01/11/2026
 
 - M114-05: si la lista del producto es del almacén del tipo de reposición de Ajustes, «Pedir reposición a planta» usa ese tipo.

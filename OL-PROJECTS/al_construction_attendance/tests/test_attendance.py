@@ -2,6 +2,7 @@
 """v1.5, fases 17 y 18: sedes, quiosco, marcación de contratas, avance sin
 asistencia y costo de personal por sede."""
 from datetime import date, datetime
+from unittest.mock import patch
 
 from odoo.tests import HttpCase, tagged
 
@@ -181,3 +182,70 @@ class TestConstructionAttendance(HttpCase, PlannerCommon):
         self.assertEqual(sorted(entries.mapped('amount')), [-80.0, -80.0])
         for entry in entries:
             self.assertEqual(entry[self.modf.plan_id._column_name()], self.modf)
+
+    def test_kiosk_pauses_after_wrong_documents(self):
+        """Cinco documentos o PIN errados seguidos pausan el quiosco: quien
+        tenga el enlace no prueba documentos hasta dar con el de cada persona."""
+        site = self.site.sudo()
+        url = '/obra/quiosco/%s/%s' % (self.site.id, site.kiosk_token)
+        # Un acierto entre errores pone el contador en cero.
+        for document in ('1', '2', '3', '4'):
+            self.assertIn('No se encontró', self.url_open(url, data={'document': document}).text)
+        self.assertIn('Ingreso registrado', self.url_open(url, data={'document': '11223344'}).text)
+        site.invalidate_recordset()
+        self.assertEqual(site.kiosk_failed_count, 0)
+        for document in ('1', '2', '3', '4', '5'):
+            self.assertIn('No se encontró', self.url_open(url, data={'document': document}).text)
+        site.invalidate_recordset()
+        self.assertTrue(site._kiosk_paused_minutes())
+        # En pausa no marca ni con un documento válido, ni dice si existe.
+        before = self.env['construction.contractor.attendance'].search_count(
+            [('worker_id', '=', self.worker.id)])
+        page = self.url_open(url, data={'document': '44556677'})
+        self.assertIn('vuelve a marcar', page.text)
+        self.assertNotIn(self.worker.name, page.text)
+        self.assertEqual(self.env['construction.contractor.attendance'].search_count(
+            [('worker_id', '=', self.worker.id)]), before)
+        # Cambiar la clave levanta la pausa (y el enlace viejo deja de servir).
+        site.action_new_kiosk_token()
+        self.assertFalse(site._kiosk_paused_minutes())
+        self.assertEqual(self.url_open(url).status_code, 404)
+
+    def test_attendance_ok_only_reads_its_own_scope(self):
+        """«Con asistencia» consulta solo las contratas, obras y fechas de los
+        avances que se calculan, y el filtro se resuelve en la base."""
+        self._generate()
+        line = self.plan.line_ids.filtered(lambda l: l.resource_type == 'contract')[0]
+        line.partner_id = self.contractor
+        self.plan.line_ids.filtered(lambda l: not l.stage).stage = 'production'
+        for plan_line in self.plan.line_ids.filtered(lambda l: not l.price_unit_planned):
+            plan_line.price_unit_planned = 10.0
+        self.plan.action_request_approval()
+        Progress = self.env['construction.task.progress']
+        photo = self.env['ir.attachment'].create({'name': 'foto.png', 'datas': 'eA=='})
+
+        def report(day):
+            return Progress.create({
+                'task_id': line.task_id.id, 'activity_id': line.activity_id.id,
+                'plan_line_id': line.id, 'qty': 1, 'date': day,
+                'attachment_ids': [(6, 0, photo.copy().ids)]})
+        marked, unmarked = report(date(2026, 11, 3)), report(date(2026, 11, 4))
+        # Una marcación de otro día y otra del día del primer avance.
+        for check_in in (datetime(2026, 10, 1, 12, 30), datetime(2026, 11, 3, 12, 30)):
+            self.env['construction.contractor.attendance'].create({
+                'worker_id': self.worker.id, 'site_id': self.site.id, 'check_in': check_in})
+        both = marked | unmarked
+        both.invalidate_recordset(['attendance_ok'])
+        self.assertEqual(both.mapped('attendance_ok'), [True, False])
+        self.assertEqual(marked._attendance_keys(), {
+            (self.contractor.commercial_partner_id.id, self.project.id, date(2026, 11, 3))})
+        self.assertFalse(unmarked._attendance_keys())
+        mine = [('id', 'in', both.ids)]
+        with patch.object(self.env.registry['construction.task.progress'],
+                          '_compute_attendance_ok',
+                          side_effect=AssertionError('calcula el campo para filtrar')):
+            without = Progress.search(mine + [('attendance_ok', '=', False)])
+            with_it = Progress.search(mine + [('attendance_ok', '=', True)])
+            negated = Progress.search(mine + [('attendance_ok', '!=', True)])
+        self.assertEqual((without, with_it, negated), (unmarked, marked, unmarked))
+

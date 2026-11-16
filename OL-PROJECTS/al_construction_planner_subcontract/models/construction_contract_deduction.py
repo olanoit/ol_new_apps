@@ -145,12 +145,27 @@ class ConstructionContractDeduction(models.Model):
         return '%s%04d' % (prefix, last + taken + 1)
 
     def write(self, vals):
+        # Un deductivo en una valorización o aplicado no se edita, tampoco
+        # por el sistema: este solo lo mueve (estado y valorización).
         protected = set(vals) - {'state', 'settlement_id', 'message_main_attachment_id'}
-        if protected and self.filtered(lambda d: d.state in ('in_valuation', 'applied')) \
-                and not self.env.context.get('construction_deduction_sync'):
+        if protected and self.filtered(lambda d: d.state in ('in_valuation', 'applied')):
             raise UserError(self.env._(
                 'Un deductivo en una valorización o aplicado no se edita: corríjalo con otro de '
                 'signo contrario.'))
+        # Moverlo es del sistema (sudo), con su valorización. Las personas
+        # solo anulan uno pendiente y lo retoman: una llamada directa no abre
+        # uno aplicado cambiándole el estado.
+        if not self.env.su:
+            if 'settlement_id' in vals:
+                raise UserError(self.env._(
+                    'El deductivo entra y sale de una valorización al prepararla o anularla.'))
+            if 'state' in vals and any(
+                    (deduction.state, vals['state']) not in (('pending', 'cancel'),
+                                                             ('cancel', 'pending'))
+                    and deduction.state != vals['state'] for deduction in self):
+                raise UserError(self.env._(
+                    'El estado del deductivo lo lleva su valorización: solo se anula uno '
+                    'pendiente o se retoma uno anulado.'))
         return super().write(vals)
 
     @api.ondelete(at_uninstall=False)
@@ -163,8 +178,10 @@ class ConstructionContractDeduction(models.Model):
             raise UserError(self.env._(
                 'Un deductivo aplicado no se anula: corríjalo con otro de signo contrario.'))
         self.filtered(lambda d: d.state == 'in_valuation').settlement_id._check_state(('draft',))
-        self.with_context(construction_deduction_sync=True).write(
-            {'state': 'cancel', 'settlement_id': False})
+        self.check_access('write')
+        # sudo: sacar el deductivo de su valorización en borrador es del
+        # sistema; quien anula ya pasó el control de acceso y el de estado.
+        self.sudo().write({'state': 'cancel', 'settlement_id': False})
 
     def action_draft(self):
         self.filtered(lambda d: d.state == 'cancel').state = 'pending'

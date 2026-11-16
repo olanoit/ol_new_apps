@@ -151,6 +151,16 @@ class TestExtraDiscount(ExtraCommon, TestContracts):
         self.assertAlmostEqual(line.price_subtotal, -50.0)
         self.assertAlmostEqual(settlement.invoice_id.amount_untaxed, 380.88 - 38.09 - 50.0)
 
+    def test_discount_settlement_is_set_by_the_system(self):
+        """Auditoría del 16-nov-2026: «Descontado en» no se escribe a mano (ni
+        la jefatura): un extra marcado como ya descontado no se cobraría."""
+        settlement = self._settlement()
+        self.assertEqual(self.extra.construction_discount_settlement_id, settlement)
+        with self.assertRaises(UserError):
+            self.extra.with_user(self.manager).write(
+                {'construction_discount_settlement_id': False})
+        self.assertEqual(self.extra.construction_discount_settlement_id, settlement)
+
     def test_cancelled_settlement_frees_the_discount(self):
         settlement = self._settlement()
         settlement.with_user(self.planner).action_cancel()
