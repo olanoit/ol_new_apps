@@ -216,6 +216,10 @@ class ConstructionPortalMember(models.Model):
         pin = (pin or '').strip()
         if len(pin) != 4 or not pin.isdigit():
             raise UserError(self.env._('El PIN es de 4 dígitos.'))
+        # El método es público (RPC): solo quien puede modificar al personal
+        # del portal asigna el PIN. Sin esto, cualquier usuario con sesión
+        # pondría el PIN de otra persona e ingresaría por el QR en su nombre.
+        self.check_access('write')
         for member in self:
             # sudo: la huella del PIN solo la escribe el sistema.
             member.sudo().write({'pin_hash': _hash('%s:%s' % (member.id, pin)),
@@ -229,6 +233,9 @@ class ConstructionPortalMember(models.Model):
                 'target': 'new', 'context': {'default_member_id': self.id}}
 
     def action_unlock(self):
+        # Público (RPC): mismo control que al asignar el PIN.
+        self.check_access('write')
+        # sudo: el contador y el bloqueo del PIN solo los escribe el sistema.
         self.sudo().write({'pin_failures': 0, 'pin_locked': False})
 
     def _check_pin(self, pin):

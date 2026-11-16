@@ -7,6 +7,19 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261112 — 16/11/2026
+
+- La contrata recibe en su parte diario solo su empresa y sus avances del día, no los de las demás contratas de la obra.
+- Rendimiento: la sincronización del portal y la bandeja «Por validar» consultan lo reportado de todas las partidas de una vez, no partida por partida.
+- Fotos: el portal solo guarda imágenes JPG, PNG o WebP (el tipo se lee del contenido) y hasta 10 por registro.
+- Un registro con un dato mal formado se rechaza con su motivo en vez de quedar reintentándose en «Por enviar».
+
+## 17.20261112 — 15/11/2026
+
+- Seguridad: asignar el PIN y desbloquear el ingreso por QR piden permiso para modificar al personal del portal (antes cualquier usuario con sesión podía cambiar el PIN de otra persona).
+- Seguridad: el ingreso con usuario y clave no da acceso a un usuario con verificación en dos pasos; esa persona entra con el QR de la obra y su PIN.
+- Recepción: la obra confirma hasta lo enviado en cada entrega; lo que llegó de más lo regulariza el almacén.
+
 ## 13.20261027 — 07/11/2026
 
 - Pestaña Obra: la curva de avance y el Gantt llegan hasta hoy aunque el plan haya terminado antes (encontrado en la prueba del paquete 6 en creval-dev).

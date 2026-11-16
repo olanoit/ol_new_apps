@@ -58,6 +58,15 @@ def portal_api(func=None, raw=False):
         except (UserError, ValidationError) as error:
             request.env.cr.rollback()
             return _json({'error': error.args[0] if error.args else str(error)}, 422)
+        except (ValueError, TypeError):
+            # Un dato mal formado del celular (texto donde va un número) no
+            # es un error del servidor: con 500 el registro se reintentaría
+            # sin fin en la cola sin señal; con 422 la persona lo ve y lo corrige.
+            request.env.cr.rollback()
+            _logger.warning('Portal de obra: datos no válidos en %s', request.httprequest.path,
+                            exc_info=True)
+            return _json({'error': 'El registro tiene un dato no válido: revíselo y vuelva a '
+                                   'enviarlo.'}, 422)
     return wrapper
 
 
@@ -85,7 +94,14 @@ class ConstructionPortalApi(http.Controller):
             info = request.env(user=None, su=False)['res.users'].authenticate(credential, wsgienv)
         except AccessDenied:
             return _json({'error': 'Usuario o clave incorrectos.'}, 401)
+        # sudo: el visitante aún no tiene sesión; se lee el usuario que acaba
+        # de autenticarse.
         user = request.env['res.users'].sudo().browse(info['uid'])
+        # La clave sola no basta si el usuario tiene verificación en dos
+        # pasos: el portal no pide el segundo factor, así que no emite token.
+        if info.get('mfa') != 'skip' and user._mfa_type():
+            return _json({'error': 'Su usuario tiene verificación en dos pasos: ingrese con el '
+                                   'QR de la obra y su PIN.'}, 403)
         members = request.env['construction.portal.member'].sudo().search([
             ('user_id', '=', user.id), ('active', '=', True),
             ('project_id.construction_portal_password_login', '=', True)])
@@ -116,8 +132,12 @@ class ConstructionPortalApi(http.Controller):
     def pin(self, **kw):
         body = _body()
         project = request.env['project.project']._construction_portal_by_code(body.get('code'))
+        try:
+            member_id = int(body.get('member_id') or 0)
+        except (TypeError, ValueError):
+            member_id = 0
         member = project.construction_portal_member_ids.filtered(
-            lambda m: m.id == int(body.get('member_id') or 0) and m.active) if project else False
+            lambda m: m.id == member_id and m.active) if project else False
         if not member:
             return _json({'error': 'Elija su nombre en la lista de la obra.'}, 404)
         if member.sudo().pin_locked:
@@ -279,6 +299,7 @@ class ConstructionPortalApi(http.Controller):
         data, mimetype = self._service().progress_photo(project_id, attachment_id, size)
         return request.make_response(data, headers=[
             ('Content-Type', mimetype), ('Content-Length', len(data)),
+            ('X-Content-Type-Options', 'nosniff'),
             ('Cache-Control', 'private, max-age=86400')])
 
     @http.route(PREFIX + '/valuations/<int:project_id>', type='http', auth='public',

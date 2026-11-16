@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Paquete 1.21, M121-02: la obra recibe en el portal la recepción encadenada
 de una salida a obra; el residente es un usuario portal sin permisos internos."""
+from odoo.exceptions import UserError
 from odoo.tests import new_test_user, tagged
 
 from odoo.addons.al_construction_material_request.tests.common import setup_dispatch_transit
@@ -82,3 +83,16 @@ class TestPortalReception121(ContractTermsCommon):
             'photos': PHOTOS, 'lines': [{'move_id': backorder.move_ids.id, 'qty': 1}]})
         self.assertEqual(line.qty_received_on_site, 2)
         self.assertEqual(request.state, 'done')
+
+    def test_reception_not_above_what_was_sent(self):
+        """La obra confirma hasta lo enviado: el celular no infla el stock."""
+        request, dispatch = self._processed_request(2)
+        dispatch.move_ids.picked = True
+        dispatch.button_validate()
+        receipt = dispatch.move_ids.move_dest_ids.picking_id
+        with self.assertRaises(UserError):
+            self._service().reception({
+                'uuid': 'rec-121-over', 'project_id': self.project.id, 'picking_id': receipt.id,
+                'photos': PHOTOS, 'lines': [{'move_id': receipt.move_ids.id, 'qty': 200}]})
+        self.assertEqual(receipt.state, 'assigned')
+        self.assertEqual(request.line_ids.qty_received_on_site, 0)

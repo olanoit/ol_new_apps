@@ -3,6 +3,7 @@
 4.11): ingreso con usuario y clave, QR y PIN, token y la aplicación
 instalable."""
 import json
+from unittest.mock import patch
 
 from odoo.tests import HttpCase, new_test_user, tagged
 
@@ -80,3 +81,35 @@ class TestPortalHttp(HttpCase):
         right = self._post('/pin', {'code': code, 'member_id': self.member.id, 'pin': '4321'})
         self.assertEqual(right.status_code, 200, right.text)
         self.assertEqual(self._get('/me', right.json()['token']).status_code, 200)
+
+    def test_login_refused_with_two_factor(self):
+        """Con verificación en dos pasos, la clave sola no da token: el
+        portal no pide el segundo factor."""
+        Users = self.env.registry['res.users']
+        body = {'login': 'portal_http_capataz', 'password': 'portal_http_capataz'}
+        with patch.object(Users, '_mfa_type', lambda self: 'totp'):
+            response = self._post('/login', body)
+        self.assertEqual(response.status_code, 403, response.text)
+        self.assertNotIn('token', response.json())
+        self.assertFalse(self.env['construction.portal.token'].search(
+            [('user_id', '=', self.user.id)]))
+        # Sin segundo factor sigue entrando.
+        self.assertEqual(self._post('/login', body).status_code, 200)
+
+    def test_malformed_data_is_rejected_not_an_error(self):
+        """Un dato mal formado del celular responde 422 (la persona lo ve y
+        lo corrige), no 500 (se reintentaría sin fin en la cola sin señal)."""
+        token = self._post('/login', {'login': 'portal_http_capataz',
+                                      'password': 'portal_http_capataz'}).json()['token']
+        with self.assertLogs('odoo.addons.al_construction_portal.controllers.api', 'WARNING'):
+            response = self._post('/daily-report', {
+                'uuid': 'mal-1', 'project_id': self.project.id,
+                'staff': [{'name': 'Cuadrilla', 'count': 'muchos'}]}, token)
+        self.assertEqual(response.status_code, 422, response.text)
+        self.assertIn('error', response.json())
+        self.assertFalse(self.env['construction.daily.report'].search(
+            [('project_id', '=', self.project.id)]))
+        code = self.project.construction_portal_code
+        bad = self._post('/pin', {'code': code, 'member_id': 'abc', 'pin': '4321'})
+        self.assertEqual(bad.status_code, 404)
+

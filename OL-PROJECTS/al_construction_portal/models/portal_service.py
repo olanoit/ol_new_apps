@@ -11,6 +11,7 @@ primero que la persona esté en el portal de la obra (y, la contrata, que sea
 su partida u orden) y después lee o escribe con sudo solo eso. Al
 sincronizar, Odoo vuelve a validar las reglas (saldo, fechas, permisos)."""
 import base64
+import binascii
 import re
 from collections import defaultdict
 from datetime import datetime, time, timedelta
@@ -19,12 +20,18 @@ import pytz
 
 from odoo import api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tools.mimetypes import guess_mimetype
 
 from odoo.addons.al_construction_planner.models.common import DRIVER_TYPES
 
 from .daily_report import WEATHER
 
 MAX_PHOTO_BYTES = 8 * 1024 * 1024
+#: Tope de fotos por registro (el celular pide como máximo 10, en el parte diario).
+MAX_PHOTOS = 10
+#: Lo que el portal guarda como foto: el tipo se lee del contenido, no de lo
+#: que declara el celular.
+PHOTO_MIMETYPES = {'image/jpeg', 'image/png', 'image/webp'}
 API_VERSION = 1
 #: Palabras que no cuentan para las iniciales del logo («Creamos Valor S.A.C.» → CV).
 LEGAL_WORDS = {'SA', 'SAC', 'SAA', 'SRL', 'EIRL', 'DE', 'DEL', 'LA', 'LOS', 'Y'}
@@ -142,14 +149,21 @@ class ConstructionPortalService(models.AbstractModel):
         photos = [photo for photo in photos or [] if photo and photo.get('data')]
         if required and not photos:
             raise UserError(self.env._('Tome al menos una foto.'))
+        if len(photos) > MAX_PHOTOS:
+            raise UserError(self.env._('Un registro lleva como máximo %s fotos.', MAX_PHOTOS))
         values = []
         for index, photo in enumerate(photos, start=1):
-            data = photo['data'].split(',', 1)[-1]
+            data = str(photo['data']).split(',', 1)[-1]
             if len(data) * 3 / 4 > MAX_PHOTO_BYTES:
                 raise UserError(self.env._('La foto %s pesa más de 8 MB.', index))
+            try:
+                mimetype = guess_mimetype(base64.b64decode(data, validate=True))
+            except (binascii.Error, ValueError):
+                mimetype = False
+            if mimetype not in PHOTO_MIMETYPES:
+                raise UserError(self.env._('La foto %s no es una imagen JPG, PNG o WebP.', index))
             values.append({'name': photo.get('name') or 'foto-%s.jpg' % index, 'datas': data,
-                           'mimetype': photo.get('mimetype') or 'image/jpeg',
-                           'res_model': res_model, 'res_id': 0})
+                           'mimetype': mimetype, 'res_model': res_model, 'res_id': 0})
         # sudo: las fotos del portal las adjunta el sistema al registro.
         return self.env['ir.attachment'].sudo().create(values)
 
@@ -194,6 +208,7 @@ class ConstructionPortalService(models.AbstractModel):
         today = fields.Date.context_today(self)
         week_start, week_end = project._construction_period(today)
         last_validation = self._last_validation(lines)
+        reported = self._reported_qty_map(lines)
         data = {
             'project': {'id': project.id, 'name': project.display_name,
                         'week_start': fields.Date.to_string(week_start),
@@ -206,7 +221,8 @@ class ConstructionPortalService(models.AbstractModel):
             'members': [{'role': member.role, 'name': member.name,
                          'partner': member.partner_id.commercial_partner_id.name or ''}
                         for member in members],
-            'partidas': [self._line_data(line, last_validation.get(line.id)) for line in
+            'partidas': [self._line_data(line, last_validation.get(line.id), reported)
+                         for line in
                          lines.sorted(lambda l: (l.task_id.construction_path or '', l.id))],
             'rework_reasons': [[code, label] for code, label in self.env[
                 'construction.task.progress']._fields['rework_reason']._description_selection(
@@ -215,7 +231,10 @@ class ConstructionPortalService(models.AbstractModel):
             'synced_at': fields.Datetime.to_string(fields.Datetime.now()),
         }
         if roles & {'foreman', 'office', 'contractor'}:
-            data['daily'] = self._daily_data(project, site, today)
+            # La contrata ve solo sus partidas: en su parte, su empresa y sus
+            # avances del día, no los de las demás contratas.
+            only = self._partners(members) if not roles & {'foreman', 'office'} else None
+            data['daily'] = self._daily_data(project, site, today, partners=only)
         if roles & {'foreman', 'office'}:
             data['catalog'] = self._catalog(project, lines, roles)
             data['deliveries'] = self._deliveries(project)
@@ -230,9 +249,21 @@ class ConstructionPortalService(models.AbstractModel):
         data['counters'] = self._counters(project, members, lines, data, today)
         return data
 
-    def _line_data(self, line, last_validation=None):
+    def _reported_qty_map(self, lines):
+        """{línea: avance reportado y aún no validado}, como
+        ``_get_reported_qty`` pero en una sola consulta para todas las
+        partidas (la sincronización corre cada vez que se abre el portal)."""
+        if not lines:
+            return {}
+        # sudo: el avance de las partidas de la persona (comprobadas al leerlas).
+        groups = self.env['construction.task.progress'].sudo()._read_group(
+            [('plan_line_id', 'in', lines.ids), ('state', '=', 'draft'),
+             ('is_rework', '=', False)], ['plan_line_id'], ['qty_weighted:sum'])
+        return {line.id: qty or 0.0 for line, qty in groups}
+
+    def _line_data(self, line, last_validation=None, reported=None):
         validated = line.qty_executed
-        pending = line._get_reported_qty()
+        pending = line._get_reported_qty() if reported is None else reported.get(line.id, 0.0)
         labels = _task_labels(line.task_id, line.activity_id, line.resource_type)
         return dict(labels, **{
             # «item» y «path» siguen para la aplicación ya instalada, sin la
@@ -280,9 +311,11 @@ class ConstructionPortalService(models.AbstractModel):
         return {'progress_to_validate': to_validate, 'requests_to_approve': requests,
                 'deliveries_today': len(deliveries)}
 
-    def _daily_data(self, project, site, today):
+    def _daily_data(self, project, site, today, partners=None):
         """Lo que el parte diario trae ya llenado: el personal propio que
-        marcó hoy en la sede, cada contrata de la obra y los avances del día."""
+        marcó hoy en la sede, cada contrata de la obra y los avances del día.
+        Con ``partners`` (quien solo es contrata), solo lo de esas empresas."""
+        scope = [('partner_id', 'child_of', partners.ids)] if partners is not None else []
         own = 0
         if site:
             tz = site._tz()
@@ -299,7 +332,7 @@ class ConstructionPortalService(models.AbstractModel):
             # sudo: las contratas de la obra y lo que hacen (sin montos).
             contract_lines = self.env['construction.resource.plan.line'].sudo().search([
                 ('plan_id', '=', plan.id), ('resource_type', '=', 'contract'),
-                ('partner_id', '!=', False), ('line_state', '!=', 'cancel')])
+                ('partner_id', '!=', False), ('line_state', '!=', 'cancel')] + scope)
             scopes = defaultdict(list)
             for line in contract_lines:
                 partner = line.partner_id.commercial_partner_id
@@ -311,7 +344,7 @@ class ConstructionPortalService(models.AbstractModel):
         # sudo: los avances de hoy en la obra, para «Trabajos del día».
         progress = self.env['construction.task.progress'].sudo().search([
             ('task_id.project_id', '=', project.id), ('date', '=', today),
-            ('state', '!=', 'rejected')], order='id')
+            ('state', '!=', 'rejected')] + scope, order='id')
         states = dict(progress._fields['state']._description_selection(self.env))
         # Reportados y validados, con su estado (7.1).
         work = [dict(_task_labels(p.task_id, p.activity_id), **{
@@ -703,6 +736,14 @@ class ConstructionPortalService(models.AbstractModel):
                     for row in values.get('lines') or []}
         for move in picking.move_ids.filtered(lambda m: m.state not in ('done', 'cancel')):
             qty = max(received.get(move.id, 0.0), 0.0)
+            # La obra confirma hasta lo enviado: lo que llegó de más lo
+            # regulariza el almacén, no el celular.
+            if move.product_uom.compare(qty, move.product_uom_qty) > 0:
+                raise UserError(self.env._(
+                    'De %(product)s se enviaron %(sent)s %(uom)s: no puede recibir %(qty)s. '
+                    'Si llegó de más, avise al almacén.',
+                    product=move.product_id.display_name, sent=move.product_uom_qty,
+                    uom=move.product_uom.name, qty=qty))
             move.quantity = qty
             move.picked = True
         if not any(picking.move_ids.mapped('quantity')):

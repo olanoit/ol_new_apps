@@ -3,7 +3,9 @@
 de demostración de las contratas: avance sin duplicar, alcance de la
 contrata, PIN, parte diario, requerimientos de obra e internos, recepción con
 faltante, devolución, tareo y valorizaciones. Datos ficticios."""
+import base64
 from datetime import date, timedelta
+from unittest.mock import patch
 
 from odoo import Command, fields
 from odoo.exceptions import AccessError, UserError
@@ -93,6 +95,81 @@ class TestPortalService(ContractTermsCommon):
         stranger = new_test_user(self.env, 'portal_ajeno', groups='base.group_portal')
         with self.assertRaises(AccessError):
             self._service(stranger).sync(self.project.id)
+
+    def _progress_payload(self, uuid, **extra):
+        return dict({'uuid': uuid, 'project_id': self.project.id,
+                     'plan_line_id': self._wall_line().id,
+                     'date': fields.Date.to_string(self._today()), 'qty': 10.0,
+                     'photos': PHOTOS}, **extra)
+
+    def test_contractor_daily_only_its_own(self):
+        """Quien solo es contrata recibe en «daily» su empresa y sus avances
+        del día, no los de las demás contratas; el capataz, toda la obra."""
+        self._service(self.contractor_user).progress(self._progress_payload('daily-own-1'))
+        other = self.env['res.partner'].create({'name': 'Otra contrata (test daily)'})
+        intruder = new_test_user(self.env, 'portal_otra_daily', groups='base.group_portal')
+        intruder.partner_id.parent_id = other
+        self.env['construction.portal.member'].create({
+            'project_id': self.project.id, 'user_id': intruder.id, 'role': 'contractor',
+            'partner_id': other.id})
+        own = self._service(self.contractor_user).sync(self.project.id)['daily']
+        self.assertEqual(len(own['work']), 1)
+        self.assertEqual([c['name'] for c in own['contractors']], [self.contractor.name])
+        foreign = self._service(intruder).sync(self.project.id)['daily']
+        self.assertFalse(foreign['work'])
+        self.assertFalse(foreign['contractors'])
+        site = self._service(self.foreman_user).sync(self.project.id)['daily']
+        self.assertEqual(len(site['work']), 1)
+        self.assertIn(self.contractor.name, [c['name'] for c in site['contractors']])
+
+    def test_sync_reads_reported_qty_once(self):
+        """La sincronización no consulta lo reportado partida por partida."""
+        service = self._service(self.contractor_user)
+        service.progress(self._progress_payload('batch-1'))
+        expected = {line['id']: line['pending'] for line in service.sync(
+            self.project.id)['partidas']}
+        self.assertEqual(expected[self._wall_line().id], 10.0)
+        Line = self.env.registry['construction.resource.plan.line']
+        with patch.object(Line, '_get_reported_qty', side_effect=AssertionError(
+                'consulta por partida')):
+            data = service.sync(self.project.id)
+        self.assertEqual({line['id']: line['pending'] for line in data['partidas']}, expected)
+
+    def test_photos_must_be_images(self):
+        """El tipo de la foto se lee del contenido, no de lo que declara el
+        celular, y un registro no lleva fotos sin tope."""
+        service = self._service(self.contractor_user)
+        html = base64.b64encode(b'<html><script>alert(1)</script></html>').decode()
+        with self.assertRaisesRegex(UserError, 'imagen'):
+            service.progress(self._progress_payload('photo-1', photos=[
+                {'name': 'x.jpg', 'mimetype': 'image/jpeg', 'data': html}]))
+        with self.assertRaisesRegex(UserError, 'imagen'):
+            service.progress(self._progress_payload('photo-2', photos=[
+                {'name': 'x.jpg', 'mimetype': 'image/jpeg', 'data': 'no es base64 !!'}]))
+        with self.assertRaisesRegex(UserError, 'máximo'):
+            service.progress(self._progress_payload('photo-3', photos=PHOTOS * 11))
+        # Aunque el celular declare otro tipo, se guarda el del contenido.
+        result = service.progress(self._progress_payload('photo-4', photos=[
+            {'name': 'x.jpg', 'mimetype': 'text/html', 'data': PHOTO.decode()}]))
+        progress = self.env['construction.task.progress'].browse(int(result['ids']))
+        self.assertEqual(progress.attachment_ids.mimetype, 'image/png')
+
+    def test_pin_only_by_who_manages_members(self):
+        """Asignar el PIN y desbloquear son métodos públicos: un usuario de
+        portal no cambia el PIN de otra persona (entraría por el QR en su
+        nombre)."""
+        member = self.foreman_member
+        member.action_set_pin('1234')
+        with self.assertRaises(AccessError):
+            member.with_user(self.contractor_user).action_set_pin('9999')
+        self.assertTrue(member._check_pin('1234'))
+        self.assertFalse(member._check_pin('9999'))
+        for _attempt in range(2):
+            member._check_pin('0000')
+        self.assertTrue(member.pin_locked)
+        with self.assertRaises(AccessError):
+            member.with_user(self.contractor_user).action_unlock()
+        self.assertTrue(member.pin_locked)
 
     def test_pin_and_token(self):
         member = self.foreman_member

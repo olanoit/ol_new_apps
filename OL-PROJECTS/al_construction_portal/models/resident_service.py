@@ -123,13 +123,15 @@ class ConstructionPortalService(models.AbstractModel):
                     'progress': progress.name}
         return result
 
-    def _progress_warnings(self, progress, line, site, closed):
+    def _progress_warnings(self, progress, line, site, closed, reported=None):
         """Avisos de la tarjeta (CR-49, punto 5). Con aviso no se valida en
-        lote (U9)."""
+        lote (U9). ``reported``: lo reportado por partida, ya consultado."""
         warnings = []
         uom = progress.uom_id.name or ''
         if not progress.is_rework:
-            pending_others = line._get_reported_qty() - progress.qty
+            line_reported = line._get_reported_qty() if reported is None \
+                else reported.get(line.id, 0.0)
+            pending_others = line_reported - progress.qty
             balance = line.qty_planned - line.qty_executed - pending_others
             if progress.qty > balance + QTY_EPSILON:
                 warnings.append({'code': 'over', 'text': self.env._(
@@ -155,6 +157,7 @@ class ConstructionPortalService(models.AbstractModel):
         site = project._construction_site() if hasattr(project, '_construction_site') else False
         closed = self._closed_weeks(project, progresses)
         last_photos = self._last_validated_photos(progresses.plan_line_id)
+        reported = self._reported_qty_map(progresses.plan_line_id)
         reasons = dict(progresses._fields['rework_reason']._description_selection(self.env))
         periods = {}
         rows = []
@@ -163,7 +166,7 @@ class ConstructionPortalService(models.AbstractModel):
             if progress.date not in periods:
                 periods[progress.date] = project._construction_period(progress.date)[1]
             labels = _task_labels(progress.task_id, progress.activity_id, line.resource_type)
-            pending_others = line._get_reported_qty() - progress.qty
+            pending_others = reported.get(line.id, 0.0) - progress.qty
             rows.append(dict(labels, **{
                 'id': progress.id, 'name': progress.name,
                 'plan_line_id': line.id, 'kind': line.resource_type,
@@ -186,7 +189,7 @@ class ConstructionPortalService(models.AbstractModel):
                 'photos': [{'id': a.id, 'taken': fields.Datetime.to_string(a.create_date)}
                            for a in progress.attachment_ids.sorted('id')],
                 'last_photo': last_photos.get(line.id) or False,
-                'warnings': self._progress_warnings(progress, line, site, closed),
+                'warnings': self._progress_warnings(progress, line, site, closed, reported),
             }))
         # «Por corte» (U5): primero los de contrata con el corte más cercano.
         rows.sort(key=lambda r: (not r['cutoff'], r['cutoff'] or '', r['date'], r['id']))
