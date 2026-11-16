@@ -9,6 +9,7 @@ from .test_portal_service import PHOTOS
 from odoo.addons.al_construction_planner_subcontract.tests.test_contract_terms_creval import (
     ContractTermsCommon,
 )
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class ResidentCommon(ContractTermsCommon):
@@ -184,7 +185,7 @@ class TestResident(ResidentCommon):
             {'name': 'Cemento (p6)', 'is_storable': True})
         if not self.plan.line_ids.filtered(lambda l: l.product_id == cement):
             self.env['construction.resource.plan.line'].with_context(
-                construction_plan_force=True).create({
+                construction_plan_force=PLAN_FORCE).create({
                     'plan_id': self.plan.id, 'task_id': self.partida.id,
                     'resource_type': 'material', 'product_id': cement.id,
                     'stage': 'creval_tab', 'qty_planned': 50, 'price_unit_planned': 30.0,

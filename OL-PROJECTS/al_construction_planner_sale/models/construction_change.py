@@ -25,6 +25,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.addons.al_construction_planner.models.common import (
     PROJECT_HEAD_GROUPS, RESOURCE_TYPES, UNIT_STATE_RANK, UNIT_STATES, stage_selection,
 )
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 CHANGE_KINDS = [
     ('additional', 'Adicional'),
@@ -212,6 +213,18 @@ class ConstructionChangeOrder(models.Model):
                     'construction.change.order') or '/'
         return super().create(vals_list)
 
+    def write(self, vals):
+        # «Aprobado» lo escribe el sistema desde «Aprobar», que es de la
+        # jefatura y además mete las líneas al plan: escrito a mano, el cambio
+        # figuraría aprobado sin ella. Descartar y retomar sigue libre.
+        if 'state' in vals and not self.env.su and any(
+                change.state != vals['state']
+                and (change.state, vals['state']) not in (('draft', 'cancel'), ('cancel', 'draft'))
+                for change in self):
+            raise UserError(self.env._(
+                'El cambio de obra se aprueba con «Aprobar» (jefatura de proyectos).'))
+        return super().write(vals)
+
     def action_approve(self):
         """Aprueba el cambio: sus líneas entran al plan vigente con origen
         «Cambio» y su costo se suma al presupuesto analítico del plan."""
@@ -229,7 +242,9 @@ class ConstructionChangeOrder(models.Model):
                     change.project_id.display_name))
             lines = change._create_plan_lines(plan)
             plan._construction_lines_added(lines)
-            change.write({'state': 'approved', 'approved_by_id': self.env.user.id,
+            # sudo: el estado lo escribe el sistema; la jefatura ya pasó su
+            # comprobación arriba.
+            change.sudo().write({'state': 'approved', 'approved_by_id': self.env.user.id,
                           'date_approved': fields.Datetime.now()})
             sale_line = change._construction_add_sale_line()
             if sale_line:
@@ -249,11 +264,11 @@ class ConstructionChangeOrder(models.Model):
         # Las líneas de un plan aprobado no se editan: el cambio aprobado es
         # la vía para sumarlas (como la replanificación).
         lines = self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create(vals_list)
+            construction_plan_force=PLAN_FORCE).create(vals_list)
         lines._apply_analytic_rules()
         if plan.state != 'draft':
             for line in lines:
-                line.with_context(construction_plan_force=True).amount_budgeted = \
+                line.with_context(construction_plan_force=PLAN_FORCE).amount_budgeted = \
                     line.amount_planned
         return lines
 

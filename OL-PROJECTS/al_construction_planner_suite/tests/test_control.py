@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 from odoo.tests import new_test_user, tagged
 
 from .common import PlannerCommon
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 # PNG de 1 × 1 píxel: la foto del avance.
 PHOTO = (b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAE'
@@ -324,7 +325,7 @@ class TestControl(PlannerCommon):
                 values[end_field] = start + timedelta(days=5)
             task.write(values)
         lines = self.plan.line_ids.filtered(lambda l: l.apartment_task_id == self.apt_501)
-        lines.with_context(construction_plan_force=True)._compute_date_needed()
+        lines.with_context(construction_plan_force=PLAN_FORCE)._compute_date_needed()
         before = {line.id: line.date_needed for line in lines}
         wizard = self.env['construction.plan.reschedule.wizard'].with_context(
             default_plan_id=self.plan.id, construction_selection_task_ids=[self.apt_501.id],

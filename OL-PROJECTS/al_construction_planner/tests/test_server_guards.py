@@ -84,3 +84,25 @@ class TestProgressGuards(TransactionCase):
         self.assertEqual(progress.state, 'rejected')
         with self.assertRaises(UserError):
             progress.write({'state': 'draft'})
+
+    def test_force_context_from_the_client(self):
+        """Los candados del plan y del avance no se abren con un contexto que
+        envía el cliente (las marcas son objetos del servidor), y quien
+        ejecuta solo pasa el plan de «Aprobado» a «En ejecución»."""
+        progress = self._reported()
+        progress.with_user(self.validator).action_validate()
+        with self.assertRaises(UserError):
+            progress.with_context(construction_progress_force=True).write({'qty': 99.0})
+        as_executor = self.line.with_user(self.executor)
+        with self.assertRaises(UserError):
+            as_executor.with_context(construction_plan_force=True).write(
+                {'qty_planned': 999.0, 'price_unit_planned': 1.0})
+        with self.assertRaises(UserError):
+            self.plan.with_user(self.executor).with_context(construction_plan_force=True).write(
+                {'exceed_tolerance': 90.0})
+        for state in ('draft', 'closed', 'cancel', 'replaced'):
+            with self.assertRaises(UserError):
+                self.plan.with_user(self.executor).write({'state': state})
+        self.assertEqual(self.plan.state, 'approved')
+        self.plan.with_user(self.executor)._mark_in_progress()
+        self.assertEqual(self.plan.state, 'in_progress')

@@ -244,6 +244,17 @@ class ConstructionWeeklyDelivery(models.Model):
             raise UserError(self.env._('Solo se actualizan entregas en borrador.'))
         self._refresh_lines()
 
+    def write(self, vals):
+        # Confirmar y reabrir la entrega es de la jefatura (fija el ingreso
+        # y el costo de la semana); «Valorizada» la escribe la valorización.
+        # Todo pasa por sus acciones, que escriben con sudo.
+        if 'state' in vals and not self.env.su and any(
+                delivery.state != vals['state'] for delivery in self):
+            raise UserError(self.env._(
+                'El estado de la entrega cambia con «Confirmar» y «Volver a borrador» '
+                '(jefatura de proyectos).'))
+        return super().write(vals)
+
     def action_confirm(self):
         self._check_manager()
         for delivery in self.sorted('period_start'):
@@ -260,7 +271,9 @@ class ConstructionWeeklyDelivery(models.Model):
             # Lo confirmado fija el ingreso y el costo: se recalcula una
             # última vez con lo validado hasta ahora.
             delivery._refresh_lines()
-            delivery.write({'state': 'confirmed', 'confirmed_by_id': self.env.user.id,
+            # sudo: el estado lo escribe el sistema; la jefatura ya pasó su
+            # comprobación.
+            delivery.sudo().write({'state': 'confirmed', 'confirmed_by_id': self.env.user.id,
                             'date_confirmed': fields.Datetime.now()})
 
     def action_draft(self):
@@ -279,7 +292,7 @@ class ConstructionWeeklyDelivery(models.Model):
                 raise UserError(self.env._(
                     'Reabra primero las entregas posteriores de la obra: %s.',
                     ', '.join(later.mapped('name'))))
-        self.write({'state': 'draft', 'confirmed_by_id': False, 'date_confirmed': False})
+        self.sudo().write({'state': 'draft', 'confirmed_by_id': False, 'date_confirmed': False})
 
     def action_view_progress(self):
         self.ensure_one()

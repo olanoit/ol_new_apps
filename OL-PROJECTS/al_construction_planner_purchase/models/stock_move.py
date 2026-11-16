@@ -3,6 +3,7 @@ from odoo import models
 from odoo.fields import Domain
 
 from odoo.addons.al_construction_planner.models.construction_resource_plan import OPEN_STATES
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class StockMove(models.Model):
@@ -75,7 +76,7 @@ class ConstructionResourcePlanLine(models.Model):
         estas líneas de suministro del cliente, en orden, hasta lo
         planificado; lo que sobra va a la última (CR-06)."""
         # El plan aprobado admite este control (lo escribe el almacén).
-        lines = self.with_context(construction_plan_force=True)
+        lines = self.with_context(construction_plan_force=PLAN_FORCE)
         if qty < 0:
             for line in reversed(lines):
                 take = min(-qty, line.qty_client_received)

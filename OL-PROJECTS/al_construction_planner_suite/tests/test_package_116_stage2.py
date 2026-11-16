@@ -16,6 +16,7 @@ from odoo.exceptions import UserError
 from odoo.tests import new_test_user, tagged
 
 from .common import PlannerCommon
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 @tagged('post_install', '-at_install')
@@ -445,7 +446,7 @@ class TestPackage116Stage2aContract(PlannerCommon):
                                        'project_id': cls.site.id})
         cls.partida_free = Task.create({'name': '5.0102 Salida de voz (test)',
                                         'project_id': cls.site.id})
-        cls.partida_own.with_context(construction_plan_force=True).construction_execution_mode = 'own'
+        cls.partida_own.with_context(construction_plan_force=PLAN_FORCE).construction_execution_mode = 'own'
         cls.other = env['res.partner'].create({'name': 'Otra contrata (test 1.16)'})
         cls.plan_116 = env['construction.resource.plan'].create({'project_id': cls.site.id})
         cls.line_own, cls.line_free = env['construction.resource.plan.line'].create([

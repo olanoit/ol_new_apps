@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '26.20261112'
+  fecha: 16/11/2026
+  cambios:
+    - "Las escrituras del sistema sobre un plan aprobado usan la marca del servidor PLAN_FORCE (un contexto enviado por el cliente ya no abre el plan)."
 - version: '25.20261112'
   fecha: 16/11/2026
   cambios:

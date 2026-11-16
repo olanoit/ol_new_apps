@@ -15,6 +15,7 @@ from odoo.addons.al_construction_portal.models.portal_service import _initials, 
 from odoo.addons.al_construction_planner_subcontract.tests.test_contract_terms_creval import (
     PHOTO, ContractTermsCommon,
 )
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 PHOTOS = [{'name': 'avance.jpg', 'mimetype': 'image/png', 'data': PHOTO.decode()}]
 
@@ -215,7 +216,7 @@ class TestPortalService(ContractTermsCommon):
         cement = self.env['product.product'].create({
             'name': 'Cemento Portland (test portal)', 'is_storable': True})
         self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': self.partida.id, 'resource_type': 'material',
                 'product_id': cement.id, 'stage': 'creval_tab', 'qty_planned': 50,
                 'price_unit_planned': 30.0, 'product_uom_id': cement.uom_id.id})
@@ -328,7 +329,7 @@ class TestPortalService(ContractTermsCommon):
             'code': 'TC-OPE', 'name': 'Operario (test portal)', 'stage': 'creval_tab',
             'uom_id': self.env.ref('uom.product_uom_hour').id, 'default_price': 25.0})
         line = self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': self.partida.id, 'resource_type': 'labor',
                 'activity_id': labor.id, 'stage': 'creval_tab', 'qty_planned': 80,
                 'price_unit_planned': 25.0,
@@ -446,7 +447,7 @@ class TestPortalService(ContractTermsCommon):
         cement = self.env['product.product'].create({
             'name': 'Cemento sin regla (test portal)', 'is_storable': True})
         self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': self.partida.id, 'resource_type': 'material',
                 'product_id': cement.id, 'stage': 'creval_tab', 'qty_planned': 50,
                 'price_unit_planned': 30.0, 'product_uom_id': cement.uom_id.id})

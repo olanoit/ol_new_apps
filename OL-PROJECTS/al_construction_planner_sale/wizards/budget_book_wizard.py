@@ -33,6 +33,7 @@ from odoo.exceptions import UserError
 from odoo.addons.al_construction_planner.models.common import budget_code_levels, norm
 
 from .budget_import_wizard import _number, _text
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 SHEETS = ('OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO', 'LISTAS', 'INSTRUCCIONES')
 # Columnas de cada hoja: clave, encabezados aceptados (el primero es el de la
@@ -1304,7 +1305,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 line.construction_qty_real or line.product_uom_qty)}
             if recipe:
                 values['construction_execution_template_id'] = recipe.id
-            task.with_context(construction_plan_force=True).write(values)
+            task.with_context(construction_plan_force=PLAN_FORCE).write(values)
             planned = book.get('plan', {}).get(line.construction_budget_item) or {}
             mode = planned.get('mode') or (partida or {}).get('mode') or (
                 recipe.execution_mode if recipe else False)
@@ -1316,7 +1317,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             if dates:
                 task_dates[task] = dates
             if mode:
-                task.with_context(construction_plan_force=True).construction_execution_mode = mode
+                task.with_context(construction_plan_force=PLAN_FORCE).construction_execution_mode = mode
             if recipe:
                 tasks |= task
         if tasks:
@@ -1328,7 +1329,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         # Las fechas de la pestaña PLAN, después de generar (el plan propone
         # las suyas).
         for task, dates in task_dates.items():
-            task.with_context(construction_plan_force=True).write(dates)
+            task.with_context(construction_plan_force=PLAN_FORCE).write(dates)
         messages.append(self.env._(
             'Plan %(plan)s: %(tasks)s partidas con su receta.', plan=plan.display_name,
             tasks=len(tasks)))

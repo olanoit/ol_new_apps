@@ -15,6 +15,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 from .common import DRIVER_TYPES, norm
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 CALC_METHODS = [
     ('qty', 'Cantidad por unidad'),
@@ -365,6 +366,6 @@ class ConstructionResourcePlanLine(models.Model):
             if line.product_uom_id.compare(values['qty_planned'], line.qty_planned) or \
                     line.currency_id.compare_amounts(values['price_unit_planned'],
                                                      line.price_unit_planned):
-                line.with_context(construction_plan_force=True,
+                line.with_context(construction_plan_force=PLAN_FORCE,
                                   construction_pct_sync=True).write(values)
 

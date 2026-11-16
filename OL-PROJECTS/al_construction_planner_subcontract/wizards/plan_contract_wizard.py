@@ -11,6 +11,7 @@ from odoo.tools import float_compare
 from odoo.addons.al_construction_planner.models.common import EXECUTION_MODES, stage_selection
 
 from ..models.construction_contract_condition import compute_cascade
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class ConstructionPlanContractWizard(models.TransientModel):
@@ -514,7 +515,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
         plan_lines = rows.plan_line_ids
         # La contrata se escribe sobre el plan aprobado: es la asignación que
         # la especificación prevé (proceso interno, no una edición del plan).
-        plan_lines.with_context(construction_plan_force=True).write(
+        plan_lines.with_context(construction_plan_force=PLAN_FORCE).write(
             {'partner_id': self.partner_id.id})
         self.env['construction.resource.plan.allocation'].create(allocation_values)
         plan._mark_in_progress()

@@ -1220,6 +1220,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '84.20261112'
+    fecha: 16/11/2026
+    cambios:
+      - "Seguridad: los candados del plan aprobado y del avance validado ya no se abren con un contexto enviado por el cliente (PLAN_FORCE y PROGRESS_FORCE son objetos del servidor)."
+      - "Seguridad: quien ejecuta solo pasa el plan de «Aprobado» a «En ejecución»; cerrar y devolver a borrador es de quien aprueba planes, y cancelar uno vigente, del grupo que fija la compañía. Antes bastaba poder escribir el plan para poner cualquier estado."
   - version: '83.20261112'
     fecha: 16/11/2026
     cambios:

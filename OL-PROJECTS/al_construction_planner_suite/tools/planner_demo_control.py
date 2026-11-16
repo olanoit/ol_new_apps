@@ -23,6 +23,7 @@ Ejecutar con:
 from datetime import date
 
 from odoo import Command
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 # Prefijo opcional de los nombres, con espacio final: el mismo que en
 # planner_demo_data.py (vacío en la base demo).
@@ -54,7 +55,7 @@ if not plan.line_ids.filtered(lambda l: l.activity_id == activity):
                           ('parent_id.name', 'in', ('Dpto 501', 'Dpto 502'))])
     # La línea se agrega al plan vigente como si viniera de la generación
     # (proceso interno, no una edición del plan aprobado).
-    env['construction.resource.plan.line'].with_context(construction_plan_force=True).create([{
+    env['construction.resource.plan.line'].with_context(construction_plan_force=PLAN_FORCE).create([{
         'plan_id': plan.id, 'task_id': space.id, 'resource_type': 'labor',
         'stage': 'installation', 'activity_id': activity.id, 'role_id': role.id,
         'product_uom_id': hour.id, 'qty_planned': 16.0, 'price_unit_planned': 12.0,

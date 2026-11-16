@@ -10,6 +10,7 @@ from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 @tagged('post_install', '-at_install')
@@ -300,7 +301,7 @@ class TestRecipeCalc(TransactionCase):
         mixin = self.env['construction.plan.reschedule.wizard'].with_context(
             default_plan_id=plan.id, construction_selection_project=True).new({})
         self.assertNotIn(line, mixin._get_selected_lines())
-        line.with_context(construction_plan_force=True).qty_client_received = 100.0
+        line.with_context(construction_plan_force=PLAN_FORCE).qty_client_received = 100.0
         self.assertEqual(line.qty_executed, 100.0)
 
     # 6.4: modalidad de ejecución por partida.

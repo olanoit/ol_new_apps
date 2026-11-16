@@ -8,6 +8,7 @@ from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.al_construction_planner.models.common import EXEC_USER_GROUP
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class ConstructionChangeOrder(models.Model):
@@ -96,7 +97,7 @@ class ConstructionChangeOrder(models.Model):
             allocations.append({'plan_line_id': plan_line.id, 'kind': 'service_order',
                                 'purchase_line_id': po_line_sudo.id,
                                 'qty_allocated': plan_line.qty_planned})
-        plan_lines.with_context(construction_plan_force=True).write({'partner_id': partner.id})
+        plan_lines.with_context(construction_plan_force=PLAN_FORCE).write({'partner_id': partner.id})
         self.env['construction.resource.plan.allocation'].sudo().create(allocations)
         self.message_post(body=self.env._(
             'Adicional agregado a la orden de contrata %s.', order_sudo.name))

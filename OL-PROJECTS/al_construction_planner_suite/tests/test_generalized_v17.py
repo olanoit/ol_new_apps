@@ -8,6 +8,7 @@ from odoo.tests import HttpCase, new_test_user, tagged
 
 from .test_levels_v17 import TestFreeLevels
 from .test_portal_v15 import PNG
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class ApprovedSite:
@@ -69,7 +70,7 @@ class TestGeneralized(ApprovedSite, TestFreeLevels):
         account = self.env['account.analytic.account'].create({
             'name': 'Obra Torre Lima (test)',
             'plan_id': self.env['account.analytic.plan'].search([], limit=1).id})
-        self.plan_site.line_ids.with_context(construction_plan_force=True).write(
+        self.plan_site.line_ids.with_context(construction_plan_force=PLAN_FORCE).write(
             {'analytic_distribution': {str(account.id): 100.0}})
         wizard = self.env['construction.plan.purchase.wizard'].with_context(
             default_plan_id=self.plan_site.id, construction_selection_project=True).create({})

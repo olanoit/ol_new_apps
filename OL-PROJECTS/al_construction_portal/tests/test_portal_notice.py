@@ -4,6 +4,7 @@ ficticios."""
 from odoo.tests import tagged
 
 from .test_resident import ResidentCommon
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 @tagged('post_install', '-at_install')
@@ -21,7 +22,7 @@ class TestPortalNotice(ResidentCommon):
         cement = self.env['product.product'].create({'name': 'Cemento aviso (p6)',
                                                      'is_storable': True})
         self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': self.partida.id, 'resource_type': 'material',
                 'product_id': cement.id, 'stage': 'creval_tab', 'qty_planned': 20,
                 'price_unit_planned': 30.0, 'product_uom_id': cement.uom_id.id})

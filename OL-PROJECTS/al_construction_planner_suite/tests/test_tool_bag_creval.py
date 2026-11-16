@@ -7,6 +7,7 @@ from odoo import Command
 from odoo.tests import tagged
 
 from .test_income import IncomeCommon
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 @tagged('post_install', '-at_install')
@@ -18,7 +19,7 @@ class TestToolBag(IncomeCommon):
         shovel = self.env['product.product'].create({
             'name': 'Lampa (test)', 'categ_id': category.id, 'purchase_ok': True})
         bag = self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': self.space.id, 'resource_type': 'equipment',
                 'product_uom_id': self.unit.id, 'stage': 'installation',
                 'calc_method': 'pct_labor', 'calc_pct': 5.0, 'qty_planned': 0.05,

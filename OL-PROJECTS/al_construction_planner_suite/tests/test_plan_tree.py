@@ -4,6 +4,7 @@ from odoo.exceptions import AccessError
 from odoo.tests import HttpCase, TransactionCase, new_test_user, tagged
 
 from .common import load_demo
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 @tagged('post_install', '-at_install')
@@ -117,7 +118,7 @@ class TestPlanTree(TransactionCase):
         self.assertTrue(lines)
         # La asignación de contrata (fase 5) escribe sobre el plan aprobado
         # (el demo puede estarlo, planner_demo_baseline.py): proceso interno.
-        lines.with_context(construction_plan_force=True).write({'partner_id': self.gonza.id})
+        lines.with_context(construction_plan_force=PLAN_FORCE).write({'partner_id': self.gonza.id})
         assigned = round(sum(lines.mapped('amount_planned')), 2)
         self.assertIn([self.gonza.id, self.gonza.display_name], self.plan.get_tree_partners())
         floor = self._node('p', 'Piso 05', {'partner_ids': [self.gonza.id]})

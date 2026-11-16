@@ -31,6 +31,12 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '32.20261112'
+  fecha: 16/11/2026
+  cambios:
+    - "Seguridad: el estado de la valorización al cliente, de la entrega semanal y del cambio de obra solo cambia con sus acciones; antes quien ejecutaba podía confirmar una entrega, dar por confirmada una valorización o aprobar un cambio con una escritura directa."
+    - "Seguridad: lo confirmado por el cliente ya no se cambia después de la conformidad."
+    - "Las escrituras del sistema sobre un plan aprobado usan la marca del servidor PLAN_FORCE (un contexto enviado por el cliente ya no abre el plan)."
 - version: '31.20261112'
   fecha: 16/11/2026
   cambios:

@@ -10,6 +10,7 @@ from odoo.exceptions import UserError
 from odoo.addons.al_construction_planner.models.common import EXEC_APPROVER_GROUPS
 
 from ..models.construction_contract_intervention import INTERVENTION_HOLD
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class ConstructionContractInterventionWizard(models.TransientModel):
@@ -312,7 +313,7 @@ class ConstructionContractInterventionWizard(models.TransientModel):
         partner = order_sudo.partner_id.commercial_partner_id
         plan_lines.filtered(
             lambda l: l.partner_id.commercial_partner_id == partner).with_context(
-            construction_plan_force=True).write({'partner_id': False})
+            construction_plan_force=PLAN_FORCE).write({'partner_id': False})
         plan_lines._refresh_control()
         return plan_lines
 

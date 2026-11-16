@@ -18,6 +18,7 @@ from unittest import SkipTest
 from odoo.addons.al_construction_planner_suite.tests.common import PlannerCommon
 
 from . import board_acceptance_data
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 def _board_data(cls):
@@ -182,7 +183,7 @@ class TestInstallationBoard(PlannerCommon):
         # Armado, programado en la semana 1, termina en la 2: la instalación lo
         # dice con solo «Instalación» prendida.
         assembly = self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': self.space_501.id,
                 'resource_type': 'contract', 'activity_id': self.act_screw.id,
                 'stage': 'assembly', 'partner_id': self.contractor.id, 'qty_planned': 2.0,
@@ -252,7 +253,7 @@ class TestInstallationBoardBudget(PlannerCommon):
         apt = self.task('Dpto 401', 'apartment', floor_04)
         space_401 = self.task('Cocina', 'space', apt, construction_typology_id=self.typology.id)
         line_04 = self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': space_401.id, 'resource_type': 'contract',
                 'activity_id': self.act_inst_low.id, 'stage': 'installation',
                 'partner_id': self.contractor.id, 'qty_planned': 2.0,
@@ -286,7 +287,7 @@ class TestInstallationBoardBudget(PlannerCommon):
         product = self.env['product.product'].create({'name': 'Tablero (test tablero)',
                                                       'type': 'consu'})
         material = self.env['construction.resource.plan.line'].with_context(
-            construction_plan_force=True).create({
+            construction_plan_force=PLAN_FORCE).create({
                 'plan_id': self.plan.id, 'task_id': self.space_501.id,
                 'resource_type': 'material', 'product_id': product.id, 'stage': 'production',
                 'qty_planned': 10.0, 'price_unit_planned': 10.0,

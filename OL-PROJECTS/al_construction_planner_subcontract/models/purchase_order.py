@@ -2,6 +2,7 @@
 """OC de servicio de las contratas (fases 5 y 6): una abierta por contrata y
 obra, que concentra sus asignaciones y recibe cada liquidación semanal."""
 from odoo import api, fields, models
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class PurchaseOrder(models.Model):
@@ -68,7 +69,7 @@ class PurchaseOrder(models.Model):
         for line in plan_lines_sudo:
             partner = line._construction_active_contract_partner()
             if line.partner_id != partner:
-                line.with_context(construction_plan_force=True).write(
+                line.with_context(construction_plan_force=PLAN_FORCE).write(
                     {'partner_id': partner.id})
         plan_lines_sudo._refresh_control()
 

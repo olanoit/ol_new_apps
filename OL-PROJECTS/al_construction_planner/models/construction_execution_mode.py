@@ -14,6 +14,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 from .common import EXECUTION_MODES
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 
 class ConstructionExecutionTemplate(models.Model):
@@ -84,7 +85,7 @@ class ProjectTask(models.Model):
 
     def write(self, vals):
         if 'construction_execution_mode' in vals \
-                and not self.env.context.get('construction_plan_force'):
+                and self.env.context.get('construction_plan_force') is not PLAN_FORCE:
             self._construction_check_mode_change(vals['construction_execution_mode'])
         return super().write(vals)
 

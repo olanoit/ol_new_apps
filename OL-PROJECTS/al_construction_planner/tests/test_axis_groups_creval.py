@@ -7,6 +7,7 @@ from odoo.tests import new_test_user, tagged
 from odoo.tests.common import TransactionCase
 
 from odoo.addons.al_construction_planner.models.common import migrate_axis_groups
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 G = 'al_construction_planner.group_planner_'
 
@@ -99,7 +100,7 @@ class TestAxisGroups(TransactionCase):
     def test_executor_marks_approved_plan_in_progress(self):
         stage = self.env['construction.stage'].create({
             'name': 'Obra gruesa (test)', 'code': 'axis_test_stage', 'sequence': 900})
-        self.plan.line_ids.with_context(construction_plan_force=True).stage = stage.code
+        self.plan.line_ids.with_context(construction_plan_force=PLAN_FORCE).stage = stage.code
         self.plan.action_request_approval()
         self.assertEqual(self.plan.state, 'approved')
         executor = self._user('eje_ejecuta2', ['user'])

@@ -8,6 +8,7 @@ from odoo.exceptions import UserError, ValidationError
 
 from .common import EXCEED_STATES, EXEC_VALIDATOR_GROUP, PROJECT_HEAD_GROUPS
 from .construction_resource_plan import OPEN_STATES
+from odoo.addons.al_construction_planner.models.common import PROGRESS_FORCE
 
 PROGRESS_STATES = [
     ('draft', 'Reportado'),
@@ -423,7 +424,7 @@ class ConstructionTaskProgress(models.Model):
     def write(self, vals):
         if VALIDATION_FIELDS & set(vals) and not self.env.su:
             self._check_validator()
-        if LOCKED_FIELDS & set(vals) and not self.env.context.get('construction_progress_force'):
+        if LOCKED_FIELDS & set(vals) and self.env.context.get('construction_progress_force') is not PROGRESS_FORCE:
             locked = self.filtered(lambda p: p.state != 'draft')
             if locked:
                 raise UserError(self.env._(

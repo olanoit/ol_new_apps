@@ -414,6 +414,18 @@ class ConstructionValuation(models.Model):
     # ------------------------------------------------------------------
     # Estados
     # ------------------------------------------------------------------
+    def write(self, vals):
+        # El estado lo escriben las acciones de la valorización (con sudo,
+        # tras sus comprobaciones) y la factura. Solo es de lectura en la
+        # vista y quien ejecuta tiene permiso de escritura: una escritura
+        # directa la daría por confirmada sin la conformidad del cliente.
+        if 'state' in vals and not self.env.su and any(
+                valuation.state != vals['state'] for valuation in self):
+            raise UserError(self.env._(
+                'El estado de la valorización cambia con sus acciones (enviar, observar, '
+                'registrar la conformidad, anular).'))
+        return super().write(vals)
+
     def _check_state(self, states):
         labels = dict(VALUATION_STATES)
         for valuation in self:
@@ -455,7 +467,9 @@ class ConstructionValuation(models.Model):
                     'valorización.', docs=', '.join(missing.mapped('name')),
                     contract=valuation.contract_id.display_name))
             resend = valuation.state == 'observed'
-            valuation.write({'state': 'sent', 'submit_date': fields.Date.context_today(self)})
+            # sudo: el estado lo escribe el sistema desde la acción.
+            valuation.sudo().write(
+                {'state': 'sent', 'submit_date': fields.Date.context_today(self)})
             # sudo: el PDF se adjunta al historial aunque quien envía no
             # administre los reportes.
             report_sudo = self.env.ref(
@@ -483,7 +497,7 @@ class ConstructionValuation(models.Model):
         subtipo «Observación del cliente»."""
         self._check_state(('sent',))
         for valuation in self:
-            valuation.state = 'observed'
+            valuation.sudo().state = 'observed'
             valuation.message_post(
                 body=reason, message_type='comment',
                 subtype_xmlid='al_construction_planner_sale.mt_valuation_observation')
@@ -509,7 +523,10 @@ class ConstructionValuation(models.Model):
         self._check_state(('sent',))
         for line, amount in confirmed.items():
             line.amount_confirmed = amount
-        self.write(dict(values, state='confirmed'))
+        self.check_access('write')
+        # sudo: «Confirmada» la escribe el sistema con la conformidad que
+        # registra el asistente (fecha, nombre, cargo y adjuntos).
+        self.sudo().write(dict(values, state='confirmed'))
         # sudo: la conformidad la registra Proyectos o Finanzas, que no
         # editan entregas; el paso a Valorizada es efecto del sistema.
         self.delivery_ids.sudo().write({'state': 'valued'})
@@ -524,7 +541,7 @@ class ConstructionValuation(models.Model):
             raise UserError(self.env._('Una valorización con factura no se anula.'))
         # sudo: las entregas vuelven a Confirmada como efecto de la anulación.
         self.delivery_ids.sudo().write({'valuation_id': False, 'state': 'confirmed'})
-        self.write({'state': 'cancel'})
+        self.sudo().write({'state': 'cancel'})
 
     # ------------------------------------------------------------------
     # Factura
@@ -581,10 +598,11 @@ class ConstructionValuation(models.Model):
         """Confirmada ↔ Facturada según la factura publicada."""
         for valuation in self:
             posted = valuation.invoice_id.state == 'posted'
+            # sudo: lo escribe el sistema según la factura.
             if valuation.state == 'confirmed' and posted:
-                valuation.state = 'invoiced'
+                valuation.sudo().state = 'invoiced'
             elif valuation.state == 'invoiced' and not posted:
-                valuation.state = 'confirmed'
+                valuation.sudo().state = 'confirmed'
 
     def _prepare_invoice_lines(self, invoice_date):
         """Una línea por partida con la cantidad entregada de la OV al %
@@ -953,6 +971,11 @@ class ConstructionValuationLine(models.Model):
         return lines
 
     def write(self, vals):
+        # Lo confirmado por el cliente no cambia después de la conformidad.
+        if 'amount_confirmed' in vals and not self.env.su and any(
+                line.state not in ('draft', 'sent', 'observed') for line in self):
+            raise UserError(self.env._(
+                'Lo confirmado por el cliente ya no se cambia: la valorización está confirmada.'))
         if 'pct_manual' not in vals:
             return super().write(vals)
         if any(line.state != 'draft' for line in self):

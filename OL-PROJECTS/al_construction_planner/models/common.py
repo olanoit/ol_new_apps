@@ -347,4 +347,9 @@ FROM_PROCUREMENT = object()
 #: El exceso de la OF lo controla la orden misma (motor «Aprobaciones»): no
 #: aplica el bloqueo de la receta real sobre el umbral.
 SKIP_RECIPE_AUTHORIZATION = object()
-
+#: Un asistente o el sistema cambian las líneas de un plan aprobado (asignar
+#: contrata, sumar un cambio aprobado, repartir lo recibido del cliente) o la
+#: modalidad de una partida: el candado del plan no aplica a esa escritura.
+PLAN_FORCE = object()
+#: El sistema mueve un avance ya validado (a la línea de la versión nueva).
+PROGRESS_FORCE = object()

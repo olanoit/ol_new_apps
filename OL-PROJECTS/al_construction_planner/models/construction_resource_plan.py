@@ -14,6 +14,7 @@ from .common import (
     DRIVER_TYPES, PLAN_APPROVER_GROUPS, PLAN_PLANNER_GROUP, RESOURCE_TYPES, stage_group_selection,
     stage_selection,
 )
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE, PROGRESS_FORCE
 
 PLAN_STATES = [
     ('draft', 'Borrador'),
@@ -466,16 +467,33 @@ class ConstructionResourcePlan(models.Model):
     def _check_plan_planner(self, vals=None):
         """Editar un plan en borrador, o los datos de un plan aprobado, es de
         Plan: planificador; Ejecución solo lo pasa a «En ejecución»."""
-        if self.env.su or self.env.context.get('construction_plan_force') \
+        if self.env.su or self.env.context.get('construction_plan_force') is PLAN_FORCE \
                 or self.env.user.has_group(PLAN_PLANNER_GROUP):
             return
         # Sin permiso de escritura, el error de acceso de siempre.
         self.check_access('write')
         if vals is not None and set(vals) <= self._EXEC_WRITABLE \
-                and all(plan.state != 'draft' for plan in self):
+                and all(plan.state != 'draft' for plan in self) \
+                and self._construction_state_step_allowed(vals.get('state')):
             return
         raise UserError(self.env._(
             'Edita el plan de recursos quien planifica (grupo Plan: planificador).'))
+
+    def _construction_state_step_allowed(self, state):
+        """Pasos de estado de quien no planifica, sobre un plan que ya no
+        está en borrador. Ejecución solo lo pasa de «Aprobado» a «En
+        ejecución»; cerrar y devolver a borrador es de quien aprueba planes;
+        cancelar uno vigente, del grupo que fija la compañía. «Reemplazado» y
+        el rechazo de una revisión los escribe el sistema (sudo). Antes
+        bastaba poder escribir el plan para poner cualquier estado."""
+        if state == 'in_progress':
+            return all(plan.state == 'approved' for plan in self)
+        if self.env.user.has_groups(PLAN_APPROVER_GROUPS):
+            return True
+        if state == 'cancel':
+            return all(plan.state in OPEN_STATES and plan._construction_cancel_open_allowed()
+                       for plan in self)
+        return False
 
     def write(self, vals):
         self._check_plan_planner(vals)
@@ -582,13 +600,15 @@ class ConstructionResourcePlan(models.Model):
         self.invalidate_recordset(['need_validation', 'review_ids', 'validation_status'])
         for plan in self:
             previous = plan._get_previous_open_version()
-            lines = plan.line_ids.with_context(construction_plan_force=True)
+            lines = plan.line_ids.with_context(construction_plan_force=PLAN_FORCE)
             for amount, same_amount in lines.grouped('amount_planned').items():
                 same_amount.write({'amount_budgeted': amount})
             values = plan._construction_on_approve(previous)
             if previous:
                 previous._transfer_to_new_version(plan)
-                previous.write({'state': 'replaced'})
+                # sudo: «Reemplazado» lo escribe el sistema al aprobarse la
+                # versión nueva, sea quien sea el último revisor.
+                previous.sudo().write({'state': 'replaced'})
                 previous.message_post(body=self.env._(
                     'Reemplazado por la versión %s.', plan.display_name))
             # Guarda de reentrada: al escribir «Aprobado», tier.validation
@@ -645,7 +665,7 @@ class ConstructionResourcePlan(models.Model):
         for line, progresses in progress_sudo.grouped('plan_line_id').items():
             successor = successors.get(line)
             if successor:
-                progresses.with_context(construction_progress_force=True).write(
+                progresses.with_context(construction_progress_force=PROGRESS_FORCE).write(
                     {'plan_line_id': successor.id})
                 moved_progress += len(progresses)
         if moved_progress:
@@ -677,7 +697,9 @@ class ConstructionResourcePlan(models.Model):
                 # Rechazo: vuelve a borrador (diagrama de estados). Lo escribe
                 # el revisor, que no puede editar el plan en revisión: se omite
                 # ese control solo para el estado.
-                plan.with_context(skip_validation_check=True).write({'state': 'draft'})
+                # sudo: lo escribe el sistema tras el rechazo de un revisor
+                # que OCA ya comprobó.
+                plan.sudo().with_context(skip_validation_check=True).write({'state': 'draft'})
                 plan.message_post(body=self.env._('Rechazado: el plan vuelve a borrador.'))
         return res
 
@@ -1477,7 +1499,7 @@ class ConstructionResourcePlanLine(models.Model):
                 # es cuadrático y al generar miles de líneas caen en el mismo.
                 updates[tuple(sorted(vals.items()))].append(line.id)
         for vals, line_ids in updates.items():
-            lines_sudo.browse(line_ids).with_context(construction_plan_force=True).write(dict(vals))
+            lines_sudo.browse(line_ids).with_context(construction_plan_force=PLAN_FORCE).write(dict(vals))
 
     @api.model
     def _cron_refresh_control(self):
@@ -1652,7 +1674,7 @@ class ConstructionResourcePlanLine(models.Model):
                        'amount_remaining', 'executed_pct', 'stage_parent'}
 
     def _check_plan_editable(self, vals=None):
-        if self.env.context.get('construction_plan_force'):
+        if self.env.context.get('construction_plan_force') is PLAN_FORCE:
             return
         if vals is not None and set(vals) <= self._LOCKED_ALLOWED:
             return

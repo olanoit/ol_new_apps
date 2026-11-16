@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 84.20261112 — 16/11/2026
+
+- Seguridad: los candados del plan aprobado y del avance validado ya no se abren con un contexto enviado por el cliente (PLAN_FORCE y PROGRESS_FORCE son objetos del servidor).
+- Seguridad: quien ejecuta solo pasa el plan de «Aprobado» a «En ejecución»; cerrar y devolver a borrador es de quien aprueba planes, y cancelar uno vigente, del grupo que fija la compañía. Antes bastaba poder escribir el plan para poner cualquier estado.
+
 ## 83.20261112 — 16/11/2026
 
 - Seguridad: validar, rechazar o revertir un avance es de quien valida la ejecución también con una escritura directa; antes quien reportaba podía dejar su avance «Validado» y entraba al ejecutado y a la valorización.

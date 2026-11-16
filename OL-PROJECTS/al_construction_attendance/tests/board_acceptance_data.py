@@ -27,6 +27,7 @@ from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 
 from odoo.exceptions import UserError
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 NAME = 'ZZ TABLERO PRUEBA'
 ORIGIN = date(2025, 11, 24)
@@ -171,7 +172,7 @@ def load(env):
 
     # Plan.
     plan = env['construction.resource.plan'].create({'project_id': project.id})
-    Line = env['construction.resource.plan.line'].with_context(construction_plan_force=True)
+    Line = env['construction.resource.plan.line'].with_context(construction_plan_force=PLAN_FORCE)
     lines = defaultdict(list)
     line_values = []
     for (floor, index), space in spaces.items():

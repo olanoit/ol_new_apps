@@ -11,6 +11,7 @@ ningún nivel no cambia nada."""
 import re
 
 from odoo import api, fields, models
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 ANALYTIC_MODES = [
     ('catalog', 'Catálogo'),
@@ -55,7 +56,7 @@ class ConstructionLevelTemplate(models.Model):
         tasks._construction_ensure_level_account()
         plans = self.env['construction.resource.plan'].search([
             ('project_id', 'in', projects.ids), ('state', 'in', ('draft',) + tuple(OPEN_STATES))])
-        plans.line_ids.with_context(construction_plan_force=True)._apply_analytic_rules()
+        plans.line_ids.with_context(construction_plan_force=PLAN_FORCE)._apply_analytic_rules()
         plans.filtered(lambda p: p.state in OPEN_STATES)._construction_refresh_budget()
         for plan in plans:
             plan.message_post(body=self.env._(

@@ -14,6 +14,7 @@ from odoo import Command, fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.al_construction_planner.models.common import norm
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
 
 SHEETS = {
     'ORDENES': [
@@ -208,7 +209,7 @@ class ConstructionContractOpeningWizard(models.TransientModel):
                     allocations.append({'plan_line_id': plan_line.id, 'kind': 'service_order',
                                         'purchase_line_id': po_line.id, 'qty_allocated': share})
                     remaining -= share
-            plan_lines.with_context(construction_plan_force=True).write(
+            plan_lines.with_context(construction_plan_force=PLAN_FORCE).write(
                 {'partner_id': partner.id})
             valued[po_line] = self._float(line_row.get('valued_qty'))
         self.env['construction.resource.plan.allocation'].create(allocations)

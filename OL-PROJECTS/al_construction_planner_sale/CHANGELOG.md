@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 32.20261112 — 16/11/2026
+
+- Seguridad: el estado de la valorización al cliente, de la entrega semanal y del cambio de obra solo cambia con sus acciones; antes quien ejecutaba podía confirmar una entrega, dar por confirmada una valorización o aprobar un cambio con una escritura directa.
+- Seguridad: lo confirmado por el cliente ya no se cambia después de la conformidad.
+- Las escrituras del sistema sobre un plan aprobado usan la marca del servidor PLAN_FORCE (un contexto enviado por el cliente ya no abre el plan).
+
 ## 31.20261112 — 16/11/2026
 
 - Multicompañía: la meta de valorización del mes y lo facturado por partida solo se ven en las compañías del usuario (les faltaba la regla de registro).
