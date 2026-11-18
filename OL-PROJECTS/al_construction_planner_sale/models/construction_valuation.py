@@ -19,6 +19,11 @@ from odoo.addons.al_construction_planner.models.common import PROJECT_HEAD_GROUP
 # Tope del ajuste de redondeo entre la valorización y su factura (CR-01): el
 # precio por partida se redondea hacia abajo para no pasar lo confirmado.
 MAX_INVOICE_ROUNDING = 1.0
+# Diferencia entre los hitos de una partida y su línea de la orden que se toma
+# por redondeo (D1 del paquete 1.22): el factor de descuento guarda 6
+# decimales y cada hito se redondea al céntimo. Es relativa al precio de la
+# partida y se le suma un céntimo por hito.
+MILESTONE_ROUNDING_RATIO = 1e-5
 
 VALUATION_STATES = [
     ('draft', 'Borrador'),
@@ -282,7 +287,13 @@ class ConstructionValuation(models.Model):
     def _create_from_milestones(self, contract, cutoff):
         """Valorización por hitos del contrato al corte: por partida, lo ganado
         por los hitos de sus unidades (monto × avance) menos lo confirmado
-        antes. Guarda el detalle por hito (avance cobrado y avance al corte)."""
+        antes. Guarda el detalle por hito (avance cobrado y avance al corte).
+
+        Paquete 1.22, anexo. D1: la valorización que lleva la partida a su
+        100 % toma el total de la línea de la orden menos lo ya valorizado
+        (el último céntimo del descuento). D2: una partida con dos líneas en
+        la orden trae su hito partido entre las dos, y la línea de un
+        deductivo se valoriza en negativo."""
         if contract.state != 'active':
             raise UserError(self.env._(
                 'El contrato %s no está vigente.', contract.display_name))
@@ -312,9 +323,12 @@ class ConstructionValuation(models.Model):
             details.append(Command.create({
                 'milestone_id': milestone.id, 'pct_before': milestone.billed_pct,
                 'pct_now': now, 'amount': amount}))
+        by_line = {}
         for milestone in milestones:
             earned[milestone.sale_line_id] = earned.get(milestone.sale_line_id, 0.0) + \
                 milestone.amount * max(milestone.progress_pct, milestone.billed_pct) / 100
+            by_line[milestone.sale_line_id] = by_line.get(
+                milestone.sale_line_id, milestones.browse()) | milestone
         if not details:
             raise UserError(self.env._(
                 'Los hitos del contrato %s no avanzaron desde la última valorización.',
@@ -326,8 +340,15 @@ class ConstructionValuation(models.Model):
             price = sale_line._construction_price(cutoff)
             before = previous.filtered(lambda l, s=sale_line: l.sale_line_id == s)
             confirmed_before = sum(before.mapped('amount_confirmed'))
-            amount = currency.round(min(value, price) - confirmed_before)
-            if amount <= 0:
+            # Con signo: la línea de un deductivo tiene precio negativo y su
+            # tope es ese precio (D2).
+            sign = -1 if price < 0 else 1
+            value = sign * min(sign * value, sign * price)
+            if self._construction_milestones_complete(
+                    by_line[sale_line], price, currency, cutoff):
+                value = price
+            amount = currency.round(value - confirmed_before)
+            if currency.compare_amounts(sign * amount, 0.0) <= 0:
                 continue
             lines.append(Command.create({
                 'sale_line_id': sale_line.id, 'price': price,
@@ -343,6 +364,23 @@ class ConstructionValuation(models.Model):
             'advance_amortization_pct': contract.advance_pct,
             'line_ids': lines, 'milestone_line_ids': details,
         })
+
+    @api.model
+    def _construction_milestones_complete(self, milestones, price, currency, cutoff):
+        """D1 del paquete 1.22: ¿los hitos de la partida están todos al 100 %
+        y su suma solo difiere de la línea de la orden por redondeo? Entonces
+        la partida se valoriza por el total de la línea. Una diferencia mayor
+        no es redondeo (hitos que no cubren toda la línea) y se deja como
+        está."""
+        if not milestones or not price or any(
+                max(milestone.progress_pct, milestone.billed_pct) < 100
+                for milestone in milestones):
+            return False
+        contract = milestones.contract_id
+        total = contract.currency_id._convert(
+            sum(milestones.mapped('amount')), currency, contract.company_id, cutoff)
+        tolerance = abs(price) * MILESTONE_ROUNDING_RATIO + currency.rounding * len(milestones)
+        return currency.compare_amounts(abs(total - price), tolerance) <= 0
 
     def _construction_stage_progress(self):
         """Filas del avance por etapa y sub etapa del plan vigente de la obra

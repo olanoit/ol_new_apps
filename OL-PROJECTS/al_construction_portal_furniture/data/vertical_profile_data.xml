@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Paquete 1.22, etapa 2: las funciones de campo de mobiliario del portal
+     nacen encendidas solo en el perfil Mobiliario. noupdate: corre al
+     instalar el puente (como su post_init_hook) y no vuelve a encender en una
+     actualización lo que el cliente apagó. -->
+<odoo noupdate="1">
+    <function model="construction.vertical.profile" name="_portal_furniture_enable_defaults"/>
+</odoo>

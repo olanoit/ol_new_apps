@@ -1,0 +1,23 @@
+/* Portal de obra · funciones de campo de mobiliario (paquete 1.22, etapa 2). */
+.fur-matrix, .fur-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.fur-matrix th, .fur-table th { text-align: left; font-weight: 600; padding: 6px 4px; }
+.fur-matrix thead th, .fur-table thead th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.fur-matrix thead th:not(:first-child), .fur-matrix td { text-align: center; width: 60px; }
+.fur-matrix td { padding: 4px 2px; }
+.fur-matrix tbody tr, .fur-table tbody tr { border-top: 1px solid #EEF0F2; }
+.fur-none { color: var(--muted); }
+.fur-cell {
+    min-width: 48px; min-height: 44px; border-radius: 10px; border: 2px solid transparent;
+    background: #F1F3F5; color: var(--ink); font-weight: 700; font-size: 15px; cursor: pointer;
+}
+.fur-cell.part { background: #FFF4D6; color: #5C4300; }
+.fur-cell.ok { background: #E6F4EA; color: var(--ok); }
+.fur-cell.set { background: var(--brand); color: #FFF; }
+.fur-cell.sel { border-color: var(--ink); }
+.fur-table td { text-align: right; padding: 6px 4px; white-space: nowrap; }
+.fur-table thead th:not(:first-child) { text-align: right; }
+.fur-driver { gap: 6px; }
+.fur-mod { display: grid; gap: 8px; padding-bottom: 8px; }
+.fur-sub { display: block; }
+.fur-marks { display: flex; gap: 6px; flex-wrap: wrap; }
+.fur-marks .pill-btn { flex: 1; min-width: 86px; }

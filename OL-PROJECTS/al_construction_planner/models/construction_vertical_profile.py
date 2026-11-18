@@ -114,6 +114,12 @@ class ConstructionVerticalProfile(models.Model):
         string='Planes analíticos',
         help='Separados por comas (p. ej. «Disciplina, Subpartida, Partida»): se crean los '
              'que no existen.')
+    # Paquete 1.22, M122-03: datos del perfil; la compañía los recibe al
+    # aplicarlo si no tiene motivos propios.
+    rework_reason_names = fields.Text(
+        string='Motivos de re-trabajo',
+        help='Uno por línea. Al aplicar el perfil, la compañía que no tiene motivos de '
+             're-trabajo recibe estos; después los cambia en su catálogo.')
     note = fields.Text(string='Por decidir', translate=True,
                        help='Lo que aún se valida con los clientes del rubro.')
     deviation_html = fields.Html(
@@ -203,6 +209,8 @@ class ConstructionVerticalProfile(models.Model):
         for plan_name in filter(None, (n.strip() for n in (self.analytic_plan_names or '').split(','))):
             if not Plan.search_count([('name', '=ilike', plan_name)]):
                 Plan.create({'name': plan_name})
+        self.env['construction.portal.reason']._seed_rework(
+            company, (self.rework_reason_names or '').splitlines())
 
     def _feature_menus(self):
         """Lo que muestra u oculta cada función (M18-01)."""
@@ -375,6 +383,7 @@ class ConstructionVerticalProfile(models.Model):
                     'resource_type_ids': [Command.set(base.resource_type_ids.ids)] if base else [],
                     'module_ids': [Command.set(base.module_ids.ids)] if base else [],
                     'analytic_plan_names': ', '.join(level for level, _role in levels),
+                    'rework_reason_names': base.rework_reason_names if base else False,
                     # Las funciones de construcción (M120-07): las del perfil base.
                     **{'feature_%s' % feature: base['feature_%s' % feature]
                        for feature in FEATURES if base},
@@ -468,6 +477,8 @@ class ConstructionVerticalProfile(models.Model):
                          'measurement': self.feature_measurement},
             'parameters': {param.name: param.value for param in self.parameter_ids},
             'analytic_plans': self.analytic_plan_names or '',
+            'rework_reasons': [name.strip() for name in
+                               (self.rework_reason_names or '').splitlines() if name.strip()],
         }
 
     def action_export(self):
@@ -545,6 +556,7 @@ class ConstructionVerticalProfile(models.Model):
             'feature_measurement': data.get('features', {}).get(
                 'measurement', data.get('features', {}).get('progress', True)),
             'analytic_plan_names': data.get('analytic_plans') or False,
+            'rework_reason_names': '\n'.join(data.get('rework_reasons') or []) or False,
             'parameter_ids': [Command.clear()] + [
                 Command.create({'name': name, 'value': value})
                 for name, value in data.get('parameters', {}).items()],

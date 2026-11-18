@@ -40,9 +40,9 @@ class ResCompany(models.Model):
         help='Muestra en la pestaña Obra del portal el planificado, comprometido, real y saldo '
              'del plan, como el tablero de obra del escritorio. Desactivado, solo avances.')
     construction_portal_risk_pct = fields.Integer(
-        string='Partida en riesgo al terminar con menos de (%)', default=70,
-        help='En la semana de la obra, una partida que termina con menos avance validado que '
-             'este porcentaje sale «en riesgo».')
+        string='Avance en riesgo al terminar con menos de (%)', default=70,
+        help='En la semana de la obra, lo que termina con menos avance validado que este '
+             'porcentaje sale «en riesgo».')
 
 
 class ResConfigSettings(models.TransientModel):

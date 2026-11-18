@@ -371,3 +371,9 @@ button.card.plain { border: 1px solid var(--line); padding: 12px 14px; }
     .crew-grid { display: grid; grid-template-columns: 400px minmax(0, 1fr); align-items: start; }
     .crew-grid > .error { grid-column: 1 / -1; }
 }
+
+/* Paquete 1.22, M122-04: «Avance» agrupado por los niveles de la obra. */
+.group { display: block; width: 100%; text-align: left; cursor: pointer; }
+.group > .row b:last-child { white-space: nowrap; padding-left: 8px; }
+.group-body { display: grid; gap: 8px; margin: 0 0 4px 10px; padding-left: 8px; border-left: 2px solid #DEE2E6; }
+.partida .eyebrow { display: block; margin-bottom: 2px; color: var(--brand); font-weight: 600; }

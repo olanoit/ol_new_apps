@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261112 — 17/11/2026
+
+- Paquete 1.22: el portal sigue el perfil de vertical de la obra. El inicio, la barra y los servicios muestran solo las funciones activas (Avance, Parte diario y tareo, Deductivos y fondo de garantía); una función apagada responde con un mensaje claro.
+- Los textos usan los nombres de los niveles de la plantilla de la obra (Módulo, Ambiente, Mueble o Partida) y la ayuda del tareo habla del jornal de cada persona.
+- «Avance» se abre agrupado por los niveles superiores de la obra (Piso › Departamento o Especialidad › Sub-especialidad), con contadores, filtros «Con saldo» y «Atrasadas» y búsqueda.
+- El motivo del re-trabajo se elige del catálogo de la compañía; el menú pasa a «Motivos del portal».
+- Ficha de la obra: botón «Portal de obra» con el ingreso, el QR y el personal del portal.
+
 ## 19.20261112 — 16/11/2026
 
 - Tareo: los jornales del tareo se rehacen solo para las personas de la marcación (acompaña el cambio de la asistencia de obra).

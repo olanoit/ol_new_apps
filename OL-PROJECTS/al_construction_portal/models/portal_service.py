@@ -23,6 +23,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.mimetypes import guess_mimetype
 
 from odoo.addons.al_construction_planner.models.common import DRIVER_TYPES
+from odoo.addons.al_construction_planner.models.construction_level_labels import LEVEL_NUMBER
 
 from .daily_report import WEATHER
 
@@ -41,6 +42,18 @@ LEGAL_WORDS = {'SA', 'SAC', 'SAA', 'SRL', 'EIRL', 'DE', 'DEL', 'LA', 'LOS', 'Y'}
 TASK_CODE = re.compile(r'^\s*(\d[\w.\-]*)\s+(.*)$', re.S)
 #: Rol del recurso de la línea del plan en el portal.
 KIND_LABELS = {'labor': 'personal propio', 'contract': 'contrata'}
+#: Paquete 1.22, M122-01: funciones del perfil de la obra que gobiernan el
+#: portal, {función: campo del perfil}. Los puentes suman las suyas en
+#: ``_portal_feature_fields``.
+PORTAL_FEATURES = {
+    'progress': 'feature_progress',
+    'daily_report': 'feature_daily_report',
+    'deductions': 'feature_deductions',
+    'valuation': 'feature_valuation',
+}
+#: Niveles que agrupan en «Avance» (M122-04): los agrupadores y la unidad de
+#: entrega de la plantilla de la obra.
+GROUP_LEVELS = ('group', 'floor', 'apartment')
 
 
 def _split_task(task):
@@ -97,6 +110,46 @@ class ConstructionPortalService(models.AbstractModel):
         if not members:
             raise AccessError(self.env._('No está en el portal de esa obra.'))
         return project, members
+
+    # ------------------------------------------------------------------
+    # Funciones de la obra (paquete 1.22, M122-01)
+    # ------------------------------------------------------------------
+    @api.model
+    def _portal_feature_fields(self):
+        """{función: campo del perfil de vertical}. Un puente del portal suma
+        aquí las funciones que agrega."""
+        return dict(PORTAL_FEATURES)
+
+    @api.model
+    def _portal_feature_messages(self):
+        """{función: lo que responde un servicio con la función apagada}."""
+        return {
+            'progress': self.env._('La obra no usa el avance.'),
+            'daily_report': self.env._('La obra no usa el parte diario.'),
+            'deductions': self.env._('La obra no usa deductivos ni fondo de garantía.'),
+            'valuation': self.env._('La obra no usa la valorización por avance.'),
+        }
+
+    def _portal_features(self, project):
+        """Funciones activas de la obra: las del perfil de la obra; sin
+        perfil en la obra, las del perfil de la compañía; sin ninguno, todas,
+        como antes del paquete. Se calcula en el servidor: la persona del
+        portal no tiene los grupos de las funciones."""
+        company = project.company_id or self.env.company
+        # sudo: el usuario del portal no lee los perfiles de vertical.
+        profile = (project.construction_profile_id or company.construction_profile_id).sudo()
+        fields_map = self._portal_feature_fields()
+        if not profile:
+            return set(fields_map)
+        return {feature for feature, fname in fields_map.items()
+                if fname in profile._fields and profile[fname]}
+
+    def _portal_require(self, project, feature):
+        """Un servicio de una función apagada responde con un error claro,
+        aunque el celular tenga una versión anterior guardada."""
+        if feature not in self._portal_features(project):
+            raise UserError(self._portal_feature_messages().get(
+                feature, self.env._('La obra no usa esa función.')))
 
     def _roles(self, members):
         """Papeles con los que trabaja la persona en la sesión: el residente
@@ -209,7 +262,17 @@ class ConstructionPortalService(models.AbstractModel):
         week_start, week_end = project._construction_period(today)
         last_validation = self._last_validation(lines)
         reported = self._reported_qty_map(lines)
+        features = self._portal_features(project)
+        company = project.company_id or self.env.company
+        tree = self._lines_tree(project, lines, today)
         data = {
+            # M122-01: lo que la obra usa; el inicio y la barra salen de aquí.
+            'features': sorted(features),
+            # M122-02: nombres de los niveles de la plantilla de la obra.
+            'levels': self._level_terms(project),
+            # M122-04: niveles superiores de las líneas, para agrupar sin señal.
+            'groups': tree['groups'],
+            'crew_civil': self._crew_civil(company),
             'project': {'id': project.id, 'name': project.display_name,
                         'week_start': fields.Date.to_string(week_start),
                         'week_end': fields.Date.to_string(week_end),
@@ -221,16 +284,16 @@ class ConstructionPortalService(models.AbstractModel):
             'members': [{'role': member.role, 'name': member.name,
                          'partner': member.partner_id.commercial_partner_id.name or ''}
                         for member in members],
-            'partidas': [self._line_data(line, last_validation.get(line.id), reported)
+            'partidas': [self._line_data(line, last_validation.get(line.id), reported, tree)
                          for line in
                          lines.sorted(lambda l: (l.task_id.construction_path or '', l.id))],
-            'rework_reasons': [[code, label] for code, label in self.env[
-                'construction.task.progress']._fields['rework_reason']._description_selection(
-                self.env)],
+            # M122-03: los motivos de re-trabajo del catálogo de la compañía.
+            'rework_reasons': [[reason.id, reason.name] for reason in self.env[
+                'construction.portal.reason']._rework_for(company)],
             'weather': [[code, label] for code, label in WEATHER],
             'synced_at': fields.Datetime.to_string(fields.Datetime.now()),
         }
-        if roles & {'foreman', 'office', 'contractor'}:
+        if 'daily_report' in features and roles & {'foreman', 'office', 'contractor'}:
             # La contrata ve solo sus partidas: en su parte, su empresa y sus
             # avances del día, no los de las demás contratas.
             only = self._partners(members) if not roles & {'foreman', 'office'} else None
@@ -239,7 +302,7 @@ class ConstructionPortalService(models.AbstractModel):
             data['catalog'] = self._catalog(project, lines, roles)
             data['deliveries'] = self._deliveries(project)
             data['returnables'] = self._returnables(project)
-        if 'foreman' in roles:
+        if 'foreman' in roles and 'daily_report' in features:
             data['crew'] = self._crew(project, members)
         if 'contractor' in roles:
             contract = self.valuations(project.id)
@@ -261,7 +324,84 @@ class ConstructionPortalService(models.AbstractModel):
              ('is_rework', '=', False)], ['plan_line_id'], ['qty_weighted:sum'])
         return {line.id: qty or 0.0 for line, qty in groups}
 
-    def _line_data(self, line, last_validation=None, reported=None):
+    def _level_terms(self, project):
+        """{función o level_<n>: nombre} de la plantilla de niveles de la obra
+        (los mismos del escritorio); «unit» repite la unidad de entrega."""
+        # sudo: el usuario del portal no lee las plantillas de niveles.
+        terms = self.env['construction.level.labels.mixin']._construction_level_terms(
+            project.sudo().construction_level_template_id
+            or (project.company_id or self.env.company).sudo().construction_level_template_id)
+        if terms.get('apartment'):
+            terms['unit'] = terms['apartment']
+        return terms
+
+    def _crew_civil(self, company):
+        """La compañía usa la planilla de construcción civil: alguna de sus
+        personas tiene categoría (M122-02, ayuda del tareo)."""
+        if 'hr.version' not in self.env:
+            return False
+        Version = self.env['hr.version'].sudo()
+        if 'l10n_pe_construction_category_id' not in Version._fields:
+            return False
+        return bool(Version.search_count([
+            ('company_id', '=', company.id),
+            ('l10n_pe_construction_category_id', '!=', False)], limit=1))
+
+    def _lines_tree(self, project, lines, today):
+        """Lo que «Avance» necesita para agrupar sin señal (M122-04):
+
+        * ``groups``: {id: nombre, nivel, padre y orden} de los niveles
+          superiores (agrupadores y unidad de entrega) de las líneas;
+        * ``line``: {línea: grupo más cercano, nombre del nivel de su tarea,
+          sub etapa con su orden y si su fecha del plan ya pasó}."""
+        result = {'groups': {}, 'line': {}}
+        if not lines:
+            return result
+        # sudo: los nombres de los niveles superiores de las líneas de la
+        # persona (comprobadas al leerlas).
+        Task = self.env['project.task'].sudo()
+        paths = {task.id: [int(i) for i in (task.construction_path or '').split('/') if i]
+                 for task in lines.task_id}
+        nodes = {node.id: node for node in Task.browse(
+            list({i for path in paths.values() for i in path})).exists()}
+        nearest = {}
+        for task_id, path in paths.items():
+            parent = False
+            for node_id in path:
+                node = nodes.get(node_id)
+                if not node or node_id == task_id or node.construction_level not in GROUP_LEVELS:
+                    continue
+                if node_id not in result['groups']:
+                    result['groups'][node_id] = {
+                        'id': node_id, 'name': node.name, 'parent': parent,
+                        'level': LEVEL_NUMBER.sub('', node.construction_level_name or ''),
+                        'kind': node.construction_level, 'sequence': node.sequence}
+                parent = node_id
+            nearest[task_id] = parent
+        Stage = self.env['construction.stage'].sudo().with_context(active_test=False)
+        stages = {stage.code: (index, stage._label())
+                  for index, stage in enumerate(Stage._tree_sorted(Stage.search([])))}
+        ends = {}
+        if lines.space_task_id:
+            for record in self.env['construction.space.stage'].sudo().search(
+                    [('space_task_id', 'in', lines.space_task_id.ids)]):
+                ends[(record.space_task_id.id, record.stage)] = record.date_end
+        for line in lines:
+            task = line.task_id
+            order, label = stages.get(line.stage, (999, ''))
+            end = ends.get((line.space_task_id.id, line.stage))
+            result['line'][line.id] = {
+                'group_id': nearest.get(task.id) or False,
+                'level_name': LEVEL_NUMBER.sub('', task.construction_level_name or ''),
+                'space_id': line.space_task_id.id or False,
+                'space': line.space_task_id.name or '' if line.space_task_id != task else '',
+                'stage': line.stage or '', 'stage_label': label, 'stage_order': order,
+                'date_end': fields.Date.to_string(end) if end else '',
+                'late': bool(end and end < today),
+            }
+        return result
+
+    def _line_data(self, line, last_validation=None, reported=None, tree=None):
         validated = line.qty_executed
         pending = line._get_reported_qty() if reported is None else reported.get(line.id, 0.0)
         labels = _task_labels(line.task_id, line.activity_id, line.resource_type)
@@ -279,7 +419,7 @@ class ConstructionPortalService(models.AbstractModel):
             'exceed_policy': line.plan_id._exceed_policy_for(line.resource_type),
             'last_validated': fields.Date.to_string(last_validation) if last_validation else '',
             'partner': line.partner_id.name or '',
-        })
+        }, **((tree or {}).get('line', {}).get(line.id) or {}))
 
     def _last_validation(self, lines):
         """Fecha de la última validación de cada partida."""
@@ -297,7 +437,8 @@ class ConstructionPortalService(models.AbstractModel):
         aprobación y entregas por recibir hoy."""
         Progress = self.env['construction.task.progress'].sudo()
         to_validate = Progress.search_count([
-            ('plan_line_id', 'in', lines.ids), ('state', '=', 'draft')]) if lines else 0
+            ('plan_line_id', 'in', lines.ids), ('state', '=', 'draft')]) \
+            if lines and 'progress' in data.get('features', ['progress']) else 0
         requests = 0
         if self._roles(members) & {'foreman', 'office'}:
             domain = [('project_id', '=', project.id), ('state', '=', 'to_approve')]
@@ -365,10 +506,11 @@ class ConstructionPortalService(models.AbstractModel):
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
         project, members = self._project(values.get('project_id'))
+        self._portal_require(project, 'progress')
         line = self._lines(project, members).filtered(
             lambda l: l.id == int(values.get('plan_line_id') or 0))
         if not line:
-            raise AccessError(self.env._('Esa partida no es suya.'))
+            raise AccessError(self.env._('Esa línea del plan no es suya.'))
         company = project.company_id or self.env.company
         day = self._portal_date(values.get('date'), company, company.construction_portal_progress_days)
         qty = float(values.get('qty') or 0.0)
@@ -378,8 +520,8 @@ class ConstructionPortalService(models.AbstractModel):
         if qty <= 0:
             raise UserError(self.env._('El avance debe ser mayor que lo ya registrado.'))
         is_rework = bool(values.get('is_rework'))
-        if is_rework and not values.get('rework_reason'):
-            raise UserError(self.env._('Un re-trabajo pide su motivo.'))
+        reason = self._rework_reason(values, company) if is_rework else \
+            self.env['construction.portal.reason']
         attachments = self._photos(values.get('photos'), 'construction.task.progress',
                                    required=True)
         # sudo: el avance lo crea la persona del portal sobre su partida
@@ -390,7 +532,7 @@ class ConstructionPortalService(models.AbstractModel):
             'reported_by_id': self.env.uid, 'source': 'portal',
             'latitude': float(values.get('latitude') or 0.0),
             'longitude': float(values.get('longitude') or 0.0),
-            'is_rework': is_rework, 'rework_reason': values.get('rework_reason') or False,
+            'is_rework': is_rework, 'rework_reason_id': reason.id,
             'attachment_ids': [(6, 0, attachments.ids)],
         })
         attachments.write({'res_id': progress.id})
@@ -409,6 +551,22 @@ class ConstructionPortalService(models.AbstractModel):
                 'over_balance': line.qty_planned < line.qty_executed + line._get_reported_qty(),
                 'exceed_state': progress.exceed_state}
 
+    def _rework_reason(self, values, company):
+        """El motivo del re-trabajo que envía el celular (M122-03): uno de
+        los motivos de re-trabajo de la compañía de la obra. Un celular sin
+        actualizar envía en ``rework_reason`` el valor de la lista anterior."""
+        Reason = self.env['construction.portal.reason']
+        raw = values.get('rework_reason_id') or values.get('rework_reason')
+        if not raw:
+            raise UserError(self.env._('Un re-trabajo pide su motivo.'))
+        if not str(raw).isdigit():
+            reason = Reason._rework_from_legacy(raw, company)
+        else:
+            reason = Reason._rework_for(company).filtered(lambda r: r.id == int(raw))
+        if not reason:
+            raise UserError(self.env._('Ese motivo de re-trabajo no es de la compañía de la obra.'))
+        return reason
+
     # ------------------------------------------------------------------
     # Parte diario (pantalla 6)
     # ------------------------------------------------------------------
@@ -421,6 +579,7 @@ class ConstructionPortalService(models.AbstractModel):
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
         project, members = self._project(values.get('project_id'))
+        self._portal_require(project, 'daily_report')
         if not self._roles(members) & {'foreman', 'office', 'contractor'}:
             raise AccessError(self.env._('El parte diario lo envía el personal de la obra.'))
         company = project.company_id or self.env.company
@@ -491,6 +650,7 @@ class ConstructionPortalService(models.AbstractModel):
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
         project, members = self._project(values.get('project_id'))
+        self._portal_require(project, 'daily_report')
         if 'foreman' not in self._roles(members):
             raise AccessError(self.env._('El tareo lo registra el capataz.'))
         company = project.company_id or self.env.company
@@ -932,6 +1092,11 @@ class ConstructionPortalService(models.AbstractModel):
         Deduction = self.env['construction.contract.deduction'].sudo() \
             if 'construction.contract.deduction' in self.env else None
         Progress = self.env['construction.task.progress'].sudo()
+        # M122-01: con «Deductivos, intervenciones y fondo de garantía»
+        # apagada en el perfil de la obra, no se muestran.
+        show_deductions = 'deductions' in self._portal_features(project)
+        if not show_deductions:
+            Deduction = None
 
         def order_data(order):
             valued = sum(order._construction_valued_settlements().mapped('amount_direct')) \
@@ -946,8 +1111,9 @@ class ConstructionPortalService(models.AbstractModel):
                 'valued': valued,
                 'valued_pct': round(100.0 * valued / order.amount_untaxed)
                 if order.amount_untaxed else 0,
-                'guarantee': getattr(order, 'construction_guarantee_retained', 0.0),
-                'deductions': deductions,
+                'guarantee': getattr(order, 'construction_guarantee_retained', 0.0)
+                if show_deductions else 0.0,
+                'deductions': deductions, 'show_deductions': show_deductions,
                 'frequency': frequency, 'frequency_label': frequencies.get(frequency, ''),
                 'cutoff_label': weekdays.get(weekday, '') if frequency == 'weekly' else '',
             }
@@ -997,26 +1163,27 @@ class ConstructionPortalService(models.AbstractModel):
                 detraction_pct = invoice.l10n_pe_detraction_type_id.percentage or 0.0
         payment_labels = dict(invoice._fields['payment_state']._description_selection(
             self.env)) if invoice else {}
-        reasons = dict(settlement.line_ids._fields['rework_reason']._description_selection(
-            self.env)) if 'rework_reason' in settlement.line_ids._fields else {}
+        show_deductions = 'deductions' in self._portal_features(settlement.project_id)
         lines = [{'name': line.purchase_line_id.name or line.activity_id.display_name,
                   'qty': line.qty_settle, 'uom': line.uom_id.name or '',
                   'amount': line.amount, 'rework': line.is_rework,
-                  'rework_reason': reasons.get(line.rework_reason, '') if line.is_rework else '',
+                  'rework_reason': line._rework_reason_name() if line.is_rework else '',
                   'paid_rework': getattr(line, 'rework_paid', False)}
                  for line in settlement.line_ids]
         deductions = [{'name': d.description or d.name, 'amount': -d.amount}
                       for d in settlement.deduction_ids] \
-            if 'deduction_ids' in settlement._fields else []
+            if 'deduction_ids' in settlement._fields and show_deductions else []
         amount = lambda name: settlement[name] if name in settlement._fields else 0.0
         subtotal = amount('amount_subtotal') or sum(line['amount'] for line in lines)
         tax = amount('amount_tax')
         total = invoice.amount_total if invoice else amount('amount_total')
-        guarantee = amount('amount_retention')
+        retained = amount('amount_retention')
+        # M122-01: sin la función, el fondo no se muestra; el neto es el de Odoo.
+        guarantee = retained if show_deductions else 0.0
         advance = amount('amount_advance')
         # El neto ya descuenta la amortización del adelanto y el fondo; con
         # factura, también la detracción que va al Banco de la Nación.
-        to_pay = amount('amount_to_pay') or (total - guarantee - advance)
+        to_pay = amount('amount_to_pay') or (total - retained - advance)
         payments = []
         if invoice:
             for payment in invoice.sudo()._get_reconciled_payments():
@@ -1043,6 +1210,7 @@ class ConstructionPortalService(models.AbstractModel):
             'amount_paid': (invoice.amount_total - invoice.amount_residual) if invoice else 0.0,
             'payments': payments,
             'has_invoice_pdf': bool(invoice),
+            'show_deductions': show_deductions,
         }
 
     def valuation_pdf(self, project_id, settlement_id, document):

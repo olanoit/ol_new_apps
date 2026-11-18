@@ -9,6 +9,7 @@ from odoo.exceptions import UserError, ValidationError
 from .common import EXCEED_STATES, EXEC_VALIDATOR_GROUP, PROJECT_HEAD_GROUPS
 from .construction_resource_plan import OPEN_STATES
 from odoo.addons.al_construction_planner.models.common import PROGRESS_FORCE
+from .construction_reason import LEGACY_REWORK
 
 PROGRESS_STATES = [
     ('draft', 'Reportado'),
@@ -17,7 +18,7 @@ PROGRESS_STATES = [
 ]
 # Campos que solo cambian mientras el avance está reportado.
 LOCKED_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'date', 'qty', 'attachment_ids',
-                 'is_rework', 'rework_reason'}
+                 'is_rework', 'rework_reason', 'rework_reason_id'}
 # Campos de la validación: los escribe quien valida la ejecución (o el
 # sistema, con sudo). Quien reporta tiene permiso de escritura sobre sus
 # avances y el estado solo es de lectura en la vista: escrito a mano, un avance
@@ -127,9 +128,15 @@ class ConstructionTaskProgress(models.Model):
         string='Re-trabajo', copy=False, tracking=True,
         help='Cambio, faltante o mal armado: se liquida sin bloqueo y queda separado en el '
              'análisis de control.')
+    # Paquete 1.22, M122-03: el motivo es del catálogo de la compañía. La
+    # selección anterior queda para los registros y los celulares que aún la
+    # envían: al escribirla se guarda también su motivo del catálogo.
     rework_reason = fields.Selection(
-        [('change', 'Cambio'), ('missing', 'Faltante'), ('bad_assembly', 'Mal armado')],
-        string='Motivo del re-trabajo', tracking=True, copy=False)
+        LEGACY_REWORK, string='Motivo del re-trabajo (lista anterior)', copy=False)
+    rework_reason_id = fields.Many2one(
+        'construction.portal.reason', string='Motivo del re-trabajo', tracking=True,
+        copy=False, ondelete='restrict', index='btree_not_null', check_company=True,
+        domain="[('kind', '=', 'rework'), ('company_id', 'in', (company_id, False))]")
     # Trazabilidad (v1.8, M18-11): la evaluación del supervisor queda en el
     # chatter con autor y fecha, junto a las notas, fotos y propuestas.
     supervisor_evaluation = fields.Selection(
@@ -277,13 +284,23 @@ class ConstructionTaskProgress(models.Model):
                     activity=progress.activity_id.display_name,
                     task=progress.task_id.display_name))
 
-    @api.constrains('rework_reason', 'is_rework')
+    @api.constrains('rework_reason_id', 'is_rework')
     def _check_rework_reason(self):
         for progress in self:
-            if progress.is_rework and not progress.rework_reason:
+            if progress.is_rework and not progress.rework_reason_id:
                 raise ValidationError(self.env._(
-                    'El re-trabajo %s necesita su motivo: cambio, faltante o mal armado.',
-                    progress.display_name))
+                    'El re-trabajo %s necesita su motivo.', progress.display_name))
+            if progress.rework_reason_id and progress.rework_reason_id.kind != 'rework':
+                raise ValidationError(self.env._(
+                    '%s no es un motivo de re-trabajo.', progress.rework_reason_id.name))
+
+    @api.model
+    def _construction_legacy_rework_id(self, code, company):
+        """M122-03: un avance que llega con el valor de la lista anterior
+        (otro módulo, una importación o un celular sin actualizar) toma su
+        motivo del catálogo de la compañía."""
+        return self.env['construction.portal.reason']._rework_from_legacy(
+            code, company or self.env.company).id
 
     def _construction_balance_excess(self):
         """{(línea, tramo): (reportado, límite)} de las líneas y tramos de
@@ -389,6 +406,12 @@ class ConstructionTaskProgress(models.Model):
             if vals.get('name', '/') == '/':
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'construction.task.progress') or '/'
+            if vals.get('rework_reason') and not vals.get('rework_reason_id'):
+                # sudo: solo la compañía de la línea, para elegir su catálogo.
+                line_sudo = self.env['construction.resource.plan.line'].sudo().browse(
+                    vals.get('plan_line_id') or [])
+                vals['rework_reason_id'] = self._construction_legacy_rework_id(
+                    vals['rework_reason'], line_sudo.company_id)
         if not self.env.su and any(
                 vals.get('state', 'draft') != 'draft' or vals.get('validator_id')
                 or vals.get('validation_date') for vals in vals_list):
@@ -437,6 +460,9 @@ class ConstructionTaskProgress(models.Model):
         if BALANCE_FIELDS & set(vals) and 'exceed_state' not in vals:
             # El exceso aprobado era por otra cantidad: se vuelve a revisar.
             vals = dict(vals, exceed_state='ok', exceed_qty=0.0, exceed_approver_id=False)
+        if vals.get('rework_reason') and not vals.get('rework_reason_id'):
+            vals = dict(vals, rework_reason_id=self._construction_legacy_rework_id(
+                vals['rework_reason'], self[:1].company_id))
         res = super().write(vals)
         # Lo validado es el ejecutado de la línea (estado y control).
         if {'state', 'qty', 'plan_line_id', 'settled', 'is_rework'} & set(vals):

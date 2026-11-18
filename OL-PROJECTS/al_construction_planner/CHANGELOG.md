@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 85.20261112 — 17/11/2026
+
+- Paquete 1.22: el motivo del re-trabajo es un catálogo por compañía (antes, una lista fija). Cada perfil de vertical trae sus motivos y la compañía los recibe al aplicarlo si no tiene ninguno; los registros anteriores conservan su motivo.
+
 ## 84.20261112 — 16/11/2026
 
 - Seguridad: los candados del plan aprobado y del avance validado ya no se abren con un contexto enviado por el cliente (PLAN_FORCE y PROGRESS_FORCE son objetos del servidor).

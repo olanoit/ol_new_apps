@@ -1,0 +1,52 @@
+titulo: 'Portal de obra: funciones de campo de mobiliario'
+subtitulo: La obra recibe los módulos por departamento, pide reposiciones, marca los ambientes
+  medidos y reporta el avance por sub etapa desde el celular, aunque no haya señal.
+categoria: Construcción · Proyectos
+etiquetas:
+- Portal de obra
+- Mobiliario
+- Avance por sub etapa
+- Recepción de módulos
+destacados:
+- icono: 🏢
+  titulo: Ficha del departamento
+  texto: Al abrir un departamento en «Avance», la etapa actual de cada ambiente, la misma del
+    escritorio, y las funciones de la obra con sus contadores.
+- icono: 📦
+  titulo: Recepción de módulos por departamento
+  texto: El despacho se recibe módulo por módulo, con su rótulo del ETO, tipología y lote.
+    Llegó, no llegó o llegó dañado con foto; «Llegó todo» confirma un departamento con un toque.
+- icono: 🧩
+  titulo: Avance por sub etapa
+  texto: Una fila por ambiente y una columna por sub etapa de instalación. Un envío y una foto
+    registran el saldo de cada línea del plan, con las reglas del avance de siempre.
+- icono: 🔁
+  titulo: Reposición a planta
+  texto: Ambiente, módulo, cantidad, motivo, qué pasó y foto. La reposición queda en borrador
+    y sigue su flujo de aprobación y pedido a planta.
+- icono: 📐
+  titulo: Ambiente medido
+  texto: El capataz o la oficina técnica marcan uno o varios ambientes como medidos en un solo
+    envío, con las fotos o el croquis.
+- icono: 👷
+  titulo: Avance de la contrata
+  texto: La contrata ve por departamento el driver de cada actividad y lo reportado, validado y
+    liquidado, y en «Esta semana» lo que pasa a su liquidación.
+configuracion:
+- Se instala solo cuando están el portal de obra, el puente de mobiliario del planificador y la
+  reposición a planta.
+- En el perfil de vertical (Planificación de obra › Configuración › Perfiles de vertical) se
+  enciende o apaga cada función del portal. Nacen encendidas solo en el perfil Mobiliario.
+- La obra toma las funciones de su perfil; sin perfil en la obra, las del perfil de su compañía.
+- Los motivos de la reposición son los motivos de fabricación de la compañía.
+requisitos_nota: Se instala automáticamente con `al_construction_portal`, `al_construction_planner_furniture`
+  y `al_construction_planner_mrp_request`. Licencia LGPL-3 como el portal y el planificador.
+novedades:
+- version: '1.20261117'
+  fecha: 17/11/2026
+  cambios:
+  - "Puente nuevo (paquete 1.22, etapa 2): ficha del departamento en «Avance», recepción de módulos por departamento con entrega parcial y reposición del módulo dañado, pedido de reposición a planta, marca de ambiente medido, avance por sub etapa con un solo envío y avance de la contrata con su driver y «Esta semana»; cada función se activa en el perfil de vertical y funciona sin señal."
+relacionados:
+- al_construction_portal
+- al_construction_planner_furniture
+- al_construction_planner_mrp_request

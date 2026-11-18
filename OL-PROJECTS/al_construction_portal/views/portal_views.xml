@@ -47,6 +47,73 @@
         </field>
     </record>
 
+    <!-- Paquete 1.22, M122-10: el portal de la obra desde Planificación de obra ›
+         Obras, con lo mismo que la pestaña de la ficha del proyecto. -->
+    <record id="project_project_view_form_construction_portal_staff" model="ir.ui.view">
+        <field name="name">project.project.form.construction.portal.staff</field>
+        <field name="model">project.project</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Portal de obra" create="0" delete="0" duplicate="0">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Obra"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <field name="company_id" invisible="1"/>
+                    <field name="is_construction_site" invisible="1"/>
+                    <group>
+                        <group string="Ingreso">
+                            <field name="construction_portal_password_login"/>
+                            <field name="construction_portal_qr_login"/>
+                            <field name="construction_portal_url" widget="url" invisible="not construction_portal_qr_login"/>
+                            <field name="construction_portal_qr_html" nolabel="1" colspan="2"
+                                   invisible="not construction_portal_qr_login or not construction_portal_code"/>
+                            <field name="construction_portal_code" invisible="1"/>
+                            <button name="action_construction_portal_new_code" type="object" string="Nuevo código del QR"
+                                    class="btn-secondary" invisible="not construction_portal_qr_login"
+                                    confirm="El QR del cartel actual dejará de servir. ¿Continuar?"/>
+                        </group>
+                        <group string="Requerimientos del portal">
+                            <field name="construction_portal_overhead_area_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Cliente en obra">
+                            <field name="construction_client_contact_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <field name="construction_portal_member_ids" context="{'default_project_id': id}">
+                        <list editable="bottom">
+                            <field name="user_id" options="{'no_create': True}"/>
+                            <field name="role"/>
+                            <field name="partner_id" required="role == 'contractor'" options="{'no_create': True}"/>
+                            <field name="employee_id" options="{'no_create': True}" optional="show"/>
+                            <field name="is_default_approver" invisible="role != 'resident'"/>
+                            <field name="has_pin" optional="show"/>
+                            <field name="pin_locked" optional="show"/>
+                            <button name="action_open_pin_wizard" type="object" string="PIN" icon="fa-key"/>
+                            <button name="action_unlock" type="object" string="Desbloquear" icon="fa-unlock"
+                                    invisible="not pin_locked"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="project_project_view_form_construction_board_portal" model="ir.ui.view">
+        <field name="name">project.project.form.construction.board.portal</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_board"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='board_execute']" position="inside">
+                <button name="action_construction_open_portal" type="object" class="oe_stat_button"
+                        icon="fa-mobile" groups="al_construction_planner.group_planner_user">
+                    <field name="construction_portal_member_count" widget="statinfo" string="Portal de obra"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
     <record id="construction_portal_pin_wizard_view_form" model="ir.ui.view">
         <field name="name">construction.portal.pin.wizard.form</field>
         <field name="model">construction.portal.pin.wizard</field>
@@ -256,8 +323,8 @@
                              help="El residente del portal ve el planificado, comprometido, real y saldo del plan, como el tablero de obra del escritorio.">
                         <field name="construction_portal_show_amounts"/>
                     </setting>
-                    <setting company_dependent="1" string="Partida en riesgo"
-                             help="En la semana de la obra, una partida que termina con menos avance validado que este porcentaje sale en riesgo.">
+                    <setting company_dependent="1" string="Avance en riesgo"
+                             help="En la semana de la obra, lo que termina con menos avance validado que este porcentaje sale en riesgo.">
                         <field name="construction_portal_risk_pct" class="oe_inline"/> %
                     </setting>
                 </block>
@@ -292,6 +359,8 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
+                <filter name="rework" string="Re-trabajo" domain="[('kind', '=', 'rework')]"/>
+                <separator/>
                 <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
                 <group>
                     <filter name="group_kind" string="Para" context="{'group_by': 'kind'}"/>
@@ -301,13 +370,14 @@
     </record>
 
     <record id="action_construction_portal_reason" model="ir.actions.act_window">
-        <field name="name">Motivos del residente</field>
+        <field name="name">Motivos del portal</field>
         <field name="res_model">construction.portal.reason</field>
         <field name="view_mode">list</field>
+        <field name="view_id" ref="construction_portal_reason_view_list"/>
         <field name="context">{'search_default_group_kind': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Sin motivos</p>
-            <p>El residente elige uno de estos motivos en el portal al rechazar o corregir un avance o al rechazar un requerimiento.</p>
+            <p>Quien reporta un re-trabajo elige su motivo de esta lista, y el residente elige los suyos al rechazar o corregir un avance o al rechazar un requerimiento.</p>
         </field>
     </record>
 
@@ -339,7 +409,7 @@
     <menuitem id="menu_construction_portal_notice_rules" name="Avisos al celular"
               parent="al_construction_planner.menu_planner_config_plan" sequence="92"
               action="action_construction_portal_notice_rule" groups="al_construction_planner.group_planner_manager"/>
-    <menuitem id="menu_construction_portal_reasons" name="Motivos del residente"
+    <menuitem id="menu_construction_portal_reasons" name="Motivos del portal"
               parent="al_construction_planner.menu_planner_config_plan" sequence="91"
               action="action_construction_portal_reason" groups="al_construction_planner.group_planner_manager"/>
     <menuitem id="menu_construction_portal_kits" name="Kits del portal"

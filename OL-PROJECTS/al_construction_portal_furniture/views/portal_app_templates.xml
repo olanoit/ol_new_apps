@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Las pantallas de mobiliario se suman a la aplicación del portal por
+         «window.ObraPortal»: cargan después de app.js. -->
+    <template id="portal_app_furniture" inherit_id="al_construction_portal.portal_app"
+              name="Portal de obra: mobiliario">
+        <xpath expr="//link[@rel='stylesheet']" position="after">
+            <link rel="stylesheet" href="/al_construction_portal_furniture/static/app/furniture.css"/>
+        </xpath>
+        <xpath expr="//body/script" position="after">
+            <script src="/al_construction_portal_furniture/static/app/furniture.js"/>
+        </xpath>
+    </template>
+</odoo>

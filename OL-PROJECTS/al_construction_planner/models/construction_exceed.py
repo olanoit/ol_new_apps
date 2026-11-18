@@ -223,7 +223,12 @@ class ConstructionExceedLog(models.Model):
     uom_id = fields.Many2one('uom.uom', string='Unidad')
     amount = fields.Monetary(string='Monto', currency_field='currency_id')
     reason = fields.Text(string='Motivo')
-    rework_reason = fields.Selection(REWORK_REASONS, string='Motivo del re-trabajo')
+    rework_reason = fields.Selection(REWORK_REASONS, string='Motivo del re-trabajo (lista '
+                                     'anterior)')
+    # Paquete 1.22, M122-03: el motivo del catálogo de la compañía.
+    rework_reason_id = fields.Many2one(
+        'construction.portal.reason', string='Motivo del re-trabajo', ondelete='restrict',
+        index='btree_not_null')
     user_id = fields.Many2one('res.users', string='Autorizado por', required=True,
                               default=lambda self: self.env.user)
     date = fields.Datetime(string='Fecha', required=True, default=fields.Datetime.now)

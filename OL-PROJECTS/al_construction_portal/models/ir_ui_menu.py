@@ -10,6 +10,16 @@ class IrUiMenu(models.Model):
     _inherit = 'ir.ui.menu'
 
     @api.model
+    def _load_menus_blacklist(self):
+        """M122-03: los motivos de re-trabajo se administran en «Motivos del
+        portal», con los demás; la opción del núcleo no se repite."""
+        res = super()._load_menus_blacklist()
+        menu = self.env.ref(P + 'menu_planner_rework_reasons', raise_if_not_found=False)
+        if menu:
+            res.append(menu.id)
+        return res
+
+    @api.model
     def _construction_feature_menus(self):
         """Paquete 1.20, M120-07: el parte diario y el tareo del residente."""
         p = 'al_construction_portal.'

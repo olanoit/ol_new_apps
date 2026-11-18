@@ -54,7 +54,9 @@ class ConstructionPortalService(models.AbstractModel):
             return data
         company = project.company_id or self.env.company
         today = fields.Date.context_today(self)
-        progress = self._resident_progress_rows(project)
+        # M122-01: sin «Avance» en el perfil de la obra, no hay bandeja de avances.
+        progress = self._resident_progress_rows(project) \
+            if 'progress' in data.get('features', ['progress']) else []
         requests = self._resident_request_rows(project)
         daily = self._resident_daily_count(project, today)
         data['resident'] = {
@@ -158,7 +160,6 @@ class ConstructionPortalService(models.AbstractModel):
         closed = self._closed_weeks(project, progresses)
         last_photos = self._last_validated_photos(progresses.plan_line_id)
         reported = self._reported_qty_map(progresses.plan_line_id)
-        reasons = dict(progresses._fields['rework_reason']._description_selection(self.env))
         periods = {}
         rows = []
         for progress in progresses:
@@ -182,7 +183,7 @@ class ConstructionPortalService(models.AbstractModel):
                 'cutoff': fields.Date.to_string(periods[progress.date])
                 if progress.partner_id else '',
                 'is_rework': progress.is_rework,
-                'rework_reason': reasons.get(progress.rework_reason, '')
+                'rework_reason': progress.rework_reason_id.name or ''
                 if progress.is_rework else '',
                 'distance_m': round(progress.distance_m or 0.0),
                 'has_gps': bool(progress.latitude or progress.longitude),
@@ -225,6 +226,7 @@ class ConstructionPortalService(models.AbstractModel):
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
         project, _members = self._resident_project(values.get('project_id'))
+        self._portal_require(project, 'progress')
         action = values.get('action')
         if action not in ('validate', 'reject', 'rework'):
             raise UserError(self.env._('Acción desconocida.'))
@@ -267,16 +269,14 @@ class ConstructionPortalService(models.AbstractModel):
                 '%s%s' % (reason.name, (' — %s' % comment) if comment else ''))
             text = self.env._('Rechazado por el residente desde el portal: %s', reason.name)
         else:
-            code = values.get('rework_reason')
-            codes = dict(progresses._fields['rework_reason']._description_selection(self.env))
-            if code not in codes:
-                raise UserError(self.env._('Elija el motivo del re-trabajo.'))
+            # M122-03: el motivo del catálogo de la compañía de la obra.
+            rework = self._rework_reason(values, project.company_id or self.env.company)
             # La regla de re-trabajo vigente: entra con 0 a liquidar salvo que
             # se marque pagado en la valorización.
-            progresses.write({'is_rework': True, 'rework_reason': code})
+            progresses.write({'is_rework': True, 'rework_reason_id': rework.id})
             progresses.action_validate()
             text = self.env._('Validado como re-trabajo (%s) por el residente desde el portal.',
-                              codes[code])
+                              rework.name)
         for progress in progresses:
             # Quien reportó recibe el aviso (CR-49, punto 8), en el celular si
             # su papel lo recibe (CR-57); si no, queda en el historial.

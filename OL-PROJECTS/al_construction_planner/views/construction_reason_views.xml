@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Motivos de re-trabajo de la compañía (paquete 1.22, M122-03). Con el
+         portal de obra instalado se administran en «Motivos del portal». -->
+    <record id="construction_rework_reason_view_list" model="ir.ui.view">
+        <field name="name">construction.portal.reason.list.rework</field>
+        <field name="model">construction.portal.reason</field>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="kind" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_rework_reason" model="ir.actions.act_window">
+        <field name="name">Motivos de re-trabajo</field>
+        <field name="res_model">construction.portal.reason</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="construction_rework_reason_view_list"/>
+        <field name="domain">[('kind', '=', 'rework')]</field>
+        <field name="context">{'default_kind': 'rework', 'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin motivos de re-trabajo</p>
+            <p>Quien reporta un re-trabajo elige uno de estos motivos. El perfil de vertical trae una lista inicial y cada compañía la cambia.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_planner_rework_reasons" name="Motivos de re-trabajo"
+              parent="menu_planner_config_plan" sequence="93"
+              action="action_construction_rework_reason" groups="group_planner_manager"/>
+</odoo>

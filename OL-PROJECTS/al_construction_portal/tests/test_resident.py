@@ -126,8 +126,9 @@ class TestResident(ResidentCommon):
         service.resident_progress({
             'uuid': 'p6-rw-1', 'project_id': self.project.id, 'action': 'rework',
             'items': [{'id': third.id, 'seen_qty': 5.0}], 'rework_reason': 'bad_assembly'})
-        self.assertEqual((third.state, third.is_rework, third.rework_reason),
-                         ('validated', True, 'bad_assembly'))
+        # M122-03: el valor de la lista anterior toma su motivo del catálogo.
+        self.assertEqual((third.state, third.is_rework, third.rework_reason_id.name),
+                         ('validated', True, 'Mal armado'))
         # Envío repetido: no se aplica dos veces.
         again = service.resident_progress({
             'uuid': 'p6-val-1', 'project_id': self.project.id, 'action': 'validate',

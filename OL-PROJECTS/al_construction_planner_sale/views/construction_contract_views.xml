@@ -220,6 +220,7 @@
                 <field name="contract_id" optional="hide"/>
                 <field name="task_id" readonly="1"/>
                 <field name="typology_id" readonly="1"/>
+                <field name="sale_line_id" readonly="1" optional="show"/>
                 <field name="template_line_id" readonly="1"/>
                 <field name="trigger"/>
                 <field name="pct"/>

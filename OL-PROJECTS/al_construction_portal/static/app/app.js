@@ -75,6 +75,13 @@
             return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
         });
     const role = (name) => state.data && state.data.roles.includes(name);
+    // Paquete 1.22, M122-01: funciones del perfil de la obra. Los datos
+    // guardados antes del paquete no las traen: se ve todo, como entonces.
+    const feature = (name) => !state.data || !state.data.features || state.data.features.includes(name);
+    // M122-02: nombres de los niveles de la plantilla de la obra.
+    const levelName = (key, fallback) => ((state.data && state.data.levels) || {})[key] || fallback;
+    const itemLabel = () => levelName("space", "Partida");
+    const itemTerm = () => itemLabel().charAt(0).toLowerCase() + itemLabel().slice(1);
     // Empresa del sitio (antes de ingresar viene en la página).
     // Sin la forma societaria: «Personal propio Constructora Andina».
     const shortName = (name) => String(name || "").replace(/[\s,]+(S\.?\s?A\.?\s?C?\.?|S\.?\s?A\.?\s?A\.?|E\.?\s?I\.?\s?R\.?\s?L\.?|S\.?\s?R\.?\s?L\.?)$/i, "");
@@ -275,7 +282,7 @@
                     item.result = result;
                     item.sent = new Date().toISOString();
                     await queuePut(item);
-                    stockChanged = stockChanged || item.kind === "reception" || item.kind === "return";
+                    stockChanged = stockChanged || item.kind === "reception" || item.kind === "return" || portal.afterFlush.some((fn) => fn(item));
                 } catch (error) {
                     if (error.status === 401) {
                         break;
@@ -441,10 +448,10 @@
               ]
             : [
                   ["home", "home", "Inicio"],
-                  ["partidas", "chart", "Avance"],
+                  feature("progress") && ["partidas", "chart", "Avance"],
                   ["catalog", "cart", "Pedidos"],
                   ["queue", "sync", "Por enviar"],
-              ];
+              ].filter(Boolean);
         const pending = state.queue.filter((q) => q.status !== "done").length;
         const inbox = isResident() ? inboxTotal() : 0;
         return `<nav class="nav" aria-label="Navegación principal">${items
@@ -493,6 +500,26 @@
     // Pantallas
     // ------------------------------------------------------------------
     const screens = {};
+    // Paquete 1.22, M122-01: lo que un puente del portal amplía sin tocar
+    // esta aplicación. Los mosaicos del inicio, las pantallas, las acciones,
+    // los botones de un grupo de «Avance» y la cabecera de «Avance» se
+    // registran aquí; cada uno decide si se muestra con «feature» y «role».
+    const portal = {
+        tiles: [
+            { route: "partidas", icon: "chart", label: "Avance", show: () => feature("progress") },
+            { route: "daily", icon: "report", label: "Parte diario", show: () => feature("daily_report") && (role("foreman") || role("office") || role("contractor")) },
+            { route: "crew", icon: "crew", label: "Cuadrilla y tareo", show: () => feature("daily_report") && role("foreman") },
+            { route: "catalog", icon: "cart", label: "Requerimientos", show: () => role("foreman") || role("office") },
+            { route: "reception", icon: "truck", label: "Recepción", show: () => role("foreman") || role("office") },
+            { route: "return", icon: "undo", label: "Devolución", show: () => role("foreman") || role("office") },
+        ],
+        // Pantalla → función del perfil que la gobierna.
+        routeFeature: { partidas: "progress", progress: "progress", daily: "daily_report", crew: "daily_report", parts: "daily_report", deduction: "deductions" },
+        groupActions: [], // (grupo) => HTML bajo la cabecera de un grupo abierto
+        progressHead: [], // (datos) => HTML sobre la lista de «Avance»
+        clicks: [], // (dataset, elemento) => true si atendió el toque
+        afterFlush: [], // (registro enviado) => true si hay que refrescar la obra
+    };
 
     // 1. Ingreso con usuario y clave.
     screens.login = () => `
@@ -562,21 +589,9 @@
         }
         const data = state.data;
         const projects = state.me.projects;
-        const tiles = [];
-        if (data) {
-            tiles.push(["partidas", "chart", "Avance"]);
-            if (role("foreman") || role("office") || role("contractor")) {
-                tiles.push(["daily", "report", "Parte diario"]);
-            }
-            if (role("foreman")) {
-                tiles.push(["crew", "crew", "Cuadrilla y tareo"]);
-            }
-            if (role("foreman") || role("office")) {
-                tiles.push(["catalog", "cart", "Requerimientos"]);
-                tiles.push(["reception", "truck", "Recepción"]);
-                tiles.push(["return", "undo", "Devolución"]);
-            }
-        }
+        // M122-01: los mosaicos de las funciones activas de la obra y del
+        // papel de la persona; cada puente suma los suyos a «portal.tiles».
+        const tiles = data ? portal.tiles.filter((t) => !t.show || t.show()).map((t) => [t.route, t.icon, t.label]) : [];
         const c = (data && data.counters) || {};
         const counter = (n, one, many, accent) =>
             `<div class="card stat"><b class="${accent && n ? "accent" : ""}">${n || 0}</b><small>${n === 1 ? one : many}</small></div>`;
@@ -602,7 +617,7 @@
                 ${data && isResident() ? myDay(data, c) : ""}
                 ${
                     data && !isResident()
-                        ? `<div class="stats">${counter(c.progress_to_validate, "avance por validar", "avances por validar")}
+                        ? `<div class="stats">${feature("progress") ? counter(c.progress_to_validate, "avance por validar", "avances por validar") : ""}
                            ${counter(c.requests_to_approve, "pedido en aprobación", "pedidos en aprobación")}
                            ${counter(c.deliveries_today, "entrega por recibir hoy", "entregas por recibir hoy", true)}</div>`
                         : ""
@@ -614,7 +629,7 @@
                                .join("")}</div>
                            ${
                                role("contractor")
-                                   ? `<button class="card row-link" data-go="valuations"><span class="teal">${svg("doc", 26)}</span><span><b>Valorizaciones y pagos</b><small>Su orden, fondo de garantía y deductivos</small></span>${svg("next", 20)}</button>`
+                                   ? `<button class="card row-link" data-go="valuations"><span class="teal">${svg("doc", 26)}</span><span><b>Valorizaciones y pagos</b><small>${feature("deductions") ? "Su orden, fondo de garantía y deductivos" : "Su orden y sus pagos"}</small></span>${svg("next", 20)}</button>`
                                    : ""
                            }
                            <p class="hint">Datos de la obra del ${esc((data.synced_at || "").replace("T", " ").slice(0, 16))}.
@@ -742,13 +757,13 @@
                     item.kind === "urgent" ? `data-go="inbox" data-tab-go="requests" data-id="${item.id}"`
                     : item.kind === "cutoff" ? `data-go="inbox" data-tab-go="progress"`
                     : item.kind === "delivery" ? `data-go="reception" data-id="${item.id}"`
-                    : `data-go="partidas"`;
+                    : feature("progress") ? `data-go="partidas"` : `data-go="home"`;
                 return `<button class="agenda-row" ${target}><span class="${cls}">${svg(ic, 22)}</span><span class="grow"><b>${esc(item.title)}</b><small>${esc(item.kind === "cutoff" ? item.sub.replace(/(\d{4}-\d{2}-\d{2})/, (d) => dayMonth(d)) : item.sub)}</small></span>${svg("next", 18)}</button>`;
             })
             .join("");
-        return `<div class="stats">${stat(c.inbox_progress, "por validar", "por validar", "inbox", "progress", true)}
+        return `<div class="stats">${feature("progress") ? stat(c.inbox_progress, "por validar", "por validar", "inbox", "progress", true) : ""}
             ${stat(c.inbox_requests, "por aprobar", "por aprobar", "inbox", "requests", true)}
-            ${stat(c.daily_to_review, "parte por revisar", "partes por revisar", "parts", null, true)}</div>
+            ${feature("daily_report") ? stat(c.daily_to_review, "parte por revisar", "partes por revisar", "parts", null, true) : ""}</div>
             ${quickActions()}
             <h2>Hoy</h2>
             <div class="card list">${agenda || '<small class="muted">Nada urgente para hoy.</small>'}</div>`;
@@ -805,7 +820,7 @@
                 d.mode === "reject"
                     ? `<label>Motivo del rechazo<select data-bind="val${row.id}.reason">${options(reasons.progress_reject, d.reason)}</select></label>`
                     : d.mode === "rework"
-                    ? `<label>Motivo del re-trabajo<select data-bind="val${row.id}.rework">${`<option value="">Elija el motivo</option>` + (state.data.rework_reasons || []).map(([code, label]) => `<option value="${code}" ${d.rework === code ? "selected" : ""}>${esc(label)}</option>`).join("")}</select></label>
+                    ? `<label>Motivo del re-trabajo<select data-bind="val${row.id}.rework">${`<option value="">Elija el motivo</option>` + (state.data.rework_reasons || []).map(([code, label]) => `<option value="${code}" ${String(d.rework) === String(code) ? "selected" : ""}>${esc(label)}</option>`).join("")}</select></label>
                        <small>El re-trabajo se valida con 0 a liquidar, como en el escritorio.</small>`
                     : ""
             }
@@ -824,7 +839,7 @@
     }
 
     function requestCard(row, selected) {
-        const kinds = { partida: "De partida", epp: "EPP", office: "Útiles y aseo", text: "Fuera de catálogo", internal: "Interno" };
+        const kinds = { partida: "Del plan", epp: "EPP", office: "Útiles y aseo", text: "Fuera de catálogo", internal: "Interno" };
         return `<button class="card inbox-card plain ${selected ? "on" : ""}" data-go="inbox" data-tab-go="requests" data-id="${row.id}">
             <div class="row between"><b>${esc(row.name)}</b>${row.urgent ? pill("Urgente", "bad") : ""}</div>
             <small>${esc(join(kinds[row.kind] || row.type_label, "pidió " + row.requested_by))}</small>
@@ -881,9 +896,9 @@
     // Bandejas (CR-49 y CR-50): lista y, en la tablet, el detalle al lado (U6).
     screens.inbox = () => {
         const r = (state.data && state.data.resident) || { progress: [], requests: [] };
-        const tab = state.params.tab || (r.progress.length || !r.requests.length ? "progress" : "requests");
+        const tab = !feature("progress") ? "requests" : state.params.tab || (r.progress.length || !r.requests.length ? "progress" : "requests");
         const id = Number(state.params.id) || 0;
-        const tabs = [["progress", `Por validar (${r.progress.length})`], ["requests", `Por aprobar (${r.requests.length})`]];
+        const tabs = [feature("progress") && ["progress", `Por validar (${r.progress.length})`], ["requests", `Por aprobar (${r.requests.length})`]].filter(Boolean);
         let list = "";
         let detail = "";
         if (tab === "progress") {
@@ -893,7 +908,7 @@
             if (order === "warn") rows = rows.filter((x) => (x.warnings || []).length);
             const picked = state.draft.picked || [];
             const chip = (key, label) => `<button class="chip ${order === key ? "on" : ""}" data-order="${key}" aria-pressed="${order === key}">${label}</button>`;
-            list = `<div class="chips">${chip("cutoff", "Por corte")}${chip("item", "Por partida")}${chip("warn", "Con aviso")}</div>
+            list = `<div class="chips">${chip("cutoff", "Por corte")}${chip("item", "Por " + itemTerm())}${chip("warn", "Con aviso")}</div>
                 ${rows.map((row) => progressCard(row, row.id === id, picked.includes(row.id))).join("") || '<p class="muted">No hay avances por validar.</p>'}
                 ${picked.length ? `<button class="primary" data-action="resident-batch">Validar seleccionados (${picked.length})</button>` : ""}`;
             const row = r.progress.find((x) => x.id === id);
@@ -946,12 +961,12 @@
     function taskPicker(key, selected) {
         const q = (state.params.tq || "").toLowerCase();
         const rows = taskOptions().filter((p) => selected.includes(p.task_id) || matches(q, taskName(p), taskCode(p), p.parent_label));
-        return `<label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar partida" value="${esc(state.params.tq || "")}" data-input="tq" aria-label="Buscar partida"></label>
+        return `<label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar" value="${esc(state.params.tq || "")}" data-input="tq" aria-label="Buscar"></label>
             <div class="card list pick-list">${rows
                 .slice(0, 40)
                 .map((p) => `<label class="pick"><input type="checkbox" data-taskpick="${key}:${p.task_id}" ${selected.includes(p.task_id) ? "checked" : ""}>
                     <span class="grow"><b>${esc(taskName(p))}${taskCode(p) ? ` · ${esc(taskCode(p))}` : ""}</b><small>${esc(p.parent_label || "")}</small></span></label>`)
-                .join("") || '<small class="muted">Sin partidas.</small>'}</div>`;
+                .join("") || '<small class="muted">Sin resultados.</small>'}</div>`;
     }
     function signatureCard(key, title) {
         const d = state.draft[key];
@@ -1023,10 +1038,10 @@
                     <button class="${d.kind === "deductive" ? "on" : ""}" data-set="change.kind=deductive" aria-pressed="${d.kind === "deductive"}">Deductivo</button></div>
                     <label>Qué pide el cliente<textarea rows="3" data-bind="change.description" placeholder="Puede dictarlo con el micrófono del teclado">${esc(d.description)}</textarea></label>
                 </div>
-                <h2>Partidas afectadas</h2>
+                <h2>Dónde afecta</h2>
                 ${taskPicker("change", d.task_ids)}
                 <div class="card form">
-                    <label>O partida nueva<input data-bind="change.new_item" value="${esc(d.new_item)}" placeholder="Lo que no está en el presupuesto"></label>
+                    <label>O trabajo nuevo<input data-bind="change.new_item" value="${esc(d.new_item)}" placeholder="Lo que no está en el presupuesto"></label>
                     <label>Metrado estimado<input data-bind="change.qty_estimate" value="${esc(d.qty_estimate)}" placeholder="Ej.: 12 m²"></label>
                 </div>
                 ${photosCard("change", d, true)}
@@ -1056,7 +1071,7 @@
                     <label>Contrata y orden<select data-bind="deduction.order" data-rerender="1"><option value="">Elija la orden</option>${orders
                         .map((o) => `<option value="${o.id}" ${String(o.id) === String(d.order) ? "selected" : ""}>${esc(o.partner)} · ${esc(o.name)}</option>`)
                         .join("")}</select></label>
-                    ${order ? `<label>Partida<select data-bind="deduction.line" data-rerender="1"><option value="">Sin partida</option>${order.lines
+                    ${order ? `<label>${esc(itemLabel())}<select data-bind="deduction.line" data-rerender="1"><option value="">Sin elegir</option>${order.lines
                         .map((l) => `<option value="${l.id}" ${String(l.id) === String(d.line) ? "selected" : ""}>${esc(join(l.task_name, l.task_code))}</option>`)
                         .join("")}</select></label>` : ""}
                     <label>Motivo<select data-bind="deduction.type"><option value="">Elija el motivo</option>${(r.deduction_types || [])
@@ -1113,9 +1128,9 @@
                     <label>Fecha<input type="date" data-bind="expense.date" value="${esc(d.date)}" max="${today()}"></label>
                     <label>Monto total<input type="number" inputmode="decimal" step="0.01" min="0" data-bind="expense.amount" value="${esc(d.amount)}"></label>
                     <label>Qué se compró<input data-bind="expense.description" value="${esc(d.description)}" placeholder="Opcional"></label>
-                    <label class="check"><input type="checkbox" data-bind="expense.general" data-rerender="1" ${d.general ? "checked" : ""}> Gastos generales de la obra (sin partida)</label>
+                    <label class="check"><input type="checkbox" data-bind="expense.general" data-rerender="1" ${d.general ? "checked" : ""}> Gastos generales de la obra </label>
                 </div>
-                ${d.general ? "" : `<h2>Partida</h2>${taskPicker("expense", d.task_ids)}`}
+                ${d.general ? "" : `<h2>${esc(itemLabel())}</h2>${taskPicker("expense", d.task_ids)}`}
                 ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
                 <button class="primary" data-action="save-expense">Registrar el comprobante</button>
                 <h2>Mis comprobantes</h2>
@@ -1140,7 +1155,7 @@
             <main class="page">
                 <div class="toggle"><button class="${d.kind === "crew" ? "on" : ""}" data-set="crewreq.kind=crew">Cuadrilla adicional</button>
                 <button class="${d.kind === "contract" ? "on" : ""}" data-set="crewreq.kind=contract">Contrata</button></div>
-                <h2>Partidas</h2>
+                <h2>Dónde se necesita</h2>
                 ${taskPicker("crewreq", d.task_ids)}
                 <div class="card form">
                     <label>Se necesita el<input type="date" data-bind="crewreq.date_needed" value="${esc(d.date_needed)}" min="${today()}"></label>
@@ -1152,7 +1167,7 @@
                     }
                     <label>Comentario<textarea rows="2" data-bind="crewreq.comment">${esc(d.comment)}</textarea></label>
                 </div>
-                <p class="hint">Le llega al planificador de la obra como actividad en la partida; la asignación la hace en Odoo.</p>
+                <p class="hint">Le llega al planificador de la obra como actividad en su nivel del plan; la asignación la hace en Odoo.</p>
                 ${sendingNote()}${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
                 <button class="primary" data-action="save-crewreq">Enviar la solicitud</button>
                 ${mine.length ? `<h2>Mis solicitudes</h2><div class="card list">${mine
@@ -1225,7 +1240,7 @@
         const zoom = state.params.zoom || "week";
         const perDay = zoom === "week" ? 22 : 6;
         const rows = site.tasks.filter((t) => t.start && t.end);
-        if (!rows.length) return '<p class="muted">Las partidas no tienen fechas en el plan.</p>';
+        if (!rows.length) return '<p class="muted">El plan no tiene fechas.</p>';
         const day0 = asDate(site.start || rows[0].start);
         const days = (iso) => Math.round((asDate(iso) - day0) / 86400000);
         // Hasta hoy aunque el plan haya terminado antes (la línea de hoy a la vista).
@@ -1288,7 +1303,7 @@
                     <span class="right"><small class="eyebrow">Programado a hoy</small><b class="hero-num muted-num">${pct(s.programmed)}</b></span></div>
                     ${pairBar(s.real, s.programmed)}
                     <small class="${behind > 0.05 ? "warn strong" : ""}">${behind > 0.005 ? `${Math.round(100 * behind)} puntos por debajo de lo programado` : behind < -0.005 ? `${Math.round(-100 * behind)} puntos por encima de lo programado` : "Al día con lo programado"}</small></div>
-                <div class="stats four">${stat(s.late, "partidas atrasadas", s.late ? "bad" : "")}${stat(s.to_validate, "avances por validar")}${stat(s.open_requests, "pedidos abiertos")}${stat(s.staff_today, "personas hoy")}</div>
+                <div class="stats four">${stat(s.late, "atrasadas", s.late ? "bad" : "")}${stat(s.to_validate, "avances por validar")}${stat(s.open_requests, "pedidos abiertos")}${stat(s.staff_today, "personas hoy")}</div>
                 ${s.amounts ? `<div class="card"><small class="eyebrow">Montos del plan</small>
                     <div class="kv"><span>Planificado</span><b>${money(s.amounts.planned)}</b></div><div class="kv"><span>Comprometido</span><b>${money(s.amounts.committed)}</b></div>
                     <div class="kv"><span>Real</span><b>${money(s.amounts.actual)}</b></div><div class="kv"><span>Saldo del plan</span><b>${money(s.amounts.remaining)}</b></div></div>` : ""}
@@ -1308,7 +1323,7 @@
             const rows = site.tasks.filter((t) => filter === "all" || (filter === "crew" ? t.own_staff : filter === "contract" ? t.partners.length : t.late));
             const chip = (key, label) => `<button class="chip ${filter === key ? "on" : ""}" data-tfilter="${key}" aria-pressed="${filter === key}">${label}</button>`;
             body = `<div class="chips">${chip("all", "Todas")}${chip("crew", "Personal propio")}${chip("contract", "Por contrata")}${chip("late", "Atrasadas")}</div>
-                <p class="hint">Las columnas las calcula Odoo con las fechas del plan y el avance validado. Toque una partida para registrar su avance.</p>
+                <p class="hint">Las columnas las calcula Odoo con las fechas del plan y el avance validado. Toque una fila para registrar su avance.</p>
                 <div class="kanban">${COLUMNS.map(([key, label]) => {
                     const items = rows.filter((t) => t.column === key);
                     return `<section class="kanban-col"><h3>${label} <span class="muted">${items.length}</span></h3>${items.slice(0, 60).map((t) => siteTaskCard(t, true)).join("") || '<small class="muted">—</small>'}${items.length > 60 ? `<small class="muted">y ${items.length - 60} más</small>` : ""}</section>`;
@@ -1319,42 +1334,140 @@
         return `${head}<main class="page ${view === "tasks" || view === "gantt" ? "wide" : ""}">${body}</main>${nav("site")}`;
     };
 
-    // 4. Mis partidas.
+    // 4. Avance, agrupado por los niveles de la obra (paquete 1.22, M122-04).
     function partidaState(p) {
         if (p.pending > 0) return [`${qtyText(p.pending)} ${p.uom} por validar`, "warn"];
         if (!p.validated) return ["Sin avance", "muted"];
         if (p.last_validated) return [`Validado al ${dayMonth(p.last_validated)}`, "ok"];
         return [`Saldo ${qtyText(p.balance)} ${p.uom}`, "muted"];
     }
+    const lineDone = (p) => (p.validated || 0) + (p.pending || 0);
+    const lineKind = (p) => (lineDone(p) <= 1e-6 ? "none" : lineDone(p) >= p.planned - 1e-6 ? "done" : "part");
+    const byName = (a, b) => String(a).localeCompare(String(b), "es", { numeric: true });
+    // Grupos abiertos: el celular los recuerda por obra.
+    function openGroups() {
+        if (!state.open || state.openProject !== state.projectId) {
+            let saved = [];
+            try {
+                saved = JSON.parse(localStorage.getItem("obra-open-" + state.projectId) || "[]");
+            } catch {
+                saved = [];
+            }
+            state.open = new Set(saved);
+            state.openProject = state.projectId;
+        }
+        return state.open;
+    }
+    function toggleGroup(id) {
+        const open = openGroups();
+        if (open.has(id)) open.delete(id);
+        else open.add(id);
+        try {
+            localStorage.setItem("obra-open-" + state.projectId, JSON.stringify([...open]));
+        } catch {
+            // Navegación privada: se recuerda mientras la página esté abierta.
+        }
+    }
+    // Árbol de grupos con sus contadores a partir de las líneas (sin señal).
+    function groupTree(rows) {
+        const groups = (state.data && state.data.groups) || {};
+        const nodes = new Map();
+        const roots = [];
+        const loose = [];
+        const node = (id) => {
+            if (!nodes.has(id)) {
+                const g = groups[id];
+                const n = { id: Number(id), g, children: [], lines: [], total: 0, none: 0, part: 0, done: 0, sum: 0 };
+                nodes.set(id, n);
+                if (g.parent && groups[g.parent]) node(g.parent).children.push(n);
+                else roots.push(n);
+            }
+            return nodes.get(id);
+        };
+        rows.forEach((p) => {
+            if (!p.group_id || !groups[p.group_id]) {
+                loose.push(p);
+                return;
+            }
+            node(p.group_id).lines.push(p);
+            const kind = lineKind(p);
+            const share = p.planned ? Math.min(1, lineDone(p) / p.planned) : 0;
+            for (let id = p.group_id; id && groups[id]; id = groups[id].parent) {
+                const n = node(id);
+                n.total += 1;
+                n[kind] += 1;
+                n.sum += share;
+            }
+        });
+        const order = (a, b) => (a.g.sequence || 0) - (b.g.sequence || 0) || byName(a.g.name, b.g.name);
+        nodes.forEach((n) => n.children.sort(order));
+        roots.sort(order);
+        return { roots, loose, nodes };
+    }
+    // Dentro del grupo final: por ambiente y por sub etapa.
+    const lineOrder = (a, b) =>
+        byName(a.space || taskName(a), b.space || taskName(b)) || (a.stage_order || 0) - (b.stage_order || 0) || byName(taskName(a), taskName(b)) || a.id - b.id;
+    function lineCard(p) {
+        const done = lineDone(p);
+        const pct = p.planned ? Math.min(100, (100 * done) / p.planned) : 0;
+        const [stateText, cls] = partidaState(p);
+        const code = taskCode(p);
+        // La tarjeta dice el nivel de su tarea con el nombre de la plantilla de la obra (M122-02).
+        const eyebrow = join(p.level_name, code || taskName(p));
+        const title = code ? taskName(p) : p.role_label || p.activity || taskName(p);
+        const sub = join(p.space && p.space !== taskName(p) ? p.space : "", p.stage_label, code ? p.role_label : "");
+        return `<button class="card partida" data-go="progress" data-id="${p.id}">
+            ${eyebrow ? `<small class="eyebrow">${esc(eyebrow)}</small>` : ""}
+            <div class="row top"><b class="grow clamp2">${esc(title)}</b>${svg("next", 18)}</div>
+            ${sub ? `<small class="muted">${esc(sub)}</small>` : ""}
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+            <div class="row between"><small>${qtyText(done)} de ${qtyText(p.planned)} ${esc(p.uom)}</small>
+            <small class="strong ${cls}">${esc(stateText)}</small></div>
+        </button>`;
+    }
+    function groupCard(n, depth, allOpen) {
+        const open = allOpen || openGroups().has(n.id);
+        const pct = n.total ? Math.round((100 * n.sum) / n.total) : 0;
+        const head = `<button class="card group" data-group="${n.id}" aria-expanded="${open}">
+            <div class="row between"><b class="grow clamp2">${open ? "▾" : "▸"} ${esc(n.g.name)}</b><b>${pct} %</b></div>
+            <small class="muted">${esc(join(`${n.total} ${n.total === 1 ? "tarjeta" : "tarjetas"}`, `${n.none} sin avance`, `${n.part} con avance`, `${n.done} ${n.done === 1 ? "terminada" : "terminadas"}`))}</small>
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></button>`;
+        if (!open) return head;
+        // Solo se dibuja lo abierto; cada puente suma las acciones de su grupo.
+        return `${head}<div class="group-body">${portal.groupActions.map((fn) => fn(n) || "").join("")}${n.children
+            .map((c) => groupCard(c, depth + 1, allOpen))
+            .join("")}${n.lines.slice().sort(lineOrder).map(lineCard).join("")}</div>`;
+    }
     screens.partidas = () => {
         const data = state.data || { partidas: [] };
         const filter = state.params.filter || "all";
         const q = (state.params.q || "").toLowerCase();
+        const groups = data.groups || {};
+        const groupNames = (p) => {
+            const names = [];
+            for (let id = p.group_id; id && groups[id]; id = groups[id].parent) names.push(groups[id].name);
+            return names.join(" ");
+        };
+        const pass = {
+            all: () => true,
+            pending: (p) => p.pending > 0,
+            balance: (p) => p.balance > 1e-6,
+            late: (p) => p.late && p.balance > 1e-6,
+        };
         const rows = data.partidas.filter(
-            (p) =>
-                (filter === "all" || (filter === "pending" ? p.pending > 0 : p.balance > 0)) &&
-                matches(q, taskCode(p), taskName(p), p.parent_label, p.activity)
+            (p) => (pass[filter] || pass.all)(p) && matches(q, taskCode(p), taskName(p), p.parent_label, p.activity, p.space, p.stage_label, groupNames(p))
         );
         const chip = (key, label) =>
             `<button class="chip ${filter === key ? "on" : ""}" data-filter="${key}" aria-pressed="${filter === key}">${label}</button>`;
+        const tree = groupTree(rows);
+        // Con la búsqueda escrita, solo los grupos con resultados, abiertos.
+        const body = tree.roots.map((n) => groupCard(n, 0, !!q)).join("") + tree.loose.slice().sort(lineOrder).map(lineCard).join("");
         return `${header("Avance", join(projectParts().code, scopeText()), "home")}
             <main class="page">
-                <label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar partida o ítem" value="${esc(state.params.q || "")}" data-input="q" aria-label="Buscar partida"></label>
-                <div class="chips">${chip("all", "Todas")}${chip("pending", "Por validar")}${chip("balance", "Con saldo")}</div>
-                ${rows
-                    .map((p) => {
-                        const done = p.validated + p.pending;
-                        const pct = p.planned ? Math.min(100, (100 * done) / p.planned) : 0;
-                        const [stateText, cls] = partidaState(p);
-                        return `<button class="card partida" data-go="progress" data-id="${p.id}">
-                            <div class="row top">${taskCode(p) ? `<span class="tag">${esc(taskCode(p))}</span>` : ""}<b class="grow clamp2">${esc(taskName(p))}</b>${svg("next", 18)}</div>
-                            ${taskSub(p) ? `<small class="muted">${esc(taskSub(p))}</small>` : ""}
-                            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
-                            <div class="row between"><small>${qtyText(done)} de ${qtyText(p.planned)} ${esc(p.uom)}</small>
-                            <small class="strong ${cls}">${esc(stateText)}</small></div>
-                        </button>`;
-                    })
-                    .join("") || '<p class="muted">Sin partidas.</p>'}
+                ${portal.progressHead.map((fn) => fn(data) || "").join("")}
+                <label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar" value="${esc(state.params.q || "")}" data-input="q" aria-label="Buscar"></label>
+                <div class="chips">${chip("all", "Todas")}${chip("balance", "Con saldo")}${chip("late", "Atrasadas")}${chip("pending", "Por validar")}</div>
+                ${body || '<p class="muted">Sin resultados.</p>'}
             </main>${nav("partidas")}`;
     };
 
@@ -1386,7 +1499,7 @@
         return `${header("Registrar avance", "", "partidas")}
             <main class="page">
                 <div class="card">
-                    <div class="row">${taskCode(line) ? `<span class="tag">${esc(taskCode(line))}</span>` : ""}<small>${esc(line.parent_label || "")}</small></div>
+                    <div class="row">${taskCode(line) ? `<span class="tag">${esc(taskCode(line))}</span>` : ""}<small>${esc(join(line.level_name, line.parent_label))}</small></div>
                     <b class="title">${esc(taskName(line))}</b>${line.role_label || (line.activity && line.activity !== line.name) ? `<small>${esc(line.role_label || line.activity)}</small>` : ""}
                     <div class="grid4"><span>Plan<b>${qtyText(line.planned)}</b></span><span>Validado<b>${qtyText(line.validated)}</b></span>
                     <span>Por validar<b class="warn">${qtyText(line.pending)}</b></span><span>Saldo ${esc(line.uom)}<b class="accent">${qtyText(line.balance)}</b></span></div>
@@ -1400,13 +1513,13 @@
                     <button data-step="1" aria-label="Sumar">+</button></div>
                     ${
                         check.blocked
-                            ? `<p class="alert box">Supera el saldo de la partida${tolerance ? ` y la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)})` : ""}: Odoo no lo acepta. Si es trabajo adicional, pida al residente el adicional; si se rehace, márquelo como re-trabajo.</p>`
+                            ? `<p class="alert box">Supera el saldo${tolerance ? ` y la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)})` : ""}: Odoo no lo acepta. Si es trabajo adicional, pida al residente el adicional; si se rehace, márquelo como re-trabajo.</p>`
                             : check.exceeds && check.policy === "approval"
-                            ? `<p class="alert box">Supera el saldo de la partida${tolerance ? ` y la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)})` : ""}: se envía como exceso y lo aprueba la jefatura antes de validarse.</p>`
+                            ? `<p class="alert box">Supera el saldo${tolerance ? ` y la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)})` : ""}: se envía como exceso y lo aprueba la jefatura antes de validarse.</p>`
                             : check.exceeds
-                            ? `<p class="notice box">Supera el saldo de la partida${tolerance ? ` y la tolerancia del plan` : ""}: se envía con una alerta para el residente.</p>`
+                            ? `<p class="notice box">Supera el saldo${tolerance ? ` y la tolerancia del plan` : ""}: se envía con una alerta para el residente.</p>`
                             : check.over
-                            ? `<p class="notice box">Supera el saldo de la partida; entra en la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)}) y lo revisa el residente al validarlo.</p>`
+                            ? `<p class="notice box">Supera el saldo; entra en la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)}) y lo revisa el residente al validarlo.</p>`
                             : ""
                     }
                 </div>
@@ -1416,7 +1529,7 @@
                     ${
                         d.rework
                             ? `<label>Motivo<select data-bind="progress.reason"><option value="">Elija el motivo</option>${(state.data.rework_reasons || [])
-                                  .map(([code, label]) => `<option value="${code}" ${d.reason === code ? "selected" : ""}>${esc(label)}</option>`)
+                                  .map(([code, label]) => `<option value="${code}" ${String(d.reason) === String(code) ? "selected" : ""}>${esc(label)}</option>`)
                                   .join("")}</select></label>`
                             : ""
                     }
@@ -1466,7 +1579,7 @@
     const SAVED_TEXT = {
         progress: ["Avance", "queda por validar por el residente"],
         daily_report: ["Parte diario", "le llega al residente"],
-        crew_day: ["Tareo", "se carga como costo de personal de cada partida"],
+        crew_day: ["Tareo", "se carga como costo de personal propio"],
         material_request: ["Requerimiento", "va a la aprobación del coordinador de la obra"],
         reception: ["Recepción", "lo que faltó queda pendiente de entrega"],
         return: ["Devolución", "el almacén la recibe"],
@@ -1520,7 +1633,7 @@
             ${older.length ? `<h2>Anteriores</h2><div class="card list">${older.map(queueRow).join("")}</div>` : ""}
             ${state.params.error ? `<p class="notice box">${esc(state.params.error)}</p>` : ""}
             <button class="secondary" data-action="flush">Reintentar el envío ahora</button>
-            ${saved === "progress" ? '<button class="primary" data-go="partidas">Registrar otra partida</button>' : ""}
+            ${saved === "progress" ? '<button class="primary" data-go="partidas">Registrar otro avance</button>' : ""}
             <button class="link center" data-go="home">Volver al inicio</button>
         </main>${nav("queue")}`;
     };
@@ -1636,7 +1749,7 @@
                         <button class="pill-btn ${on ? "ok" : "bad"}" data-presence="${w.id}" aria-pressed="${on}">${on ? "Presente" : "Falta"}</button></div>`;
                     })
                     .join("") || '<small class="muted">La cuadrilla no tiene personas con turno en la obra.</small>'}</div>
-                <div class="card scroll"><div class="row between"><b>Horas por partida</b><small class="muted">jornada de ${hoursDay} horas; las horas extra van aparte</small></div>
+                <div class="card scroll"><div class="row between"><b>Horas por ${esc(itemTerm())}</b><small class="muted">jornada de ${hoursDay} horas; las horas extra van aparte</small></div>
                 <table class="tareo"><thead>${crewHead(lines)}</thead>
                 <tbody>${crew
                     .map((w) => {
@@ -1647,7 +1760,7 @@
                             .join("")}<td class="strong ${on ? (t === hoursDay ? "ok" : "bad") : "muted"}" data-total="${w.id}">${on ? qtyText(t) : "—"}</td></tr>`;
                     })
                     .join("")}</tbody></table>
-                <p class="hint">El tareo se valoriza con la tarifa de construcción civil de cada categoría y se carga como costo de personal propio de cada partida.</p></div>
+                <p class="hint">El tareo se valoriza con el jornal de cada persona${state.data.crew_civil ? " (su categoría de construcción civil o el costo de su puesto)" : ""} y se carga como costo de personal propio.</p></div>
                 ${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
             </main>`;
     };
@@ -1659,7 +1772,7 @@
             return cat.partida.map((p) => ({
                 key: `partida:${p.product_id}:${p.task_id}`, catalog: "partida", product_id: p.product_id,
                 task_id: p.task_id, name: p.name, uom: p.uom,
-                dest: `Partida ${join(taskCode(p), p.task_name || p.task)}`,
+                dest: `${itemLabel()} ${join(taskCode(p), p.task_name || p.task)}`,
                 sub: join(`${p.uom} · saldo del plan ${qtyText(p.balance)}`, taskCode(p), p.task_name || p.task),
                 search: [taskCode(p), p.task_name || p.task, p.parent_label].join(" "),
             }));
@@ -1675,7 +1788,7 @@
         }
         const tab = state.params.tab || "partida";
         const qty = (key) => (state.cart.find((c) => c.key === key) || {}).qty || 0;
-        const tabs = [["partida", "De la partida"], ["epp", "EPP"], ["office", "Útiles y aseo"]];
+        const tabs = [["partida", "Del plan"], ["epp", "EPP"], ["office", "Útiles y aseo"]];
         const q = (state.params.q || "").toLowerCase();
         // Busca por producto y, en «De la partida», por código o nombre de la partida (CR-17).
         const items = catalogItems(tab).filter((it) => matches(q, it.name, it.search));
@@ -1683,7 +1796,7 @@
         return `${header("Requerimientos", join(projectParts().code, "para el almacén central o compra"), "home")}
             <div class="tabs" role="tablist">${tabs.map(([key, label]) => `<button role="tab" aria-selected="${tab === key}" class="${tab === key ? "on" : ""}" data-tab="${key}">${label}</button>`).join("")}</div>
             <main class="page">
-                <label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar producto o partida" value="${esc(state.params.q || "")}" data-input="q" aria-label="Buscar en el catálogo"></label>
+                <label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar" value="${esc(state.params.q || "")}" data-input="q" aria-label="Buscar en el catálogo"></label>
                 ${tab === "partida" ? `<p class="muted">Materiales de las recetas de su cuadrilla, con el saldo del plan de la obra.</p>` : ""}
                 ${kits.length ? `<div class="chips">${kits.map((k) => `<button class="chip outline" data-kit="${tab}:${k.id}">+ ${esc(k.name)}</button>`).join("")}</div>` : ""}
                 ${items
@@ -1716,7 +1829,7 @@
                     .map((kind) => {
                         const rows = state.cart.filter((c) => c.catalog === kind);
                         if (!rows.length) return "";
-                        return `<div class="card"><small class="eyebrow">${{ partida: "De la partida", epp: "EPP", office: "Útiles y aseo", text: "Fuera de catálogo" }[kind]}</small>${rows
+                        return `<div class="card"><small class="eyebrow">${{ partida: "Del plan", epp: "EPP", office: "Útiles y aseo", text: "Fuera de catálogo" }[kind]}</small>${rows
                             .map((c) => `<div class="row between cart-row"><span class="grow">${esc(c.name)}<small>${esc(c.dest || "Lo revisa logística")}</small></span><b>${kind === "text" ? "" : `${qtyText(c.qty)} ${esc(c.uom || "")}`}</b></div>`)
                             .join("")}</div>`;
                     })
@@ -1784,7 +1897,7 @@
         const where = state.data.project.location;
         return `${header("Devolución al almacén", where ? `De la ubicación ${where} al almacén central` : "Al almacén central", "home")}
             <main class="page">
-                <p class="muted">Elija lo que regresa. Lo que está en buen estado vuelve al almacén y sale del costo de la partida; lo dañado pasa a «Dañados» de la obra hasta que Logística decida.</p>
+                <p class="muted">Elija lo que regresa. Lo que está en buen estado vuelve al almacén y sale del costo de la obra; lo dañado pasa a «Dañados» de la obra hasta que Logística decida.</p>
                 ${items
                     .map((it) => {
                         const row = d.lines[it.product_id];
@@ -1823,8 +1936,8 @@
                         <div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100, o.valued_pct)}%"></div></div>
                         <div class="kv"><span>Contratado sin IGV</span><b>${money(o.amount_untaxed)}</b></div>
                         <div class="kv"><span>Valorizado (${o.valued_pct} %)</span><b>${money(o.valued)}</b></div>
-                        <div class="kv"><span>Fondo de garantía retenido</span><b>${money(o.guarantee)}</b></div>
-                        <div class="kv"><span>Deductivos</span><b>${money(o.deductions)}</b></div></div>`
+                        ${o.show_deductions === false ? "" : `<div class="kv"><span>Fondo de garantía retenido</span><b>${money(o.guarantee)}</b></div>
+                        <div class="kv"><span>Deductivos</span><b>${money(o.deductions)}</b></div>`}</div>`
                     )
                     .join("")}
                 <h2>Valorizaciones</h2>
@@ -1840,7 +1953,7 @@
                             ${v.state === "draft" ? "" : `<div class="kv"><span>Total con IGV</span><b>${money(v.amount_total)}</b></div>`}</button>`;
                     })
                     .join("") || '<p class="muted">Aún no tiene valorizaciones.</p>'}
-            <button class="primary" data-go="partidas">Registrar avance</button></main>${nav("home")}`;
+            ${feature("progress") ? '<button class="primary" data-go="partidas">Registrar avance</button>' : ""}</main>${nav("home")}`;
     };
 
     // 14. Contrata: detalle y pago.
@@ -1866,14 +1979,14 @@
         }
         return `${header(v.title || v.name, join(v.name, range(v.period_start, v.period_end) + "-" + asDate(v.period_end).getFullYear()), "valuations")}
             <main class="page">
-                <div class="card"><small class="eyebrow">Partidas con más avance</small>
+                <div class="card"><small class="eyebrow">Lo de más avance</small>
                 ${top.map((l) => row(l.name, num(l.amount))).join("")}
-                ${rest.length ? row(`Otras ${rest.length} ${rest.length === 1 ? "partida" : "partidas"}`, num(rest.reduce((s, l) => s + l.amount, 0))) : ""}
+                ${rest.length ? row(rest.length === 1 ? "Otra línea" : `Otras ${rest.length} líneas`, num(rest.reduce((s, l) => s + l.amount, 0))) : ""}
                 ${rework.map((l) => row(`Re-trabajo ${l.name} (${join(qtyText(l.qty) + " " + l.uom, (l.rework_reason || "").toLowerCase())})`, "rechazado, no se paga", "bad")).join("")}</div>
                 <div class="card">${row("Avance del periodo", num(v.progress_total))}
                 ${v.deductions.map((dd) => row("Deductivo: " + dd.name, num(dd.amount))).join("")}
                 ${row("Subtotal", num(v.subtotal))}${row(`IGV ${v.tax_pct} %`, num(v.tax))}${row("Total de la factura", num(v.total))}
-                ${row(`Fondo de garantía ${num(v.guarantee_pct, v.guarantee_pct % 1 ? 1 : 0)} % (cuota retenida)`, "−" + num(v.guarantee))}
+                ${v.show_deductions === false ? "" : row(`Fondo de garantía ${num(v.guarantee_pct, v.guarantee_pct % 1 ? 1 : 0)} % (cuota retenida)`, "−" + num(v.guarantee))}
                 ${v.advance ? row("Amortización del adelanto", "−" + num(v.advance)) : ""}
                 ${v.detraction ? row(`Detracción ${num(v.detraction_pct, 0)} % (Banco de la Nación)`, "−" + num(v.detraction)) : ""}
                 ${row("Neto a su cuenta", money(v.net), "big")}</div>
@@ -1888,6 +2001,12 @@
     // Pintado y eventos
     // ------------------------------------------------------------------
     function render() {
+        // M122-01: la pantalla de una función apagada no se abre.
+        const needs = portal.routeFeature[state.route];
+        if (needs && state.data && !feature(needs)) {
+            state.route = "home";
+            state.params = {};
+        }
         const screen = screens[state.route] || screens.home;
         $app().innerHTML = screen();
         if (state.route === "daily" || state.route === "change") {
@@ -2119,6 +2238,13 @@
             return;
         }
         const data = el.dataset;
+        if (data.group) {
+            toggleGroup(Number(data.group));
+            return render();
+        }
+        for (const handler of portal.clicks) {
+            if (await handler(data, el)) return;
+        }
         if (data.go) {
             event.preventDefault();
             if (data.go === "progress") {
@@ -2358,7 +2484,7 @@
                 label = `Rechazar ${row.name}`;
             } else {
                 if (!d.rework) return alertInline("Elija el motivo del re-trabajo.");
-                payload.rework_reason = d.rework;
+                payload.rework_reason_id = d.rework;
                 label = `Re-trabajo ${row.name}`;
             }
             await enqueue("resident_progress", "/resident/progress", payload, `${label} · ${taskName(row)}`);
@@ -2423,7 +2549,7 @@
             if (!/^\d{11}$/.test(d.ruc)) return alertInline("El RUC del emisor tiene 11 dígitos.");
             if (!d.number.trim()) return alertInline("Indique la serie y el número del comprobante.");
             if (!(Number(d.amount) > 0)) return alertInline("Indique el monto del comprobante.");
-            if (!d.general && !d.task_ids.length) return alertInline("Elija la partida o marque gastos generales de la obra.");
+            if (!d.general && !d.task_ids.length) return alertInline("Elija dónde va el gasto o marque gastos generales de la obra.");
             const payload = {
                 uuid: uuid(), project_id: state.projectId, fund_id: Number(d.fund), doc_type_id: Number(d.doc_type),
                 ruc: d.ruc, number: d.number.trim().toUpperCase(), date: d.date, amount: Number(d.amount),
@@ -2467,7 +2593,7 @@
             const canvas = document.getElementById("signature");
             const signature = d.signature || (canvas && canvas.dataset.signed ? canvas.toDataURL("image/png") : "");
             if (!d.description.trim()) return alertInline("Describa el cambio que pide el cliente.");
-            if (!d.task_ids.length && !d.new_item.trim()) return alertInline("Elija las partidas afectadas o describa la partida nueva.");
+            if (!d.task_ids.length && !d.new_item.trim()) return alertInline("Elija dónde afecta o describa el trabajo nuevo.");
             if (!d.photos.length) return alertInline("Tome al menos una foto.");
             if (!d.rep_name.trim()) return alertInline("Indique quién lo pidió por el cliente.");
             if (!signature) return alertInline("Falta la firma de quien lo pidió.");
@@ -2496,7 +2622,7 @@
         },
         "save-crewreq": async () => {
             const d = state.draft.crewreq;
-            if (!d.task_ids.length) return alertInline("Elija las partidas.");
+            if (!d.task_ids.length) return alertInline("Elija dónde se necesita.");
             if (!d.date_needed) return alertInline("Indique la fecha en que se necesita.");
             if (d.kind === "crew" && !d.people.some((p) => p.role && p.count > 0)) return alertInline("Indique cuántas personas y de qué rol.");
             if (d.kind === "contract" && !d.scope.trim()) return alertInline("Indique el metrado que hará la contrata.");
@@ -2509,7 +2635,7 @@
             const d = state.draft.progress;
             const line = state.data.partidas.find((p) => p.id === Number(state.params.id));
             if (progressCheck(line, d).blocked) {
-                return alertInline("El avance supera el saldo de la partida y la tolerancia del plan.");
+                return alertInline("El avance supera el saldo y la tolerancia del plan.");
             }
             if (!d.photos.length) {
                 return alertInline("Tome al menos una foto del avance.");
@@ -2521,11 +2647,18 @@
             const payload = {
                 uuid: uuid(), project_id: state.projectId, plan_line_id: line.id, date: d.date,
                 mode: d.mode, qty: Number(d.qty || 0), pct: Number(d.pct || 0),
-                is_rework: !!d.rework, rework_reason: d.reason || false, note: d.note,
+                is_rework: !!d.rework, rework_reason_id: d.reason || false, note: d.note,
                 latitude: pos.latitude || 0, longitude: pos.longitude || 0, photos: d.photos,
             };
             const amount = d.mode === "pct" ? d.pct + " %" : qtyText(d.qty) + " " + line.uom;
             await enqueue("progress", "/progress", payload, `Avance ${line.item} ${line.name}: ${amount}`);
+            // M122-04: los contadores del grupo se actualizan al guardar.
+            if (!d.rework) {
+                const added = Math.max(0, progressCheck(line, d).qty);
+                line.pending += added;
+                line.balance -= added;
+                cachePut("sync:" + state.projectId, state.data).catch(() => {});
+            }
             state.draft.progress = null;
             go("queue", { saved: "progress" });
         },
@@ -2713,5 +2846,16 @@
         render();
         flush();
     }
-    start();
+    // Lo que usan los puentes del portal (cargan después de este archivo).
+    window.ObraPortal = Object.assign(portal, {
+        state, screens, actions, icon, SAVED_TEXT, MAX_PHOTOS,
+        h: { esc, num, qtyText, money, today, dayMonth, longDay, range, join, matches, pill, svg, header, nav, role, feature, levelName,
+             itemLabel, itemTerm, go, render, call, enqueue, uuid, refresh, cachePut, photosCard, alertInline, projectParts, projectName,
+             taskCode, taskName, lineDone, lineKind, lineCard, byName, groupTree, toggleGroup, openGroups, locate },
+    });
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start);
+    } else {
+        start();
+    }
 })();

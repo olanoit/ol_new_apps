@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.22, etapa 2: funciones de campo de mobiliario del portal. -->
+    <record id="construction_vertical_profile_view_form_portal_furniture" model="ir.ui.view">
+        <field name="name">construction.vertical.profile.form.portal.furniture</field>
+        <field name="model">construction.vertical.profile</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_vertical_profile_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='feature_installation_board']" position="after">
+                <field name="portal_stage_progress"/>
+                <field name="portal_module_reception"/>
+                <field name="portal_measure"/>
+                <field name="portal_replacement"/>
+                <field name="portal_contractor_units"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

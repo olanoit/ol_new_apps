@@ -116,7 +116,7 @@
                                       decoration-info="is_rework">
                                     <field name="activity_id" readonly="1"/>
                                     <field name="is_rework" optional="show" readonly="1"/>
-                                    <field name="rework_reason" optional="show" readonly="1"/>
+                                    <field name="rework_reason_id" optional="show" readonly="1"/>
                                     <field name="uom_id" groups="uom.group_uom"/>
                                     <field name="qty_period" readonly="1"/>
                                     <field name="qty_repeat" optional="show" readonly="1"/>

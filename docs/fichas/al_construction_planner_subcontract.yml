@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '27.20261112'
+  fecha: 17/11/2026
+  cambios:
+    - "Paquete 1.22: las líneas de re-trabajo de la liquidación y de la valorización agrupan por el motivo del catálogo de la compañía."
 - version: '26.20261112'
   fecha: 16/11/2026
   cambios:

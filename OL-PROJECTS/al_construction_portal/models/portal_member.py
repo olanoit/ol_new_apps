@@ -102,6 +102,30 @@ class ProjectProject(models.Model):
         string='QR del cartel', compute='_compute_construction_portal_url', sanitize=False,
         groups='al_construction_planner.group_planner_user')
 
+    # Paquete 1.22, M122-10: el personal del portal desde la ficha de la obra.
+    construction_portal_member_count = fields.Integer(
+        string='Personas del portal', compute='_compute_construction_portal_member_count')
+
+    @api.depends('construction_portal_member_ids.active')
+    def _compute_construction_portal_member_count(self):
+        for project in self:
+            project.construction_portal_member_count = len(
+                project.construction_portal_member_ids.filtered('active'))
+
+    def action_construction_open_portal(self):
+        """«Portal de obra» de la ficha de la obra: el ingreso, el QR y el
+        personal del portal, sin pasar por la ficha del proyecto."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Portal de obra · %s', self.display_name),
+            'res_model': 'project.project', 'res_id': self.id, 'view_mode': 'form',
+            'views': [(self.env.ref(
+                'al_construction_portal.project_project_view_form_construction_portal_staff').id,
+                'form')],
+            'target': 'current',
+        }
+
     @api.depends('construction_portal_member_ids.is_default_approver',
                  'construction_portal_member_ids.active', 'construction_portal_member_ids.role',
                  'construction_portal_member_ids.user_id')

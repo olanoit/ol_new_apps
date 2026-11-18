@@ -298,7 +298,8 @@ class ConstructionContractSettlement(models.Model):
                 if po_line.order_id.construction_uses_terms:
                     continue
                 if po_line:
-                    key = (po_line, progress.is_rework, progress.rework_reason or False)
+                    # M122-03: una línea por motivo del catálogo.
+                    key = (po_line, progress.is_rework, progress.rework_reason_id.id or False)
                     by_po_line[key] |= progress
                 else:
                     orphans |= progress
@@ -308,9 +309,9 @@ class ConstructionContractSettlement(models.Model):
             (settlement_sudo.progress_ids - included).write({'settlement_id': False})
             included.write({'settlement_id': settlement.id})
             vals_list = []
-            for (po_line, is_rework, rework_reason), progresses in sorted(
+            for (po_line, is_rework, rework_reason_id), progresses in sorted(
                     by_po_line.items(), key=lambda kv: (kv[0][0].sequence, kv[0][0].id,
-                                                        kv[0][1], kv[0][2] or '')):
+                                                        kv[0][1], kv[0][2] or 0)):
                 activity = progresses.activity_id[:1]
                 qty = sum(progresses.mapped('qty_weighted'))
                 repeat = 0.0 if is_rework else settlement._repeat_qty(progresses)
@@ -325,7 +326,8 @@ class ConstructionContractSettlement(models.Model):
                     'price_unit': po_line.price_unit,
                     'retention_pct': po_line.construction_retention_pct,
                     'is_rework': is_rework,
-                    'rework_reason': rework_reason,
+                    'rework_reason_id': rework_reason_id,
+                    'rework_reason': progresses[:1].rework_reason,
                     'qty_repeat': repeat,
                 })
             po_lines = [key[0] for key in by_po_line]
@@ -359,7 +361,7 @@ class ConstructionContractSettlement(models.Model):
         to_create = []
         for vals in vals_list:
             line = existing.pop((vals['purchase_line_id'], vals['is_rework'],
-                                 vals['rework_reason'] or False), None)
+                                 vals.get('rework_reason_id') or False), None)
             if line:
                 line.write(dict(vals, no_progress=False))
                 kept |= line
@@ -659,7 +661,8 @@ class ConstructionContractSettlement(models.Model):
                 'partner_id': self.partner_id.id, 'qty': line.qty_period,
                 'uom_id': line.uom_id.id, 'amount': line.amount,
                 'rework_reason': line.rework_reason,
-                'reason': dict(REWORK_REASONS).get(line.rework_reason),
+                'rework_reason_id': line.rework_reason_id.id,
+                'reason': line._rework_reason_name(),
                 'document': self.name, 'res_model': self._name, 'res_id': self.id,
             })
         if values:
@@ -713,7 +716,7 @@ class ConstructionContractSettlement(models.Model):
             values['quantity'] = line.qty_settle
             if line.is_rework:
                 values['name'] = self.env._('Re-trabajo (%(reason)s): %(name)s',
-                                            reason=dict(REWORK_REASONS).get(line.rework_reason, ''),
+                                            reason=line._rework_reason_name(),
                                             name=values.get('name') or line.activity_id.name)
             line_vals.append(values)
         invoice.write({'invoice_line_ids': [Command.create(v) for v in line_vals]})
@@ -836,7 +839,12 @@ class ConstructionContractSettlementLine(models.Model):
         string='Monto', compute='_compute_amount', store=True, currency_field='currency_id')
     # Re-trabajo y pago repetido (v1.8, M18-21).
     is_rework = fields.Boolean(string='Re-trabajo', readonly=True)
-    rework_reason = fields.Selection(REWORK_REASONS, string='Motivo del re-trabajo', readonly=True)
+    rework_reason = fields.Selection(REWORK_REASONS, string='Motivo del re-trabajo (lista '
+                                     'anterior)', readonly=True)
+    # Paquete 1.22, M122-03: el motivo del catálogo de la compañía.
+    rework_reason_id = fields.Many2one(
+        'construction.portal.reason', string='Motivo del re-trabajo', readonly=True,
+        ondelete='restrict', index='btree_not_null')
     qty_repeat = fields.Float(
         string='Repetido', digits='Product Unit', readonly=True,
         help='Parte del driver que repite lo ya liquidado de la misma actividad, módulo y '
@@ -936,7 +944,12 @@ class ConstructionContractSettlementLine(models.Model):
 
     def _sync_key(self):
         self.ensure_one()
-        return (self.purchase_line_id.id, self.is_rework, self.rework_reason or False)
+        return (self.purchase_line_id.id, self.is_rework, self.rework_reason_id.id or False)
+
+    def _rework_reason_name(self):
+        """Nombre del motivo del re-trabajo de la línea (M122-03)."""
+        self.ensure_one()
+        return self.rework_reason_id.name or dict(REWORK_REASONS).get(self.rework_reason, '')
 
     def _construction_has_decision(self):
         """La línea tiene una decisión del validador que se conserva al

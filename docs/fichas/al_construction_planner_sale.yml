@@ -31,6 +31,11 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '33.20261117'
+  fecha: 17/11/2026
+  cambios:
+    - "Paquete 1.22, anexo, D1: la valorización por hitos que lleva una partida a su 100 % toma el total de su línea en la orden de venta menos lo ya valorizado; el último céntimo del descuento ya no queda sin valorizar."
+    - "Paquete 1.22, anexo, D2: cuando un adicional cambia una tipología que ya existía, el hito de cada unidad se parte entre la línea original de la partida y la línea del adicional (en negativo si es un deductivo); las dos líneas avanzan con el mismo avance y ninguna pasa de su precio. Los hitos por unidad muestran su partida."
 - version: '32.20261112'
   fecha: 16/11/2026
   cambios:

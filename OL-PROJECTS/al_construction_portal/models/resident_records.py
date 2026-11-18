@@ -46,6 +46,10 @@ class ConstructionPortalService(models.AbstractModel):
         resident['deduction_types'] = self._deduction_types()
         resident['crew_requests'] = self._resident_crew_requests(project)
         resident['features'] = self._resident_features()
+        # M122-01: lo que el perfil de la obra apaga.
+        resident['features']['deduction'] = bool(
+            resident['features'].get('deduction') and 'deductions' in data.get('features', []))
+        resident['features']['close_day'] = 'daily_report' in data.get('features', [])
         data['counters']['daily_to_review'] = len(
             [p for p in resident['parts']['reports'] if p['state'] == 'sent'])
         return data
@@ -118,6 +122,7 @@ class ConstructionPortalService(models.AbstractModel):
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
         project, _members = self._resident_project(values.get('project_id'))
+        self._portal_require(project, 'daily_report')
         company = project.company_id or self.env.company
         day = self._portal_date(values.get('date'), company,
                                 company.construction_portal_progress_days)
@@ -225,6 +230,7 @@ class ConstructionPortalService(models.AbstractModel):
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
         project, _members = self._resident_project(values.get('project_id'))
+        self._portal_require(project, 'deductions')
         if 'construction.contract.deduction' not in self.env:
             raise UserError(self.env._('Los deductivos piden el módulo de contratas.'))
         orders = {row['id']: row for row in self._resident_orders(project)}

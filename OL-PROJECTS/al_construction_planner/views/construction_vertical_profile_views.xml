@@ -36,6 +36,7 @@
                             <field name="code"/>
                             <field name="level_template_id" options="{'no_create': True}"/>
                             <field name="analytic_plan_names"/>
+                            <field name="rework_reason_names" placeholder="Un motivo por línea"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group string="Funciones">

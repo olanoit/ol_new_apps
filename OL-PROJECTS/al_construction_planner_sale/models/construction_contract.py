@@ -15,7 +15,17 @@ sale del disparador del hito (etapa terminada, llegada a obra, acta de
 entrega o manual). La valorización por hitos lleva lo ganado a las partidas
 de la orden de venta: el envío, la conformidad y la factura son los de la
 valorización de siempre, y un hito puede cobrarse en dos valorizaciones.
+
+Partida con dos líneas en la orden (paquete 1.22, anexo, D2): cuando un
+adicional cambia una tipología que ya existía, la orden lleva la partida en
+dos líneas (la original y la del adicional). El hito de cada unidad se parte:
+la parte original conserva su monto en la línea original y la diferencia va
+en otra parte del mismo hito, en la línea del adicional (negativa si es un
+deductivo). Las partes comparten unidad, precio e hito de la plantilla, así
+que avanzan con el mismo avance físico; cada una lleva su cobrado.
 """
+from collections import defaultdict
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -247,17 +257,21 @@ class ConstructionContract(models.Model):
     def action_generate_milestones(self):
         """Hitos por unidad: por cada unidad cubierta y cada precio de sus
         tipologías, un hito por línea de la plantilla con su monto. Los hitos
-        ya cobrados (aunque sea en parte) no se tocan; los demás se rehacen."""
+        ya cobrados (aunque sea en parte) no se tocan; los demás se rehacen.
+
+        Con la partida en dos líneas de la orden (D2 del paquete 1.22) el
+        hito se parte: lo que ya estaba en una línea anterior de la partida se
+        conserva tal cual y la diferencia con el monto de hoy va a la línea
+        más reciente (la del adicional o del deductivo)."""
         Milestone = self.env['construction.unit.milestone']
         for contract in self:
             prices = {price.typology_id: price for price in contract.price_line_ids}
             if not prices:
                 raise UserError(self.env._(
                     'El contrato %s no tiene precios por tipología.', contract.display_name))
-            keep = contract.milestone_ids.filtered(lambda m: m.billed_pct)
-            (contract.milestone_ids - keep).unlink()
-            existing = {(m.task_id.id, m.price_line_id.id, m.template_line_id.id) for m in keep}
-            vals_list = []
+            currency = contract.currency_id
+            # Monto de hoy de cada hito: {(unidad, precio, hito de la plantilla): monto}.
+            targets = {}
             for unit in contract._covered_units():
                 count = {}
                 for space in contract._unit_spaces(unit):
@@ -271,14 +285,52 @@ class ConstructionContract(models.Model):
                             'El contrato %s no tiene plantilla de hitos de cobro.',
                             contract.display_name))
                     for line in template.line_ids:
-                        if (unit.id, price.id, line.id) in existing:
-                            continue
-                        vals_list.append({
-                            'contract_id': contract.id, 'task_id': unit.id,
-                            'price_line_id': price.id, 'template_line_id': line.id,
-                            'amount': contract.currency_id.round(
-                                price.unit_price * qty * contract.discount_factor * line.pct / 100),
-                        })
+                        targets[(unit.id, price.id, line.id)] = currency.round(
+                            price.unit_price * qty * contract.discount_factor * line.pct / 100)
+            parts = defaultdict(lambda: Milestone)
+            on_base = set()
+            for milestone in contract.milestone_ids:
+                parts[milestone._construction_part_key()] |= milestone
+                if milestone.sale_line_id == milestone.price_line_id.sale_line_id:
+                    on_base.add(milestone.price_line_id.id)
+            # Línea de la orden que recibe lo nuevo de cada precio. Solo se
+            # parte lo que ya tenía hitos en su línea: sin ellos no se sabe qué
+            # monto era el original y todo sigue en la línea del precio.
+            current = {}
+            for price in contract.price_line_ids:
+                line = price._construction_current_sale_line()
+                current[price.id] = line if price.id in on_base else price.sale_line_id
+            remove = Milestone
+            vals_list = []
+            for key in list(targets) + [key for key in parts if key not in targets]:
+                unit_id, price_id, template_line_id = key
+                existing = parts.get(key, Milestone)
+                target = targets.get(key)
+                price = contract.price_line_ids.browse(price_id)
+                line = current[price_id]
+                vals = {'contract_id': contract.id, 'task_id': unit_id, 'price_line_id': price_id,
+                        'template_line_id': template_line_id}
+                if line == price.sale_line_id:
+                    # Una sola línea en la partida: como siempre.
+                    keep = existing.filtered('billed_pct')
+                    remove |= existing - keep
+                    if target is not None and not keep:
+                        vals_list.append(dict(vals, amount=target))
+                    continue
+                frozen = existing.filtered(lambda m, line=line: m.sale_line_id != line)
+                live = existing - frozen
+                billed = live.filtered('billed_pct')
+                remove |= live - billed
+                if billed:
+                    continue
+                # Una unidad que el deductivo quita deja su hito original y la
+                # diferencia en negativo: las dos líneas llegan juntas al 100 %.
+                amount = currency.round((target or 0.0) - sum(frozen.mapped('amount')))
+                if not currency.is_zero(amount):
+                    vals_list.append(dict(
+                        vals, amount=amount, part_sale_line_id=line.id,
+                        manual_pct=existing[:1].manual_pct))
+            remove.unlink()
             Milestone.create(vals_list)
         return True
 
@@ -356,6 +408,24 @@ class ConstructionContractPrice(models.Model):
         help='Vacía: la del contrato. Una plantilla distinta por familia (cocinas 80/15/5, '
              'closets 90/10).')
 
+    def _construction_current_sale_line(self):
+        """Línea de la orden que recibe lo nuevo de este precio (D2 del
+        paquete 1.22): la más reciente de las que llevan la misma partida que
+        la línea del precio. Sin partida escrita en la línea, o sin otra línea
+        posterior, es la línea del precio."""
+        self.ensure_one()
+        base = self.sale_line_id
+        if not base or not base.construction_partida:
+            return base
+        # sudo: quien genera los hitos (Proyectos, o el envío de la hoja) no
+        # siempre tiene el rol de Ventas; solo se lee qué líneas comparten la
+        # partida.
+        base_sudo = base.sudo()
+        lines_sudo = base_sudo.order_id.order_line.filtered(
+            lambda line: not line.display_type and line.id >= base_sudo.id
+            and line.construction_partida == base_sudo.construction_partida)
+        return base.browse(lines_sudo.sorted('id')[-1:].id or base.id)
+
 
 class ConstructionContractDocument(models.Model):
     _name = 'construction.contract.document'
@@ -394,7 +464,17 @@ class ConstructionUnitMilestone(models.Model):
         'construction.contract.price', string='Precio', required=True, ondelete='cascade',
         index=True)
     typology_id = fields.Many2one(related='price_line_id.typology_id', store=True, index=True)
-    sale_line_id = fields.Many2one(related='price_line_id.sale_line_id', store=True, index=True)
+    # D2 del paquete 1.22: la parte del hito que va en otra línea de la misma
+    # partida (la del adicional o del deductivo). Vacía: la línea del precio.
+    part_sale_line_id = fields.Many2one(
+        'sale.order.line', string='Línea del adicional', readonly=True, copy=False,
+        index='btree_not_null', ondelete='cascade', check_company=True,
+        help='Cuando un adicional cambia una tipología que ya existía, el hito se parte: el '
+             'monto original queda en la línea original de la partida y la diferencia, en la '
+             'línea del adicional.')
+    sale_line_id = fields.Many2one(
+        'sale.order.line', string='Partida', compute='_compute_sale_line_id', store=True,
+        index=True, help='Línea de la orden de venta donde se valoriza el hito.')
     template_line_id = fields.Many2one(
         'construction.milestone.template.line', string='Hito', required=True, index=True)
     trigger = fields.Selection(related='template_line_id.trigger', string='Disparador')
@@ -410,6 +490,37 @@ class ConstructionUnitMilestone(models.Model):
     billed_pct = fields.Float(
         string='Cobrado %', digits=(16, 2), readonly=True, copy=False,
         help='Lo cobrado en valorizaciones confirmadas: un hito puede cobrarse en dos.')
+
+    @api.depends('part_sale_line_id', 'price_line_id.sale_line_id')
+    def _compute_sale_line_id(self):
+        for milestone in self:
+            milestone.sale_line_id = milestone.part_sale_line_id \
+                or milestone.price_line_id.sale_line_id
+
+    def _construction_part_key(self):
+        """Las partes de un mismo hito comparten unidad, precio e hito de la
+        plantilla."""
+        self.ensure_one()
+        return (self.task_id.id, self.price_line_id.id, self.template_line_id.id)
+
+    def write(self, vals):
+        """El avance manual es del hito, no de la parte: escrito en una, vale
+        para las partes del mismo hito en las otras líneas de la partida (D2)."""
+        res = super().write(vals)
+        if 'manual_pct' in vals:
+            siblings = self.search([
+                ('contract_id', 'in', self.contract_id.ids), ('task_id', 'in', self.task_id.ids),
+                ('price_line_id', 'in', self.price_line_id.ids),
+                ('template_line_id', 'in', self.template_line_id.ids),
+                ('id', 'not in', self.ids)])
+            keys = {milestone._construction_part_key() for milestone in self}
+            siblings = siblings.filtered(
+                lambda m: m._construction_part_key() in keys
+                and m.manual_pct != vals['manual_pct'])
+            if siblings:
+                super(ConstructionUnitMilestone, siblings).write(
+                    {'manual_pct': vals['manual_pct']})
+        return res
 
     @api.depends('trigger', 'manual_pct', 'task_id')
     def _compute_progress_pct(self):

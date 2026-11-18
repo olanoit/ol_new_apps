@@ -36,7 +36,7 @@
                 <field name="currency_id" column_invisible="True"/>
                 <field name="supervisor_evaluation" optional="hide"/>
                 <field name="is_rework" optional="show" widget="boolean_toggle" readonly="1"/>
-                <field name="rework_reason" optional="hide"/>
+                <field name="rework_reason_id" optional="hide"/>
                 <field name="exceed_state" optional="show" widget="badge"
                        invisible="exceed_state == 'ok'" decoration-danger="exceed_state == 'exceeded'"
                        decoration-warning="exceed_state == 'approved'"/>
@@ -111,8 +111,9 @@
                                 <field name="uom_id" groups="uom.group_uom"/>
                             </div>
                             <field name="is_rework" readonly="state != 'draft'"/>
-                            <field name="rework_reason" invisible="not is_rework"
-                                   required="is_rework" readonly="state != 'draft'"/>
+                            <field name="rework_reason_id" invisible="not is_rework"
+                                   required="is_rework" readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
                             <field name="qty_executed"/>
                             <field name="qty_planned"/>
                             <field name="amount"/>
@@ -162,6 +163,7 @@
                 <filter string="Validados" name="validated" domain="[('state', '=', 'validated')]"/>
                 <filter string="Rechazados" name="rejected" domain="[('state', '=', 'rejected')]"/>
                 <filter string="Re-trabajos" name="rework" domain="[('is_rework', '=', True)]"/>
+                <field name="rework_reason_id"/>
                 <filter string="Exceden el plan" name="exceeded"
                         domain="[('exceed_state', '=', 'exceeded'), ('state', '=', 'draft')]"/>
                 <filter string="Posibles duplicados" name="possible_duplicate"

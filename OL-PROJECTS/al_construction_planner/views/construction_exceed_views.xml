@@ -20,7 +20,7 @@
                 <field name="amount" sum="Total" optional="show"/>
                 <field name="currency_id" column_invisible="1"/>
                 <field name="reason"/>
-                <field name="rework_reason" optional="hide"/>
+                <field name="rework_reason_id" optional="hide"/>
                 <field name="user_id" widget="many2one_avatar_user"/>
                 <field name="document"/>
             </list>
@@ -60,7 +60,7 @@
                             <field name="date"/>
                         </group>
                     </group>
-                    <field name="rework_reason" invisible="not rework_reason"/>
+                    <field name="rework_reason_id" invisible="not rework_reason_id"/>
                     <field name="reason"/>
                 </sheet>
             </form>

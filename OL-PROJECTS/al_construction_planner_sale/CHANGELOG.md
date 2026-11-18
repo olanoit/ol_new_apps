@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 33.20261117 — 17/11/2026
+
+- Paquete 1.22, anexo, D1: la valorización por hitos que lleva una partida a su 100 % toma el total de su línea en la orden de venta menos lo ya valorizado; el último céntimo del descuento ya no queda sin valorizar.
+- Paquete 1.22, anexo, D2: cuando un adicional cambia una tipología que ya existía, el hito de cada unidad se parte entre la línea original de la partida y la línea del adicional (en negativo si es un deductivo); las dos líneas avanzan con el mismo avance y ninguna pasa de su precio. Los hitos por unidad muestran su partida.
+
 ## 32.20261112 — 16/11/2026
 
 - Seguridad: el estado de la valorización al cliente, de la entrega semanal y del cambio de obra solo cambia con sus acciones; antes quien ejecutaba podía confirmar una entrega, dar por confirmada una valorización o aprobar un cambio con una escritura directa.

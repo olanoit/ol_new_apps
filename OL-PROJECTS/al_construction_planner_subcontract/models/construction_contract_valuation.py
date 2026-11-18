@@ -307,7 +307,8 @@ class ConstructionContractSettlement(models.Model):
             # Los adicionales que esperan la aprobación de la ampliación no
             # se valorizan todavía (3.9).
             if po_line.order_id == order and not po_line.construction_additional_pending:
-                groups[(po_line, progress.is_rework, progress.rework_reason or False)] |= progress
+                groups[(po_line, progress.is_rework,
+                        progress.rework_reason_id.id or False)] |= progress
         included = Progress.sudo().union(*groups.values()) if groups else Progress.sudo()
         settlement_sudo = self.sudo()
         (settlement_sudo.progress_ids - included).write({'settlement_id': False})
@@ -315,7 +316,7 @@ class ConstructionContractSettlement(models.Model):
         vals_list = []
         for (po_line, is_rework, reason), progresses in sorted(
                 groups.items(), key=lambda kv: (kv[0][0].sequence, kv[0][0].id, kv[0][1],
-                                                kv[0][2] or '')):
+                                                kv[0][2] or 0)):
             activity = progresses.activity_id[:1] or po_line.construction_activity_id
             qty = sum(progresses.mapped('qty_weighted'))
             repeat = 0.0 if is_rework else self._repeat_qty(progresses)
@@ -326,7 +327,8 @@ class ConstructionContractSettlement(models.Model):
             vals_list.append({
                 'activity_id': activity.id, 'purchase_line_id': po_line.id, 'qty_period': qty,
                 'price_unit': po_line.price_unit, 'retention_pct': 0.0, 'is_rework': is_rework,
-                'rework_reason': reason, 'qty_repeat': repeat,
+                'rework_reason_id': reason, 'rework_reason': progresses[:1].rework_reason,
+                'qty_repeat': repeat,
                 'progress_ids': [Command.set(progresses.ids)],
             })
         self._sync_lines(vals_list)

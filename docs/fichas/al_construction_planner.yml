@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '85.20261112'
+    fecha: 17/11/2026
+    cambios:
+      - "Paquete 1.22: el motivo del re-trabajo es un catálogo por compañía (antes, una lista fija). Cada perfil de vertical trae sus motivos y la compañía los recibe al aplicarlo si no tiene ninguno; los registros anteriores conservan su motivo."
   - version: '84.20261112'
     fecha: 16/11/2026
     cambios:
