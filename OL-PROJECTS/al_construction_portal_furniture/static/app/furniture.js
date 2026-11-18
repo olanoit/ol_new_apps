@@ -381,6 +381,10 @@
         const sub = p.departments ? join(p.name, plural(p.departments.length, "departamento", "departamentos")) : join(p.origin, p.name);
         return `<button class="card delivery ${on ? "on" : ""}" data-go="reception" data-id="${p.id}" aria-pressed="${on}"><b>${esc(title)}</b><small>${esc(sub)}</small></button>`;
     }
+    // También en la lista de la recepción por producto.
+    P.deliveryTitles.push((p) => (p.departments && feature("module_reception")
+        ? ["Despacho de módulos", join(plural(p.departments.length, "departamento", "departamentos"), p.origin)]
+        : null));
     const baseReception = screens.reception;
     screens.reception = () => {
         const deliveries = (state.data && state.data.deliveries) || [];

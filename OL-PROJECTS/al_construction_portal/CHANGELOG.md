@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261112 — 18/11/2026
+
+- Recepción: un puente puede titular sus entregas en la lista (el despacho de módulos de mobiliario).
+
 ## 20.20261112 — 17/11/2026
 
 - Paquete 1.22: el portal sigue el perfil de vertical de la obra. El inicio, la barra y los servicios muestran solo las funciones activas (Avance, Parte diario y tareo, Deductivos y fondo de garantía); una función apagada responde con un mensaje claro.

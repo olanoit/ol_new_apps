@@ -42,6 +42,10 @@ configuracion:
 requisitos_nota: Se instala automáticamente con `al_construction_portal`, `al_construction_planner_furniture`
   y `al_construction_planner_mrp_request`. Licencia LGPL-3 como el portal y el planificador.
 novedades:
+- version: '3.20261117'
+  fecha: 18/11/2026
+  cambios:
+  - "Recepción: el despacho de módulos lleva su título también en la lista de la recepción por producto."
 - version: '2.20261117'
   fecha: 18/11/2026
   cambios:

@@ -73,6 +73,10 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '21.20261112'
+    fecha: 18/11/2026
+    cambios:
+      - "Recepción: un puente puede titular sus entregas en la lista (el despacho de módulos de mobiliario)."
   - version: '20.20261112'
     fecha: 17/11/2026
     cambios:

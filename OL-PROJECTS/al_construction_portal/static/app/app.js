@@ -519,6 +519,7 @@
         progressHead: [], // (datos) => HTML sobre la lista de «Avance»
         clicks: [], // (dataset, elemento) => true si atendió el toque
         afterFlush: [], // (registro enviado) => true si hay que refrescar la obra
+        deliveryTitles: [], // (entrega) => [título, detalle] en la lista de «Recepción»
     };
 
     // 1. Ingreso con usuario y clave.
@@ -1842,6 +1843,11 @@
 
     // 11. Recepción en obra.
     function deliveryTitle(p) {
+        // Un puente puede titular sus entregas (el despacho de módulos de mobiliario).
+        for (const fn of portal.deliveryTitles) {
+            const title = fn(p);
+            if (title) return title;
+        }
         return p.kind === "purchase"
             ? [`Compra a ${p.partner || "proveedor"}`, join("Directo a obra", p.origin)]
             : ["Despacho del almacén", join("Requerimiento de obra", p.origin)];

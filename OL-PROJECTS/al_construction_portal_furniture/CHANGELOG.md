@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261117 — 18/11/2026
+
+- Recepción: el despacho de módulos lleva su título también en la lista de la recepción por producto.
+
 ## 2.20261117 — 18/11/2026
 
 - Avance de la contrata: el driver del departamento se suma por unidad (antes, una cantidad por actividad).
