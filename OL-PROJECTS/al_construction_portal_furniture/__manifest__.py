@@ -37,7 +37,7 @@ con su identificador y Odoo no lo duplica si el envío se repite.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_portal_furniture/static/description/icon.png',
-    'version': '1.20261117',
+    'version': '2.20261117',
     # LGPL-3 como el portal y el planificador de los que depende.
     'license': 'LGPL-3',
     'countries': ['pe'],

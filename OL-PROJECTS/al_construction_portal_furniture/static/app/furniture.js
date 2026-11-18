@@ -246,7 +246,10 @@
         if (!rows.size) return "";
         const list = [...rows.values()];
         const q = (value, uom) => `${qtyText(value)} ${esc(uom || "")}`;
-        return `<div class="card fur-driver"><small class="strong">${esc(list.map((r) => `${qtyText(r.planned)} ${r.uom || ""}`.trim()).join(" · "))}</small>
+        // El driver del departamento, sumado por unidad («12 módulos · 8.40 ml»).
+        const totals = new Map();
+        list.forEach((r) => totals.set(r.uom || "", (totals.get(r.uom || "") || 0) + r.planned));
+        return `<div class="card fur-driver"><small class="strong">${esc([...totals].map(([uom, qty]) => `${qtyText(qty)} ${uom}`.trim()).join(" · "))}</small>
             <table class="fur-table"><thead><tr><th>Actividad</th><th>Reportado</th><th>Validado</th><th>Liquidado</th></tr></thead><tbody>${list
                 .map((r) => `<tr><th>${esc(r.activity)}</th><td>${q(r.reported, r.uom)}</td><td>${q(r.validated, r.uom)}</td><td>${q(r.settled, r.uom)}</td></tr>`)
                 .join("")}</tbody></table></div>`;
