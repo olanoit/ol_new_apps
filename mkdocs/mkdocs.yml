@@ -42,7 +42,9 @@ theme:
   name: material
   custom_dir: overrides
   language: es
-  logo: assets/logo.png
+  # Isotipo de ALTA: negativo en la cabecera navy, a color en el favicon y
+  # en la página de inicio de sesión (deploy/auth lee assets/logo.png).
+  logo: assets/logo-negativo.svg
   favicon: assets/logo.png
   icon:
     repo: fontawesome/brands/github
@@ -68,7 +70,7 @@ theme:
         icon: material/brightness-4
         name: Cambiar al modo del sistema
   font:
-    text: Inter
+    text: Carlito
     code: JetBrains Mono
   features:
     - navigation.tabs

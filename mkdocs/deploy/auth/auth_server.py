@@ -142,30 +142,37 @@ PAGE = """<!doctype html>
 <meta name="robots" content="noindex, nofollow">
 <title>Documentación · Suite OL para Odoo</title>
 <link rel="icon" href="/_login/logo.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap">
 <style>
 :root {
-  --brand: #b45309; --brand-dark: #92400e; --accent: #0f766e;
-  --bg: #f6f3ee; --card: #ffffff; --text: #1f2933; --muted: #5b6570;
-  --border: #e3ddd3; --input: #ffffff; --error-bg: #fdecea; --error: #b42318;
-  --shadow: 0 18px 45px rgba(31, 41, 51, 0.12);
+  --brand: #1F3145; --brand-dark: #06182E; --accent: #5F5594;
+  --grad-a: #06182E; --grad-b: #5F5594; --mark: #EF9F27;
+  --bg: #F0EEF7; --card: #ffffff; --text: #1F3145; --muted: #5A5A5A;
+  --border: #D7DEE5; --input: #ffffff; --error-bg: #fdecea; --error: #B23A48;
+  --shadow: 0 18px 45px rgba(6, 24, 46, 0.14);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14181d; --card: #1e242b; --text: #e6e9ec; --muted: #a8b3bd;
-    --border: #323a44; --input: #161b21; --error-bg: #3a1d1b; --error: #f4a29a;
-    --accent: #2dd4bf; --shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+    --brand: #5F5594; --brand-dark: #4E457E; --accent: #B9B2E0;
+    --bg: #06182E; --card: #12253B; --text: #E7E5F2; --muted: #B4B9C8;
+    --border: #2B3D54; --input: #0B1B2E; --error-bg: #3a1d24; --error: #f4a2ac;
+    --shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
   }
+}
+/* El isotipo a color lleva fuste navy: sobre la tarjeta oscura va en placa blanca. */
+@media (prefers-color-scheme: dark) {
+  .brand img { background: #fff; border-radius: 10px; padding: 5px; }
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body {
-  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 15px; line-height: 1.5; color: var(--text); background: var(--bg);
+  font-family: Calibri, Carlito, "Segoe UI", system-ui, sans-serif;
+  font-size: 17px; line-height: 1.5; color: var(--text); background: var(--bg);
   display: flex; align-items: center; justify-content: center; padding: 24px 16px;
 }
 body::before {
   content: ""; position: fixed; inset: 0 0 auto 0; height: 38vh; z-index: -1;
-  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 100%);
 }
 main { width: 100%; max-width: 400px; }
 .card {
@@ -173,12 +180,12 @@ main { width: 100%; max-width: 400px; }
   box-shadow: var(--shadow); padding: 32px 30px 26px;
 }
 .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
-.brand img { width: 44px; height: 44px; border-radius: 10px; }
-.brand strong { display: block; font-size: 17px; }
-.brand span { display: block; font-size: 13px; color: var(--muted); }
-h1 { font-size: 21px; margin: 0 0 4px; letter-spacing: -0.01em; }
-p.lead { margin: 0 0 22px; color: var(--muted); font-size: 14px; }
-label { display: block; font-size: 13px; font-weight: 600; margin: 0 0 6px; }
+.brand img { width: 44px; height: 44px; }
+.brand strong { display: block; font-size: 19px; }
+.brand span { display: block; font-size: 15px; color: var(--muted); }
+h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -0.01em; }
+p.lead { margin: 0 0 22px; color: var(--muted); font-size: 16px; }
+label { display: block; font-size: 15px; font-weight: 600; margin: 0 0 6px; }
 input[type=text], input[type=password] {
   width: 100%; padding: 11px 12px; margin-bottom: 16px; font: inherit; color: var(--text);
   background: var(--input); border: 1px solid var(--border); border-radius: 8px;
@@ -186,20 +193,20 @@ input[type=text], input[type=password] {
 input:focus { outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
 .row { display: flex; align-items: center; justify-content: space-between; margin: 2px 0 20px; }
-.check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 400; margin: 0; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 400; margin: 0; }
 .check input { width: 16px; height: 16px; accent-color: var(--brand); }
 button {
   width: 100%; padding: 12px; font: inherit; font-weight: 600; color: #fff; cursor: pointer;
   background: var(--brand); border: 0; border-radius: 8px; transition: background .15s;
 }
 button:hover { background: var(--brand-dark); }
-button:focus-visible { outline: 3px solid color-mix(in srgb, var(--brand) 40%, transparent); outline-offset: 2px; }
+button:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
 .error {
   background: var(--error-bg); color: var(--error); border-radius: 8px;
-  padding: 10px 12px; font-size: 14px; margin-bottom: 18px;
+  padding: 10px 12px; font-size: 16px; margin-bottom: 18px;
 }
-.note { margin: 16px 0 0; font-size: 13px; color: var(--muted); text-align: center; }
-footer { margin-top: 18px; text-align: center; font-size: 12px; color: var(--muted); }
+.note { margin: 16px 0 0; font-size: 15px; color: var(--muted); text-align: center; }
+footer { margin-top: 18px; text-align: center; font-size: 14px; color: var(--muted); }
 footer a { color: inherit; }
 </style>
 </head>
@@ -281,7 +288,8 @@ class Handler(BaseHTTPRequestHandler):
             ('Cache-Control', 'no-store'),
             ('X-Frame-Options', 'DENY'),
             ('Content-Security-Policy',
-             "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; "
+             "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; "
+             "font-src https://fonts.gstatic.com; img-src 'self'; "
              "form-action 'self'; frame-ancestors 'none'; base-uri 'none'"),
         ])
 

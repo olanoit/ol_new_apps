@@ -1,25 +1,55 @@
-/* Identidad de la suite: los mismos colores que las fichas de los módulos
-   (docs/fichas/generar_fichas.py: BRAND #b45309 y ACCENT #0f766e). */
+/* Identidad de ALTA Latam: los mismos tokens que los sitios web
+   (ol-odoo, OL-WEBSITE/al_website_alta_landing/static/src/scss/landing.scss):
+   navy #1F3145 / #06182E, violeta #7B70B4 / #5F5594, lila #E7E5F2 / #F0EEF7
+   y ámbar #EF9F27 solo como acento. */
 :root,
 [data-md-color-scheme="default"] {
-  --md-primary-fg-color: #b45309;
-  --md-primary-fg-color--light: #d97706;
-  --md-primary-fg-color--dark: #92400e;
-  --md-accent-fg-color: #0f766e;
-  --md-accent-fg-color--transparent: rgba(15, 118, 110, 0.1);
-  --ol-lead: #5b6570;
-  --ol-icon-bg: #fef6ec;
+  --md-primary-fg-color: #1F3145;
+  --md-primary-fg-color--light: #7B70B4;
+  --md-primary-fg-color--dark: #06182E;
+  --md-primary-bg-color: #FFFFFF;
+  --md-primary-bg-color--light: rgba(231, 229, 242, 0.75);
+  --md-accent-fg-color: #7B70B4;
+  --md-accent-fg-color--transparent: rgba(123, 112, 180, 0.12);
+  --md-typeset-a-color: #5F5594;
+  --md-footer-bg-color: #06182E;
+  --md-footer-bg-color--dark: #041122;
+  --ol-heading: #1F3145;
+  --ol-lead: #5A5A5A;
+  --ol-icon-bg: #E7E5F2;
+  --ol-icon-fg: #5F5594;
+  --ol-th-bg: #F0EEF7;
+  --ol-mark: #EF9F27;
 }
 
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color: #9a4a10;
-  --md-primary-fg-color--light: #b45309;
-  --md-primary-fg-color--dark: #7c2d12;
-  --md-accent-fg-color: #2dd4bf;
-  --md-accent-fg-color--transparent: rgba(45, 212, 191, 0.12);
-  --md-typeset-a-color: #5eead4;
-  --ol-lead: #a8b3bd;
-  --ol-icon-bg: rgba(180, 83, 9, 0.22);
+  --md-hue: 213;
+  --md-primary-fg-color: #1F3145;
+  --md-primary-fg-color--light: #7B70B4;
+  --md-primary-fg-color--dark: #06182E;
+  --md-default-bg-color: #0B1B2E;
+  --md-accent-fg-color: #EF9F27;
+  --md-accent-fg-color--transparent: rgba(239, 159, 39, 0.12);
+  --md-typeset-a-color: #B9B2E0;
+  --md-footer-bg-color: #06182E;
+  --md-footer-bg-color--dark: #041122;
+  --ol-heading: #FFFFFF;
+  --ol-lead: #C9C5E0;
+  --ol-icon-bg: rgba(123, 112, 180, 0.25);
+  --ol-icon-fg: #EF9F27;
+  --ol-th-bg: rgba(123, 112, 180, 0.16);
+  --ol-mark: #EF9F27;
+}
+
+/* Pestaña activa y foco: el ámbar de la marca, como en el sitio. */
+.md-tabs__item--active .md-tabs__link {
+  box-shadow: inset 0 -2px 0 var(--ol-mark);
+}
+
+.md-typeset a:focus-visible,
+.md-nav__link:focus-visible {
+  outline: 2px solid var(--ol-mark);
+  outline-offset: 2px;
 }
 
 /* Subtítulo de las fichas y de las áreas: un punto sobre el texto (em, no
@@ -42,12 +72,8 @@
   padding: 0 0.3em;
   border-radius: 0.4em;
   background: var(--ol-icon-bg);
-  color: var(--md-primary-fg-color);
+  color: var(--ol-icon-fg);
   font-weight: 700;
-}
-
-[data-md-color-scheme="slate"] .md-typeset .ol-icon {
-  color: #fbbf24;
 }
 
 /* Tabla de datos de la ficha: columna de etiquetas compacta. */
@@ -73,10 +99,14 @@
    tablas y avisos 0.64rem, títulos finos y grises); aquí todo deriva de
    un solo tamaño base y los títulos ganan peso y contraste en ambos modos.
    ------------------------------------------------------------------ */
+/* Tipografía de la marca: Calibri si está instalada y Carlito (métrica
+   idéntica, la carga el tema) en el resto. Es más estrecha que Inter, por
+   eso el tamaño base sube un punto. */
 :root {
-  --ol-text: 0.75rem;        /* 15 px: texto, listas y avisos */
-  --ol-small: 0.7rem;        /* 14 px: tablas, navegación, código */
-  --ol-line: 1.65;
+  --md-text-font: "Calibri", "Carlito";
+  --ol-text: 0.85rem;        /* 17 px: texto, listas y avisos */
+  --ol-small: 0.775rem;      /* 15,5 px: tablas, navegación */
+  --ol-line: 1.6;
 }
 
 .md-typeset {
@@ -88,15 +118,15 @@
 .md-typeset h2,
 .md-typeset h3,
 .md-typeset h4 {
-  color: var(--md-default-fg-color);
+  color: var(--ol-heading);
   letter-spacing: -0.01em;
   line-height: 1.3;
 }
 
 .md-typeset h1 { font-size: 1.85em; font-weight: 700; margin: 0 0 0.9em; }
-.md-typeset h2 { font-size: 1.4em;  font-weight: 650; margin: 1.8em 0 0.6em; }
-.md-typeset h3 { font-size: 1.15em; font-weight: 600; margin: 1.5em 0 0.5em; }
-.md-typeset h4 { font-size: 1em;    font-weight: 600; margin: 1.2em 0 0.4em; }
+.md-typeset h2 { font-size: 1.4em;  font-weight: 700; margin: 1.8em 0 0.6em; }
+.md-typeset h3 { font-size: 1.15em; font-weight: 700; margin: 1.5em 0 0.5em; }
+.md-typeset h4 { font-size: 1em;    font-weight: 700; margin: 1.2em 0 0.4em; }
 
 /* Tablas, avisos y desplegables con el mismo tamaño legible. */
 .md-typeset table:not([class]),
@@ -107,7 +137,8 @@
 
 .md-typeset table:not([class]) th {
   font-weight: 600;
-  background: var(--md-default-fg-color--lightest);
+  color: var(--ol-heading);
+  background: var(--ol-th-bg);
 }
 
 .md-typeset table:not([class]) td,
@@ -119,7 +150,7 @@
 .md-typeset code,
 .md-typeset kbd,
 .md-typeset pre {
-  font-size: 0.86em;
+  font-size: 0.8em;
 }
 
 /* Navegación y tabla de contenidos: mismo tamaño y aire entre entradas. */

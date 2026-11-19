@@ -817,9 +817,6 @@ def copy_media():
     for path, vpath in MEDIA.items():
         with mkdocs_gen_files.open(vpath, 'wb') as handle:
             handle.write(path.read_bytes())
-    logo = ROOT / 'OL-ACCOUNTING' / 'al_account_base' / 'static' / 'description' / 'icon.png'
-    with mkdocs_gen_files.open('assets/logo.png', 'wb') as handle:
-        handle.write(logo.read_bytes())
 
 
 template_pages()
