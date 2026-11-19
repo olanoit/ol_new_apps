@@ -63,8 +63,25 @@ BRAND_SOFT = '#E7E5F2'   # lila bruma
 ACCENT = '#1F3145'
 ACCENT_SOFT = '#F0EEF7'
 AMBER = '#EF9F27'
-FONT = ("-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',"
-        "Arial,sans-serif")
+# Tipografía de la marca: Calibri y, donde no está instalada, Carlito (misma
+# métrica). La página completa carga Carlito de Google Fonts; Aplicaciones
+# descarta el <head>, así que allí se ve Calibri si el equipo la tiene y, si
+# no, la fuente del sistema.
+FONT = "Calibri,Carlito,'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif"
+FONT_LINK = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+             'family=Carlito:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap"/>\n')
+# Calibri es más estrecha y baja que las fuentes del sistema: los tamaños del
+# diseño (pensados para estas) suben un 10 % para leerse igual.
+FONT_SCALE = 1.1
+FONT_SIZE = re.compile(r'font-size:(\d+(?:\.\d+)?)px')
+
+
+def scale_fonts(markup):
+    return FONT_SIZE.sub(
+        lambda m: 'font-size:%gpx' % (round(float(m.group(1)) * FONT_SCALE * 2) / 2),
+        markup)
+
+
 MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'
 
 WRAP = 'max-width:1120px;margin:0 auto;padding:0 24px;'
@@ -818,9 +835,10 @@ def render(module, data):
         '<!DOCTYPE html>\n<html lang="es">\n<head>\n'
         '<meta charset="utf-8"/>\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1"/>\n'
-        '<title>%s</title>\n</head>\n'
+        '<title>%s</title>\n%s</head>\n'
         '<body style="margin:0;font-family:%s;color:%s;background:#fff;line-height:1.55;">\n'
-        '%s</body>\n</html>\n' % (esc(data['titulo']), FONT, INK, body))
+        '%s</body>\n</html>\n' % (esc(data['titulo']), FONT_LINK, FONT, INK,
+                                  scale_fonts(body)))
 
 
 def build(module, check=False):

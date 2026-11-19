@@ -11,7 +11,7 @@ diagrama quedó desfasado).
 Por qué imagen y no HTML: Aplicaciones descarta ``<svg>`` y ``<script>`` al
 sanear la ficha, así que un diagrama con decisiones y ramas solo sobrevive como
 PNG. Se dibuja con Mermaid en Chrome (Playwright); necesita acceso a
-cdn.jsdelivr.net.
+cdn.jsdelivr.net y a fonts.googleapis.com (Carlito).
 """
 import json
 import sys
@@ -35,8 +35,8 @@ MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js'
 
 # Misma paleta que generar_fichas.py
 THEME = {
-    'fontFamily': "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif",
-    'fontSize': '15px',
+    'fontFamily': "Calibri,Carlito,'Segoe UI',system-ui,Arial,sans-serif",
+    'fontSize': '17px',
     'primaryColor': '#F0EEF7',
     'primaryBorderColor': '#5F5594',
     'primaryTextColor': '#1F3145',
@@ -51,6 +51,7 @@ THEME = {
 }
 
 PAGE = """<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&display=swap"/>
 <style>body{margin:0;background:#fff;} #d{display:inline-block;padding:24px;}</style>
 </head><body><div id="d"></div>
 <script src="%s"></script>
@@ -59,6 +60,9 @@ PAGE = """<!DOCTYPE html><html><head><meta charset="utf-8"/>
                       flowchart: {curve: 'basis', padding: 14, htmlLabels: true, useMaxWidth: false},
                       sequence: {useMaxWidth: false}});
   window.dibujar = async (texto) => {
+    // Mermaid mide el texto para dar tamaño a los nodos: la fuente debe
+    // estar cargada antes de dibujar.
+    await Promise.all(['17px', 'bold 17px', 'italic 17px'].map(f => document.fonts.load(f + ' Carlito')));
     const {svg} = await mermaid.render('g', texto);
     document.getElementById('d').innerHTML = svg;
     return true;
