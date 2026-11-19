@@ -22,9 +22,10 @@ Modelo de referencia: **`al_l10n_pe_retention.yml`** y su guion de capturas.
 PY=/home/och/odoo/ce19/.venv/bin/python
 # 1. capturas (servidor de Odoo levantado en http://127.0.0.1:19730)
 $PY docs/fichas/capturas/<módulo>.py
-# 2. diagramas (si el YAML tiene «flujos»; necesita acceso a cdn.jsdelivr.net)
+# 2. diagramas (si el YAML tiene «flujos»; necesita acceso a cdn.jsdelivr.net
+#    y a fonts.googleapis.com)
 $PY docs/fichas/diagramas.py <módulo>
-# 3. ficha
+# 3. ficha (siempre después de los diagramas: el tamaño del PNG va en el HTML)
 $PY docs/fichas/generar_fichas.py <módulo>
 # 4. revisión visual: deja PNG por tramos en la carpeta indicada
 $PY docs/fichas/revisar.py <módulo> /ruta/temporal
@@ -40,6 +41,37 @@ $PY docs/fichas/revisar.py <módulo> /ruta/temporal
   licencia del manifest.
 - Dependencias, edición (Community/Enterprise, detectada de forma transitiva) y
   módulos relacionados salen de los manifests.
+
+## Diseño
+
+Las fichas llevan la identidad de ALTA Latam, la misma de los sitios web y de
+la documentación (`mkdocs/content/assets/stylesheets/extra.css`). Los valores
+están al inicio de `generar_fichas.py`; el tema de los diagramas, en
+`diagramas.py`. Cambiar el aspecto de todas las fichas es tocar esas constantes
+y volver a generar.
+
+| Constante | Valor | Dónde se usa |
+|---|---|---|
+| `INK`, `ACCENT` | `#1F3145` (navy) | Texto, títulos, cabeceras de tabla, bloques de código, números de paso y marcas de verificación |
+| `NAVY_DEEP` | `#06182E` | Pie de la ficha e inicio del degradado de la portada |
+| `BRAND` | `#5F5594` (violeta) | Enlaces, etiquetas de sección, realces y borde de los diagramas |
+| `BRAND_SOFT` | `#E7E5F2` (lila bruma) | Fondo de las notas |
+| `SOFT`, `ACCENT_SOFT` | `#F0EEF7` (lila aire) | Secciones alternas, filas alternas, rutas de menú y nodos de los diagramas |
+| `AMBER` | `#EF9F27` | Solo acento: categoría de la portada y botón «Escríbenos» |
+| `MUTED` | `#5A5A5A` | Texto secundario |
+| `LINE` | `#D7DEE5` | Bordes |
+
+- **Portada:** degradado `135deg, #06182E → #5F5594`, el del hero de los sitios.
+- **Insignia Enterprise:** conserva el morado de Odoo (`#714b67`); no es color
+  de la marca.
+- **Tipografía:** Calibri y, donde no está instalada, Carlito (misma métrica).
+  La página completa carga Carlito de Google Fonts. Aplicaciones descarta el
+  `<head>`, así que allí se ve Calibri si el equipo la tiene y, si no, la
+  fuente del sistema.
+- **Tamaños:** se escriben pensados para una fuente del sistema y
+  `FONT_SCALE` (1.1) los sube al generar, porque Calibri es más pequeña.
+- **Diagramas:** texto en Carlito a 17 px. Si cambia el tema, hay que redibujar
+  todos los diagramas y volver a generar las fichas.
 
 ## Esquema del YAML
 
