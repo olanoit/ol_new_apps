@@ -44,7 +44,7 @@ LINK_CLASS = 'al-ficha-link'
 LINK_CSS = '.%s { display: none; }' % LINK_CLASS
 LINK_HTML = (
     '<p class="%s" style="margin:0 0 16px;padding:10px 14px;'
-    'border:1px solid #cfe8e5;border-radius:6px;background:#edf7f6;">'
+    'border:1px solid #D7DEE5;border-radius:6px;background:#F0EEF7;">'
     '<a href="/{module}/static/description/index.html" target="_blank" '
     'rel="noopener"><strong>Ver la ficha completa del m&#243;dulo</strong></a>'
     ' &#8212; abre esta descripci&#243;n con su dise&#241;o en una pesta&#241;a'

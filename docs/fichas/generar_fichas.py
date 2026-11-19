@@ -48,23 +48,28 @@ fichas = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(fichas)
 
 # ----------------------------------------------------------------------
-# Paleta y tipografía (misma identidad que las fichas anteriores)
+# Paleta y tipografía: los tokens de marca de ALTA Latam, los mismos de los
+# sitios web y de la documentación (mkdocs/content/assets/stylesheets/extra.css).
+# Navy para el texto y los bloques oscuros, violeta para enlaces y realces,
+# lila para los fondos suaves y ámbar solo como acento de la portada.
 # ----------------------------------------------------------------------
-INK = '#1c2024'
-MUTED = '#5b6570'
-LINE = '#e2e5e9'
-SOFT = '#f7f8fa'
-BRAND = '#b45309'
-BRAND_SOFT = '#fef6ec'
-ACCENT = '#0f766e'
-ACCENT_SOFT = '#edf7f6'
+INK = '#1F3145'          # navy
+NAVY_DEEP = '#06182E'
+MUTED = '#5A5A5A'
+LINE = '#D7DEE5'
+SOFT = '#F0EEF7'         # lila aire
+BRAND = '#5F5594'        # violeta legible sobre blanco
+BRAND_SOFT = '#E7E5F2'   # lila bruma
+ACCENT = '#1F3145'
+ACCENT_SOFT = '#F0EEF7'
+AMBER = '#EF9F27'
 FONT = ("-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',"
         "Arial,sans-serif")
 MONO = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace'
 
 WRAP = 'max-width:1120px;margin:0 auto;padding:0 24px;'
 CARD = ('background:#fff;border:1px solid %s;border-radius:12px;'
-        'padding:22px;box-shadow:0 1px 2px rgba(16,24,40,.04);' % LINE)
+        'padding:22px;box-shadow:0 1px 2px rgba(6,24,46,.04);' % LINE)
 H2 = ('font-size:28px;line-height:1.25;font-weight:800;color:%s;'
       'margin:0 0 8px;letter-spacing:-.01em;' % INK)
 SUB = 'font-size:16px;color:%s;margin:0 0 28px;max-width:760px;' % MUTED
@@ -120,7 +125,7 @@ def rich(text):
         chunk = esc(' '.join(para.split()))
         chunk = LINK.sub(
             lambda m: '<a href="%s" target="_blank" rel="noopener" style="color:%s;'
-                      'font-weight:600;">%s</a>' % (m.group(2), ACCENT, m.group(1)), chunk)
+                      'font-weight:600;">%s</a>' % (m.group(2), BRAND, m.group(1)), chunk)
         parts = chunk.split('**')
         chunk = ''.join(p if i % 2 == 0 else '<strong>%s</strong>' % p
                         for i, p in enumerate(parts))
@@ -180,7 +185,7 @@ def needs_enterprise(module, _seen=None):
 
 
 def figure(src, alt, margin_top=18, border=LINE,
-           shadow='0 12px 32px rgba(16,24,40,.10)', width=None):
+           shadow='0 12px 32px rgba(6,24,46,.10)', width=None):
     """Captura a su tamaño natural, centrada y como mucho al ancho de la página.
 
     Con ``width:100%`` un diálogo de 650 px se ampliaba a 1070 px y salía
@@ -239,7 +244,7 @@ def render_topbar(data, manifest, module):
 
 def render_hero(data, manifest):
     tags = ''.join(
-        '<span style="%sbackground:rgba(255,255,255,.1);color:#e6e9ec;'
+        '<span style="%sbackground:rgba(255,255,255,.1);color:#E7E5F2;'
         'border:1px solid rgba(255,255,255,.18);">%s</span>' % (PILL, esc(t))
         for t in data.get('etiquetas', []))
     email = (manifest.get('author', '').split('<')[-1].rstrip('>')
@@ -248,9 +253,9 @@ def render_hero(data, manifest):
     buttons = ''
     if email:
         buttons += ('<a href="mailto:%s" style="display:inline-block;background:%s;'
-                    'color:#fff;font-weight:700;font-size:14px;text-decoration:none;'
+                    'color:%s;font-weight:700;font-size:14px;text-decoration:none;'
                     'padding:11px 22px;border-radius:999px;margin:0 8px 8px 0;">'
-                    '&#9993; Escríbenos</a>' % (esc(email), BRAND))
+                    '&#9993; Escríbenos</a>' % (esc(email), AMBER, NAVY_DEEP))
     if website:
         buttons += ('<a href="%s" target="_blank" rel="noopener" style="display:inline-block;'
                     'background:transparent;color:#fff;font-weight:700;font-size:14px;'
@@ -263,13 +268,13 @@ def render_hero(data, manifest):
                        border='rgba(255,255,255,.15)',
                        shadow='0 20px 50px rgba(0,0,0,.35)')
     return (
-        '<header style="background:linear-gradient(160deg,#1c2024 0%%,#2c3138 55%%,'
-        '#3a3128 100%%);color:#fff;padding:60px 0 52px;">'
+        '<header style="background:linear-gradient(135deg,#06182E 0%%,#5F5594 100%%);'
+        'color:#fff;padding:60px 0 52px;">'
         '<div style="%s">'
-        '<p style="%scolor:#fbbf24;">%s</p>'
+        '<p style="%scolor:#EF9F27;">%s</p>'
         '<h1 style="font-size:42px;line-height:1.12;font-weight:800;margin:0 0 16px;'
         'letter-spacing:-.02em;color:#fff;">%s</h1>'
-        '<p style="font-size:18px;color:#c9ced5;max-width:720px;margin:0 0 24px;">%s</p>'
+        '<p style="font-size:18px;color:#E7E5F2;max-width:720px;margin:0 0 24px;">%s</p>'
         '<div style="margin:0 0 18px;">%s</div><div>%s</div>%s'
         '</div></header>\n'
         % (WRAP, EYEBROW, esc(data.get('categoria', 'Odoo 19')), esc(data['titulo']),
@@ -328,7 +333,7 @@ def render_steps(data):
             continue
         i += 1
         route = ('<div style="display:inline-block;font-size:13px;font-weight:600;'
-                 'color:%s;background:%s;border:1px solid #cfe8e5;border-radius:6px;'
+                 'color:%s;background:%s;border:1px solid #D7DEE5;border-radius:6px;'
                  'padding:4px 10px;margin:0 0 12px;">&#128205; %s</div>'
                  % (ACCENT, ACCENT_SOFT, esc(step['ruta']))) if step.get('ruta') else ''
         image = ''
@@ -527,11 +532,11 @@ def render_related(data):
 
 def render_footer(data, manifest, module):
     return (
-        '<footer style="background:%s;color:#9aa4ae;padding:34px 0;font-size:13.5px;">'
+        '<footer style="background:%s;color:#C9C5E0;padding:34px 0;font-size:13.5px;">'
         '<div style="%s">'
         '<p style="margin:0 0 6px"><strong>%s</strong> · versión %s · %s</p>'
         '<p style="margin:0">%s</p></div></footer>\n'
-        % (INK, WRAP, esc(module), esc(manifest.get('version', '')),
+        % (NAVY_DEEP, WRAP, esc(module), esc(manifest.get('version', '')),
            esc(manifest.get('license', '')),
            inline(data.get('pie', 'Desarrollado por AltaBPO para Odoo 19.'))))
 
@@ -583,7 +588,7 @@ def render_index(data):
         functions = ('<p style="font-size:13px;font-weight:700;color:%s;margin:14px 0 8px;'
                      'text-transform:uppercase;letter-spacing:.08em;">Funciones cubiertas</p>'
                      '<div>%s</div>' % (MUTED, ''.join(
-                         '<span style="%sbackground:%s;color:%s;border:1px solid #cfe8e5;">%s</span>'
+                         '<span style="%sbackground:%s;color:%s;border:1px solid #D7DEE5;">%s</span>'
                          % (PILL, ACCENT_SOFT, ACCENT, esc(s['seccion'])) for s in sections)))
     return ('<div style="background:%s;border-bottom:1px solid %s;padding:22px 0 14px;">'
             '<div style="%s"><p style="font-size:13px;font-weight:700;color:%s;margin:0 0 10px;'
@@ -696,7 +701,7 @@ def render_fields(data):
     out = ''
     for group in groups:
         route = ('<div style="display:inline-block;font-size:13px;font-weight:600;color:%s;'
-                 'background:%s;border:1px solid #cfe8e5;border-radius:6px;padding:4px 10px;'
+                 'background:%s;border:1px solid #D7DEE5;border-radius:6px;padding:4px 10px;'
                  'margin:0 0 10px;">&#128205; %s</div>'
                  % (ACCENT, ACCENT_SOFT, esc(group['ruta']))) if group.get('ruta') else ''
         out += ('<div style="margin:0 0 26px;"><h3 style="font-size:19px;font-weight:700;'
