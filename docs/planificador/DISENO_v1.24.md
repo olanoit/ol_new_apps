@@ -152,8 +152,54 @@ no cubrían; quedaron corregidos y con su prueba
    (`_construction_rubro_account`), que es uno solo porque todos son del mismo
    tipo (`_construction_line_analytic_common`).
 
-## 8. Verificación en las instancias
+## 8. Verificación en las instancias (20-nov-2026)
 
-Pendiente del despliegue: newallcenter-dev1 (obra de mobiliario del
-requerimiento) y creval-dev (una obra de construcción), con una captura por
-criterio.
+Desplegado en las cuatro bases de desarrollo con `c4a9bea9` y la corrección
+`f7a130ed`. La verificación se hizo en el navegador, en la instancia de
+mobiliario con un usuario que pide material y no es administrador, y en la de
+construcción con el administrador. Las capturas quedan fuera del repositorio.
+
+### Instancia de mobiliario
+
+| Criterio | Resultado |
+|---|---|
+| M124-01 · 1 | Con un piso elegido, «Tipo de ambiente» ofrece los cuatro tipos de ese piso con las cantidades del requerimiento |
+| M124-01 · 2 | Etapa, piso y «Cocina»: las 6 líneas con las cantidades del requerimiento, «Tipo de ambiente» = Cocina y analítica con la obra y el Rubro Cocina |
+| M124-01 · 3 | «Cocina» y «Closet»: 11 líneas, 6 de cocina y 5 de closet; el material común sale en dos líneas, cada una con su Rubro |
+| M124-01 · 4 | La segunda pulsación responde «No queda saldo por pedir…» y no crea líneas |
+| M124-01 · 7 | El recorrido (elegir, abrir cada lista, traer) corre sin error con el usuario que pide |
+| M124-02 · 1 y 2 | En la obra sin plantilla, la lista muestra piso, departamento, ambiente y tipología, y escribir el número de un departamento deja solo sus ambientes |
+| M124-02 · 3 | Con un tipo y un piso elegidos, la lista ofrece solo los ambientes de ese tipo en ese piso |
+| M124-03 · 1 | Cada campo del recuadro tiene su «?», en la obra con plantilla y en la obra sin plantilla |
+| M124-04 · 1 y 2 | Almacén (de solo lectura para quien pide), analítica y jefe de proyecto en la cabecera; sin pestañas |
+
+Queda en esa base un requerimiento en borrador con las 11 líneas, para la
+aceptación. Mientras exista, sus líneas cuentan como pedidas contra el plan.
+
+### Instancia de construcción
+
+| Criterio | Resultado |
+|---|---|
+| M124-01 · 5 | En una obra por partidas no aparece el selector de tipo; el recuadro muestra etapas, especialidad, sub-especialidad, partida y tarea del Gantt |
+| M124-03 · 3 | Cada nivel muestra su orientación |
+| M124-04 | Almacén, analítica y jefe de proyecto en la cabecera; sin pestañas |
+
+No se pulsó «Traer materiales del plan» ni se guardó ningún requerimiento ahí.
+
+### Lo que no se verificó en pantalla
+
+- M124-01 · 6 (sin tipos elegidos trae lo mismo que antes): solo por las pruebas.
+- M124-03 · 2 (cambiar la orientación en la plantilla cambia el requerimiento):
+  solo por las pruebas.
+- M124-04 · 3 (el requerimiento interno no muestra «Jefe de proyecto»): no se
+  abrió un interno.
+- El requerimiento existente que cita el criterio 1 de M124-02 y de M124-04: el
+  usuario de la verificación no tiene acceso a él; se comprobó en un borrador
+  nuevo de la misma obra, que se descartó.
+- La lista de partidas abierta, en construcción.
+
+### Pendiente del cliente
+
+La plantilla de niveles de construcción usa las orientaciones por defecto, que
+hablan de pisos y ambientes. La compañía escribe las suyas para especialidad,
+sub-especialidad y partida («Configuración y datos» del requerimiento).
