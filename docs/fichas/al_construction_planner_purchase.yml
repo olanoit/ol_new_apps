@@ -31,6 +31,11 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '31.20261120'
+  fecha: 20/11/2026
+  cambios:
+    - "La línea traída del plan por tipo lleva siempre la cuenta Rubro de su tipo, aunque las líneas del plan se hayan generado antes de configurar el Rubro."
+    - "El selector de tipo y el resumen usan el nombre que da la vertical («Tipo de ambiente», «23 ambientes»), no el del nivel con etapas de la plantilla."
 - version: '30.20261120'
   fecha: 20/11/2026
   cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 34.20261120 — 20/11/2026
+
+- El selector de tipo del requerimiento de obra se llama «Tipo de ambiente» en cualquier plantilla de niveles.
+
 ## 33.20261120 — 20/11/2026
 
 - El tipo de ambiente del requerimiento de obra es la familia de la tipología (Cocina, Closet, Baño, Lavandería, Ducto…); un ambiente sin tipología queda en «Sin tipo» (paquete 1.24).

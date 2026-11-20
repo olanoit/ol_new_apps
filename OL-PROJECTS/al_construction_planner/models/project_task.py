@@ -190,6 +190,13 @@ class ProjectTask(models.Model):
         return {}
 
     @api.model
+    def _construction_space_type_noun(self):
+        """Cómo llama la vertical a lo que tiene tipo, en singular y minúscula
+        («ambiente»): da el nombre del selector («Tipo de ambiente») y el
+        conteo del resumen. Vacío: el nombre del nivel con etapas de la obra."""
+        return False
+
+    @api.model
     def _construction_space_type_hint(self):
         """Orientación del selector de tipo (gancho de la vertical); vacía, la
         general del requerimiento."""

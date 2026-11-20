@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 31.20261120 — 20/11/2026
+
+- La línea traída del plan por tipo lleva siempre la cuenta Rubro de su tipo, aunque las líneas del plan se hayan generado antes de configurar el Rubro.
+- El selector de tipo y el resumen usan el nombre que da la vertical («Tipo de ambiente», «23 ambientes»), no el del nivel con etapas de la plantilla.
+
 ## 30.20261120 — 20/11/2026
 
 - Requerimiento de obra (paquete 1.24): selector «Tipo de ambiente» entre el departamento y el ambiente, de varias opciones y con la cantidad de cada tipo; «Traer materiales del plan» trae el saldo de los ambientes de esos tipos, una línea por material, etapa, tipo y nivel elegido, con la analítica de la obra y del Rubro.

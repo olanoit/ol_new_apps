@@ -231,6 +231,13 @@ class ConstructionMaterialRequest(models.Model):
         el selector de tipo; 0 si la obra no lo tiene."""
         return next((depth for depth, slot in enumerate(slots, 1) if slot[3] == 'space'), 0)
 
+    def _construction_scope_type_noun(self, slots):
+        """Nombre, en singular y minúscula, de lo que tiene tipo: el que da la
+        vertical («ambiente») o, si no lo da, el del nivel con etapas."""
+        type_depth = self._construction_scope_type_depth(slots)
+        return self.env['project.task']._construction_space_type_noun() \
+            or slots[type_depth - 1][0].lower()
+
     def _construction_scope_type_set(self):
         self.ensure_one()
         return set(self.construction_scope_type_keys or [])
@@ -293,12 +300,13 @@ class ConstructionMaterialRequest(models.Model):
             type_depth = request._construction_scope_type_depth(slots) if options else 0
             request.construction_scope_type_options = options
             request.construction_scope_type_depth = type_depth
+            noun = request._construction_scope_type_noun(slots) if type_depth else ''
             request.construction_scope_type_label = self.env._(
-                'Tipo de %s', slots[type_depth - 1][0].lower()) if type_depth else False
+                'Tipo de %s', noun) if type_depth else False
             request.construction_scope_type_hint = (
                 Task._construction_space_type_hint() or self.env._(
                     'Tipo de %s al que va el material. Puede elegir varios. Vacío: todos los '
-                    'tipos de lo elegido arriba.', slots[type_depth - 1][0].lower())
+                    'tipos de lo elegido arriba.', noun)
             ) if type_depth else False
             for depth in range(1, SCOPE_DEPTH + 1):
                 request['construction_scope_%s_label' % depth] = \
@@ -403,8 +411,9 @@ class ConstructionMaterialRequest(models.Model):
                     'Se traerá el saldo del plan de %(where)s, %(stages)s.',
                     where=where, stages=stage_text)
                 continue
-            detail = ''
+            detail, noun = '', slots[type_depth - 1][0]
             if request.construction_scope_type_depth:
+                noun = request._construction_scope_type_noun(slots)
                 types = spaces._construction_space_types()
                 none = (NO_TYPE, self.env._('Sin tipo'))
                 counts = Counter(types.get(space.id, none) for space in spaces)
@@ -413,7 +422,7 @@ class ConstructionMaterialRequest(models.Model):
                         counts.items(), key=lambda item: (item[0][0] == NO_TYPE, item[0][1])))
             request.construction_fetch_summary = self.env._(
                 'Se traerá el saldo del plan de %(spaces)s de %(where)s%(detail)s, %(stages)s.',
-                spaces=_plural(len(spaces), slots[type_depth - 1][0]), where=where,
+                spaces=_plural(len(spaces), noun), where=where,
                 detail=': %s' % detail if detail else '', stages=stage_text)
 
     # ------------------------------------------------------------------
@@ -473,20 +482,24 @@ class ConstructionMaterialRequest(models.Model):
         aunque cada nivel tenga su cuenta. Si no coinciden enteras, pasan a la
         línea las cuentas que todas tienen (cada una con una sola combinación
         al 100 %)."""
-        values = self._construction_line_analytic(plan_lines)
-        if values:
-            return values
         common = None
         for line in plan_lines:
             distribution = line.analytic_distribution or {}
             if len(distribution) != 1:
                 return {}
-            accounts = set(next(iter(distribution)).split(','))
+            accounts = {int(account) for account in next(iter(distribution)).split(',')}
             common = accounts if common is None else common & accounts
         if not common:
             return {}
+        # El Rubro del tipo va siempre, aunque el plan se haya generado antes
+        # de configurar sus cuentas: todos los niveles con etapas de la línea
+        # son del mismo tipo.
+        rubros = {space._construction_rubro_account().id
+                  for space in plan_lines.space_task_id}
+        if len(rubros) == 1:
+            common |= rubros - {False}
         return {'analytic_distribution': {
-            ','.join(sorted(common, key=int)): 100.0}}
+            ','.join(str(account) for account in sorted(common)): 100.0}}
 
     def _construction_fetch_groups(self):
         """{(nivel, producto, etapa, tipo): líneas del plan} del alcance

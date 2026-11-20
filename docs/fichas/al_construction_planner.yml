@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '87.20261120'
+    fecha: 20/11/2026
+    cambios:
+      - "Gancho para que la vertical nombre lo que tiene tipo en el requerimiento de obra («ambiente»)."
   - version: '86.20261120'
     fecha: 20/11/2026
     cambios:

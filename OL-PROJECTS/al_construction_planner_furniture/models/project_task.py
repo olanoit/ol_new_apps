@@ -60,6 +60,10 @@ class ProjectTask(models.Model):
         return types
 
     @api.model
+    def _construction_space_type_noun(self):
+        return self.env._('ambiente')
+
+    @api.model
     def _construction_space_type_hint(self):
         return self.env._(
             'Tipo de mueble o ambiente al que va el material: Cocina, Closet, Baño, '

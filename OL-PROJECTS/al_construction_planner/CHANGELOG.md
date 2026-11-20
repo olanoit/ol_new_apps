@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 87.20261120 — 20/11/2026
+
+- Gancho para que la vertical nombre lo que tiene tipo en el requerimiento de obra («ambiente»).
+
 ## 86.20261120 — 20/11/2026
 
 - Plantilla de niveles: campo «Orientación en el requerimiento» por nivel, con un texto por defecto según la función del nivel (paquete 1.24).

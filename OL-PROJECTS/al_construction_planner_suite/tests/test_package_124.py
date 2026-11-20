@@ -7,6 +7,8 @@ from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form, HttpCase, new_test_user, tagged
 
+from odoo.addons.al_construction_planner.models.common import PLAN_FORCE
+
 from .common import PlannerCommon
 
 
@@ -174,6 +176,34 @@ class TestPackage124(Package124Common):
         hinges[0].unlink()
         request.action_construction_fetch_plan()
         self.assertEqual(len(request.line_ids), count)
+
+    def test_rubro_even_if_plan_lacks_it_and_noun_of_vertical(self):
+        """Verificación del 20-nov-2026 en la instancia: el plan generado antes
+        de configurar el Rubro no lo trae en sus líneas, y la plantilla llama
+        «Mueble instalado» al nivel con etapas. La línea lleva el Rubro de su
+        tipo y el selector sigue siendo «Tipo de ambiente»."""
+        for line in self.plan.line_ids.filtered('analytic_distribution'):
+            line.with_context(construction_plan_force=PLAN_FORCE).analytic_distribution = {
+                ','.join(a for a in key.split(',') if int(a) not in (
+                    self.rubro['kitchen'].id, self.rubro['closet'].id)): value
+                for key, value in line.analytic_distribution.items()}
+        template = self.env['construction.level.template'].create({
+            'name': 'Edificio por mueble instalado (test 1.24)', 'line_ids': [
+                (0, 0, {'sequence': 1, 'name': 'Piso', 'role': 'group'}),
+                (0, 0, {'sequence': 2, 'name': 'Departamento', 'role': 'unit'}),
+                (0, 0, {'sequence': 3, 'name': 'Mueble instalado', 'role': 'space'})]})
+        self.project.construction_level_template_id = template
+        request = self._new_request()
+        self.assertEqual(request.construction_scope_3_label, 'Mueble instalado')
+        self.assertEqual(request.construction_scope_type_label, 'Tipo de ambiente')
+        request.write({'construction_scope_1_ids': [Command.set(self.floor.ids)],
+                       'construction_stage_ids': [Command.set(self.stage_assembly.ids)],
+                       'construction_scope_type_keys': ['kitchen']})
+        self.assertIn('2 ambientes de Piso 05: 2 cocinas', request.construction_fetch_summary)
+        request.action_construction_fetch_plan()
+        accounts = self._accounts(self._hinges(request))
+        self.assertIn(self.rubro['kitchen'].id, accounts)
+        self.assertIn(self.project.account_id.id, accounts)
 
     def test_fetch_one_line_per_floor_and_type(self):
         """Decisión del 20-nov-2026: con varios pisos, una línea por material,

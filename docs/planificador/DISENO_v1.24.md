@@ -135,7 +135,24 @@ corrieron: van en otra base.
 8. **1280 × 720.** La cabecera y el inicio del recuadro entran sin desplazar; el
    recuadro completo con seis campos y las etiquetas elegidas necesita desplazar.
 
-## 7. Verificación en las instancias
+## 7. Correcciones de la verificación (20-nov-2026)
+
+La primera pasada en la instancia de mobiliario mostró dos casos que las pruebas
+no cubrían; quedaron corregidos y con su prueba
+(`test_rubro_even_if_plan_lacks_it_and_noun_of_vertical`):
+
+1. **Nombre del selector.** La plantilla de la obra llama «Mueble instalado» al
+   nivel con etapas, y el selector salía como «Tipo de mueble instalado». La
+   vertical nombra ahora lo que tiene tipo con el gancho
+   `project.task._construction_space_type_noun` (mobiliario: «ambiente»); sin
+   gancho, se usa el nombre del nivel. El resumen cuenta con ese mismo nombre.
+2. **Rubro que el plan no trae.** Las líneas del plan se habían generado sin la
+   cuenta Rubro, así que la línea del requerimiento tampoco la llevaba. La línea
+   con tipo suma siempre el Rubro de sus niveles con etapas
+   (`_construction_rubro_account`), que es uno solo porque todos son del mismo
+   tipo (`_construction_line_analytic_common`).
+
+## 8. Verificación en las instancias
 
 Pendiente del despliegue: newallcenter-dev1 (obra de mobiliario del
 requerimiento) y creval-dev (una obra de construcción), con una captura por

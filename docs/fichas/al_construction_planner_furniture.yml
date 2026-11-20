@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '34.20261120'
+  fecha: 20/11/2026
+  cambios:
+    - "El selector de tipo del requerimiento de obra se llama «Tipo de ambiente» en cualquier plantilla de niveles."
 - version: '33.20261120'
   fecha: 20/11/2026
   cambios:
