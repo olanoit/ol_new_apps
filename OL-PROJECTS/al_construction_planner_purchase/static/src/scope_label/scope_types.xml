@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_construction_planner_purchase.ScopeTypes">
+        <div t-if="props.readonly" class="o_construction_scope_types">
+            <span t-foreach="chosen" t-as="option" t-key="option.key"
+                  class="badge rounded-pill text-bg-secondary me-1" t-esc="option.label"/>
+        </div>
+        <SelectMenu t-else=""
+                    class="'o_construction_scope_types w-100'"
+                    choices="choices"
+                    value="value"
+                    multiSelect="true"
+                    autoSort="false"
+                    placeholder="props.placeholder"
+                    onSelect.bind="onSelect">
+            <t t-set-slot="choice" t-slot-scope="choice">
+                <span class="o_construction_scope_type_option">
+                    <t t-esc="choice.data.label"/> (<t t-esc="choice.data.count"/>)
+                </span>
+            </t>
+        </SelectMenu>
+    </t>
+
+</templates>

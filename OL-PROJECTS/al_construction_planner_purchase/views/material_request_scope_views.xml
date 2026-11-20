@@ -19,7 +19,7 @@
             <xpath expr="//group[@name='site']/field[@name='task_id']" position="attributes">
                 <attribute name="invisible">not project_id or construction_has_levels</attribute>
             </xpath>
-            <xpath expr="//notebook" position="before">
+            <xpath expr="//separator[@name='lines']" position="before">
                 <div name="construction_scope" class="border border-primary rounded p-3 mb-3"
                      invisible="state != 'draft' or not project_id">
                     <field name="construction_has_levels" invisible="1"/>
@@ -27,9 +27,12 @@
                     <field name="construction_default_stage" invisible="1"/>
                     <field name="construction_default_task_id" invisible="1"/>
                     <field name="construction_plan_id" invisible="1"/>
+                    <field name="construction_scope_type_depth" invisible="1"/>
+                    <field name="construction_scope_type_options" invisible="1"/>
+                    <field name="construction_scope_type_hint" invisible="1"/>
                     <h5 class="mb-3">¿Para qué es el material?</h5>
                     <div class="row mb-2">
-                        <div class="col-12 col-md-3 fw-bold">Etapas</div>
+                        <div class="col-12 col-md-3 fw-bold"><label for="construction_stage_ids"/></div>
                         <div class="col-12 col-md-9">
                             <field name="construction_stage_ids" widget="many2many_tags" placeholder="Todas"
                                    options="{'no_create': True}"/>
@@ -43,74 +46,185 @@
                                    options="{'no_create': True}"/>
                         </div>
                     </div>
+                    <!-- M124-01: el tipo va antes del selector del nivel con etapas. -->
+                    <div class="row mb-2" invisible="construction_scope_type_depth != 1">
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_type_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_type_hint'}"/>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_type_keys" widget="construction_scope_types"
+                                   placeholder="Todos"
+                                   options="{'options_field': 'construction_scope_type_options'}"/>
+                        </div>
+                    </div>
                     <div class="row mb-2" invisible="not construction_scope_1_label">
-                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_1_label"/></div>
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_1_hint" invisible="1"/>
+                            <field name="construction_scope_1_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_1_hint'}"/>
+                            <span class="text-muted fw-normal" invisible="construction_scope_type_depth != 1"> (opcional)</span>
+                        </div>
                         <div class="col-12 col-md-9">
                             <field name="construction_scope_1_allowed_ids" invisible="1"/>
-                            <field name="construction_scope_1_ids" widget="many2many_tags" placeholder="Todos"
+                            <field name="construction_scope_1_ids" widget="construction_scope_tags" placeholder="Todos"
                                    domain="[('id', 'in', construction_scope_1_allowed_ids)]"
+                                   context="{'construction_scope_path': True}"
                                    options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <!-- M124-01: el tipo va antes del selector del nivel con etapas. -->
+                    <div class="row mb-2" invisible="construction_scope_type_depth != 2">
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_type_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_type_hint'}"/>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_type_keys" widget="construction_scope_types"
+                                   placeholder="Todos"
+                                   options="{'options_field': 'construction_scope_type_options'}"/>
                         </div>
                     </div>
                     <div class="row mb-2" invisible="not construction_scope_2_label">
-                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_2_label"/></div>
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_2_hint" invisible="1"/>
+                            <field name="construction_scope_2_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_2_hint'}"/>
+                            <span class="text-muted fw-normal" invisible="construction_scope_type_depth != 2"> (opcional)</span>
+                        </div>
                         <div class="col-12 col-md-9">
                             <field name="construction_scope_2_allowed_ids" invisible="1"/>
-                            <field name="construction_scope_2_ids" widget="many2many_tags" placeholder="Todos"
+                            <field name="construction_scope_2_ids" widget="construction_scope_tags" placeholder="Todos"
                                    domain="[('id', 'in', construction_scope_2_allowed_ids)]"
+                                   context="{'construction_scope_path': True}"
                                    options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <!-- M124-01: el tipo va antes del selector del nivel con etapas. -->
+                    <div class="row mb-2" invisible="construction_scope_type_depth != 3">
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_type_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_type_hint'}"/>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_type_keys" widget="construction_scope_types"
+                                   placeholder="Todos"
+                                   options="{'options_field': 'construction_scope_type_options'}"/>
                         </div>
                     </div>
                     <div class="row mb-2" invisible="not construction_scope_3_label">
-                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_3_label"/></div>
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_3_hint" invisible="1"/>
+                            <field name="construction_scope_3_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_3_hint'}"/>
+                            <span class="text-muted fw-normal" invisible="construction_scope_type_depth != 3"> (opcional)</span>
+                        </div>
                         <div class="col-12 col-md-9">
                             <field name="construction_scope_3_allowed_ids" invisible="1"/>
-                            <field name="construction_scope_3_ids" widget="many2many_tags" placeholder="Todos"
+                            <field name="construction_scope_3_ids" widget="construction_scope_tags" placeholder="Todos"
                                    domain="[('id', 'in', construction_scope_3_allowed_ids)]"
+                                   context="{'construction_scope_path': True}"
                                    options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <!-- M124-01: el tipo va antes del selector del nivel con etapas. -->
+                    <div class="row mb-2" invisible="construction_scope_type_depth != 4">
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_type_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_type_hint'}"/>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_type_keys" widget="construction_scope_types"
+                                   placeholder="Todos"
+                                   options="{'options_field': 'construction_scope_type_options'}"/>
                         </div>
                     </div>
                     <div class="row mb-2" invisible="not construction_scope_4_label">
-                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_4_label"/></div>
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_4_hint" invisible="1"/>
+                            <field name="construction_scope_4_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_4_hint'}"/>
+                            <span class="text-muted fw-normal" invisible="construction_scope_type_depth != 4"> (opcional)</span>
+                        </div>
                         <div class="col-12 col-md-9">
                             <field name="construction_scope_4_allowed_ids" invisible="1"/>
-                            <field name="construction_scope_4_ids" widget="many2many_tags" placeholder="Todos"
+                            <field name="construction_scope_4_ids" widget="construction_scope_tags" placeholder="Todos"
                                    domain="[('id', 'in', construction_scope_4_allowed_ids)]"
+                                   context="{'construction_scope_path': True}"
                                    options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <!-- M124-01: el tipo va antes del selector del nivel con etapas. -->
+                    <div class="row mb-2" invisible="construction_scope_type_depth != 5">
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_type_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_type_hint'}"/>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_type_keys" widget="construction_scope_types"
+                                   placeholder="Todos"
+                                   options="{'options_field': 'construction_scope_type_options'}"/>
                         </div>
                     </div>
                     <div class="row mb-2" invisible="not construction_scope_5_label">
-                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_5_label"/></div>
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_5_hint" invisible="1"/>
+                            <field name="construction_scope_5_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_5_hint'}"/>
+                            <span class="text-muted fw-normal" invisible="construction_scope_type_depth != 5"> (opcional)</span>
+                        </div>
                         <div class="col-12 col-md-9">
                             <field name="construction_scope_5_allowed_ids" invisible="1"/>
-                            <field name="construction_scope_5_ids" widget="many2many_tags" placeholder="Todos"
+                            <field name="construction_scope_5_ids" widget="construction_scope_tags" placeholder="Todos"
                                    domain="[('id', 'in', construction_scope_5_allowed_ids)]"
+                                   context="{'construction_scope_path': True}"
                                    options="{'no_create': True}"/>
                         </div>
                     </div>
+                    <!-- M124-01: el tipo va antes del selector del nivel con etapas. -->
+                    <div class="row mb-2" invisible="construction_scope_type_depth != 6">
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_type_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_type_hint'}"/>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_type_keys" widget="construction_scope_types"
+                                   placeholder="Todos"
+                                   options="{'options_field': 'construction_scope_type_options'}"/>
+                        </div>
+                    </div>
                     <div class="row mb-2" invisible="not construction_scope_6_label">
-                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_6_label"/></div>
+                        <div class="col-12 col-md-3 fw-bold">
+                            <field name="construction_scope_6_hint" invisible="1"/>
+                            <field name="construction_scope_6_label" widget="construction_scope_label"
+                                   options="{'hint_field': 'construction_scope_6_hint'}"/>
+                            <span class="text-muted fw-normal" invisible="construction_scope_type_depth != 6"> (opcional)</span>
+                        </div>
                         <div class="col-12 col-md-9">
                             <field name="construction_scope_6_allowed_ids" invisible="1"/>
-                            <field name="construction_scope_6_ids" widget="many2many_tags" placeholder="Todos"
+                            <field name="construction_scope_6_ids" widget="construction_scope_tags" placeholder="Todos"
                                    domain="[('id', 'in', construction_scope_6_allowed_ids)]"
+                                   context="{'construction_scope_path': True}"
                                    options="{'no_create': True}"/>
                         </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-12 col-md-3 fw-bold">Tarea del Gantt <span class="text-muted fw-normal">(opcional)</span></div>
+                        <div class="col-12 col-md-3 fw-bold"><label for="construction_gantt_task_id"/> <span class="text-muted fw-normal">(opcional)</span></div>
                         <div class="col-12 col-md-9">
                             <field name="construction_gantt_task_id"
-                                   placeholder="Para material de una tarea que no es nivel del plan"
+                                   placeholder="Para material de una tarea…"
                                    options="{'no_create': True}"/>
-                            <div class="text-muted small">
-                                Úsala para material de una tarea de la obra que no está en el plan (por ejemplo, una movilización o un trabajo adicional). «Traer materiales del plan» no la usa: trae el saldo de los niveles elegidos arriba. Los materiales que agregues a mano quedan cargados a esta tarea.
-                            </div>
                         </div>
                     </div>
-                    <button name="action_construction_fetch_plan" type="object"
-                            string="Traer materiales del plan" class="btn-primary mt-2"
-                            icon="fa-download" invisible="not construction_plan_id"/>
+                    <!-- M124-01: lo que se va a traer, a la izquierda del botón. -->
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2"
+                         invisible="not construction_plan_id">
+                        <field name="construction_fetch_summary" class="flex-grow-1 mb-0"
+                               nolabel="1" readonly="1"/>
+                        <button name="action_construction_fetch_plan" type="object"
+                                string="Traer materiales del plan" class="btn-primary ms-auto"
+                                icon="fa-download"/>
+                    </div>
                     <div class="text-muted small mt-2" invisible="construction_plan_id">
                         La obra no tiene plan de recursos vigente: agregue los materiales a mano.
                     </div>
@@ -123,6 +237,8 @@
             </xpath>
             <xpath expr="//field[@name='line_ids']/list/field[@name='product_id']" position="after">
                 <field name="construction_level_label" optional="show"/>
+                <field name="construction_space_type" optional="show" width="120px"
+                       column_invisible="not parent.construction_scope_type_depth"/>
                 <field name="construction_stage_codes" column_invisible="1"/>
                 <field name="construction_stage" optional="show" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
                 <field name="location_dest_id" optional="hide" options="{'no_create': True}"

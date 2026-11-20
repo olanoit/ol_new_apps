@@ -1,0 +1,12 @@
+// Paquete 1.24, M124-02: la lista de un selector de nivel muestra el camino
+// completo de cada opción; necesita más ancho que el campo en una columna.
+.o_field_construction_scope_tags .o-autocomplete--dropdown-menu {
+    min-width: 430px;
+    max-width: 90vw;
+}
+
+@media (max-width: 575.98px) {
+    .o_field_construction_scope_tags .o-autocomplete--dropdown-menu {
+        min-width: 0;
+    }
+}

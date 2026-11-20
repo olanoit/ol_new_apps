@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="al_construction_planner_purchase.ScopeLabel">
+        <span class="o_form_label o_construction_scope_label">
+            <t t-esc="label"/><sup t-if="hint" class="d-print-none text-info p-1"
+                t-att-data-tooltip="hint" data-tooltip-touch-tap-to-show="true">?</sup>
+        </span>
+    </t>
+
+</templates>

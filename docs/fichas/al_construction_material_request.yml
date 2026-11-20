@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '39.20261120'
+    fecha: 20/11/2026
+    cambios:
+      - "Cabecera completa (paquete 1.24): «Almacén por defecto», «Distribución analítica», «Jefe de proyecto» e «Indicaciones para logística» suben a la cabecera; la pestaña «Otra información» se quita y «Materiales» titula la tabla. Los permisos de edición no cambian."
   - version: '38.20261112'
     fecha: 16/11/2026
     cambios:

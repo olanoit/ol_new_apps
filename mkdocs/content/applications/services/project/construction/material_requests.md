@@ -87,7 +87,10 @@ electrónica salga correcta.
 1. Vaya a **Requerimientos de obra ‣ Requerimientos ‣ Requerimientos ‣ Nuevo**.
 2. Elija la **Obra** y la **Fecha requerida**, y agregue los materiales con su
    cantidad. El requerimiento toma la ubicación de la obra y su analítica, y
-   recibe el número `RQO/AAAA/#####`.
+   recibe el número `RQO/AAAA/#####`. La cabecera muestra el **Almacén por
+   defecto** del que se pide (lo cambia solo Logística), la **Distribución
+   analítica** y el **Jefe de proyecto**; debajo, escriba las **Indicaciones
+   para logística** (acceso a la obra, horario de recepción).
 3. Haga clic en **Solicitar aprobación**. El requerimiento pasa a **En
    aprobación** con una revisión por nivel; si ninguna regla aplica, pasa
    directo a **Aprobado**.
@@ -115,26 +118,45 @@ Las **Etapas** van primero: si elige una de Producción, debajo aparece la
 **Planta**, y los selectores de nivel solo muestran los niveles que llevan esa
 etapa en la plantilla. Con niveles, el campo **Tarea** de la cabecera se oculta.
 
+Cada campo del recuadro tiene un **?** con la orientación de qué se elige y
+qué pasa si se deja vacío. La de cada nivel se escribe en **Planificación de
+obra ‣ Configuración ‣ Plantillas de niveles**, columna **Orientación en el
+requerimiento**; vacía, se usa el texto por defecto de la función del nivel.
+
 1. Elija los niveles en cascada. Hay un selector por cada nivel de la
    plantilla de la obra (Piso, Departamento, Ambiente, Mueble en mobiliario;
    Disciplina, Subpartida, Partida en una constructora) y cada lista muestra
    solo lo que cuelga de lo elegido arriba. Un nivel sin elegir significa
    «todos los de arriba»: si solo elige pisos, entra todo lo que cuelga de esos
-   pisos. Un nivel que la obra no tiene no aparece.
+   pisos. Un nivel que la obra no tiene no aparece. Cada opción de la lista
+   muestra su camino y su tipología («Piso 19 · 1907 · Closet 2 · CL-09») y
+   la búsqueda mira todo ese texto: escribir «1907» deja los ambientes de ese
+   departamento.
 2. Elija las **Etapas** (vacío: todas). La lista trae las etapas del perfil
    de vertical de la obra y las que usa su plan: una obra de mobiliario no
    ofrece las de construcción por partidas. Cada línea guarda su etapa en la
    columna **Etapa**.
-3. Si el material es para una tarea del Gantt que no es nivel del plan
+3. En una obra de mobiliario, elija el **Tipo de ambiente** (Cocina, Closet,
+   Baño, Lavandería, Ducto…; varios a la vez). La lista muestra cuántos
+   ambientes de cada tipo hay bajo lo elegido arriba, y **Sin tipo** reúne los
+   ambientes sin tipología. Vacío: todos. Con tipos elegidos, **Ambiente** es
+   opcional y ofrece solo los de esos tipos. Así, «las cocinas de cinco pisos»
+   se piden eligiendo la etapa, los pisos y el tipo, sin abrir la lista de
+   ambientes.
+4. Si el material es para una tarea del Gantt que no es nivel del plan
    (movilización, obras provisionales), elíjala en **Tarea del Gantt** (una
    sola). Esa tarea no tiene líneas en el plan: **Traer materiales del plan**
    no la usa y los materiales que agregue a mano quedan cargados a ella. Si
    eligió niveles y tarea, un aviso lo recuerda.
-4. Haga clic en **Traer materiales del plan**. Se crea una línea por material,
-   nivel y etapa con lo que falta pedir del plan, agrupada en el nivel más bajo
-   que eligió. La columna **Nivel** muestra la ruta corta («Dpto 102 /
-   Cocina»).
-5. Corrija cantidades o borre líneas antes de **Solicitar aprobación**. Una
+5. Revise la línea que está a la izquierda del botón: dice lo que se va a
+   traer («Se traerá el saldo del plan de 14 ambientes de Piso 02: 11 closets
+   y 3 cocinas, etapa Acabado.»). Haga clic en **Traer materiales del plan**.
+   Se crea una línea por material, nivel y etapa con lo que falta pedir del
+   plan, agrupada en el nivel más bajo que eligió. La columna **Nivel**
+   muestra la ruta corta («Dpto 102 / Cocina»). Con tipos elegidos, sale una
+   línea por cada tipo, con la columna **Tipo de ambiente** y la analítica de
+   la obra y del Rubro de ese tipo.
+6. Corrija cantidades o borre líneas antes de **Solicitar aprobación**. Una
    línea que agrega a mano toma el nivel y la etapa del recuadro cuando hay
    uno solo elegido; si eligió varios, indíquelos en la línea.
 

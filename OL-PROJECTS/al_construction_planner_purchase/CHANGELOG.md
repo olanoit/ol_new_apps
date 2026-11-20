@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 30.20261120 — 20/11/2026
+
+- Requerimiento de obra (paquete 1.24): selector «Tipo de ambiente» entre el departamento y el ambiente, de varias opciones y con la cantidad de cada tipo; «Traer materiales del plan» trae el saldo de los ambientes de esos tipos, una línea por material, etapa, tipo y nivel elegido, con la analítica de la obra y del Rubro.
+- Antes del botón, una línea dice lo que se va a traer (ambientes, tipos y etapa).
+- La lista de cada nivel muestra el camino de cada opción («Piso 19 · 1907 · Closet 2 · CL-09») y busca en todo ese texto; la etiqueta elegida muestra el texto corto.
+- Cada campo de «¿Para qué es el material?» lleva su «?» con la orientación de qué se elige; la de cada nivel sale de la plantilla de niveles.
+
 ## 29.20261112 — 16/11/2026
 
 - Las escrituras del sistema sobre un plan aprobado usan la marca del servidor PLAN_FORCE (un contexto enviado por el cliente ya no abre el plan).

@@ -19,8 +19,8 @@ Si dos fuentes no coinciden, manda la primera de esta lista:
 
 1. Este documento, en lo común y en las reglas de trabajo.
 2. El código de la rama 19.0, en cómo funciona hoy el planificador.
-3. El diseño de cada paquete (`DISENO_v1.7` a `DISENO_v1.12`,
-   `DISENO_CREVAL_v1.0`, `DISENO_v1.16`), en lo que decidió ese paquete.
+3. El diseño de cada paquete (`DISENO_v1.7` a `DISENO_v1.24`,
+   `DISENO_CREVAL_v1.0`), en lo que decidió ese paquete.
 4. La especificación v1.4 (`ESPECIFICACION_v1.4.md`) y el diseño técnico
    (`DISENO_TECNICO.md`). Son la historia del núcleo. Desde el paquete 1.7 no
    describen:
@@ -278,6 +278,7 @@ esa misma regla.
 | 17-nov-2026 | Paquete 1.22, M122-03: el motivo del re-trabajo es un catálogo por compañía (`construction.portal.reason`, ahora en el núcleo con el uso «Re-trabajo»; el portal suma sus usos). El avance, el registro de excesos y la línea de liquidación guardan `rework_reason_id`; la selección anterior queda para lo que aún la escribe y se traduce al catálogo. Cada perfil trae sus motivos (`rework_reason_names`) y la compañía los recibe al aplicarlo si no tiene ninguno | Las dos | Común (núcleo, contratas, portal) |
 | 17-nov-2026 | Paquete 1.22, etapa 2: las funciones de campo de mobiliario del portal (recepción de módulos por departamento, reposición a planta, medición de ambientes, avance por sub etapa y avance de la contrata por departamento) viven en `al_construction_portal_furniture`. Son funciones del perfil, apagadas por defecto y encendidas en el perfil Mobiliario. La medición acepta al personal del portal de la obra solo con una marca del servidor (`PORTAL_MEASURE`). Las sub etapas de instalación son las etapas de campo del perfil que no consume la orden de fabricación | Mobiliario | Mobiliario (puente del portal) |
 | 17-nov-2026 | Paquete 1.22, anexo (D1 y D2 del 1.17): la valorización por hitos que lleva una partida a su 100 % toma el total de su línea en la orden menos lo ya valorizado, si la diferencia con sus hitos es de redondeo. Cuando la partida tiene dos líneas en la orden, el hito de cada unidad se parte: lo que ya estaba queda en la línea original y la diferencia va en otra parte del mismo hito en la línea más reciente (`part_sale_line_id`; negativa en un deductivo). Sin `construction_partida` en las líneas nada cambia | Mobiliario | Común (ventas) |
+| 20-nov-2026 | Paquete 1.24: el requerimiento de obra pide por tipo del nivel con etapas. El tipo no es un catálogo del núcleo: lo da la vertical con el gancho `project.task._construction_space_types` (mobiliario responde con la familia de la tipología) y, si ninguna lo da, el selector no aparece. La elección se guarda como lista de claves y cada línea traída guarda su tipo; con tipos, la analítica de la línea son las cuentas que comparten todas sus líneas del plan (obra y Rubro). La orientación «?» de cada nivel es un campo de la plantilla de niveles (`request_hint`), con texto por defecto según la función. En los selectores del alcance la tarea se nombra con su camino por contexto (`construction_scope_path`); su nombre no cambia. El formulario del requerimiento ya no tiene pestañas: una vista heredada que se ancle en ellas necesita migrar su ancla antes de actualizar (`al_construction_planner_purchase/migrations/30.20261120`) | Mobiliario | Común (núcleo, requerimiento con plan, requerimiento de obra); el tipo, mobiliario |
 
 ## 9. Conflictos abiertos
 

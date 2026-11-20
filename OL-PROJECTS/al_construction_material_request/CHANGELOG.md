@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 39.20261120 — 20/11/2026
+
+- Cabecera completa (paquete 1.24): «Almacén por defecto», «Distribución analítica», «Jefe de proyecto» e «Indicaciones para logística» suben a la cabecera; la pestaña «Otra información» se quita y «Materiales» titula la tabla. Los permisos de edición no cambian.
+
 ## 38.20261112 — 16/11/2026
 
 - Seguridad: fuera del borrador, los materiales del requerimiento (producto, cantidad, unidad, partida, origen y destino) solo los cambia Logística; antes una llamada directa podía cambiar lo ya aprobado.

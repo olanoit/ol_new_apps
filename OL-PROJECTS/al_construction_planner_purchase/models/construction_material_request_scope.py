@@ -11,10 +11,11 @@ material, nivel y etapa, enlazada a sus líneas del plan.
 El material de la etapa de fabricación (Producción) va a la preproducción de
 la planta que elige quien pide; lo demás, a la ubicación de la obra.
 """
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.fields import Domain
 
 from odoo.addons.al_construction_planner.models.common import LEVELS, stage_selection
 
@@ -34,9 +35,42 @@ def _scope_fields(namespace):
             help='Vacío: todos los de este nivel bajo lo elegido arriba.')
         namespace['construction_scope_%s_label' % depth] = fields.Char(
             string='Nombre del nivel %s' % depth, compute='_compute_construction_scope')
+        # Paquete 1.24, M124-03: el «?» de cada nivel.
+        namespace['construction_scope_%s_hint' % depth] = fields.Char(
+            string='Orientación del nivel %s' % depth, compute='_compute_construction_scope')
         namespace['construction_scope_%s_allowed_ids' % depth] = fields.Many2many(
             'project.task', string='Nivel %s permitido' % depth,
             compute='_compute_construction_scope')
+
+
+# Paquete 1.24, M124-01: clave del tipo de los niveles con etapas a los que la
+# vertical no les da tipo (el ambiente sin tipología).
+NO_TYPE = '_none'
+
+
+def _plural(count, label):
+    """«3 cocinas», «11 closets», «1 ambiente». Un nombre de varias palabras
+    queda como está («2 sin tipo»)."""
+    word = (label or '').strip().lower()
+    if count != 1 and word and ' ' not in word:
+        last = word[-1]
+        if last in 'aeiouáéó':
+            word += 's'
+        elif last == 'z':
+            word = word[:-1] + 'ces'
+        elif last in 'lrndj':
+            word += 'es'
+        elif last not in 'sx':
+            word += 's'
+    return '%s %s' % (count, word)
+
+
+def _join(names):
+    """«A», «A y B», «A, B y C»."""
+    names = list(names)
+    if len(names) < 2:
+        return ''.join(names)
+    return '%s y %s' % (', '.join(names[:-1]), names[-1])
 
 
 SCOPE_FIELDS = ['construction_scope_%s_ids' % depth for depth in range(1, SCOPE_DEPTH + 1)]
@@ -114,7 +148,7 @@ class ConstructionMaterialRequest(models.Model):
         'construction.stage', 'construction_mat_request_stage_rel', 'request_id', 'stage_id',
         string='Etapas', copy=False,
         domain="[('id', 'in', construction_allowed_stage_ids)]",
-        help='Vacío: todas. Cada línea guarda su etapa.')
+        help='Etapa de la obra en la que se usará el material. Vacío: todas las de la obra.')
     construction_allowed_stage_ids = fields.Many2many(
         'construction.stage', string='Etapas permitidas',
         compute='_compute_construction_allowed_stage_ids')
@@ -123,9 +157,8 @@ class ConstructionMaterialRequest(models.Model):
     construction_gantt_task_id = fields.Many2one(
         'project.task', string='Tarea del Gantt', copy=False, check_company=True,
         domain="[('project_id', '=', project_id), ('construction_level', '=', False)]",
-        help='Tarea de la obra que no es nivel del planificador (una movilización, un trabajo '
-             'adicional): no tiene líneas en el plan y los materiales agregados a mano quedan '
-             'cargados a ella.')
+        help='Solo para material de una tarea que no está en el plan (una movilización, un '
+             'trabajo adicional). "Traer materiales del plan" no la usa.')
     construction_production_location_id = fields.Many2one(
         'stock.location', string='Planta', check_company=True, tracking=True,
         domain="[('construction_preproduction', '=', True), ('usage', '=', 'internal')]",
@@ -135,6 +168,22 @@ class ConstructionMaterialRequest(models.Model):
         string='Lleva material de producción', compute='_compute_construction_needs_plant')
     construction_has_levels = fields.Boolean(
         string='Obra con niveles', compute='_compute_construction_scope')
+    # Paquete 1.24, M124-01: tipo del nivel con etapas (en mobiliario, «Tipo
+    # de ambiente»). Los tipos los da la vertical (gancho
+    # ``project.task._construction_space_types``); sin tipos, no hay selector.
+    construction_scope_type_keys = fields.Json(
+        string='Tipos elegidos', copy=False,
+        help='Claves de los tipos elegidos. Vacío: todos.')
+    construction_scope_type_options = fields.Json(
+        string='Tipos que se ofrecen', compute='_compute_construction_scope')
+    construction_scope_type_depth = fields.Integer(
+        string='Selector al que precede el tipo', compute='_compute_construction_scope')
+    construction_scope_type_label = fields.Char(
+        string='Nombre del selector de tipo', compute='_compute_construction_scope')
+    construction_scope_type_hint = fields.Char(
+        string='Orientación del selector de tipo', compute='_compute_construction_scope')
+    construction_fetch_summary = fields.Char(
+        string='Lo que se va a traer', compute='_compute_construction_fetch_summary')
     # Valores por defecto de las líneas agregadas a mano.
     construction_default_stage = fields.Char(
         string='Etapa por defecto', compute='_compute_construction_line_defaults')
@@ -145,10 +194,11 @@ class ConstructionMaterialRequest(models.Model):
     # Selectores de nivel en cascada (RQ-01)
     # ------------------------------------------------------------------
     def _construction_scope_slots(self):
-        """[(nombre, dominio)] de los niveles elegibles de la obra, de arriba
-        abajo. Los nombres salen de la plantilla de niveles; sin plantilla, de
-        los niveles del planificador. Un nivel sin tareas en la obra no sale
-        (la obra de mobiliario sin muebles: los módulos cuelgan del ambiente)."""
+        """[(nombre, dominio, orientación, nivel)] de los niveles elegibles de
+        la obra, de arriba abajo. Los nombres y la orientación (M124-03) salen de
+        la plantilla de niveles; sin plantilla, de los niveles del
+        planificador. Un nivel sin tareas en la obra no sale (la obra de
+        mobiliario sin muebles: los módulos cuelgan del ambiente)."""
         self.ensure_one()
         if not self.project_id:
             return []
@@ -166,20 +216,37 @@ class ConstructionMaterialRequest(models.Model):
             slots = [(line.name, [
                 '|', ('construction_level_line_id', '=', line.id),
                 '&', ('construction_level_line_id', '=', False),
-                ('construction_level', '=', line.level)]) for line in levels]
+                ('construction_level', '=', line.level)],
+                line._construction_request_hint(), line.level) for line in levels]
         else:
-            slots = [(label, [('construction_level', '=', level)]) for level, label in LEVELS]
+            hint = self.env['construction.level.template.line']._construction_request_hint_default
+            slots = [(label, [('construction_level', '=', level)], hint(level), level)
+                     for level, label in LEVELS]
         base = [('project_id', '=', self.project_id.id)]
-        return [(name, base + domain) for name, domain in slots
+        return [(name, base + domain, hint, level) for name, domain, hint, level in slots
                 if Task.search_count(base + domain, limit=1)][:SCOPE_DEPTH]
 
-    def _construction_scope_allowed(self, slots, depth):
+    def _construction_scope_type_depth(self, slots):
+        """Posición (desde 1) del selector del nivel con etapas, al que precede
+        el selector de tipo; 0 si la obra no lo tiene."""
+        return next((depth for depth, slot in enumerate(slots, 1) if slot[3] == 'space'), 0)
+
+    def _construction_scope_type_set(self):
+        self.ensure_one()
+        return set(self.construction_scope_type_keys or [])
+
+    def _construction_scope_allowed(self, slots, depth, typed=True):
         """Tareas que se pueden elegir en el nivel ``depth``: las de ese nivel
-        que cuelgan de lo elegido en el nivel más bajo de arriba."""
+        que cuelgan de lo elegido en el nivel más bajo de arriba. Con tipos
+        elegidos (M124-01), el nivel con etapas ofrece solo los de esos tipos y
+        los niveles de abajo, lo que cuelga de ellos. ``typed=False``: sin
+        mirar los tipos (para contar los que se ofrecen)."""
         self.ensure_one()
         Task = self.env['project.task']
         if depth > len(slots):
             return Task
+        keys = self._construction_scope_type_set() if typed else set()
+        type_depth = self._construction_scope_type_depth(slots) if keys else 0
         domain = list(slots[depth - 1][1])
         for upper in range(depth - 1, 0, -1):
             chosen = self['construction_scope_%s_ids' % upper]
@@ -187,16 +254,57 @@ class ConstructionMaterialRequest(models.Model):
                 # En el onchange las tareas llegan como registros nuevos.
                 domain.append(('id', 'child_of', chosen._origin.ids))
                 break
-        return Task.search(domain)
+            if upper == type_depth:
+                domain.append(
+                    ('id', 'child_of', self._construction_scope_allowed(slots, upper).ids))
+                break
+        tasks = Task.search(domain)
+        if depth == type_depth:
+            types = tasks._construction_space_types()
+            tasks = tasks.filtered(lambda task: types.get(task.id, (NO_TYPE,))[0] in keys)
+        return tasks
 
-    @api.depends('project_id', 'construction_stage_ids', *SCOPE_FIELDS)
+    def _construction_scope_type_options(self, slots):
+        """[{key, label, count}] de los tipos de los niveles con etapas bajo lo
+        elegido arriba, por nombre y con «Sin tipo» al final. Vacío si la
+        vertical no da tipos."""
+        self.ensure_one()
+        type_depth = self._construction_scope_type_depth(slots)
+        if not type_depth:
+            return []
+        spaces = self._construction_scope_allowed(slots, type_depth, typed=False)
+        types = spaces._construction_space_types()
+        if not types:
+            return []
+        none = (NO_TYPE, self.env._('Sin tipo'))
+        counts = Counter(types.get(space.id, none) for space in spaces)
+        return [{'key': key, 'label': label, 'count': count}
+                for (key, label), count in sorted(
+                    counts.items(), key=lambda item: (item[0][0] == NO_TYPE, item[0][1]))]
+
+    @api.depends('project_id', 'construction_stage_ids', 'construction_scope_type_keys',
+                 *SCOPE_FIELDS)
     def _compute_construction_scope(self):
+        Task = self.env['project.task']
         for request in self:
             slots = request._construction_scope_slots()
             request.construction_has_levels = bool(slots)
+            options = request._construction_scope_type_options(slots)
+            type_depth = request._construction_scope_type_depth(slots) if options else 0
+            request.construction_scope_type_options = options
+            request.construction_scope_type_depth = type_depth
+            request.construction_scope_type_label = self.env._(
+                'Tipo de %s', slots[type_depth - 1][0].lower()) if type_depth else False
+            request.construction_scope_type_hint = (
+                Task._construction_space_type_hint() or self.env._(
+                    'Tipo de %s al que va el material. Puede elegir varios. Vacío: todos los '
+                    'tipos de lo elegido arriba.', slots[type_depth - 1][0].lower())
+            ) if type_depth else False
             for depth in range(1, SCOPE_DEPTH + 1):
                 request['construction_scope_%s_label' % depth] = \
                     slots[depth - 1][0] if depth <= len(slots) else False
+                request['construction_scope_%s_hint' % depth] = \
+                    slots[depth - 1][2] if depth <= len(slots) else False
                 request['construction_scope_%s_allowed_ids' % depth] = \
                     request._construction_scope_allowed(slots, depth)
 
@@ -204,6 +312,7 @@ class ConstructionMaterialRequest(models.Model):
     def _onchange_construction_scope_project(self):
         for name in SCOPE_FIELDS + ['construction_gantt_task_id']:
             self[name] = self.env['project.task']
+        self.construction_scope_type_keys = False
 
     @api.onchange('construction_gantt_task_id', *SCOPE_FIELDS)
     def _onchange_construction_gantt_task(self):
@@ -216,11 +325,18 @@ class ConstructionMaterialRequest(models.Model):
             }}
         return None
 
-    @api.onchange(*SCOPE_FIELDS)
+    @api.onchange('construction_scope_type_keys', *SCOPE_FIELDS)
     def _onchange_construction_scope(self):
-        """Lo elegido abajo que ya no cuelga de lo elegido arriba sale."""
+        """Lo elegido abajo que ya no cuelga de lo elegido arriba sale, y los
+        tipos que ya no tiene lo elegido arriba, también."""
         slots = self._construction_scope_slots()
-        for depth in range(2, SCOPE_DEPTH + 1):
+        keys = self.construction_scope_type_keys or []
+        if keys:
+            offered = {option['key'] for option in self._construction_scope_type_options(slots)}
+            kept = [key for key in keys if key in offered]
+            if kept != keys:
+                self.construction_scope_type_keys = kept or False
+        for depth in range(1, SCOPE_DEPTH + 1):
             name = 'construction_scope_%s_ids' % depth
             if self[name]:
                 allowed = set(self._construction_scope_allowed(slots, depth).ids)
@@ -235,6 +351,70 @@ class ConstructionMaterialRequest(models.Model):
             if chosen:
                 return chosen
         return None
+
+    def _construction_scope_spaces(self, slots):
+        """Niveles con etapas del alcance elegido (M124-01); ``None`` si la
+        obra no tiene ese nivel."""
+        self.ensure_one()
+        type_depth = self._construction_scope_type_depth(slots)
+        if not type_depth:
+            return None
+        Task = self.env['project.task']
+        for depth in range(SCOPE_DEPTH, type_depth - 1, -1):
+            chosen = self['construction_scope_%s_ids' % depth]._origin
+            if chosen:
+                spaces = chosen if depth == type_depth \
+                    else chosen.mapped('construction_space_task_id')
+                if self._construction_scope_type_set():
+                    spaces &= self._construction_scope_allowed(slots, type_depth)
+                return spaces
+        return self._construction_scope_allowed(slots, type_depth) or Task
+
+    @api.depends('project_id', 'construction_plan_id', 'construction_stage_ids',
+                 'construction_scope_type_keys', *SCOPE_FIELDS)
+    def _compute_construction_fetch_summary(self):
+        """M124-01, punto 4: lo que va a traer «Traer materiales del plan»,
+        antes de pulsarlo."""
+        for request in self:
+            if not request.project_id or not request.construction_plan_id:
+                request.construction_fetch_summary = False
+                continue
+            slots = request._construction_scope_slots()
+            type_depth = request._construction_scope_type_depth(slots)
+            stages = request.construction_stage_ids
+            if not stages:
+                stage_text = self.env._('todas las etapas')
+            elif len(stages) == 1:
+                stage_text = self.env._('etapa %s', stages.name)
+            else:
+                stage_text = self.env._('etapas %s', _join(stages.mapped('name')))
+            # Dónde: lo elegido en el nivel más bajo por encima del nivel con
+            # etapas (o en cualquiera, si la obra no lo tiene).
+            where = self.env._('toda la obra')
+            for depth in range((type_depth or SCOPE_DEPTH + 1) - 1, 0, -1):
+                chosen = request['construction_scope_%s_ids' % depth]._origin
+                if chosen:
+                    where = _join(chosen.mapped('name')) if len(chosen) <= 3 \
+                        else _plural(len(chosen), slots[depth - 1][0])
+                    break
+            spaces = request._construction_scope_spaces(slots)
+            if spaces is None:
+                request.construction_fetch_summary = self.env._(
+                    'Se traerá el saldo del plan de %(where)s, %(stages)s.',
+                    where=where, stages=stage_text)
+                continue
+            detail = ''
+            if request.construction_scope_type_depth:
+                types = spaces._construction_space_types()
+                none = (NO_TYPE, self.env._('Sin tipo'))
+                counts = Counter(types.get(space.id, none) for space in spaces)
+                detail = _join(
+                    _plural(count, label) for (key, label), count in sorted(
+                        counts.items(), key=lambda item: (item[0][0] == NO_TYPE, item[0][1])))
+            request.construction_fetch_summary = self.env._(
+                'Se traerá el saldo del plan de %(spaces)s de %(where)s%(detail)s, %(stages)s.',
+                spaces=_plural(len(spaces), slots[type_depth - 1][0]), where=where,
+                detail=': %s' % detail if detail else '', stages=stage_text)
 
     # ------------------------------------------------------------------
     # Etapas (RQ-02) y tareas del Gantt (RQ-03)
@@ -288,10 +468,32 @@ class ConstructionMaterialRequest(models.Model):
             return {'analytic_distribution': dict(next(iter(distributions)))}
         return {}
 
+    def _construction_line_analytic_common(self, plan_lines):
+        """M124-01: las líneas de un mismo tipo comparten la obra y el Rubro
+        aunque cada nivel tenga su cuenta. Si no coinciden enteras, pasan a la
+        línea las cuentas que todas tienen (cada una con una sola combinación
+        al 100 %)."""
+        values = self._construction_line_analytic(plan_lines)
+        if values:
+            return values
+        common = None
+        for line in plan_lines:
+            distribution = line.analytic_distribution or {}
+            if len(distribution) != 1:
+                return {}
+            accounts = set(next(iter(distribution)).split(','))
+            common = accounts if common is None else common & accounts
+        if not common:
+            return {}
+        return {'analytic_distribution': {
+            ','.join(sorted(common, key=int)): 100.0}}
+
     def _construction_fetch_groups(self):
-        """{(nivel, producto, etapa): líneas del plan} del alcance elegido: el
-        nivel es lo elegido en el nivel más bajo (la obra si no se eligió
-        nada)."""
+        """{(nivel, producto, etapa, tipo): líneas del plan} del alcance
+        elegido: el nivel es lo elegido en el nivel más bajo (la obra si no se
+        eligió nada). Con tipos elegidos (M124-01) solo entran las líneas que
+        cuelgan de los niveles con etapas de esos tipos, y el tipo es
+        ``(clave, nombre)``; sin tipos, ``False`` y todo como antes."""
         self.ensure_one()
         # sudo: quien pide (residente, supervisor) no ve el plan; solo se leen
         # las líneas del plan vigente de su obra para traer su saldo.
@@ -302,6 +504,14 @@ class ConstructionMaterialRequest(models.Model):
         tasks = self._construction_scope_tasks()
         if tasks is not None:
             domain.append(('task_id', 'child_of', tasks.ids))
+        types = {}
+        if self._construction_scope_type_set():
+            spaces = self._construction_scope_spaces(self._construction_scope_slots())
+            if spaces is not None:
+                domain.append(('space_task_id', 'in', spaces.ids))
+                types = spaces._construction_space_types()
+                types = {space.id: types.get(space.id, (NO_TYPE, self.env._('Sin tipo')))
+                         for space in spaces}
         Task = self.env['project.task']
         chosen = set(tasks.ids) if tasks is not None else set()
         groups = defaultdict(lambda: self.env['construction.resource.plan.line'].sudo())
@@ -312,27 +522,31 @@ class ConstructionMaterialRequest(models.Model):
             if chosen:
                 path = [int(i) for i in (line.task_path or '').split('/') if i]
                 level = Task.browse(next((i for i in path if i in chosen), line.task_id.id))
-            groups[(level, line.product_id, line.stage)] |= line
+            groups[(level, line.product_id, line.stage,
+                    types.get(line.space_task_id.id, False))] |= line
         return groups
 
     def action_construction_fetch_plan(self):
         """«Traer materiales del plan»: una línea por material, nivel y etapa
-        con el saldo por pedir, enlazada a sus líneas del plan. Lo ya traído no
-        se repite."""
+        (y tipo, si se eligieron tipos: M124-01) con el saldo por pedir,
+        enlazada a sus líneas del plan. Lo ya traído no se repite."""
         self.ensure_one()
         self._check_state(('draft',))
         if not self.construction_plan_id:
             raise UserError(self.env._(
                 'La obra %s no tiene un plan de recursos vigente: agregue los materiales a mano.',
                 self.project_id.display_name))
-        existing = {(line.task_id, line.product_id, line.construction_stage)
+        existing = {(line.task_id, line.product_id, line.construction_stage,
+                     line.construction_space_type_key or False)
                     for line in self.line_ids.filtered(lambda l: not l.cancelled)}
         values, shares_by_key = [], []
-        for (level, product, stage), plan_lines in sorted(
+        for (level, product, stage, space_type), plan_lines in sorted(
                 self._construction_fetch_groups().items(),
                 key=lambda kv: (kv[0][0]._construction_path_name() if kv[0][0] else '',
+                                kv[0][3][1] if kv[0][3] else '',
                                 kv[0][2] or '', kv[0][1].display_name)):
-            if (level, product, stage) in existing:
+            type_key, type_name = space_type or (False, False)
+            if (level, product, stage, type_key) in existing:
                 continue
             remaining = sum(line._qty_to_product_uom(line.qty_planned - line.qty_requested)
                             for line in plan_lines)
@@ -345,11 +559,15 @@ class ConstructionMaterialRequest(models.Model):
                 'product_uom_id': product.uom_id.id,
                 'task_id': level.id,
                 'construction_stage': stage,
-            }, **self._construction_line_analytic(plan_lines)))
+                'construction_space_type_key': type_key,
+                'construction_space_type': type_name,
+            }, **(self._construction_line_analytic_common(plan_lines) if type_key
+                  else self._construction_line_analytic(plan_lines))))
             shares_by_key.append(plan_lines._supply_split(remaining))
         if not values:
             raise UserError(self.env._(
-                'No queda saldo por pedir en el plan para esta selección de niveles y etapas.'))
+                'No queda saldo por pedir en el plan para esta selección de niveles, tipos y '
+                'etapas.'))
         new_lines = self.env['construction.material.request.line'].create(values)
         # sudo: las asignaciones al plan son del planificador; quien pide solo
         # enlaza las líneas de su propio requerimiento (como al solicitar la
@@ -406,6 +624,12 @@ class ConstructionMaterialRequestLine(models.Model):
     # perfil de la obra (paquete 1.16, M116-01).
     construction_stage_codes = fields.Json(
         string='Etapas que se ofrecen', compute='_compute_construction_stage_codes')
+    # Paquete 1.24, M124-01: tipo del nivel con etapas de la línea traída del
+    # plan con tipos elegidos (lo escribe «Traer materiales del plan»).
+    construction_space_type_key = fields.Char(string='Clave del tipo', readonly=True, copy=False)
+    construction_space_type = fields.Char(
+        string='Tipo de ambiente', readonly=True, copy=False,
+        help='Tipo de los ambientes de los que sale el saldo de la línea (Cocina, Closet…).')
     construction_level_label = fields.Char(
         string='Nivel', compute='_compute_construction_level_label',
         help='El nivel de la línea y el de arriba, por ejemplo «Dpto 102 / Cocina».')
@@ -521,3 +745,63 @@ class ConstructionMaterialRequestLine(models.Model):
                 self.env['construction.stage']._construction_production_codes():
             return plant
         return super()._get_default_location_dest()
+
+
+class ProjectTask(models.Model):
+    _inherit = 'project.task'
+
+    # Paquete 1.24, M124-02: en los selectores de «¿Para qué es el material?»
+    # cada opción se ve con su camino («Piso 19 · 1907 · Closet 2 · CL-09») y
+    # la etiqueta elegida, con el nivel de arriba («1907 · Closet 2»). El
+    # nombre de la tarea no cambia: solo se arma con el contexto del selector.
+    construction_scope_short_name = fields.Char(
+        string='Nombre en el alcance', compute='_compute_construction_scope_short_name')
+
+    @api.depends('name', 'parent_id.name', 'construction_level')
+    def _compute_construction_scope_short_name(self):
+        # sudo: solo el nombre del nivel de arriba de una tarea que ya se ve.
+        for task, task_sudo in zip(self, self.sudo()):
+            parent_sudo = task_sudo.parent_id
+            task.construction_scope_short_name = \
+                '%s · %s' % (parent_sudo.name, task_sudo.name) \
+                if task_sudo.construction_level and parent_sudo.construction_level \
+                else task_sudo.name
+
+    def _construction_scope_long_name(self):
+        """Camino de la tarea desde el primer nivel de la obra y, si el nombre
+        no la trae, el código de su tipología."""
+        self.ensure_one()
+        # sudo: nombres de los niveles superiores y código de la tipología de
+        # una tarea que el usuario ya puede elegir (no lee las tipologías).
+        task_sudo = self.sudo()
+        ids = [int(i) for i in (task_sudo.construction_path or '').split('/') if i]
+        names = task_sudo.browse(ids).mapped('name') or [task_sudo.name]
+        code = task_sudo.construction_typology_id.code
+        if code and code.lower() not in (task_sudo.name or '').lower():
+            names.append(code)
+        return ' · '.join(filter(None, names))
+
+    @api.depends_context('construction_scope_path')
+    @api.depends('name', 'construction_path', 'construction_typology_id.code')
+    def _compute_display_name(self):
+        super()._compute_display_name()
+        if not self.env.context.get('construction_scope_path'):
+            return
+        for task in self.filtered('construction_level'):
+            task.display_name = task._construction_scope_long_name()
+
+    @api.model
+    def _search_display_name(self, operator, value):
+        domain = super()._search_display_name(operator, value)
+        if self.env.context.get('construction_scope_path') and value and \
+                operator in ('ilike', 'like', '=ilike', '=like', '='):
+            # Busca en todo el texto de la opción: «1907» o «CL-09» filtran.
+            # sudo: quien pide no lee las tipologías; solo se busca por su
+            # código entre las tareas que ya puede elegir.
+            typologies_sudo = self.env['construction.typology'].sudo()._search(
+                [('code', operator, value)])
+            domain = Domain.OR([domain, [('construction_typology_id', 'in', typologies_sudo)]] + [
+                [(name, operator, value)] for name in (
+                    'parent_id.name', 'construction_floor_task_id.name',
+                    'construction_apartment_task_id.name', 'construction_space_task_id.name')])
+        return domain

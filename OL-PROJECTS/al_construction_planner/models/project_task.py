@@ -182,6 +182,19 @@ class ProjectTask(models.Model):
             task.construction_space_task_id = ancestors['space']
             task.construction_furniture_task_id = ancestors['furniture']
 
+    def _construction_space_types(self):
+        """{id: (clave, nombre)} del tipo de cada nivel con etapas, para pedir
+        material por tipo en el requerimiento de obra (paquete 1.24, M124-01).
+        Gancho de la vertical: mobiliario responde con la familia de la
+        tipología. Vacío: la obra no ofrece el selector."""
+        return {}
+
+    @api.model
+    def _construction_space_type_hint(self):
+        """Orientación del selector de tipo (gancho de la vertical); vacía, la
+        general del requerimiento."""
+        return False
+
     def _construction_path_name(self):
         """Nombres de los niveles de la tarea, de arriba abajo: «Torre A › Piso 01
         › Dpto 101 › Cocina», «ARQ › ARQ-03 › Muro drywall RF»."""

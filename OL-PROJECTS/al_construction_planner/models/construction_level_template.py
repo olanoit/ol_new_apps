@@ -163,6 +163,42 @@ class ConstructionLevelTemplateLine(models.Model):
         string='Etapas del nivel',
         help='Las del catálogo que lleva este nivel; vacía: todas las de la obra.')
 
+    # Paquete 1.24, M124-03: qué se elige en este nivel al pedir material.
+    request_hint = fields.Char(
+        string='Orientación en el requerimiento', translate=True,
+        help='Texto del «?» de este nivel en «¿Para qué es el material?» del requerimiento '
+             'de obra: qué se elige y qué pasa si se deja vacío. Vacía: el texto por defecto '
+             'de la función del nivel.')
+    request_hint_default = fields.Char(
+        string='Orientación por defecto', compute='_compute_request_hint_default')
+
+    @api.model
+    def _construction_request_hint_default(self, level):
+        """Orientación por defecto de un nivel del planificador (``LEVELS``):
+        la usan los niveles de la plantilla sin texto propio y las obras sin
+        plantilla."""
+        hints = {
+            'group': self.env._(
+                'Piso, torre o bloque al que va el material. Puede elegir varios. Vacío: todos.'),
+            'apartment': self.env._('Departamentos de lo elegido arriba. Vacío: todos.'),
+            'space': self.env._(
+                'Ambientes puntuales. Úselo solo si el material no es para todos los del tipo '
+                'elegido. Vacío: todos.'),
+            'detail': self.env._('Muebles o módulos puntuales. Vacío: todos.'),
+        }
+        key = {'floor': 'group', 'furniture': 'detail', 'module': 'detail',
+               'work_sublevel': 'detail'}.get(level, level)
+        return hints.get(key) or hints['group']
+
+    @api.depends('role', 'level')
+    def _compute_request_hint_default(self):
+        for line in self:
+            line.request_hint_default = self._construction_request_hint_default(line.level)
+
+    def _construction_request_hint(self):
+        self.ensure_one()
+        return self.request_hint or self.request_hint_default
+
     @api.depends('role')
     def _compute_role_flags(self):
         for line in self:

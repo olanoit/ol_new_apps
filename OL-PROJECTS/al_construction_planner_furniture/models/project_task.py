@@ -45,6 +45,27 @@ class ProjectTask(models.Model):
                                 [('construction_typology_id.code', operator, value)]])
         return domain
 
+    def _construction_space_types(self):
+        """Paquete 1.24, M124-01: el tipo del ambiente es la familia de su
+        tipología (Cocina, Closet, Baño…)."""
+        types = super()._construction_space_types()
+        labels = dict(self.env['construction.typology']._fields['family']
+                      ._description_selection(self.env))
+        # sudo: quien pide material no lee las tipologías; solo se toma la
+        # familia de las de los ambientes que ya puede elegir.
+        for task_sudo in self.sudo():
+            family = task_sudo.construction_typology_id.family
+            if family:
+                types[task_sudo.id] = (family, labels.get(family, family))
+        return types
+
+    @api.model
+    def _construction_space_type_hint(self):
+        return self.env._(
+            'Tipo de mueble o ambiente al que va el material: Cocina, Closet, Baño, '
+            'Lavandería, Ducto… Puede elegir varios. Vacío: todos los tipos de lo elegido '
+            'arriba.')
+
     def _construction_furniture_for(self, ml_group, module_type=False):
         """Mueble del ambiente donde va un módulo sin mueble en su plantilla:
         el de su grupo ML o, sin grupo, el de su tipo (mueble bajo o alto; los

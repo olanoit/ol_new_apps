@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 86.20261120 — 20/11/2026
+
+- Plantilla de niveles: campo «Orientación en el requerimiento» por nivel, con un texto por defecto según la función del nivel (paquete 1.24).
+- Gancho para que cada vertical diga el tipo de sus niveles con etapas (el requerimiento de obra pide por tipo).
+
 ## 85.20261112 — 17/11/2026
 
 - Paquete 1.22: el motivo del re-trabajo es un catálogo por compañía (antes, una lista fija). Cada perfil de vertical trae sus motivos y la compañía los recibe al aplicarlo si no tiene ninguno; los registros anteriores conservan su motivo.

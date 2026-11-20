@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '33.20261120'
+  fecha: 20/11/2026
+  cambios:
+    - "El tipo de ambiente del requerimiento de obra es la familia de la tipología (Cocina, Closet, Baño, Lavandería, Ducto…); un ambiente sin tipología queda en «Sin tipo» (paquete 1.24)."
 - version: '32.20261112'
   fecha: 16/11/2026
   cambios:

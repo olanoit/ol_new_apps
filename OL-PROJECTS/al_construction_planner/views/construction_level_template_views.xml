@@ -41,6 +41,9 @@
                             <field name="sequence" widget="handle"/>
                             <field name="name"/>
                             <field name="role"/>
+                            <field name="request_hint_default" column_invisible="1"/>
+                            <field name="request_hint" optional="show"
+                                   options="{'placeholder_field': 'request_hint_default'}"/>
                             <field name="has_stages" optional="show"/>
                             <field name="has_recipe" optional="show"/>
                             <field name="is_measured" optional="show"/>

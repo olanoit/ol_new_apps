@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 33.20261120 — 20/11/2026
+
+- El tipo de ambiente del requerimiento de obra es la familia de la tipología (Cocina, Closet, Baño, Lavandería, Ducto…); un ambiente sin tipología queda en «Sin tipo» (paquete 1.24).
+
 ## 32.20261112 — 16/11/2026
 
 - Seguridad: la autorización de la jefatura sobre la receta real ya no se salta con un contexto del cliente ni escribiendo «Autorizado por» a mano.

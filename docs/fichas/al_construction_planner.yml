@@ -1220,6 +1220,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '86.20261120'
+    fecha: 20/11/2026
+    cambios:
+      - "Plantilla de niveles: campo «Orientación en el requerimiento» por nivel, con un texto por defecto según la función del nivel (paquete 1.24)."
+      - "Gancho para que cada vertical diga el tipo de sus niveles con etapas (el requerimiento de obra pide por tipo)."
   - version: '85.20261112'
     fecha: 17/11/2026
     cambios:
