@@ -125,10 +125,12 @@ class TestBudgetWorksheet(TestBudgetBook):
         costs = document.construction_current_costs(['BK-LAD', 'X'])
         self.assertAlmostEqual(costs['BK-LAD'][0], 0.9661)
         rows = document.construction_odoo_rows()
-        self.assertEqual(len(rows['PRESUPUESTO']), 3)
+        # CREVAL 8, CR-69: cabecera, el título de la venta y sus dos partidas.
+        self.assertEqual(len(rows['PRESUPUESTO']), 4)
+        self.assertEqual(rows['PRESUPUESTO'][1][:2], ['01', 'Arquitectura'])
         # CREVAL, paquete 5, CR-41: el APU por nombre y su código calculado.
         self.assertEqual(rows['PRESUPUESTO'][0][5], 'Costo sin APU')
-        self.assertTrue(rows['PRESUPUESTO'][1][4].endswith(' · BK-R01'))
+        self.assertTrue(rows['PRESUPUESTO'][2][4].endswith(' · BK-R01'))
         self.assertEqual(rows['PRESUPUESTO'][0][-1], 'Código del APU (calc.)')
         self.assertTrue(all(isinstance(value, str) for row in rows['PRESUPUESTO']
                             for value in row))

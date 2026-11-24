@@ -162,10 +162,13 @@ class TestCrevalPackage5(TestBudgetBook):
             'Costo unitario', 'Precio unitario', 'Parcial', 'Estado', 'Especialidad'])
         p = presupuesto_letters()
         # Lo que trae la cotización: el APU por nombre y su código calculado.
-        self.assertTrue(cells['%s2' % p['apu_pick']].endswith(' · BK-R01'))
-        self.assertIn(p['apu_pick'] + '2', cells['%s2' % p['apu']])
-        self.assertIn('XLOOKUP', cells['%s2' % p['specialty']])
-        self.assertIn('XLOOKUP', cells['%s2' % p['subspecialty']])
+        # CREVAL 8, CR-69: la fila 2 es el título de la venta; la primera
+        # partida va en la 3.
+        self.assertEqual((cells['A2'], cells['B2']), ('01', 'Arquitectura'))
+        self.assertTrue(cells['%s3' % p['apu_pick']].endswith(' · BK-R01'))
+        self.assertIn(p['apu_pick'] + '3', cells['%s3' % p['apu']])
+        self.assertIn('XLOOKUP', cells['%s3' % p['specialty']])
+        self.assertIn('XLOOKUP', cells['%s3' % p['subspecialty']])
         group = presupuesto['headerGroups']['COL'][0]
         self.assertTrue(group['isFolded'])
         self.assertEqual(_col_index(p['subspecialty']), group['start'])
