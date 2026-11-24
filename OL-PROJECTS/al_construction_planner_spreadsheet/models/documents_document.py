@@ -197,7 +197,11 @@ class DocumentsDocument(models.Model):
                     rows.pop()
             worksheet = workbook.create_sheet(name)
             for row in rows or []:
-                worksheet.append([None if value in ('', False) else value for value in row])
+                # CREVAL 8, CR-72: un 0 es un dato; solo el texto vacío,
+                # ``None`` y el booleano ``False`` se escriben vacíos (en
+                # Python ``0 == False``).
+                worksheet.append([None if value is None or value is False or value == ''
+                                  else value for value in row])
         output = BytesIO()
         workbook.save(output)
         return output.getvalue()

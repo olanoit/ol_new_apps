@@ -7,6 +7,7 @@ ambiente: sobrevive a las versiones nuevas. Mover sus fechas desplaza la
 fecha de necesidad de las líneas de esa etapa en el ambiente y sus módulos
 (en el plan vigente) y avisa a Logística como «Cambiar fechas» (W-08).
 Contrata, cuadrilla, monto y avance salen de esas líneas."""
+from collections import defaultdict
 from datetime import timedelta
 
 from markupsafe import Markup
@@ -23,6 +24,8 @@ DEFAULT_STAGE_DAYS = 5
 
 class ConstructionSpaceStage(models.Model):
     _name = 'construction.space.stage'
+    # CREVAL 8, CR-70: las columnas de nivel con el nombre de la plantilla.
+    _inherit = ['construction.level.labels.mixin']
     _description = 'Etapa del ambiente'
     _order = 'project_id, space_task_id, sequence, id'
     _check_company_auto = True
@@ -269,11 +272,20 @@ class ConstructionSpaceStage(models.Model):
         nodes = (spaces or self.space_task_id)
         nodes = Task.browse(nodes.ids)
 
-        def value(field, day):
+        def value(field, day, node, end=False):
             if not field or not day:
                 return False
+            # CREVAL 8, CR-67: en un campo de fecha y hora, la entrada o la
+            # salida del horario de obra en la zona de la compañía; a las
+            # 00:00 UTC la tarea se veía el día anterior.
             return day if Task._fields[field].type == 'date' else \
-                fields.Datetime.to_datetime(day)
+                company_of(node)._construction_site_datetime(day, end=end)
+
+        def company_of(node):
+            return node.company_id or node.project_id.company_id or self.env.company
+
+        def day_of(field, node, child):
+            return company_of(node)._construction_site_date(child[field])
 
         while nodes:
             for node in nodes:
@@ -284,19 +296,60 @@ class ConstructionSpaceStage(models.Model):
                 else:
                     children = Task.search([('parent_id', '=', node.id),
                                             ('construction_level', '!=', False)])
-                    starts = [fields.Date.to_date(c[start_field]) for c in children
+                    starts = [day_of(start_field, node, c) for c in children
                               if start_field and c[start_field]]
-                    ends = [fields.Date.to_date(c[end_field]) for c in children
+                    ends = [day_of(end_field, node, c) for c in children
                             if end_field and c[end_field]]
                 vals = {}
                 if start_field:
-                    vals[start_field] = value(start_field, min(starts) if starts else False)
+                    vals[start_field] = value(start_field, min(starts) if starts else False, node)
                 if end_field:
-                    vals[end_field] = value(end_field, max(ends) if ends else False)
+                    vals[end_field] = value(
+                        end_field, max(ends) if ends else False, node, end=True)
                 vals = {k: v for k, v in vals.items() if node[k] != v}
                 if vals:
                     node.write(vals)
             nodes = nodes.parent_id.filtered('construction_level')
+
+    @api.model
+    def _fit_to_dates(self, dates_by_space):
+        """CREVAL 8, CR-68: reparte las etapas de cada nodo con APU dentro de
+        su inicio y su fin (``{tarea: (inicio, fin)}``), en el orden del
+        catálogo y con los días hábiles de la obra en partes iguales. La
+        primera empieza en el inicio y la última termina en el fin, aunque no
+        sean hábiles: son las fechas que escribió el planificador. Mueve las
+        fechas de necesidad de sus líneas sin avisar y no acumula hacia arriba:
+        quien llama acumula una vez. Devuelve las etapas movidas."""
+        moved, old = self.browse(), {}
+        spaces = self.env['project.task'].browse([task.id for task in dates_by_space])
+        by_space = defaultdict(lambda: self.browse())
+        for stage in self.search([('space_task_id', 'in', spaces.ids)]):
+            by_space[stage.space_task_id.id] |= stage
+        for space, (start, end) in dates_by_space.items():
+            stages = by_space[space.id].sorted('sequence')
+            if not stages or not start or not end:
+                continue
+            end = max(start, end)
+            company = space.company_id or space.project_id.company_id or self.env.company
+            days = [start + timedelta(days=n) for n in range((end - start).days + 1)]
+            working = [d for d in days if company._construction_is_site_day(d)] or days
+            count = len(stages)
+            for index, stage in enumerate(stages):
+                first = working[min(index * len(working) // count, len(working) - 1)]
+                last = working[min(max((index + 1) * len(working) // count - 1,
+                                       index * len(working) // count), len(working) - 1)]
+                new_start = start if index == 0 else first
+                new_end = end if index == count - 1 else last
+                if (stage.date_start, stage.date_end) == (new_start, new_end):
+                    continue
+                old[stage.id] = stage.date_start
+                stage.with_context(construction_stage_keep_lines=True,
+                                   construction_stage_no_chain=True,
+                                   construction_stage_no_rollup=True).write(
+                    {'date_start': new_start, 'date_end': new_end})
+                moved |= stage
+        moved._shift_lines(old, notify=False)
+        return moved
 
     def _shift_lines(self, old_starts, notify=True):
         """Desplaza la fecha de necesidad de las líneas de cada etapa movida
@@ -379,7 +432,9 @@ class ConstructionSpaceStage(models.Model):
         """Fechas propuestas: desde el inicio del ambiente (o del plan), una
         semana por etapa en el orden del catálogo, de lunes a viernes."""
         start_field = self.env['al.gantt.field.map'].get_map().get('date_start')
-        base = fields.Date.to_date(space[start_field]) if start_field and space[start_field] \
+        company = plan.company_id or space.company_id or self.env.company
+        base = company._construction_site_date(space[start_field]) \
+            if start_field and space[start_field] \
             else plan.date_start or fields.Date.context_today(self)
         order = self.env['construction.stage']._codes()
         start = base + timedelta(days=7 * (order.index(stage) if stage in order else 0))

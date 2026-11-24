@@ -773,18 +773,26 @@ class ProjectProject(models.Model):
         rows['INSUMOS'] = list(insumos.values())
         if order:
             section = subsection = ''
+            # CREVAL 8, CR-69: los títulos de la venta, cada uno antes de la
+            # primera partida que cuelga de él.
+            titles, pending = set(), []
             for line in order.order_line.sorted(lambda l: (l.sequence, l.id)):
                 if line.display_type == 'line_section':
                     section, subsection = line.name, ''
+                    pending = [(0, line)]
                     continue
                 if line.display_type == 'line_subsection':
                     subsection = line.name
+                    pending = [entry for entry in pending if entry[0] == 0] + [(1, line)]
                     continue
                 if line.display_type or line.is_downpayment or \
                         line.construction_line_role != 'partida':
                     continue
                 task = tasks.filtered(lambda t, l=line: t.sale_line_id == l)[:1]
                 item = line.construction_budget_item or ''
+                rows['PRESUPUESTO'] += self._construction_budget_title_rows(
+                    line, item, pending, titles)
+                pending = []
                 name = (line.name or '').splitlines()[0]
                 if item and name.startswith(item):
                     name = name[len(item):].strip()
@@ -901,6 +909,41 @@ class ProjectProject(models.Model):
                 if any(text(value) for value in picked):
                     values['PLAN'].append(picked)
         return values
+
+    @api.model
+    def _construction_budget_title_rows(self, line, item, pending, titles):
+        """CREVAL 8, CR-69: filas de título que van antes de la partida
+        ``line``. La línea guarda la ruta de títulos con que se envió la hoja
+        de presupuesto (``construction_budget_path``, todos los niveles); sin
+        ella (cotización sin hoja de venta), las secciones y subsecciones que
+        la preceden (``pending``: [(profundidad, línea)]), con el código que
+        da el ítem de la partida. ``titles`` son los ya escritos."""
+        result = []
+
+        def clean(code, name):
+            name = (name or '').strip()
+            if code and name.startswith(code + ' '):
+                name = name[len(code):].strip()
+            return name
+
+        path = [entry for entry in (line.construction_budget_path or [])
+                if isinstance(entry, (list, tuple)) and len(entry) == 2 and entry[0]] \
+            if 'construction_budget_path' in line._fields else []
+        if path:
+            for code, name in path:
+                if code not in titles:
+                    titles.add(code)
+                    result.append({'item': code, 'name': clean(code, name) or code})
+            return result
+        codes = budget_code_levels(item)[:-1] if item else []
+        for depth, title in pending:
+            code = codes[depth] if depth < len(codes) else ''
+            key = code or ('line', title.id)
+            if key in titles:
+                continue
+            titles.add(key)
+            result.append({'item': code, 'name': clean(code, title.name)})
+        return result
 
     @api.model
     def _construction_budget_order_sheets(self, sheets, last):
@@ -1123,9 +1166,11 @@ class ProjectProject(models.Model):
             'A19': 'Costo directo', 'B19': '=SUM(%s)' % rng('cost_real'),
             'A20': 'Total con IGV',
             'B20': '=SUM(%s)*(1+IFERROR(VALUE(%s),0)/100)' % (rng('subtotal'), obra('IGV %')),
+            # CREVAL 8, CR-69: cuántos títulos trae la hoja.
+            'A21': 'Títulos', 'B21': '=COUNTIF(%s,"Título")' % states,
         })
         styles = {ref: HEADER_STYLE for ref in ('A3', 'A4', 'A5', 'A8', 'B8', 'C8', 'D8', 'E8',
-                                                'A17', 'A18', 'A19', 'A20')}
+                                                'A17', 'A18', 'A19', 'A20', 'A21')}
         styles.update({'A1': TITLE_STYLE, 'A7': TITLE_STYLE, 'A16': TITLE_STYLE})
         return {
             'id': 'sheet_inicio', 'name': 'INICIO', 'colNumber': 8, 'rowNumber': 40,

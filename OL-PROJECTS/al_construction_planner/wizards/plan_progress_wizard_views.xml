@@ -13,7 +13,7 @@
                     <group string="Selección">
                         <field name="plan_id" options="{'no_create': True}" readonly="context.get('default_plan_id')"/>
                         <field name="whole_project"/>
-                        <field name="task_ids" widget="many2many_tags" invisible="whole_project" options="{'no_create': True}"/>
+                        <field name="task_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         <field name="partner_id" options="{'no_create': True}"/>
                     </group>
                     <group string="Avance">

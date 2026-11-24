@@ -22,9 +22,12 @@ class ConstructionPlanRequestWizard(models.TransientModel):
 
     group_by = fields.Selection(
         [('space', 'Ambiente'), ('apartment', 'Departamento'), ('floor', 'Piso')],
-        string='Agrupar por', required=True, default='floor',
+        string='Agrupar por', required=True, default=lambda self: self._default_group_by(),
         help='Cada línea del requerimiento lleva la tarea del grupo; las asignaciones '
-             'apuntan a las líneas del plan de cada ambiente o módulo.')
+             'apuntan a las líneas del plan de cada nivel. Se ofrecen los niveles de la '
+             'plantilla de la obra, con su nombre.')
+    group_by_functions = fields.Char(
+        string='Niveles de la obra', compute='_compute_group_by_functions')
     location_src_id = fields.Many2one(
         'stock.location', string='Origen', check_company=True,
         domain="[('usage', '=', 'internal'), ('company_id', '=', company_id)]",
@@ -34,6 +37,53 @@ class ConstructionPlanRequestWizard(models.TransientModel):
     line_ids = fields.One2many(
         'construction.plan.request.wizard.line', 'wizard_id', string='Vista previa',
         compute='_compute_line_ids', store=True, readonly=False)
+
+    # ------------------------------------------------------------------
+    # CREVAL 8, CR-70: «Agrupar por» según la plantilla de niveles de la obra
+    # ------------------------------------------------------------------
+    @api.model
+    def _construction_group_terms(self, template=None):
+        """{función: nombre} de las opciones de «Agrupar por» que la plantilla
+        tiene (la de la obra del contexto o de la compañía). Sin plantilla,
+        las tres del planificador con su nombre de siempre."""
+        Labels = self.env['construction.level.labels.mixin']
+        terms = Labels._construction_level_terms(template)
+        if not terms:
+            return dict(self._fields['group_by']._description_selection(self.env))
+        return {key: terms[key] for key in GROUP_FIELDS if key in terms}
+
+    @api.model
+    def _default_group_by(self):
+        """El agrupador de siempre (el último agrupador de la plantilla) si la
+        plantilla lo tiene; si no, el nivel con etapas."""
+        terms = self._construction_group_terms()
+        for key in ('floor', 'space', 'apartment'):
+            if key in terms:
+                return key
+        return 'floor'
+
+    @api.depends('plan_id')
+    def _compute_group_by_functions(self):
+        for wizard in self:
+            template = wizard.plan_id.project_id.construction_level_template_id
+            wizard.group_by_functions = ' '.join(
+                self._construction_group_terms(template or None))
+
+    @api.onchange('plan_id')
+    def _onchange_plan_group_by(self):
+        functions = (self.group_by_functions or '').split()
+        if functions and self.group_by not in functions:
+            self.group_by = 'floor' if 'floor' in functions else functions[0]
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super().fields_get(allfields, attributes)
+        if res.get('group_by', {}).get('selection'):
+            terms = self._construction_group_terms()
+            res['group_by']['selection'] = [
+                (key, terms[key]) for key, _label in res['group_by']['selection']
+                if key in terms]
+        return res
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'group_by', 'location_src_id',
                  'stage_ids')
@@ -149,12 +199,18 @@ class ConstructionPlanRequestWizard(models.TransientModel):
 
 class ConstructionPlanRequestWizardLine(models.TransientModel):
     _name = 'construction.plan.request.wizard.line'
+    _inherit = ['construction.level.labels.mixin']
     _description = 'Línea del requerimiento de obra desde el plan'
 
     wizard_id = fields.Many2one(
         'construction.plan.request.wizard', string='Asistente', required=True,
         ondelete='cascade')
     group_task_id = fields.Many2one('project.task', string='Nivel')
+    # CR-70: la primera columna lleva el nombre del nivel elegido en «Agrupar
+    # por»; son la misma tarea, una columna por función.
+    space_task_id = fields.Many2one(related='group_task_id', string='Ambiente')
+    apartment_task_id = fields.Many2one(related='group_task_id', string='Departamento')
+    floor_task_id = fields.Many2one(related='group_task_id', string='Piso')
     product_id = fields.Many2one('product.product', string='Material', required=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unidad')
     qty_planned = fields.Float(string='Planificado', digits='Product Unit')
@@ -166,3 +222,12 @@ class ConstructionPlanRequestWizardLine(models.TransientModel):
     plan_line_ids = fields.Many2many(
         'construction.resource.plan.line', 'construction_plan_request_wiz_line_rel',
         'wizard_line_id', 'plan_line_id', string='Líneas del plan')
+
+    @api.model
+    def _construction_level_label_fields(self):
+        return {name: key for key, name in GROUP_FIELDS.items()}
+
+    @api.model
+    def _construction_level_columns(self, arch, view_type):
+        """Las tres columnas las muestra «Agrupar por»; aquí solo cambian de
+        nombre (``fields_get``)."""

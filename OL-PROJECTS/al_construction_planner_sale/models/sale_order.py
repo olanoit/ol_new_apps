@@ -27,8 +27,36 @@ class SaleOrder(models.Model):
         crea otro."""
         res = super().action_confirm()
         for order in self.filtered(lambda o: o.state == 'sale'):
+            # CREVAL 8, CR-66: primero el vínculo de la obra; el contrato y la
+            # hoja de planificación lo leen.
+            order._construction_link_project_order()
             order._construction_create_draft_contract()
         return res
+
+    def _construction_link_project_order(self):
+        """CREVAL 8, CR-66: la obra elegida en «Proyecto» toma la cotización
+        que se confirma como «Orden de venta del contrato» si no tiene una
+        vigente. Si la tiene, no se reemplaza y la orden lo avisa."""
+        self.ensure_one()
+        # sudo: quien confirma es de Ventas y puede no escribir en la obra; el
+        # vínculo lo pone el sistema y el historial conserva a quien confirmó.
+        project_sudo = self.sudo().project_id
+        if not project_sudo.is_construction_site:
+            return False
+        current_sudo = project_sudo.construction_sale_order_id
+        if current_sudo == self:
+            return False
+        if current_sudo and current_sudo.state != 'cancel':
+            self.message_post(body=self.env._(
+                'La obra %(project)s ya tiene la orden de venta del contrato %(order)s; no se '
+                'reemplazó. Si corresponde esta orden, cámbiela en la obra, pestaña «Calendario '
+                'e ingresos», campo «Orden de venta del contrato».',
+                project=project_sudo.display_name, order=current_sudo.name))
+            return False
+        project_sudo._track_set_log_message(self.env._(
+            'Al confirmar la cotización %s.', self.name))
+        project_sudo.construction_sale_order_id = self.id
+        return True
 
     def _construction_draft_contract_project(self):
         self.ensure_one()

@@ -87,3 +87,4 @@ from . import test_package_120_screens
 from . import test_review_roles
 from . import test_sale_guards
 from . import test_package_124
+from . import test_creval_package8

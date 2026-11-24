@@ -59,7 +59,8 @@ class ConstructionPlanRescheduleWizard(models.TransientModel):
 
     def _get_reference_date(self, tasks, lines):
         start_field = self.env['al.gantt.field.map'].get_map().get('date_start')
-        starts = [fields.Date.to_date(task[start_field]) for task in tasks
+        company = self.plan_id.company_id or self.env.company
+        starts = [company._construction_site_date(task[start_field]) for task in tasks
                   if start_field and task[start_field]]
         if starts:
             return min(starts)

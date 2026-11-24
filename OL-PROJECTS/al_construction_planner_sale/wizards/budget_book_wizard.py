@@ -1309,13 +1309,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             planned = book.get('plan', {}).get(line.construction_budget_item) or {}
             mode = planned.get('mode') or (partida or {}).get('mode') or (
                 recipe.execution_mode if recipe else False)
-            dates = {}
-            if planned.get('end'):
-                dates['date_deadline'] = planned['end']
-            if planned.get('start') and 'planned_date_begin' in task._fields:
-                dates['planned_date_begin'] = planned['start']
-            if dates:
-                task_dates[task] = dates
+            if planned.get('start') or planned.get('end'):
+                task_dates[task] = (planned.get('start'), planned.get('end'))
             if mode:
                 task.with_context(construction_plan_force=PLAN_FORCE).construction_execution_mode = mode
             if recipe:
@@ -1328,8 +1323,9 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 'mode': 'replace'}).action_generate()
         # Las fechas de la pestaña PLAN, después de generar (el plan propone
         # las suyas).
-        for task, dates in task_dates.items():
-            task.with_context(construction_plan_force=PLAN_FORCE).write(dates)
+        applied = self._construction_apply_plan_dates(plan, task_dates)
+        if applied:
+            messages.append(applied)
         messages.append(self.env._(
             'Plan %(plan)s: %(tasks)s partidas con su receta.', plan=plan.display_name,
             tasks=len(tasks)))
@@ -1338,6 +1334,57 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 'Con compromisos o avance, no se regeneraron (resuélvalas con un cambio de '
                 'obra): %s.', ', '.join(blocked[:20])))
         return messages
+
+    def _construction_apply_plan_dates(self, plan, task_dates):
+        """CREVAL 8, CR-67 y CR-68: las fechas de la pestaña PLAN
+        (``{tarea: (inicio, fin)}``) pasan a las etapas del cronograma de cada
+        partida y de ahí a la partida y a sus títulos, con la hora de entrada
+        y de salida del horario de obra en la zona horaria de la compañía. Una
+        partida sin fechas en PLAN conserva las propuestas."""
+        if not task_dates:
+            return False
+        Stage = self.env['construction.space.stage']
+        Task = self.env['project.task']
+        company = plan.company_id or self.env.company
+        start_field, end_field = Stage._task_date_fields()
+        fit, loose = {}, Task
+        staged = set(Stage.search([('space_task_id', 'in', [t.id for t in task_dates])])
+                     .space_task_id.ids)
+        for task, (start, end) in task_dates.items():
+            # Con una sola fecha en PLAN, la otra es la que ya tiene la partida.
+            start = start or (start_field and company._construction_site_date(
+                task[start_field])) or end
+            end = max(end or (end_field and company._construction_site_date(
+                task[end_field])) or start, start)
+            if task.id in staged:
+                fit[task] = (start, end)
+                continue
+            # Sin etapas en el cronograma (partida sin receta): las fechas van
+            # en la tarea.
+            values = {}
+            if start_field:
+                values[start_field] = start if Task._fields[start_field].type == 'date' \
+                    else company._construction_site_datetime(start)
+            if end_field:
+                values[end_field] = end if Task._fields[end_field].type == 'date' \
+                    else company._construction_site_datetime(end, end=True)
+            task.with_context(construction_plan_force=PLAN_FORCE).write(values)
+            loose |= task
+        Stage._fit_to_dates(fit)
+        spaces = Task.browse([task.id for task in fit])
+        # Una sola acumulación: las partidas con etapas y, desde el título, las
+        # que no las tienen.
+        Stage._rollup_task_dates(spaces | loose.parent_id.filtered('construction_level'))
+        titles = Task
+        node = (spaces | loose).parent_id.filtered('construction_level')
+        while node:
+            titles |= node
+            node = node.parent_id.filtered('construction_level')
+        message = self.env._(
+            'Fechas de la pestaña PLAN aplicadas: %(tasks)s partidas, %(titles)s títulos.',
+            tasks=len(task_dates), titles=len(titles))
+        plan.message_post(body=message)
+        return message
 
     # ------------------------------------------------------------------
     # Plantilla

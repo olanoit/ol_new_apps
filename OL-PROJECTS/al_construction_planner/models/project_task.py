@@ -3,6 +3,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 from .common import DRIVER_TYPES, LEVELS, UNIT_STATE_RANK, UNIT_STATES, UNIT_TYPES
+from .construction_level_labels import LEVEL_NUMBER
 
 # Estados del módulo que pone el avance validado (y que su reversión quita).
 PROGRESS_UNIT_STATES = ('produced', 'installed')
@@ -25,6 +26,12 @@ class ProjectTask(models.Model):
              'se ve en el árbol y fija la función del nivel.')
     construction_level_name = fields.Char(
         string='Nombre del nivel', compute='_compute_construction_level_name')
+    # CREVAL 8, CR-70: «Nivel de obra» con el nombre de la plantilla
+    # («Partida»), sin la marca «(N3)».
+    construction_level_label = fields.Char(
+        string='Nivel de obra según la plantilla', compute='_compute_construction_level_name',
+        help='Nombre del nivel en la plantilla de niveles de la obra; sin plantilla, la '
+             'función del nivel en el planificador.')
     # Ruta de ids de los niveles desde el primero (v1.7, M17-01): «12/34/56/».
     # Base de la acumulación por cualquier nivel de la plantilla sin recorrer
     # el árbol (=like ruta%).
@@ -227,6 +234,8 @@ class ProjectTask(models.Model):
         for task in self:
             task.construction_level_name = task.construction_level_line_id.name \
                 or labels.get(task.construction_level, '')
+            task.construction_level_label = LEVEL_NUMBER.sub(
+                '', task.construction_level_name or '') or False
 
     @api.model_create_multi
     def create(self, vals_list):

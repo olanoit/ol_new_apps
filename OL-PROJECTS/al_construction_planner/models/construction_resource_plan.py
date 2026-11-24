@@ -1598,7 +1598,9 @@ class ConstructionResourcePlanLine(models.Model):
         for line in self:
             plan = line.plan_id
             start = line.task_id[start_field] if line.task_id and start_field else False
-            start = fields.Date.to_date(start) if start else plan.date_start
+            # CR-67: el día de la obra en su zona horaria.
+            start = (plan.company_id or self.env.company)._construction_site_date(start) \
+                if start else plan.date_start
             lead = {
                 'material': plan.lead_days_material, 'service': plan.lead_days_material,
                 'contract': plan.lead_days_contract, 'labor': plan.lead_days_contract,

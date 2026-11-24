@@ -20,7 +20,11 @@ class ConstructionPlanSupplyMixin(models.AbstractModel):
     plan_id = fields.Many2one(
         'construction.resource.plan', string='Plan', required=True, check_company=True,
         domain="[('state', 'in', ('approved', 'in_progress'))]")
-    company_id = fields.Many2one(related='plan_id.company_id', string='Compañía')
+    # CREVAL 8, CR-71: sin plan (asistente abierto desde el menú), la compañía
+    # activa; con un relacionado al plan, el dominio de compañía del propio
+    # campo «Plan» quedaba en «ninguna» y la lista salía vacía.
+    company_id = fields.Many2one(
+        'res.company', string='Compañía', compute='_compute_company_id')
     project_id = fields.Many2one(related='plan_id.project_id', string='Obra')
     currency_id = fields.Many2one(related='plan_id.currency_id', string='Moneda')
     task_ids = fields.Many2many(
@@ -32,6 +36,23 @@ class ConstructionPlanSupplyMixin(models.AbstractModel):
         'construction.stage', string='Etapas',
         default=lambda self: self.env['construction.stage'].search([]),
         help='Etapas del catálogo que entran en la selección.')
+
+    @api.depends('plan_id')
+    @api.depends_context('company')
+    def _compute_company_id(self):
+        for wizard in self:
+            wizard.company_id = wizard.plan_id.company_id or self.env.company
+
+    @api.onchange('task_ids')
+    def _onchange_task_ids_whole_project(self):
+        """CR-71: «Toda la obra» sigue a la «Selección»; así no queda una
+        selección que el asistente ignora."""
+        self.whole_project = not self.task_ids
+
+    @api.onchange('whole_project')
+    def _onchange_whole_project_selection(self):
+        if self.whole_project and self.task_ids:
+            self.task_ids = [Command.clear()]
 
     @api.model
     def default_get(self, fields_list):

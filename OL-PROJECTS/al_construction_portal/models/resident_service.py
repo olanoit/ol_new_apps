@@ -553,9 +553,11 @@ class ConstructionPortalService(models.AbstractModel):
         Task = self.env['project.task'].sudo()
         if 'planned_date_begin' not in Task._fields:
             return Task
-        tz_start = fields.Datetime.to_datetime(today)
+        # CREVAL 8, CR-67: el día de la obra en su zona horaria.
+        tz_start, tz_end = (project.company_id or self.env.company) \
+            ._construction_site_day_bounds(fields.Date.to_date(today))
         # sudo: las partidas de la obra del residente.
         return Task.search([
             ('project_id', '=', project.id), ('planned_date_begin', '>=', tz_start),
-            ('planned_date_begin', '<', tz_start + timedelta(days=1)),
+            ('planned_date_begin', '<', tz_end),
             ('child_ids', '=', False)], limit=20)

@@ -11,13 +11,17 @@ Con el campo vacío, todo se calcula como antes: «Horas de la jornada», los
 días hábiles del horario de la compañía y los parámetros de cada puente.
 """
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, time, timedelta
+
+import pytz
 
 from odoo import api, fields, models
 from odoo.tools.float_utils import float_compare, float_round
 
 # Precisión de los jornales y de los días equivalentes.
 DAY_DIGITS = 4
+# CREVAL 8, CR-67: entrada y salida de un día sin horario de obra.
+DEFAULT_SITE_HOURS = (8.0, 17.0)
 
 
 class ResCompany(models.Model):
@@ -155,6 +159,51 @@ class ResCompany(models.Model):
             return None
         hours = sum(a.hour_to - a.hour_from for a in attendances)
         return min(attendances.mapped('hour_from')), max(attendances.mapped('hour_to')), hours
+
+    # ------------------------------------------------------------------
+    # Día de obra ↔ fecha y hora de la tarea (CREVAL 8, CR-67)
+    # ------------------------------------------------------------------
+    def _construction_site_tz(self):
+        """Zona horaria de la obra: la del contacto de la compañía; sin ella,
+        la del usuario."""
+        self.ensure_one()
+        # sudo: solo se lee la zona horaria del contacto de la compañía.
+        name = self.sudo().partner_id.tz or self.env.user.tz or 'UTC'
+        try:
+            return pytz.timezone(name)
+        except pytz.UnknownTimeZoneError:
+            return pytz.utc
+
+    def _construction_site_datetime(self, day, end=False):
+        """Fecha y hora (UTC, sin zona) de un día de obra en una tarea: la
+        hora de entrada del horario de obra o, con ``end``, la de salida. Un
+        día sin horario usa 08:00 y 17:00. Así la tarea muestra el mismo día
+        que el cronograma en la zona horaria de la obra."""
+        self.ensure_one()
+        if not day:
+            return False
+        window = self._construction_day_window(day)
+        hour = (window[1] if end else window[0]) if window else DEFAULT_SITE_HOURS[bool(end)]
+        minutes = min(int(round(hour * 60)), 24 * 60 - 1)
+        local = self._construction_site_tz().localize(
+            datetime.combine(day, time(minutes // 60, minutes % 60)))
+        return local.astimezone(pytz.utc).replace(tzinfo=None)
+
+    def _construction_site_date(self, moment):
+        """Día de obra de una fecha y hora de tarea (o de una fecha)."""
+        self.ensure_one()
+        if not moment:
+            return False
+        if not isinstance(moment, datetime):
+            return fields.Date.to_date(moment)
+        return pytz.utc.localize(moment).astimezone(self._construction_site_tz()).date()
+
+    def _construction_site_day_bounds(self, day):
+        """(inicio, fin) en UTC del día de obra ``day``, para buscar tareas."""
+        self.ensure_one()
+        start = self._construction_site_tz().localize(datetime.combine(day, time.min))
+        start = start.astimezone(pytz.utc).replace(tzinfo=None)
+        return start, start + timedelta(days=1)
 
     # ------------------------------------------------------------------
     # Días hábiles de la obra: con horario de obra, sus días

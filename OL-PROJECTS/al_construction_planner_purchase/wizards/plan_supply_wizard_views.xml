@@ -13,7 +13,7 @@
                 <group>
                     <group string="Selección">
                         <field name="whole_project"/>
-                        <field name="task_ids" widget="many2many_tags" invisible="whole_project" options="{'no_create': True}"/>
+                        <field name="task_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         <field name="product_ids" widget="many2many_tags" invisible="not product_ids" options="{'no_create': True}"/>
                         <field name="stage_ids" widget="many2many_checkboxes"/>
                         <label for="date_from" string="Necesidad"/>
@@ -77,10 +77,11 @@
                 <group>
                     <group string="Selección">
                         <field name="whole_project"/>
-                        <field name="task_ids" widget="many2many_tags" invisible="whole_project" options="{'no_create': True}"/>
+                        <field name="task_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         <field name="stage_ids" widget="many2many_checkboxes"/>
                     </group>
                     <group string="Requerimiento">
+                        <field name="group_by_functions" invisible="1"/>
                         <field name="group_by" widget="radio"/>
                         <field name="location_src_id" options="{'no_create': True}" groups="stock.group_stock_multi_locations"/>
                         <field name="date_required"/>
@@ -88,7 +89,10 @@
                 </group>
                 <field name="line_ids" nolabel="1">
                     <list editable="bottom" create="0">
-                        <field name="group_task_id" readonly="1" force_save="1"/>
+                        <field name="group_task_id" column_invisible="1"/>
+                        <field name="space_task_id" readonly="1" column_invisible="parent.group_by != 'space'"/>
+                        <field name="apartment_task_id" readonly="1" column_invisible="parent.group_by != 'apartment'"/>
+                        <field name="floor_task_id" readonly="1" column_invisible="parent.group_by != 'floor'"/>
                         <field name="product_id" readonly="1" force_save="1"/>
                         <field name="product_uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
                         <field name="qty_planned" readonly="1" force_save="1"/>
