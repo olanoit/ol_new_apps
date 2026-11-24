@@ -195,12 +195,26 @@ planificador sin administrador):
 | CR-71 | `al_construction_package8_contract_wizard`: «Plan» sin pasar por el plan y «Toda la obra» | `al_construction_planner_subcontract/static/tests/tours/package8_contract_wizard_tour.js` |
 | CR-69 | `al_construction_package8_titles` (`TestCrevalPackage8SheetsTour`): la hoja de planificación abierta por el planificador, con el título antes de sus partidas, INICIO y PLAN | `al_construction_planner_spreadsheet/static/tests/tours/package8_titles_tour.js` |
 
-## 8. Pendiente
+## 8. Verificación en la instancia de desarrollo (24-nov-2026)
 
-- Capturas en creval-dev: tomadas el 24-nov las de CR-70 (etapas del
-  cronograma, tarea y «Agrupar por») y CR-71 (lista de planes desde el menú y
-  «Toda la obra» desmarcada). Faltan las de CR-66, CR-67, CR-68 y CR-69, que
-  exigen confirmar una cotización, reenviar la hoja o crear una hoja nueva en
-  una obra de prueba.
-- Reenviar la hoja de planificación de las obras de prueba para que sus tareas
-  tomen la hora de obra (las fechas ya guardadas no se migran).
+En una obra de prueba nueva, con una cotización copiada de otra obra de prueba
+y sus APU, por pantalla y con capturas por criterio:
+
+| Código | Resultado |
+|---|---|
+| CR-66 | Al confirmar la cotización, la obra toma la «Orden de venta del contrato» y el historial dice «Al confirmar la cotización …» |
+| CR-67 | PLAN con 13/07 a 26/07 en ocho partidas: las tareas quedan de 07:00 del 13 a 17:00 del 26, hora de la obra; las «tareas del día» del portal las dan el 13 y no el 12 ni el 14 |
+| CR-68 | Las etapas de las ocho partidas van del 13 al 26 y el título tiene las mismas fechas; el envío avisa «8 partidas, 2 títulos» |
+| CR-69 | La hoja nueva nace con 70 títulos y 358 partidas; INICIO los cuenta aparte y la hoja se valida sin errores |
+| CR-70 | «Etapas del cronograma», la tarea y «Agrupar por» usan los nombres de la plantilla |
+| CR-71 | «Asignar contrata» desde el menú ofrece los planes; al elegir una partida, «Toda la obra» se desmarca |
+
+El navegador muestra las horas en su propia zona: las capturas se leen por el
+día, y la hora se comprobó en la zona de la obra.
+
+## 9. Pendiente
+
+- Las obras cargadas antes del paquete conservan sus tareas a las 00:00 UTC
+  (en el portal empiezan el día anterior) hasta que se reenvíe su hoja de
+  planificación; las fechas ya guardadas no se migran.
+- CR-67, control semanal: comprobado solo con pruebas.
