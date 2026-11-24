@@ -165,10 +165,14 @@ class ResCompany(models.Model):
     # ------------------------------------------------------------------
     def _construction_site_tz(self):
         """Zona horaria de la obra: la del contacto de la compañía; sin ella,
-        la del usuario."""
+        la del horario de obra, la del horario de la compañía y, al final, la
+        del usuario. Los horarios van antes que el usuario porque las fechas
+        también las escribe quien no tiene zona horaria (o el sistema)."""
         self.ensure_one()
-        # sudo: solo se lee la zona horaria del contacto de la compañía.
-        name = self.sudo().partner_id.tz or self.env.user.tz or 'UTC'
+        # sudo: solo se lee la zona horaria del contacto y de los horarios.
+        company_sudo = self.sudo()
+        name = company_sudo.partner_id.tz or company_sudo.construction_site_calendar_id.tz \
+            or company_sudo.resource_calendar_id.tz or self.env.user.tz or 'UTC'
         try:
             return pytz.timezone(name)
         except pytz.UnknownTimeZoneError:

@@ -69,7 +69,7 @@ envío del libro (`al_construction_planner_sale/wizards/budget_book_wizard.py`).
 
 | Qué | Dónde |
 |---|---|
-| Día de obra → fecha y hora de la tarea: hora de entrada (o de salida) del horario de obra de la compañía; un día sin horario, 08:00 y 17:00. Zona horaria: la del contacto de la compañía; sin ella, la del usuario | `al_construction_planner/models/construction_site_schedule.py` (`_construction_site_tz`, `_construction_site_datetime`, `DEFAULT_SITE_HOURS`) |
+| Día de obra → fecha y hora de la tarea: hora de entrada (o de salida) del horario de obra de la compañía; un día sin horario, 08:00 y 17:00. Zona horaria: la del contacto de la compañía; sin ella, la del horario de obra, la del horario de la compañía y, al final, la del usuario | `al_construction_planner/models/construction_site_schedule.py` (`_construction_site_tz`, `_construction_site_datetime`, `DEFAULT_SITE_HOURS`) |
 | Fecha y hora de la tarea → día de obra, y límites de un día de obra para buscar tareas | mismo archivo (`_construction_site_date`, `_construction_site_day_bounds`) |
 | La acumulación de fechas del cronograma hacia las tareas escribe y lee con esas ayudas | `construction_space_stage.py` (`_rollup_task_dates`) |
 | Quien lee el inicio de una tarea como día usa la misma ayuda | `_default_dates`, `construction.resource.plan.line._get_default_date_needed`, `plan_reschedule_wizard._get_reference_date` |
@@ -137,33 +137,40 @@ booleano `False` van vacíos.
    17:00 (`DEFAULT_SITE_HOURS`), a falta de la decisión pendiente. También se
    usa en un día sin horario dentro de una compañía con horario de obra (un fin
    escrito en domingo).
-3. **CR-67, portal.** La integración decía «sin ajuste». «Tareas del día»
+   Aceptadas el 24-nov-2026.
+3. **CR-67, zona horaria.** El requerimiento pide la del contacto de la
+   compañía y, sin ella, la del usuario. La verificación en las instancias
+   mostró compañías sin zona en su contacto y usuarios sin zona: entre las dos
+   se agregó la zona del horario de obra y la del horario de la compañía. Las
+   compañías de las instancias de desarrollo quedaron con America/Lima en su
+   contacto.
+4. **CR-67, portal.** La integración decía «sin ajuste». «Tareas del día»
    buscaba en el día UTC; se cambió al día de la obra para que el criterio 2
    se cumpla en cualquier zona horaria.
-4. **CR-68, reparto.** «La misma regla de reparto del plan» se programó como
+5. **CR-68, reparto.** «La misma regla de reparto del plan» se programó como
    partes iguales de los días hábiles de la partida entre sus etapas, en el
    orden del catálogo. La regla del plan (una semana por etapa) no cabe en un
    plazo fijo.
-5. **CR-69, origen de los títulos.** No se lee el documento de la hoja de
+6. **CR-69, origen de los títulos.** No se lee el documento de la hoja de
    venta: el servidor no evalúa hojas. Los títulos salen de la ruta que el
    envío de la hoja de presupuesto guarda en cada línea de la cotización, que
    trae todos los niveles. Un título de la hoja de venta sin partidas debajo no
    llega (decisión del 13-nov: los títulos vacíos se excluyen).
-6. **CR-69, «Traer de Odoo» en la hoja de venta.** Usa las mismas filas, así que
+7. **CR-69, «Traer de Odoo» en la hoja de venta.** Usa las mismas filas, así que
    también trae los títulos.
-7. **CR-69, INICIO.** «Títulos» va en la fila 21, debajo de los cuatro
+8. **CR-69, INICIO.** «Títulos» va en la fila 21, debajo de los cuatro
    indicadores, para no mover celdas que ya se leen. Las hojas ya creadas no lo
    reciben; sí las nuevas.
-8. **CR-70, valor por defecto de «Agrupar por».** El requerimiento pide el nivel
+9. **CR-70, valor por defecto de «Agrupar por».** El requerimiento pide el nivel
    con etapas. Quedó el de hoy (el último agrupador: «Piso» o
    «Sub-especialidad») cuando la plantilla lo tiene, y el nivel con etapas si
    no, porque «Lo que no debe cambiar» incluye el agrupamiento y mobiliario
-   «como hoy». Cambiarlo es una línea (`_default_group_by`). **Decisión
-   pendiente.**
-9. **CR-70, asistente abierto sin plan.** Los nombres de «Agrupar por» salen de
+   «como hoy». Cambiarlo es una línea (`_default_group_by`). Aceptado el
+   24-nov-2026.
+10. **CR-70, asistente abierto sin plan.** Los nombres de «Agrupar por» salen de
    la plantilla de la obra del plan con que se abre. Abierto desde el menú, sin
    plan, usa la plantilla de la compañía.
-10. **CR-71, «Toda la obra».** Además de lo pedido, marcar «Toda la obra» con
+11. **CR-71, «Toda la obra».** Además de lo pedido, marcar «Toda la obra» con
     partidas elegidas las quita, para que no quede una selección que se ignora.
 
 ## 7. Pruebas
@@ -194,6 +201,5 @@ INICIO del documento creado y validación del libro con títulos).
 
 - Capturas en creval-dev por criterio, junto a la maqueta.
 - Recorrido de pantalla de CR-69 (abrir la hoja y validar).
-- Verificación en creval-dev y en newallcenter-dev1.
-- Decisiones: horas por defecto de CR-67 y valor por defecto de «Agrupar por»
-  (diferencia 8).
+- Reenviar la hoja de planificación de las obras de prueba para que sus tareas
+  tomen la hora de obra (las fechas ya guardadas no se migran).

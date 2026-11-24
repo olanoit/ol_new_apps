@@ -123,9 +123,15 @@ class TestCrevalPackage8(TestBudgetBook):
         self.assertEqual(company._construction_site_datetime(monday),
                          datetime(2026, 7, 12, 23, 0))
         self.assertEqual(company._construction_site_date(datetime(2026, 7, 12, 23, 0)), monday)
-        # Sin zona en la compañía, la del usuario.
+        # Sin zona en el contacto, la del horario de la compañía (las fechas
+        # también las escribe quien no tiene zona horaria); sin horarios, la
+        # del usuario.
         company.partner_id.tz = False
         self.env.user.tz = 'America/Lima'
+        company.resource_calendar_id.tz = 'Asia/Tokyo'
+        self.assertEqual(company._construction_site_datetime(monday),
+                         datetime(2026, 7, 12, 23, 0))
+        company.resource_calendar_id = False
         self.assertEqual(company._construction_site_datetime(monday),
                          datetime(2026, 7, 13, 13, 0))
 
