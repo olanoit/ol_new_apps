@@ -5,7 +5,8 @@ ficticios."""
 import json
 from io import BytesIO
 
-from odoo.tests import new_test_user, tagged
+from odoo import Command
+from odoo.tests import HttpCase, new_test_user, tagged
 
 from odoo.addons.al_construction_planner_suite.tests.test_budget_book_creval import (
     TestBudgetBook,
@@ -123,3 +124,31 @@ class TestCrevalPackage8Sheets(TestBudgetBook):
         self.assertIsNone(values[3])
         self.assertEqual(values[4], 0)
         self.assertIsNotNone(values[4])
+
+
+@tagged('post_install', '-at_install')
+class TestCrevalPackage8SheetsTour(TestBudgetBook, HttpCase):
+    """Recorrido de pantalla de CR-69 con un planificador sin permisos de
+    administrador."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        grp = 'al_construction_planner.group_planner_'
+        cls.planner = new_test_user(
+            cls.env, 'planificador_p8_hoja_tour',
+            name='Planificador (test paquete 8, recorrido de la hoja)',
+            groups=f'{grp}planner,{grp}amounts,project.group_project_user')
+        cls.planner.write({'company_ids': [Command.link(cls.env.company.id)],
+                           'company_id': cls.env.company.id})
+
+    def test_cr69_tour_plan_sheet_with_titles(self):
+        self._send(self._book()).action_import()
+        self.project.construction_sale_order_id = self.order
+        self.project.with_user(self.planner).action_construction_open_plan_sheet()
+        document = self.env['documents.document'].search([
+            ('construction_project_id', '=', self.project.id),
+            ('construction_budget_role', '=', 'plan')])
+        document.name = 'Planificación de obra (títulos, test paquete 8)'
+        self.start_tour('/odoo', 'al_construction_package8_titles',
+                        login='planificador_p8_hoja_tour')

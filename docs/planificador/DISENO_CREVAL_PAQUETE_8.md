@@ -193,13 +193,14 @@ planificador sin administrador):
 | CR-67, CR-68, CR-70 | `al_construction_package8_schedule`: la partida con «Nivel de obra» y sus fechas, y «Etapas del cronograma» | `al_construction_planner/static/tests/tours/package8_schedule_tour.js` |
 | CR-70 | `al_construction_package8_request_wizard`: «Agrupar por» y la primera columna | `al_construction_planner_purchase/static/tests/tours/package8_request_wizard_tour.js` |
 | CR-71 | `al_construction_package8_contract_wizard`: «Plan» sin pasar por el plan y «Toda la obra» | `al_construction_planner_subcontract/static/tests/tours/package8_contract_wizard_tour.js` |
-
-CR-69 no tiene recorrido: la hoja se comprueba en el servidor (filas, celdas e
-INICIO del documento creado y validación del libro con títulos).
+| CR-69 | `al_construction_package8_titles` (`TestCrevalPackage8SheetsTour`): la hoja de planificación abierta por el planificador, con el título antes de sus partidas, INICIO y PLAN | `al_construction_planner_spreadsheet/static/tests/tours/package8_titles_tour.js` |
 
 ## 8. Pendiente
 
-- Capturas en creval-dev por criterio, junto a la maqueta.
-- Recorrido de pantalla de CR-69 (abrir la hoja y validar).
+- Capturas en creval-dev: tomadas el 24-nov las de CR-70 (etapas del
+  cronograma, tarea y «Agrupar por») y CR-71 (lista de planes desde el menú y
+  «Toda la obra» desmarcada). Faltan las de CR-66, CR-67, CR-68 y CR-69, que
+  exigen confirmar una cotización, reenviar la hoja o crear una hoja nueva en
+  una obra de prueba.
 - Reenviar la hoja de planificación de las obras de prueba para que sus tareas
   tomen la hora de obra (las fechas ya guardadas no se migran).
