@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261126 — 26/11/2026
+
+- Los formatos se llaman «Comprobante electrónico (A4)» (antes CPE A4) y «Comprobante electrónico (ticket)» (antes CPE Ticket) en el menú Imprimir y en el envío por correo.
+
 ## 23.20261126 — 26/11/2026
 
 - Facturas de compañías peruanas: el botón Imprimir y el envío por correo usan por defecto el formato CPE A4. Si el cliente o el diario tienen otro formato elegido, manda ese. CPE A4 y CPE Ticket se pueden elegir como formato de factura en el cliente y en el diario.

@@ -222,7 +222,7 @@ validados.
 | N.º | Caso | Cómo | Resultado esperado |
 |---|---|---|---|
 | 2.1.1 | Firmas y eslogan | **Perú ‣ Configuración ‣ Ajustes ‣ Comprobantes electrónicos**: active **Firma y eslogan en el reporte**, elija el **Representante** y escriba el **Eslogan** | El A4 sale con el bloque de firmas; sin la opción, sale sin él |
-| 2.1.2 | A4 y ticket | Publique una factura en **Contabilidad ‣ Clientes ‣ Facturas**; **Imprimir** y luego **⚙ ‣ Imprimir ‣ CPE Ticket** | A4 con papel **Comprobantes: A4 SUNAT**, nombrado con el número y el cliente; ticket de 80 mm |
+| 2.1.2 | A4 y ticket | Publique una factura en **Contabilidad ‣ Clientes ‣ Facturas**; **Imprimir** y luego **⚙ ‣ Imprimir ‣ Comprobante electrónico (ticket)** | A4 con papel **Comprobantes: A4 SUNAT**, nombrado con el número y el cliente; ticket de 80 mm |
 | 2.1.3 | Desglose tributario | Imprima una boleta con productos gravados, exonerados, inafectos y una bolsa | Filas Op. gravadas, exoneradas, inafectas, IGV e ICBPER, solo las que tienen importe. Ej. B001-00000001: total 99,10 |
 | 2.1.4 | Detracción y crédito | Imprima una factura con servicio al 12 % y otra con términos «30 % ahora, el resto en 60 días» | Bloque **Información de la detracción — SPOT** con monto sin decimales (2 301,00 × 12 % → S/ 276,00); forma de pago **CRÉDITO** con **Información del crédito** por cuota |
 | 2.1.5 | Cliente agente de retención | Factura de S/ 1 180,00 en dos cuotas a un cliente agente | **Monto neto pendiente de pago** S/ 1 144,60 y cuotas de 572,30 |

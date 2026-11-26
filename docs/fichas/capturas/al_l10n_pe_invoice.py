@@ -75,7 +75,7 @@ def imprimir(c):
     c.clic('.o_cp_action_menus button', ms=800)
     c.page.locator('.o-dropdown--menu .o-dropdown-item:has-text("Imprimir")').first.hover()
     c.esperar(800)
-    c.page.locator('.o-dropdown--menu .o-dropdown-item:has-text("CPE A4")').first.hover()
+    c.page.locator('.o-dropdown--menu .o-dropdown-item:has-text("Comprobante electrónico (A4)")').first.hover()
     c.esperar(400)
     path = c.out / '03-imprimir.png'
     c.page.screenshot(path=str(path), clip={'x': 0, 'y': 0, 'width': 1440, 'height': 495})

@@ -326,7 +326,7 @@
         </template>
 
         <record id="report_cpe_invoice_a4" model="ir.actions.report">
-            <field name="name">CPE A4</field>
+            <field name="name">Comprobante electrónico (A4)</field>
             <field name="model">account.move</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">al_l10n_pe_invoice.report_cpe_invoice_a4_main</field>

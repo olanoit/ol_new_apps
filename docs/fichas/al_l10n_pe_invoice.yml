@@ -79,8 +79,8 @@ flujos:
     mermaid: |
       flowchart TD
         A[Factura, boleta o nota] --> B{¿Qué formato?}
-        B -- "Botón Imprimir o ⚙ ▸ Imprimir ▸ CPE A4" --> C[A4 con papel «Comprobantes: A4 SUNAT»]
-        B -- "⚙ ▸ Imprimir ▸ CPE Ticket" --> D[Ticket con papel de 80 mm]
+        B -- "Botón Imprimir o ⚙ ▸ Imprimir ▸ Comprobante electrónico (A4)" --> C[A4 con papel «Comprobantes: A4 SUNAT»]
+        B -- "⚙ ▸ Imprimir ▸ Comprobante electrónico (ticket)" --> D[Ticket con papel de 80 mm]
         C --> E[Encabezado, cliente, fechas, moneda<br/>y T.C. de la factura si no es en soles]
         D --> E
         E --> F[Detalle y totales por código de tributo:<br/>solo filas con importe]
@@ -158,8 +158,8 @@ pasos:
   - titulo: Imprimir desde la factura
     ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ ⚙ ▸ Imprimir
     texto: >-
-      El botón **Imprimir** de la factura genera directamente el formato **CPE
-      A4**. En el menú de acciones, **Imprimir** ofrece además **CPE Ticket**,
+      El botón **Imprimir** de la factura genera directamente el formato
+      **Comprobante electrónico (A4)**. En el menú de acciones, **Imprimir** ofrece además **Comprobante electrónico (ticket)**,
       junto a los PDF estándar de Odoo.
     imagen: screenshots/03-imprimir.png
 
@@ -213,7 +213,7 @@ pasos:
   - seccion: Ticket de 80 mm
     texto: La versión de rollo.
   - titulo: Ticket con exoneradas e ICBPER
-    ruta: ⚙ ▸ Imprimir ▸ CPE Ticket
+    ruta: ⚙ ▸ Imprimir ▸ Comprobante electrónico (ticket)
     texto: >-
       Logo, RUC, tipo y número, cliente, fechas, forma de pago, moneda,
       origen, detalle, desglose, monto en letras, usuario, fecha y hora y el
@@ -275,8 +275,8 @@ campos:
   - grupo: Formatos de papel
     ruta: Ajustes ▸ Técnico ▸ Formatos de papel
     campos:
-      - ["Comprobantes: A4 SUNAT", "A4 vertical, márgenes de 10 mm, 90 ppp.", "—", Formato del CPE A4]
-      - ["Comprobantes: Ticket 80mm", "80 × 160 mm, márgenes de 1 a 5 mm, 90 ppp.", "—", "Formato del CPE Ticket; si el contenido excede, sigue en otra página del rollo"]
+      - ["Comprobantes: A4 SUNAT", "A4 vertical, márgenes de 10 mm, 90 ppp.", "—", Formato del Comprobante electrónico (A4)]
+      - ["Comprobantes: Ticket 80mm", "80 × 160 mm, márgenes de 1 a 5 mm, 90 ppp.", "—", "Formato del Comprobante electrónico (ticket); si el contenido excede, sigue en otra página del rollo"]
 
 funcionalidades:
   - grupo: Formato A4
@@ -299,7 +299,7 @@ funcionalidades:
       - Desglose en la moneda del documento, también en notas de crédito.
       - Vínculo de la factura con su orden de venta y OC. externa en el pedido.
       - Marca de crédito con el mismo criterio que el XML (vencimiento posterior a la emisión).
-      - Botón Imprimir de la factura directo al CPE A4.
+      - Botón Imprimir de la factura directo al Comprobante electrónico (A4).
   - grupo: Menú
     items:
       - "Certificados digitales accesibles desde **Perú ▸ Configuración ▸ Comprobantes electrónicos**."
@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: '24.20261126'
+    fecha: 26/11/2026
+    cambios:
+      - "Los formatos se llaman «Comprobante electrónico (A4)» (antes CPE A4) y «Comprobante electrónico (ticket)» (antes CPE Ticket) en el menú Imprimir y en el envío por correo."
   - version: '23.20261126'
     fecha: 26/11/2026
     cambios:

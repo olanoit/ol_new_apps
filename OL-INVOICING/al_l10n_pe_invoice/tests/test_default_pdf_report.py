@@ -5,7 +5,7 @@ from odoo.tests import tagged
 
 @tagged('post_install', 'post_install_l10n', '-at_install')
 class TestDefaultPdfReport(AccountTestInvoicingCommon):
-    """Imprimir y Enviar usan CPE A4 por defecto en compañías peruanas."""
+    """Imprimir y Enviar usan Comprobante electrónico (A4) por defecto en compañías peruanas."""
 
     @classmethod
     @AccountTestInvoicingCommon.setup_country('pe')

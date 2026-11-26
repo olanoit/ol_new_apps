@@ -53,8 +53,8 @@ El comprobante impreso muestra:
 flowchart TD
     A["Factura, boleta o nota publicada"] --> B["XML firmado y enviado por la localización"]
     B --> C{"¿Formato?"}
-    C -- "Imprimir o ⚙ ‣ Imprimir ‣ CPE A4" --> D["A4 con papel «Comprobantes: A4 SUNAT»"]
-    C -- "⚙ ‣ Imprimir ‣ CPE Ticket" --> E["Ticket de 80 mm"]
+    C -- "Imprimir o ⚙ ‣ Imprimir ‣ Comprobante electrónico (A4)" --> D["A4 con papel «Comprobantes: A4 SUNAT»"]
+    C -- "⚙ ‣ Imprimir ‣ Comprobante electrónico (ticket)" --> E["Ticket de 80 mm"]
     D --> F["Encabezado, cliente, fechas, moneda y T.C."]
     E --> F
     F --> G["Detalle y desglose tributario por código de tributo"]
@@ -73,16 +73,16 @@ flowchart TD
 
 1. Registre y publique la venta en **Contabilidad ‣ Clientes ‣ Facturas**. La
    localización firma y envía el XML.
-2. Para el **A4**, haga clic en **Imprimir** o vaya a **⚙ ‣ Imprimir ‣ CPE A4**.
+2. Para el **A4**, haga clic en **Imprimir** o vaya a **⚙ ‣ Imprimir ‣ Comprobante electrónico (A4)**.
    El PDF usa el papel **Comprobantes: A4 SUNAT** y se nombra con el número del
    comprobante y el cliente.
-3. Para el **ticket**, vaya a **⚙ ‣ Imprimir ‣ CPE Ticket**: sale en 80 mm.
+3. Para el **ticket**, vaya a **⚙ ‣ Imprimir ‣ Comprobante electrónico (ticket)**: sale en 80 mm.
 
-![Menú Imprimir de la factura con CPE A4 y CPE Ticket](invoice_report/print-menu.png)
+![Menú Imprimir de la factura con Comprobante electrónico (A4) y Comprobante electrónico (ticket)](invoice_report/print-menu.png)
 
 !!! note "Nota"
     El PDF estándar de Odoo sigue disponible en **Imprimir**; el botón
-    **Imprimir** de la factura usa el CPE A4. El formato no depende del
+    **Imprimir** de la factura usa el Comprobante electrónico (A4). El formato no depende del
     operador: funciona igual con la localización nativa que con un OSE.
 
 ### Desglose tributario
@@ -168,7 +168,7 @@ imprime un QR falso y la información legal ocupa todo el ancho.
 
 ## Reportes
 
-- Los informes **CPE A4** y **CPE Ticket** están en el menú **Imprimir** de la
+- Los informes **Comprobante electrónico (A4)** y **Comprobante electrónico (ticket)** están en el menú **Imprimir** de la
   factura.
 - El desglose tributario se guarda en la factura y coincide con el registro de
   ventas ([SIRE](../sire.md) y [PLE](../ple.md)).

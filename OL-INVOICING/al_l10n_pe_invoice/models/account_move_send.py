@@ -7,7 +7,7 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _get_default_pdf_report_id(self, move):
-        """CPE A4 como formato predeterminado de las facturas peruanas.
+        """Comprobante electrónico (A4) como formato predeterminado de las facturas peruanas.
 
         El botón Imprimir (``action_print_pdf``) y el asistente de envío por
         correo toman de aquí el reporte. Se respeta el orden nativo: si el

@@ -265,7 +265,7 @@
         </template>
 
         <record id="report_cpe_ticket" model="ir.actions.report">
-            <field name="name">CPE Ticket</field>
+            <field name="name">Comprobante electrónico (ticket)</field>
             <field name="model">account.move</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">al_l10n_pe_invoice.report_cpe_ticket_main</field>
