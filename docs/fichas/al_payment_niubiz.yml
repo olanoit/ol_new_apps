@@ -238,24 +238,24 @@ faq:
       insuficientes) y puede pagar con otra tarjeta sin rehacer el pedido.
 
 novedades:
-  - version: '5.20261027'
+  - version: '20261027.5'
     fecha: 27/10/2026
     cambios:
       - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
-  - version: '4.20261027'
+  - version: '20261027.4'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
       - "La imagen del proveedor de pago no cambia: pasa a static/img/niubiz_icon.png."
-  - version: '3.20261018'
+  - version: '20261018.3'
     fecha: 18/10/2026
     cambios:
       - "Ícono al estilo de Odoo (marca centrada sobre fondo transparente) y tarjeta de 240 × 160 para el método de pago del TPV."
-  - version: 2.20261009
+  - version: '20261009.2'
     fecha: 09/10/2026
     cambios:
       - "Etiquetas más cortas en la transacción: «Fecha Niubiz» y «Constancia PagoEfectivo»."
-  - version: 1.20261006
+  - version: '20261006.1'
     fecha: 06/10/2026
     cambios:
       - "Primera versión en la suite (adaptación de payment_niubiz): el modal ya se abre, la anulación cancela la transacción y el pago, rutas firmadas, contraseña solo para administradores, reintentos de conexión y pruebas; validado con pagos reales en el sandbox."

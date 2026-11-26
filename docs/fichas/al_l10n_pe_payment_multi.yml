@@ -97,15 +97,15 @@ faq:
       Sí: seleccione las facturas y elija Acción ▸ Pago múltiple.
 
 novedades:
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261021
+  - version: '20261021.2'
     fecha: 21/10/2026
     cambios:
       - "No carga ni acepta letras en el banco ni facturas cedidas con recurso."
-  - version: 1.20261021
+  - version: '20261021.1'
     fecha: 21/10/2026
     cambios:
       - "Primera versión: pago y cobro múltiple con comprobantes de varios socios, anticipos y otros pagos en un solo pago, comprobante de egreso con el detalle por socio y anulación."

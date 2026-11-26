@@ -79,19 +79,19 @@ pasos:
     imagen: screenshots/03-observado.png
 
 novedades:
-  - version: '4.20261027'
+  - version: '20261027.4'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 3.20261018
+  - version: '20261018.3'
     fecha: 18/10/2026
     cambios:
       - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
-  - version: 2.20261012
+  - version: '20261012.2'
     fecha: 12/10/2026
     cambios:
       - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): tres facturas de proveedor con el resultado de la consulta ya registrado (válido, observado y no informado), sin llamar a SUNAT."
-  - version: 1.20261012
+  - version: '20261012.1'
     fecha: 12/10/2026
     cambios:
       - "Consulta integrada de comprobantes de pago de SUNAT para facturas, boletas, liquidaciones de compra, notas y recibos por honorarios de proveedores: botón, acción en lote, aviso o bloqueo al publicar y acción programada."

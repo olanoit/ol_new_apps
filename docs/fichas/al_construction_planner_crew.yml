@@ -25,28 +25,28 @@ configuracion:
 requisitos_nota: Requiere Enterprise (`project_forecast`) y Hojas de horas. Licencia LGPL-3
   porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
-- version: '6.20261101'
+- version: '20261101.6'
   fecha: 01/11/2026
   cambios:
     - "M116-08: el cuadro dinámico «Jornales de las cuadrillas» parte los nombres largos con el ancho máximo de Ajustes."
-- version: '5.20261027'
+- version: '20261027.5'
   fecha: 27/10/2026
   cambios:
     - "Ícono nuevo: el isotipo de ALTA."
-- version: '4.20261016'
+- version: '20261016.4'
   fecha: 23/10/2026
   cambios:
   - "Requerimiento CREVAL v1.0, capítulos 4 y 5: «Asignar cuadrilla» en el tablero de obra, en el menú Ejecutar y en la sección Personal propio del menú por momento; grupos en dos ejes."
-- version: '3.20261016'
+- version: '20261016.3'
   fecha: 16/10/2026
   cambios:
   - "Cuadrillas por día (v1.8): unidad de tiempo de la cuadrilla en la compañía y la obra, costo diario por puesto y por rol, y días de cuadrilla con su costo."
-- version: '2.20261013'
+- version: '20261013.2'
   fecha: 15/10/2026
   cambios:
   - 'Cuadrilla por rol (M17-10): una fila por persona con su rol; cada una cubre la línea
     de personal propio de su rol y el rol del asistente deja de ser obligatorio.'
-- version: '1.20261013'
+- version: '20261013.1'
   fecha: 15/10/2026
   cambios:
   - 'Puente nuevo (v1.7, M17-07): la cuadrilla, sus turnos y las horas como real salen del

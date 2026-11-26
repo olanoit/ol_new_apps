@@ -2,42 +2,42 @@ Historial de cambios — Planificación de obra: producción (AL)
 =============================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 19.20261112 — 16/11/2026
+## 20261112.19 — 16/11/2026
 
 - Seguridad: confirmar una orden de fabricación que pide más que el plan con las marcas de «ya revisado» o «desde abastecimiento» en el contexto ya no se salta la política (tampoco «bloquear»).
 - Seguridad: el resultado del control de exceso de la orden lo escribe el sistema; ya no se puede escribir a mano.
 
-## 17.20261101 — 01/11/2026
+## 20261101.17 — 01/11/2026
 
 - D1: el apunte de una orden de obra reparte cada etapa entre las cuentas Rubro, en proporción al material planificado de los ambientes de la orden por familia.
 - CR-26: las ayudas que nombran la orden de fabricación y el filtro «Orden de fabricación» de las asignaciones solo se ven con este puente; el núcleo habla de producción en taller.
 - M115-01: el asistente pasa a «Requerimiento de fabricación», con el botón «Crear requerimiento de fabricación».
 
-## 14.20261027 — 27/10/2026
+## 20261027.14 — 27/10/2026
 
 - Paquete 1.12, M112-01: el paquete de piezas no vuelve a cargar costo analítico en la orden que lo consume (ajuste «El componente intermedio no carga costo analítico», activo por defecto); el asiento contable no cambia.
 - Paquete 1.12, M112-02: el apunte de una orden de obra toma la etapa de su línea de la lista o la «Etapa analítica» de su motivo, y la partida de las reglas analíticas. Ahora depende de `project_mrp_account`.
 
-## 13.20261027 — 27/10/2026
+## 20261027.13 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 12.20261024 — 25/10/2026
+## 20261024.12 — 25/10/2026
 
 - Sin «Jefe de producción» en Ajustes, la actividad «Revisar y confirmar fecha» va a los responsables de Fabricación de la compañía.
 
-## 11.20261024 — 25/10/2026
+## 20261024.11 — 25/10/2026
 
 - Paquete 1.7 parte 2, M17-18: cada orden que crea el asistente del plan lleva la actividad «Revisar y confirmar fecha» para el jefe de producción (Ajustes › Fabricación); la «Fecha confirmada» queda como fecha límite de la orden y mueve la etapa de producción de sus ambientes en el cronograma.
 - Paquete 1.7 parte 2, M17-25: los avisos del asistente («Ya en una OF», metrado por aprobar, sin lista de materiales) dicen «Departamento / ambiente».
 - Paquete 1.11, M111-22: columna «Retazo disponible» en el despacho: el retazo libre más chico que alcanza para la fracción; es un aviso, se usa con «Cubrir con retazo».
 
-## 10.20261024 — 24/10/2026
+## 20261024.10 — 24/10/2026
 
 - Paquete 1.11, M111-14: el jefe de producción («Fabricación: Usuario») declara sobrantes sin error de acceso, también si el producto retazo del tablero aún no existe.
 - Paquete 1.11, M111-15: el retazo usado no cuenta como material sin presupuesto en «Presupuestado frente a requerido».
@@ -46,45 +46,45 @@ Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedade
 - Paquete 1.11, M111-18: aviso de tablero sin área al declarar; cambiar la cantidad de la orden no multiplica el retazo.
 - Paquete 1.11, M111-19 D: Ajustes › Fabricación › «Planchas y retazos» con alcance del redondeo, tolerancia del cuadre, «Piezas (m²)» editable con registro en el historial, formato del lote del retazo y verificación del despiece opcional.
 
-## 9.20261023 — 23/10/2026
+## 20261023.9 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).
 
-## 8.20261023 — 23/10/2026
+## 20261023.8 — 23/10/2026
 
 - La ubicación de retazos de la planta puede ser una vista con sububicaciones R25, R50, R75 y R99: cada retazo declarado entra a la de su banda, y el pool puede marcarse en la vista.
 
-## 7.20261023 — 23/10/2026
+## 20261023.7 — 23/10/2026
 
 - Paquete 1.11, M111-12 (fase B, retazos): producto retazo del tablero con una variante por banda (R25 a R99) y lote con largo, ancho, área, % de plancha, banda, orden y obra de origen; pool de retazos en las ubicaciones y ubicación de retazos por almacén.
 - «Cubrir con retazo» y «Quitar retazo» en el despacho a producción: el retazo elegido cubre la fracción de la plancha, que baja a su entero.
 - «Declarar sobrantes» en la orden de corte: retazos con lote y medidas como subproductos a su costo por área, devolución de las planchas sin tocar, cuadre con la merma y registro por tablero; opción para exigirlo antes de terminar.
 - El aviso de consumo al terminar ya no salta por el redondeo a plancha entera ni por los retazos.
 
-## 6.20261023 — 23/10/2026
+## 20261023.6 — 23/10/2026
 
 - Paquete 1.11, M111-12 (fase A): la orden de fabricación guarda la necesidad de cada tablero indivisible y al confirmarla pide planchas enteras por producto en toda la orden (la diferencia va al componente con más necesidad); el despacho a producción nace en enteros. Vale también para las órdenes que crea el abastecimiento y se vuelve a redondear al cambiar la cantidad a producir. El control de exceso mide la necesidad.
 - Bloque «Planchas y retazos» en Ajustes ▸ Fabricación y aviso en la orden con necesidad, a entregar y redondeo.
 
-## 5.20261021 — 21/10/2026
+## 20261021.5 — 21/10/2026
 
 - Paquete 1.11, M111-03: «Estación de la etapa» y «Minutos por unidad» por compañía en el catálogo de etapas, para la operación de las listas por etapa.
 
-## 4.20261019 — 19/10/2026
+## 20261019.4 — 19/10/2026
 
 - Paquete 1.10, M110-01: cada etapa de fabricación del catálogo puede tener su planta (operación de fabricación) y la categoría del producto intermedio que entrega, por compañía, y la marca «Accesorios a pedido desde la orden».
 - M110-03: el asistente de órdenes ya no impone la planta; cada orden nace en la planta de su lista de materiales y «Forzar planta» queda opcional.
 - M110-04: la orden hija que crea Odoo por las rutas hereda el plan y los ambientes de la madre, se confirma sin el asistente de exceso y cada orden compara solo las etapas de su lista; el producto intermedio no es cambio de material.
 - M110-06: motivo de fabricación obligatorio en los tipos de operación que lo piden (posventa, garantía, reposición), con lista configurable y etapa analítica.
 
-## 3.20261016 — 16/10/2026
+## 20261016.3 — 16/10/2026
 
 - Las órdenes de fabricación siguen la política de exceso de producción y registran el exceso autorizado (v1.8).
 
-## 2.20261013 — 15/10/2026
+## 20261013.2 — 15/10/2026
 
 - OF genérica (M17-09): sale de cualquier nivel con etapa de producción (spools, tableros, muebles) con su producto y su cantidad, no solo del ambiente de mobiliario.
 
-## 1.20261013 — 15/10/2026
+## 20261013.1 — 15/10/2026
 
 - Puente nuevo (v1.7, M17-07): las órdenes de fabricación desde el plan salen del núcleo.

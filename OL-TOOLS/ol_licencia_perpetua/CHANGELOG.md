@@ -2,12 +2,12 @@ Historial de cambios — Perpetual License for Testing
 ====================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`). Este módulo no tiene ficha
+el `version` de `__manifest__.py` (`AAAAMMDD.N`). Este módulo no tiene ficha
 en `docs/fichas/`: el historial se mantiene a mano.
 
-## 1.20260717 — 19/07/2026
+## 20260717.1 — 19/07/2026
 
-- Versión con la convención `N.AAAAMMDD`.
+- Versión con la convención `AAAAMMDD.N`.
 
 ## 16/07/2026
 

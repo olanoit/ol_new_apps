@@ -9,7 +9,7 @@
     "maintainer": "Cristóbal OCH -> Email: olanoit@gmail.com",
     'website': "https://extendrix.com/",
     "category": "Hidden",
-    'version': '1.20260717',
+    'version': '20260717.1',
     'depends': ['web_enterprise'],
     'assets': {
         'web.assets_backend': [

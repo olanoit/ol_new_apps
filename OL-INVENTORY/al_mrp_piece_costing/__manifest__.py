@@ -30,7 +30,7 @@ piezas CNC v1.4, 20-set-2026) con la misma lógica.
     'website': 'https://www.altabpo.com',
     'category': 'OL-INVENTORY/Apps',
     'icon': '/al_mrp_piece_costing/static/description/icon.png',
-    'version': '3.20261027',
+    'version': '20261027.3',
     'license': 'OPL-1',
     # al_stock_base: costo fijo de los retazos (paquete 1.11, M111-12).
     'depends': ['mrp_account', 'al_stock_base'],

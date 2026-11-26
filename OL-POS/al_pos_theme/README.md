@@ -13,7 +13,7 @@ Documentación funcional: [Tema del TPV](../../mkdocs/content/applications/sales
 
 | Información | |
 |---|---|
-| **Versión** | ver `__manifest__.py` (convención `N.AAAAMMDD`) |
+| **Versión** | ver `__manifest__.py` (convención `AAAAMMDD.N`) |
 | **Categoría** | OL-POS |
 | **Licencia** | OPL-1 (fuentes Inter y Manrope: SIL OFL 1.1, `static/src/fonts/OFL.txt`) |
 | **Autor** | CRISTÓBAL OCH |

@@ -38,11 +38,11 @@ configuracion:
   - "Cree los tratamientos en **Farmacia ▸ Dispensación ▸ Tratamientos crónicos** o desde la receta."
 
 novedades:
-  - version: '2.20261027'
+  - version: '20261027.2'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '1.20261019'
+  - version: '20261019.1'
     fecha: 19/10/2026
     cambios:
       - "Primera versión (mejora E5): tratamientos crónicos, recompra, adherencia, WhatsApp y aviso en la caja."

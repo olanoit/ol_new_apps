@@ -2,33 +2,33 @@ Historial de cambios — PE - Cuentas Destino (dinámica 6↔9)
 ==========================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 14.20261103 — 03/11/2026
+## 20261103.14 — 03/11/2026
 
 - El asiento de destino ya no crea un segundo apunte analítico: el centro de costo se carga una sola vez, desde el comprobante de origen.
 - Al actualizar, una migración borra los apuntes duplicados de los asientos de destino anteriores: los informes analíticos de periodos pasados bajan a su valor correcto.
 
-## 13.20261027 — 27/10/2026
+## 20261027.13 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 12.20261012 — 12/10/2026
+## 20261012.12 — 12/10/2026
 
 - Menú en Perú ▸ Contabilidad ▸ Cierre del mes (Asientos de destino y Destinos por cuenta).
 
-## 11.20261009 — 09/10/2026
+## 20261009.11 — 09/10/2026
 
 - Destino de cuenta con chatter: historial de cambios de cuenta principal, cuenta destino y porcentaje.
 
-## 10.20261008 — 08/10/2026
+## 20261008.10 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.
 
-## 9.20261008 — 08/10/2026
+## 20261008.9 — 08/10/2026
 
 - Sentido y cuenta de carga como campos delegados a la raíz (patrón de Odoo): las sucursales los heredan de solo lectura.
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
@@ -39,21 +39,21 @@ Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) 
 - Nuevo asistente «Destinos del periodo» (Perú ▸ Destinos y Contabilidad ▸ Cierre): cuadre 79 vs Elemento 9 y regeneración de los destinos del rango.
 - Compañías nuevas: sentido 6→9 por defecto, el que indica el PCGE.
 
-## 7.20261008 — 08/10/2026
+## 20261008.7 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 
-## 6.20261007 — 07/10/2026
+## 20261007.6 — 07/10/2026
 
 - Los destinos de la factura pasan a la pestaña interna «Contabilidad PE ▸ Destinos».
 
-## 5.20261007 — 07/10/2026
+## 20261007.5 — 07/10/2026
 
 - Corregido: restablecer y volver a publicar un comprobante consumía otro número del diario de destinos y dejaba huecos en el correlativo; ahora conserva su número salvo que cambie el periodo.
 - Las líneas del asiento de destino (clase 9) llevan la analítica de la línea de origen.
 - Si al republicar ya no queda nada que distribuir, el asiento de destino anterior se cancela en vez de quedar en borrador.
 
-## 4.20260828 — 27/09/2026
+## 20260828.4 — 27/09/2026
 
 - Eliminar un asiento de destino ya no borra el comprobante de origen. Al eliminar un comprobante en borrador, su asiento de destino se elimina con él.
 - En comprobantes en dólares, el asiento de destino se registra en soles, con los mismos importes que el debe y el haber de la línea de origen.
@@ -62,15 +62,15 @@ Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) 
 - Desde la lista de destinos ya se pueden cargar las líneas de una en una. La suma del 100 % se comprueba al guardar la cuenta y al generar el asiento.
 - Se retira el enlace a la plantilla de importación, que apuntaba a un archivo inexistente.
 
-## 3.20260828 — 14/09/2026
+## 20260828.3 — 14/09/2026
 
 - El menú de la app Perú pasa a **Configuración ▸ Cuentas de la localización ▸ Destinos por cuenta**.
 
-## 2.20260828 — 28/08/2026
+## 20260828.2 — 28/08/2026
 
 - Acceso a los destinos desde la app Perú.
 
-## 1.20260717 — 19/07/2026
+## 20260717.1 — 19/07/2026
 
 - Asiento de destino automático en el diario GA, en los dos sentidos.
 - Configuración por cuenta con porcentajes que suman 100 % y cuenta de carga.

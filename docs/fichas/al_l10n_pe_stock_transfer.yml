@@ -152,19 +152,19 @@ campos:
       - [Propietarios de los bienes, Dueños distintos de la compañía, —, Observaciones de la guía y guía impresa]
 
 novedades:
-  - version: '5.20261027'
+  - version: '20261027.5'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 4.20261018
+  - version: '20261018.4'
     fecha: 18/10/2026
     cambios:
       - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
-  - version: 3.20261012
+  - version: '20261012.3'
     fecha: 12/10/2026
     cambios:
       - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): dos almacenes con establecimiento anexo, andamios propios y de terceros, dos traslados a la obra, una compra recogida en el proveedor y la devolución al propietario."
-  - version: 2.20261010
+  - version: '20261010.2'
     fecha: 10/10/2026
     cambios:
       - "Catálogo 20 completo para la empresa: se añaden 02 Compra, 06 Devolución, 07 Recojo de bienes transformados, 08 Importación y 09 Exportación (anexo de la R.S. 240-2024/SUNAT); 13 «Otros» con descripción obligatoria que va en la guía; 08 y 09 exigen la DAM o DS."
@@ -172,7 +172,7 @@ novedades:
       - "Motivo propuesto según la operación (04 entre establecimientos, 06 en devoluciones y al dueño de bienes de terceros, 02 en recepciones) o el que fije el tipo de operación."
       - "Partida y llegada propias con el RUC de la empresa y el código de establecimiento anexo en todas las guías; la guía impresa usa el mismo destinatario, punto de llegada y motivo que el XML."
       - "Datos de demostración «DEMO TRAS» (tools/stock_transfer_demo_data.py), capturas y guía funcional."
-  - version: 1.20261010
+  - version: '20261010.1'
     fecha: 10/10/2026
     cambios:
       - "Primera versión: guía de remisión en transferencias internas entre establecimientos (motivo 04, destinatario = remitente, código de establecimiento anexo en partida y llegada) y bienes de terceros visibles en la transferencia, con filtros en existencias, movimientos y transferencias, y el propietario en las observaciones de la guía y en la guía impresa."

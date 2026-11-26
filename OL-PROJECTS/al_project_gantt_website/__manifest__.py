@@ -27,7 +27,7 @@ y el render usa el adaptador y la configuración compartidos del módulo base.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_project_gantt_website/static/description/icon.png',
-    'version': '13.20261027',
+    'version': '20261027.13',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',

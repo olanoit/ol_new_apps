@@ -30,7 +30,7 @@ Solo admite soles: Yape y Plin no cobran en dólares.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_pos_pe_wallet_qr/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '20261027.2',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',

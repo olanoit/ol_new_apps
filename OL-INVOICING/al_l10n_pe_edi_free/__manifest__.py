@@ -29,7 +29,7 @@ falta:
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_edi_free/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '20261027.2',
     'license': 'OPL-1',
     'countries': ['pe'],
     # El XML de una factura con ítems gratuitos y pagados lo corrige

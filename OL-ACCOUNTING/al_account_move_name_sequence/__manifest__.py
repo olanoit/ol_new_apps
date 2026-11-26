@@ -33,7 +33,7 @@ globalmente el mecanismo nativo; aquí cada diario decide.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_account_move_name_sequence/static/description/icon.png',
-    'version': '14.20261027',
+    'version': '20261027.14',
     'license': 'OPL-1',
     'depends': [
         'account',

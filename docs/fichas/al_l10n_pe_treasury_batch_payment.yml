@@ -13,11 +13,11 @@ destacados:
       la programación.
 
 novedades:
-  - version: '2.20261027'
+  - version: '20261027.2'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 1.20261026
+  - version: '20261026.1'
     fecha: 26/10/2026
     cambios:
       - "Primera versión: lote bancario desde la programación de pagos."

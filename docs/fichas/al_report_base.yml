@@ -40,23 +40,23 @@ pasos:
     imagen: screenshots/01-factura-a4.png
 
 novedades:
-  - version: '5.20261126'
+  - version: '20261126.5'
     fecha: 26/11/2026
     cambios:
       - "La vista previa en pantalla (portal del cliente) ya no muestra «Página de» sin números en el pie: la numeración de páginas sale solo en el PDF."
-  - version: '4.20261126'
+  - version: '20261126.4'
     fecha: 26/11/2026
     cambios:
       - "La cabecera gris de las tablas sigue el borde redondeado: ya no se pinta en ángulo recto en las esquinas superiores (comprobantes, guías, boletas, valorizaciones, kárdex y demás documentos con este diseño)."
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '2.20261011'
+  - version: '20261011.2'
     fecha: 23/10/2026
     cambios:
     - "Casillas de firma report_pe_sign_boxes: un rectángulo por paso (elaboró, cada nivel de aprobación, conformidad) con rol, nombre, cargo y fecha (requerimiento CREVAL v1.0, 3.12)."
-  - version: 1.20261011
+  - version: '20261011.1'
     fecha: 11/10/2026
     cambios:
       - "Formato común de los documentos impresos de la suite, tomado del comprobante A4: encabezado, pie, hoja de estilos pe-doc- y papel A4 vertical y horizontal."

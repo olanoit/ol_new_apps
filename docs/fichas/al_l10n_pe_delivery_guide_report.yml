@@ -196,35 +196,35 @@ faq:
       y el vehículo.
 
 novedades:
-  - version: '13.20261027'
+  - version: '20261027.13'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 12.20261012
+  - version: '20261012.12'
     fecha: 12/10/2026
     cambios:
       - "Guías en Perú ▸ Clientes ▸ Comprobantes; análisis en Informes ▸ Análisis; vehículos solo en Configuración ▸ Comprobantes electrónicos."
-  - version: 11.20261008
+  - version: '20261008.11'
     fecha: 08/10/2026
     cambios:
       - "Menú Perú ▸ Guías de remisión: guías con su estado SUNAT (por enviar en amarillo, con error en rojo), pendientes de enviar, vehículos y análisis por motivo y mes."
       - "Datos de la guía de remisión y del transporte en la página Logística PE de la transferencia (grupos Guía de remisión y Transporte); la página «EDI PE» de l10n_pe_edi_stock queda oculta y las etiquetas siguen la convención de la suite."
-  - version: 10.20261008
+  - version: '20261008.10'
     fecha: 08/10/2026
     cambios:
       - "Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección."
       - "Tablas de datos solo con el borde exterior (sin líneas entre filas); las líneas quedan solo en las tablas de detalle."
       - "Pie de página común en cada página: compañía, R.U.C., domicilio, contacto, fecha de impresión y «Página X de Y»."
       - "Guía de remisión con el estilo común de los comprobantes PE en blanco y negro: recuadro R.U.C./tipo/número, bloques de datos en tablas con borde redondeado y el detalle de bienes con la información adicional y el QR en una sola tabla."
-  - version: 9.20261008
+  - version: '20261008.9'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 8.20261007
+  - version: '20261007.8'
     fecha: 07/10/2026
     cambios:
       - "La fecha de emisión impresa es la del XML enviado a SUNAT; el destinatario es la empresa cliente; las cantidades no se redondean a dos decimales y el detalle tiene una línea por movimiento, como el XML."
-  - version: 7.20260828
+  - version: '20260828.7'
     fecha: 27/09/2026
     cambios:
       - "El **remitente** es la empresa (razón social y RUC), igual que en el XML enviado a SUNAT; antes salían los datos del almacén, a veces vacíos."
@@ -235,12 +235,12 @@ novedades:
   - fecha: 14/09/2026
     cambios:
       - "Vehículos dentro de la sección **Comprobantes electrónicos** de la configuración de la app Perú."
-  - version: 5.20260828
+  - version: '20260828.5'
     fecha: 28/08/2026
     cambios:
       - Los vehículos de la guía, antes solo en Inventario, también desde la app Perú.
       - Pruebas de la agrupación por producto y unidad, lotes y peso.
-  - version: 4.20260719
+  - version: '20260719.4'
     fecha: 25/07/2026
     cambios:
       - "Versión para Odoo 19: reporte independiente del de facturas, agrupación de bienes con lotes y peso con respaldo."

@@ -27,31 +27,31 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_mrp` y `al_construction_planner_purchase`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
-- version: '7.20261031'
+- version: '20261031.7'
   fecha: 16/11/2026
   cambios:
     - "Seguridad: la orden, el despacho y el estado de la reposición a planta los pone el sistema. Antes solo eran de lectura en la vista, y un solicitante podía apuntar su reposición a una orden de fabricación ajena y cancelarla."
-- version: '6.20261031'
+- version: '20261031.6'
   fecha: 01/11/2026
   cambios:
     - "M114-05: si la lista del producto es del almacén del tipo de reposición de Ajustes, «Pedir reposición a planta» usa ese tipo."
-- version: '5.20261027'
+- version: '20261027.5'
   fecha: 27/10/2026
   cambios:
     - "Paquete 1.12, M112-03: «Pedir reposición a planta» crea la orden en la planta de la lista del producto, con su lista y el tipo de ese almacén que pide motivo. Sin lista, o sin ese tipo, avisa y no crea una orden vacía."
-- version: '4.20261027'
+- version: '20261027.4'
   fecha: 27/10/2026
   cambios:
     - "Ícono nuevo: el isotipo de ALTA."
-- version: '3.20261025'
+- version: '20261025.3'
   fecha: 26/10/2026
   cambios:
     - "CR-16: aquí se suman al plan los consumos de las órdenes de fabricación al validar (antes en el puente de compras, que no depende de Fabricación)."
-- version: '2.20261025'
+- version: '20261025.2'
   fecha: 25/10/2026
   cambios:
     - "La reposición a planta avisa al jefe de producción o, sin él, a los responsables de Fabricación, y lo deja como responsable de la orden; nunca a quien pide (verificación en dev1)."
-- version: '1.20261025'
+- version: '20261025.1'
   fecha: 25/10/2026
   cambios:
     - "Paquete 1.11, M111-22: «Cubrir con retazo» y «Quitar retazo» en el despacho del requerimiento de obra; la línea cuenta la fracción cubierta y su redondeo; el despacho a la preproducción de una planta usa el tipo «Elegir componentes» del almacén."

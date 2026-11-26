@@ -39,47 +39,47 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
-  - version: '10.20261027'
+  - version: '20261027.10'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '9.20261022'
+  - version: '20261022.9'
     fecha: 22/10/2026
     cambios:
       - "Bioequivalentes en la caja: entre las alternativas y en la ficha del producto, con la etiqueta «Bioequivalente»; se cargan aunque no entren en el límite de productos."
       - "Al tocar un equivalente en la ficha, la caja lo cambia en el pedido con la misma cantidad (antes solo lo buscaba)."
-  - version: '8.20261022'
+  - version: '20261022.8'
     fecha: 22/10/2026
     cambios:
       - "Ficha del producto en la caja con la información farmacéutica: condición de venta, composición, forma, vía, laboratorio, registro sanitario, DIGEMID, IGV, almacenamiento, presentaciones, lotes por vencimiento y equivalentes con precio y stock."
       - "Filtro por principio activo en lugar del de etiquetas (ajuste por caja, activo por defecto)."
       - "Búsqueda de productos también por principio activo y sus sinónimos, en lo cargado y en el servidor."
-  - version: '7.20261019'
+  - version: '20261019.7'
     fecha: 19/10/2026
     cambios:
       - "Precio por vencer: al vender un lote dentro de una escala, la línea recibe el descuento y la nota «Por vencer: vence dd/mm/aaaa»; los lotes vencidos no se ofrecen."
-  - version: '6.20261019'
+  - version: '20261019.6'
     fecha: 19/10/2026
     cambios:
       - "Empresa vinculada (DS 020-2024-SA, art. 32-B): aviso al agregar el producto y leyenda «Empresa vinculada» en la línea y en el ticket."
       - "Rótulo de venta fraccionada (art. 48) desde el recibo del TPV o la orden: establecimiento, producto, laboratorio, concentración, vía, lote y vencimiento."
-  - version: '5.20261018'
+  - version: '20261018.5'
     fecha: 18/10/2026
     cambios:
       - "El precio por presentación de la línea sale del total: el blíster de S/ 1,50 + IGV muestra S/ 1,77 y no S/ 1,80 (precio por tableta redondeado multiplicado por 10)."
-  - version: 4.20261018
+  - version: '20261018.4'
     fecha: 18/10/2026
     cambios:
       - "Datos de demostración: los medicamentos de la botica se venden en la caja."
-  - version: 3.20261018
+  - version: '20261018.3'
     fecha: 18/10/2026
     cambios:
       - "Listas de precios en las presentaciones: el porcentaje o la fórmula se aplica al precio de la caja o el blíster, y se recalcula al cambiar la lista o la cantidad."
-  - version: 2.20261018
+  - version: '20261018.2'
     fecha: 18/10/2026
     cambios:
       - "Entrega 2: alternativas genéricas, receta en la caja, control del Q.F., lotes FEFO y registro de la dispensación."
-  - version: 1.20261018
+  - version: '20261018.1'
     fecha: 18/10/2026
     cambios:
       - "Primera versión (prototipo E0): venta por presentación con precio propio en el TPV."

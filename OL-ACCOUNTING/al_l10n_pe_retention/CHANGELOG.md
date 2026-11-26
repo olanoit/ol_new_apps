@@ -2,54 +2,54 @@ Historial de cambios — PE - Retenciones de IGV (AL)
 ===================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 25.20261027 — 27/10/2026
+## 20261027.25 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 24.20261018 — 18/10/2026
+## 20261018.24 — 18/10/2026
 
 - Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
 
-## 23.20261012 — 12/10/2026
+## 20261012.23 — 12/10/2026
 
 - Menús en Perú ▸ Proveedores y Clientes ▸ Detracciones, retenciones y percepciones; resumen 626 en SUNAT ▸ Declaraciones; análisis en Informes ▸ Análisis.
 
-## 22.20261012 — 12/10/2026
+## 20261012.22 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): agente de retención con una compra pagada con su comprobante de retención y una venta a un cliente agente con la retención sufrida.
 
-## 21.20261012 — 12/10/2026
+## 20261012.21 — 12/10/2026
 
 - El motor del comprobante electrónico (l10n_pe.retention.edi.mixin) admite otros tipos de comprobante: el tipo, el número, el XML y los mensajes se piden al documento. Lo usa el comprobante de percepción (tipo 40) de al_l10n_pe_perception; el CRE no cambia.
 - El resumen de reversiones (RR) informa el tipo del comprobante revertido (20 o 40).
 
-## 20.20261011 — 11/10/2026
+## 20261011.20 — 11/10/2026
 
 - Reversión del CRE (resumen de reversiones RR, R.S. 274-2015/SUNAT) con todos los operadores: SUNAT directo, IAP y Digiflow (y The Factory HKA con su módulo); un CRE aceptado bloquea el pago hasta revertirlo y, revertido, el pago vuelve a borrador y retiene con un número nuevo.
 - CRE sin pago de Odoo (Perú ▸ Retenciones IGV ▸ CRE sin pago, o «Emitir CRE sin pago» desde las facturas de proveedor) para letras, compensaciones y pagos fuera de Odoo: mismas validaciones que el pago, la serie del CRE y un asiento que rebaja la cuenta por pagar de la factura o de la letra; entra en el resumen 626.
 - Opción «Descontar notas de crédito» (desactivada por defecto): la retención de una nota de crédito sobre una factura ya retenida se descuenta del siguiente CRE al proveedor (art. 2 de la R.S. 037-2002/SUNAT), con el registro de cada descuento en la nota y en el CRE.
 
-## 19.20261011 — 11/10/2026
+## 20261011.19 — 11/10/2026
 
 - Retenciones sufridas con el comprobante del cliente: serie, número y fecha, y una o varias facturas por comprobante; un asiento que abona y concilia cada factura.
 - Nueva lista «Retenciones sufridas por factura», agrupable por periodo y cliente para aplicar el IGV retenido en el formulario 621; pestaña «Retenciones sufridas» en la factura.
 - En el XML del CRE, cac:Payment/cbc:ID es el número de pago a ese comprobante (1, 2…), no su posición dentro del CRE (R.S. 274-2015/SUNAT).
 
-## 18.20261009 — 09/10/2026
+## 20261009.18 — 09/10/2026
 
 - La firma y el envío del CRE pasan a un método propio (`_l10n_pe_edi_sign_retention`) que extienden los módulos de otros operadores, como The Factory HKA.
 
-## 17.20261009 — 09/10/2026
+## 20261009.17 — 09/10/2026
 
 - Retenciones sufridas con chatter: historial de comprobante, fecha, cliente, factura, monto y estado.
 - Etiquetas más cortas: «N.º de comprobante», «Cliente», «En régimen de retención», «Secuencia de retención»; el detalle pasa a la ayuda (?).
 
-## 16.20261008 — 08/10/2026
+## 20261008.16 — 08/10/2026
 
 - Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.
 - Tablas de datos solo con el borde exterior (sin líneas entre filas); las líneas quedan solo en las tablas de detalle.
@@ -58,36 +58,36 @@ Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 - Comprobante de retención impreso en blanco y negro: recuadro y bordes negros, cabecera del detalle negra con texto blanco, sin colores.
 - Líneas, totales (retenido y neto pagado) y la leyenda de representación impresa en una sola tabla, como la factura.
 
-## 15.20261008 — 08/10/2026
+## 20261008.15 — 08/10/2026
 
 - Comprobante de retención impreso rediseñado: logo y datos de la compañía, recuadro con R.U.C., tipo y número, datos del proveedor en tabla y detalle con cabecera de color; formato de papel propio sin margen sobrante y «R.U.C.» también para proveedores con tipo de documento genérico.
 - Menú Perú ▸ Retenciones IGV ordenado como Detracciones: comprobantes de proveedor sujetos a retención, retenciones efectuadas (CRE con importe retenido, comprobantes pagados, plazo y estado; en amarillo fuera de plazo, en rojo rechazados), retenciones sufridas, resumen PDT 626 y análisis (tabla dinámica y gráfico por proveedor y mes).
 - El pago guarda el importe retenido, para totales y análisis.
 - Etiquetas en español también en los campos automáticos (Compañía, Moneda, Creado el…) de las retenciones sufridas y del resumen 626.
 
-## 14.20261008 — 08/10/2026
+## 20261008.14 — 08/10/2026
 
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
 
-## 13.20261008 — 08/10/2026
+## 20261008.13 — 08/10/2026
 
 - El agente de retención (agente, tasa, mínimo, impuesto y cuenta transitoria) es del RUC: las sucursales heredan la configuración de su raíz y la muestran de solo lectura; antes una factura de sucursal no retenía.
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
 
-## 12.20261008 — 08/10/2026
+## 20261008.12 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
 
-## 11.20261007 — 07/10/2026
+## 20261007.11 — 07/10/2026
 
 - La retención de IGV pasa a la pestaña interna «Facturación PE ▸ Retención IGV».
 
-## 10.20261007 — 07/10/2026
+## 20261007.10 — 07/10/2026
 
 - Plazo de envío del comprobante de retención: cada pago muestra la fecha límite (7 días calendario desde el pago, R.S. 274-2015/SUNAT) y avisa si venció; filtros «CRE por enviar» y «CRE fuera de plazo» en Retenciones efectuadas.
 
-## 9.20261007 — 07/10/2026
+## 20261007.9 — 07/10/2026
 
 - Nuevo: firma y envío del Comprobante de Retención Electrónico a SUNAT con el proveedor electrónico de la compañía (IAP, SUNAT directo o Estela), con el CDR guardado en el pago, y su representación impresa en PDF.
 - Corregido: el XML del comprobante no lo habría aceptado SUNAT (total pagado en el elemento equivocado y con el bruto, sin bloque de firma, sin datos completos del agente y del proveedor). Ahora sigue la estructura del módulo oficial de Odoo.
@@ -95,7 +95,7 @@ Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 - Nuevas excepciones: agente de percepción (marca en el contacto) y comprobantes que el CRE no admite (solo 01, 08 y 12).
 - Preparado para Odoo 20: mismos campos, métodos, impuesto y secuencia que el módulo oficial l10n_pe_edi_withholding; las compañías peruanas reciben el impuesto de retención 3 % y la secuencia R001 sin configurarlos a mano.
 
-## 8.20260828 — 27/09/2026
+## 20260828.8 — 27/09/2026
 
 - La retención solo se aplica a compras gravadas con IGV: quedan fuera los recibos por honorarios y las compras exoneradas o inafectas.
 - El XML del comprobante de retención reparte el pago y la retención entre cada factura pagada, y en facturas en dólares informa el importe en dólares, la retención en soles y el tipo de cambio.
@@ -108,11 +108,11 @@ Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 
 - Resumen 626: periodo por defecto en el mes anterior, aviso cuando no hay retenciones y resumen con cantidad y total retenido.
 
-## 5.20260828 — 27/08/2026
+## 20260828.5 — 27/08/2026
 
 - Las excepciones del régimen se toman del padrón SUNAT, fuente única y editable.
 
-## 2.20260719 — 19/07/2026
+## 20260719.2 — 19/07/2026
 
 - Retención en el pago, retenciones sufridas, XML CRE y resumen 626.
 - Etiquetas en español, cuenta transitoria y guía funcional con diagramas.

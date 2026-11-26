@@ -199,23 +199,23 @@ faq:
       en una caja o impresora de preparación activa.
 
 novedades:
-  - version: '5.20261027'
+  - version: '20261027.5'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 4.20261009
+  - version: '20261009.4'
     fecha: 09/10/2026
     cambios:
       - "Etiquetas más cortas en la impresora del TPV: «IP ESC/POS» y «Puerto ESC/POS»."
-  - version: 3.20261008
+  - version: '20261008.3'
     fecha: 08/10/2026
     cambios:
       - "El ticket de prueba imprime la compañía del punto de venta, no la compañía activa del usuario."
-  - version: 2.20261008
+  - version: '20261008.2'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 1.20261006
+  - version: '20261006.1'
     fecha: 06/10/2026
     cambios:
       - "Primera versión en la suite: impresora ESC/POS de red para el recibo y las comandas, agente local para Odoo en la nube y reintento en segundo plano con queue_job."

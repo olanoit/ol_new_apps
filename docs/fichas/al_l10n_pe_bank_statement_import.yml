@@ -58,11 +58,11 @@ faq:
       Sí: los movimientos ya importados se reconocen y no se duplican.
 
 novedades:
-  - version: '2.20261027'
+  - version: '20261027.2'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 1.20261021
+  - version: '20261021.1'
     fecha: 21/10/2026
     cambios:
       - "Primera versión: importación de extractos de bancos peruanos por encabezados (XLSX, XLS, HTML, CSV y TXT) con saldos y sin duplicados."

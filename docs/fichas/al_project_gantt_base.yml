@@ -182,34 +182,34 @@ faq:
       bloqueada en el diagrama y el servidor rechaza cualquier cambio sobre ella.
 
 novedades:
-  - version: '20.20261102'
+  - version: '20261102.20'
     fecha: 02/11/2026
     cambios:
       - "Colores con las variables de Odoo: el diagrama, el menú contextual y el formulario de tarea se ven bien en el modo oscuro."
       - "La columna «Tarea» tiene ancho de lectura y la rejilla se desplaza a lo ancho con su propia barra."
-  - version: '19.20261027'
+  - version: '20261027.19'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 18.20261011
+  - version: '20261011.18'
     fecha: 11/10/2026
     cambios:
       - "Diagrama de Gantt en PDF con el formato común de los documentos impresos (al_report_base), en A4 horizontal: encabezado con el recuadro R.U.C./tipo, tabla con cabecera gris oscuro y pie con la numeración."
-  - version: 17.20261010
+  - version: '20261010.17'
     fecha: 10/10/2026
     cambios:
       - "La edición del diagrama admite que una interfaz deje arrastrar filas propias que no son tareas (por ejemplo, las etapas del cronograma de obra) y las guarde ella misma; las tareas se editan igual que antes."
-  - version: 16.20261008
+  - version: '20261008.16'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
-  - version: 15.20261008
+  - version: '20261008.15'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
       - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
-  - version: 14.20260818
+  - version: '20260818.14'
     fecha: 27/09/2026
     cambios:
       - "Editar una subtarea cuyo padre no se ve (por un filtro o por el límite de tareas) ya no la separa de su padre: solo se guarda lo que de verdad se cambió."

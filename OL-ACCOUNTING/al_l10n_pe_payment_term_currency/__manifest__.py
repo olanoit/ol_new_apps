@@ -19,7 +19,7 @@ al_l10n_pe_detraction; este módulo cubre el resto (inicial o arras pactadas en 
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_payment_term_currency/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '20261027.2',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_account_base'],

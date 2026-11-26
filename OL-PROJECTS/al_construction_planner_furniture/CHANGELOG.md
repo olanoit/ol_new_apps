@@ -2,38 +2,38 @@ Historial de cambios — Planificación de obra: rubro mobiliario (AL)
 ===================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 34.20261120 — 20/11/2026
+## 20261120.34 — 20/11/2026
 
 - El selector de tipo del requerimiento de obra se llama «Tipo de ambiente» en cualquier plantilla de niveles.
 
-## 33.20261120 — 20/11/2026
+## 20261120.33 — 20/11/2026
 
 - El tipo de ambiente del requerimiento de obra es la familia de la tipología (Cocina, Closet, Baño, Lavandería, Ducto…); un ambiente sin tipología queda en «Sin tipo» (paquete 1.24).
 
-## 32.20261112 — 16/11/2026
+## 20261112.32 — 16/11/2026
 
 - Seguridad: la autorización de la jefatura sobre la receta real ya no se salta con un contexto del cliente ni escribiendo «Autorizado por» a mano.
 - Multicompañía: la receta real del mueble, sus materiales y su comparación, las piezas y materiales de la tipología y las líneas de la lista de tarifas solo se ven en las compañías del usuario (les faltaba la regla de registro).
 
-## 24.20261104 — 04/11/2026
+## 20261104.24 — 04/11/2026
 
 - M117-24: catálogo «Tipos de mueble y de módulo», con clase, grupo de ML, palabras clave y actividad de armado; se pueden agregar tipos sin programar.
 - M117-25: CONTRATOS admite forma de factura y orden de servicio.
 
-## 23.20261104 — 04/11/2026
+## 20261104.23 — 04/11/2026
 
 - M117-22: el envío no pone en 0 el adelanto ni el fondo de un contrato existente cuando CONTRATOS los trae vacíos; columna opcional «Factor de descuento»; cada precio nuevo queda asociado a la línea de la orden de su partida.
 
-## 22.20261104 — 04/11/2026
+## 20261104.22 — 04/11/2026
 
 - M117-02: «Etapa de consumo por defecto» en la categoría de producto: la usa una línea de BOM sin etapa al enviar al planificador.
 
-## 21.20261101 — 01/11/2026
+## 20261101.21 — 01/11/2026
 
 - M116-01: «Generar plan» ofrece las etapas del perfil de la obra, sin lista fija.
 - M116-02: los nombres de los estados del ambiente (Pendiente, Medido y Entregado) se configuran por compañía en Ajustes; la marca de ambiente medido actualiza la etapa actual del Cronograma.
@@ -41,70 +41,70 @@ Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `no
 - M116-10: grupo ML «Mueble completo» (closets, baños, lavanderías, ductos); la tipología tiene «ML total», que usan el plan, la medición y el árbol de recursos.
 - M113-01: el importador del maestro avisa del módulo desconocido, del tablero inexistente, de la BOM sin módulo en tipologías con recetas, del agrupador sin nivel y de la fecha de OBRA ilegible; la fecha se lee como número de la hoja o como texto.
 
-## 15.20261029 — 29/10/2026
+## 20261029.15 — 29/10/2026
 
 - Ajuste «Categoría de los productos de módulo» (Fabricación ‣ Órdenes del plan de obra): los productos de módulo se crean con esa categoría y toman de ella su método de costo; con costo promedio, sus órdenes admiten el cierre de costos de fabricación.
 
-## 14.20261027 — 27/10/2026
+## 20261027.14 — 27/10/2026
 
 - Paquete 1.12, M112-04: «Generar plan» crea cada actividad como personal propio o como contrata según la modalidad del ambiente, de la actividad o de su etapa; personal propio por defecto. «Contrata a todo costo» sale como contrata y se avisa.
 
-## 13.20261027 — 27/10/2026
+## 20261027.13 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 12.20261021 — 25/10/2026
+## 20261021.12 — 25/10/2026
 
 - Paquete 1.7 parte 2, M17-25: el aviso «Sin marcar como medidos» usa el mismo «Departamento / ambiente».
 
-## 11.20261021 — 23/10/2026
+## 20261021.11 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).
 
-## 10.20261021 — 21/10/2026
+## 20261021.10 — 21/10/2026
 
 - El despacho a obra por unidad solo exige departamento si lleva productos de módulo: el material de un requerimiento se valida sin él, aunque sea de varios departamentos o de todo el piso.
 
-## 9.20261021 — 21/10/2026
+## 20261021.9 — 21/10/2026
 
 - El despacho a obra por unidad de un requerimiento toma el departamento de sus líneas cuando son de un solo departamento (al confirmar y al validar); con varios, se sigue pidiendo.
 
-## 8.20261021 — 21/10/2026
+## 20261021.8 — 21/10/2026
 
 - Paquete 1.11, M111-03: las listas por etapa sin operaciones reciben la de la estación de su etapa al importar, y la obra tiene «Completar operaciones» para las ya importadas; las operaciones puestas a mano se conservan.
 - M111-04: la lista suma las cantidades por módulo ya redondeadas como el plan, así que la orden no sale «excede» por céntimos.
 
-## 7.20261019 — 19/10/2026
+## 20261019.7 — 19/10/2026
 
 - Paquete 1.10, M110-02: el importador separa en dos líneas un producto que está en dos etapas y, con cadena de plantas, arma una lista de fabricación por etapa (producto intermedio y lista final con los módulos como subproductos); la receta de la tipología queda detrás con secuencia 1000.
 - M110-03: la orden del asistente usa la lista de fabricación de la tipología y lleva los módulos de sus ambientes, que pasan a «Producido» al cerrarla.
 - M110-05: despacho a obra por departamento en el despacho nativo (obra y departamento obligatorios para validar); al validarlo los módulos que salieron pasan a «En obra» y se nombran los que faltan.
 - M110-09: formato del lote del módulo configurable por compañía ({obra_prefijo}-{unidad_num}-{tipologia}-{modulo}).
 
-## 6.20261017 — 17/10/2026
+## 20261017.6 — 17/10/2026
 
 - El aviso de ambientes sin medir de la orden de fabricación nombra el departamento.
 
-## 5.20261017 — 17/10/2026
+## 20261017.5 — 17/10/2026
 
 - Con el exceso en la orden (paquete 1.9, M19-04), la autorización de la receta real ya no detiene la confirmación de la orden.
 
-## 4.20261017 — 17/10/2026
+## 20261017.4 — 17/10/2026
 
 - Ambiente medido (paquete 1.9, M19-06): el supervisor marca el ambiente como medido con fecha y archivo, sin cantidades ni aprobación; lista de ambientes medidos por cargar a una orden para Optimización y aviso en la orden de los que no están marcados.
 - En mobiliario, la orden de fabricación ya no espera al metrado con diferencia por aprobar.
 
-## 3.20261016 — 16/10/2026
+## 20261016.3 — 16/10/2026
 
 - Catálogo de mobiliario (v1.8): clase de módulo, tipo especial, método de unión con reglas, piezas y materiales por módulo; actividades de armado e instalación y listas de tarifas.
 - Un producto por módulo al aprobar el plan, con su lista de materiales, fabricación y despacho de módulos a obra (M18-15).
 - Receta real contra la planificada con umbral que bloquea la orden de fabricación.
 - Importador de la proyección de materiales (M17-18) con validación de códigos contra Odoo (M17-19), y maestro de carga con piezas, productos nuevos, tarifas, obra, contratos, hitos y venta.
 
-## 2.20261013 — 15/10/2026
+## 20261013.2 — 15/10/2026
 
 - La OF del ambiente hereda la OF genérica del puente de producción; la familia de la partida pasa a `al_construction_planner_sale_furniture`.
 
-## 1.20261013 — 15/10/2026
+## 20261013.1 — 15/10/2026
 
 - Puente nuevo (v1.7, M17-07): lo propio del mueble (familia, módulos, ML, BOM y ETO) sale del núcleo.

@@ -65,7 +65,7 @@ es de cada compañía queda en la propia compañía; las demás se configuran co
 ## Añadir una industria
 
 1. Copie el paquete más parecido a `OL-INDUSTRIES/al_industry_<rubro>/` y
-   ajuste el manifiesto: nombre `Industria: <Rubro> (AL)`, versión `1.AAAAMMDD`,
+   ajuste el manifiesto: nombre `Industria: <Rubro> (AL)`, versión `AAAAMMDD.1`,
    licencia OPL-1. Si depende del planificador, use LGPL-3 y añada la
    excepción en `scripts/areas.py`.
 2. Cambie el `al.industry`: código, CIIU (compruebe que la clase está en

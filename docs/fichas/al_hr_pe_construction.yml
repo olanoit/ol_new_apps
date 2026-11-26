@@ -607,11 +607,11 @@ faq:
       TXT publicado que implementar.
 
 novedades:
-  - version: '27.20261027'
+  - version: '20261027.27'
     fecha: 05/11/2026
     cambios:
       - "Corrección: una página vigilada a la que ya se llegó por un enlace de otra ya no se revisa ni se anota dos veces."
-  - version: '26.20261027'
+  - version: '20261027.26'
     fecha: 05/11/2026
     cambios:
       - "Búsqueda de la tabla salarial por página: revisa las páginas de CAPECO y de la FTCCP y detecta el PDF del convenio siguiente; las direcciones fijas quedan como respaldo."
@@ -620,64 +620,64 @@ novedades:
       - "Alerta por falta de tabla: actividad desde el 1-dic, actividad urgente si no hay tabla activa vigente y aviso en la boleta y en el lote."
       - "El campo «Fuente» se llena al importar y al encontrar una tabla ya cargada sin fuente."
       - "Corrección: quitar todas las direcciones vigiladas ya no hace que vuelvan las iniciales."
-  - version: '25.20261027'
+  - version: '20261027.25'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 24.20261012
+  - version: '20261012.24'
     fecha: 12/10/2026
     cambios:
       - "Construcción civil pasa a Configuración ▸ Construcción civil."
-  - version: 23.20261011
+  - version: '20261011.23'
     fecha: 11/10/2026
     cambios:
       - "La boleta de construcción civil hereda el nuevo formato A4 de la boleta (al_report_base): jornal básico, categoría, obra y especialidad en la tabla del trabajador."
-  - version: 22.20261010
+  - version: '20261010.22'
     fecha: 10/10/2026
     cambios:
       - "Centro de costo de la obra y obra del día en la marcación y en el detalle del tareaje: fija el centro de costo con el que la planilla reparte el costo del obrero entre sus obras; los días sin obra van a la obra de la ficha."
-  - version: 21.20261009
+  - version: '20261009.21'
     fecha: 09/10/2026
     cambios:
       - "El asistente de importación de la tabla salarial distingue «Origen» (archivo o dirección) de «Origen leído» (nombre del archivo o URL)."
-  - version: 20.20261008
+  - version: '20261008.20'
     fecha: 08/10/2026
     cambios:
       - "CONAFOVICER pagado: la constancia de pago no se edita. El botón «Trabajadores» de la obra solo aparece si tiene trabajadores."
-  - version: 19.20261008
+  - version: '20261008.19'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
-  - version: 18.20261008
+  - version: '20261008.18'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
       - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
-  - version: 17.20261008
+  - version: '20261008.17'
     fecha: 08/10/2026
     cambios:
       - "Los datos de construcción civil del trabajador pasan a «Planilla PE ▸ Construcción civil»; nombres legibles en el resumen CONAFOVICER y la tabla de jornales."
-  - version: 16.20261007
+  - version: '20261007.16'
     fecha: 07/10/2026
     cambios:
       - "Corregido: los códigos PLAME del SCTR estaban invertidos (salud iba como 0805, que es pensión). Ahora usa los mismos de la estructura general, según la entidad contratada."
-  - version: 15.20261007
+  - version: '20261007.15'
     fecha: 07/10/2026
     cambios:
       - "El dominical (D.S.O.) ya no se infla en una semana con feriado trabajado: el feriado trabajado se paga aparte y no genera otro sexto."
       - "Gratificación de la semana que cruza el 31 de julio o el 31 de diciembre: cada día devenga en su ventana (Fiestas Patrias ÷210, Navidad ÷150). Antes toda la semana tomaba la del mes de cierre."
-  - version: 14.20261007
+  - version: '20261007.14'
     fecha: 07/10/2026
     cambios:
       - "Códigos PLAME (tabla 22) de construcción corregidos: descanso 0115, BUC 0311, movilidad 0909, bonificaciones por altura/contacto con agua/cota 0303-0310, escolaridad 0211 y CONAFOVICER 0602."
       - "Asignación escolar para hijos con estudios técnicos o superiores hasta los 24 años (convenio vigente; el módulo traía 21). Las compañías con el valor antiguo se actualizan solas."
-  - version: 13.20261007
+  - version: '20261007.13'
     fecha: 07/10/2026
     cambios:
       - "Corregido: las horas extra que vuelca el tareaje (25 % y 35 % del régimen general) no se pagaban en construcción; ahora se pagan al 60 % y al 100 % del convenio."
       - "Una boleta en borrador creada antes de activar la tabla del convenio toma el jornal al calcularse (antes quedaba en 0); un jornal corregido a mano se respeta."
-  - version: 12.20260925
+  - version: '20260925.12'
     fecha: 27/09/2026
     cambios:
       - "El feriado no laborado se paga: entra en los días pagados con su jornal, D.S.O. y BUC (D.Leg. 713). Antes una semana con feriado cobraba un jornal de menos."
@@ -693,19 +693,19 @@ novedades:
   - fecha: 24/09/2026
     cambios:
       - "Los datos de construcción civil de la ficha del trabajador se restringen al personal de nómina, en la vista y en cada campo: sin ello, un usuario sin ese permiso recibía un error de acceso al abrir un empleado."
-  - version: 10.20260816
+  - version: '20260816.10'
     fecha: 16/09/2026
     cambios:
       - "Botón Importar tabla del convenio: lee el PDF de CAPECO o de la FTCCP, lo valida contra los importes semanales publicados y crea la tabla archivada para revisión."
       - Acción planificada mensual que busca convenios nuevos y crea una actividad para los responsables de planillas.
       - "Si la vigencia ya existe, el asistente muestra los cambios y permite actualizar la tabla; con origen Dirección web propone la dirección conocida."
       - "Historial en las tablas salariales, con la fuente del PDF y el aviso si el CONAFOVICER del convenio difiere del de la compañía."
-  - version: 7.20260816
+  - version: '20260816.7'
     fecha: 18/08/2026
     cambios:
       - El menú Construcción civil se ordena en Nómina ▸ Configuración ▸ Perú, entre los catálogos SUNAT y Documentos.
       - La boleta del régimen adopta el nuevo diseño de la boleta legal.
-  - version: 6.20260803
+  - version: '20260803.6'
     fecha: 03/08/2026
     cambios:
       - "Primera versión: maestros del convenio, estructura semanal, beneficios en planilla, CONAFOVICER y boleta del régimen."

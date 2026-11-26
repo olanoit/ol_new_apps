@@ -29,7 +29,7 @@ faq:
 - pregunta: ¿Y si la transferencia ya tiene proyecto u obra?
   respuesta: Odoo crea el apunte analítico desde el movimiento. El asiento no repite el centro para no cargarlo dos veces, y su destino sigue el reparto de la cuenta.
 novedades:
-- version: '1.20261103'
+- version: '20261103.1'
   fecha: 03/11/2026
   cambios:
   - "Primera versión: asiento de consumo a costo por cuenta de categoría y centro de costo, en valorización permanente y periódica."

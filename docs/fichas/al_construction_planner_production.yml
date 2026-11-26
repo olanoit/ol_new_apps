@@ -25,35 +25,35 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals_mrp`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
-- version: '8.20261101'
+- version: '20261101.8'
   fecha: 16/11/2026
   cambios:
     - "Seguridad: en el pedido de accesorios, el accesorio del plan, su saldo y su costo los pone el sistema, y lo enviado a aprobación ya no se cambia. Antes se podía subir el saldo a mano para que el pedido entrara a la orden sin aprobación, o subir la cantidad con el pedido en aprobación."
-- version: '7.20261101'
+- version: '20261101.7'
   fecha: 01/11/2026
   cambios:
     - "M116-08: el cuadro dinámico «Presupuestado frente a real de fabricación» parte los nombres largos con el ancho máximo de Ajustes."
-- version: '6.20261027'
+- version: '20261027.6'
   fecha: 27/10/2026
   cambios:
     - "Ícono nuevo: el isotipo de ALTA."
-- version: '5.20261019'
+- version: '20261019.5'
   fecha: 23/10/2026
   cambios:
   - "Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba)."
-- version: '4.20261019'
+- version: '20261019.4'
   fecha: 19/10/2026
   cambios:
   - "Paquete 1.10, M110-04: «Pedir accesorios» y su aviso salen de las etapas marcadas «Accesorios a pedido desde la orden» (ya no del código de armado) y el informe compara solo las etapas de la orden. M110-08: cifras de la solicitud del pedido de accesorios."
-- version: '3.20261018'
+- version: '20261018.3'
   fecha: 18/10/2026
   cambios:
   - "Confirmar la orden sin accesorios ya no falla para el comprador: el aviso a Logística se arma aunque no pueda leer las compañías de los demás usuarios."
-- version: '2.20261017'
+- version: '20261017.2'
   fecha: 17/10/2026
   cambios:
   - "El pedido de accesorios no vuelve a proponer lo que la orden ya trae en sus componentes (prueba en dev1 del 17-oct)."
-- version: '1.20261017'
+- version: '20261017.1'
   fecha: 17/10/2026
   cambios:
   - "Puente nuevo (paquete 1.9, M19-02 y M19-05): accesorios de armado desde la orden y presupuestado frente a real en la orden y en el planificador."

@@ -2,39 +2,39 @@ Historial de cambios — Gantt de Proyectos — Base (AL)
 =====================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_project_gantt_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 20.20261102 — 02/11/2026
+## 20261102.20 — 02/11/2026
 
 - Colores con las variables de Odoo: el diagrama, el menú contextual y el formulario de tarea se ven bien en el modo oscuro.
 - La columna «Tarea» tiene ancho de lectura y la rejilla se desplaza a lo ancho con su propia barra.
 
-## 19.20261027 — 27/10/2026
+## 20261027.19 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 18.20261011 — 11/10/2026
+## 20261011.18 — 11/10/2026
 
 - Diagrama de Gantt en PDF con el formato común de los documentos impresos (al_report_base), en A4 horizontal: encabezado con el recuadro R.U.C./tipo, tabla con cabecera gris oscuro y pie con la numeración.
 
-## 17.20261010 — 10/10/2026
+## 20261010.17 — 10/10/2026
 
 - La edición del diagrama admite que una interfaz deje arrastrar filas propias que no son tareas (por ejemplo, las etapas del cronograma de obra) y las guarde ella misma; las tareas se editan igual que antes.
 
-## 16.20261008 — 08/10/2026
+## 20261008.16 — 08/10/2026
 
 - Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.
 
-## 15.20261008 — 08/10/2026
+## 20261008.15 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
 - La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
 
-## 14.20260818 — 27/09/2026
+## 20260818.14 — 27/09/2026
 
 - Editar una subtarea cuyo padre no se ve (por un filtro o por el límite de tareas) ya no la separa de su padre: solo se guarda lo que de verdad se cambió.
 - El avance de las tareas con partes de horas se muestra en su porcentaje real (antes salía 100 veces menor) y ya no se ofrece editarlo: lo calcula Odoo a partir de las horas.

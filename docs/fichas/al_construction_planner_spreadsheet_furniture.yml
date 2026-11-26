@@ -61,12 +61,12 @@ pasos:
     imagen: screenshots/04-importar.png
 
 novedades:
-  - version: '13.20261104'
+  - version: '20261104.13'
     fecha: 04/11/2026
     cambios:
       - "M117-08: cuadro de avance con pestaña, filas y total, y «Cancelar» que vuelve a la versión guardada, en importar, «Traer de Odoo», «Traer la venta», «Traer tarifario», «Aplicar propuestas» y al ampliar la hoja."
       - "M117-24: la hoja lee el catálogo de tipos: listas, «Clase (calc.)» y «A armar»."
-  - version: '12.20261104'
+  - version: '20261104.12'
     fecha: 04/11/2026
     cambios:
       - "M117-15: «Parámetros de las hojas de trabajo» por compañía y pestaña PARAMETROS en las dos hojas; PROGRAMA y CONTROL leen sus valores por clave."
@@ -74,7 +74,7 @@ novedades:
       - "M117-19: catálogo «Tarifario de venta de mobiliario» con vigencias y clientes con convenio."
       - "M117-21: RESUMEN VENTA, «Pasar el resumen a la cotización», «Nueva versión» y PDF de la cotización como adjunto del correo."
       - "M117-22: «Traer la venta» con vista previa, pestañas ACABADOS DE OBRA y VENDIDO, comparación en CONTROL, aviso de precio distinto, propuestas de tablero y actividad al adjudicar."
-  - version: '10.20261104'
+  - version: '20261104.10'
     fecha: 04/11/2026
     cambios:
       - "M117-01 y M117-23: tabla nativa con filtros, relleno por tipo de columna en todas las filas, anchos, formatos, columnas fijas, encabezado de tres líneas, color y orden de pestañas, también en las filas ampliadas y con «Actualizar a la plantilla vigente»."
@@ -82,14 +82,14 @@ novedades:
       - "M117-05: las marcas de código desconocido y costo 0 llegan a todas las filas."
       - "M117-07: «Traer de Odoo» no escribe líneas sin módulo por el redondeo y muestra una vista previa antes de escribir."
       - "Anexo A: listas nuevas de tipología, actividad, mueble, contrato, plantilla de hitos, tipo de pieza, tipo de unidad y tipo de variante."
-  - version: '9.20261104'
+  - version: '20261104.9'
     fecha: 04/11/2026
     cambios:
       - "M117-03: «Importar Excel a la hoja» ya no escribe en las pestañas que arma la plantilla ni en las de la hoja de venta, y la revisión previa dice qué hace con cada una; MATERIALES OBRA importa solo el material; las columnas calculadas no se pisan."
       - "M117-03: «Restaurar versión» vuelve a una versión guardada con vista previa por pestaña, sin perder el vínculo con la obra; la importación termina con un resumen y un vínculo a ERRORES."
       - "M117-04: las listas fijas sobreviven a la importación y rechazan el valor inválido."
       - "M117-06: abrir la hoja después de un envío ya no da error y CONTROL se compara solo."
-  - version: '8.20261101'
+  - version: '20261101.8'
     fecha: 01/11/2026
     cambios:
       - "M113-01 a M113-03 y M116-09: «Validar» y «Enviar al planificador» en el menú «Planificación de obra»; con errores el envío lleva a ERRORES; se leen solo las pestañas del maestro; amarillo para el dato y gris para la fórmula."
@@ -98,11 +98,11 @@ novedades:
       - "M113-07, M113-09 a M113-11: pestañas INICIO, FICHA, PROGRAMA y CONTROL; «Traer de Odoo» escribe en la hoja la obra del planificador."
       - "M113-08: panel «Planificación» y clic derecho para copiar un piso, asignar tipología, numerar ambientes, crear una variante, reemplazar un material y ver la ficha; ARBOL agrupado por piso. «Actualizar a la plantilla vigente…» lleva una hoja ya creada a la plantilla nueva."
       - "Rendimiento: TIPOLOGIAS lleva fórmulas en 500 filas y ACTIVIDADES en 2 000, así una hoja grande abre y se edita más rápido."
-  - version: '2.20261027'
+  - version: '20261027.2'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '1.20261024'
+  - version: '20261024.1'
     fecha: 24/10/2026
     cambios:
     - "Primera versión: el maestro de mobiliario de la hoja de trabajo (v1.5, M15-15 y v1.8, M18-22), separado del módulo genérico (requerimiento CREVAL v1.0, 6.7)."

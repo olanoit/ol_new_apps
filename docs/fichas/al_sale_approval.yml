@@ -56,15 +56,15 @@ pasos:
       pasar la orden.
 
 novedades:
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261013
+  - version: '20261013.2'
     fecha: 13/10/2026
     cambios:
       - "Marcar «Sin aprobación (carga histórica)» en una orden ya creada actualiza su estado de aprobación."
-  - version: 1.20261013
+  - version: '20261013.1'
     fecha: 13/10/2026
     cambios:
       - "Módulo nuevo: aprobación de órdenes de venta por producto con la app de Aprobaciones, botón «Solicitar aprobación», estado en la orden y marca de carga histórica (reemplaza la automatización manual de New Allcenter)."

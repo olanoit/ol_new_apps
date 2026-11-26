@@ -2,64 +2,64 @@ Historial de cambios — Planificación de obra (AL)
 =================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 87.20261120 — 20/11/2026
+## 20261120.87 — 20/11/2026
 
 - Gancho para que la vertical nombre lo que tiene tipo en el requerimiento de obra («ambiente»).
 
-## 86.20261120 — 20/11/2026
+## 20261120.86 — 20/11/2026
 
 - Plantilla de niveles: campo «Orientación en el requerimiento» por nivel, con un texto por defecto según la función del nivel (paquete 1.24).
 - Gancho para que cada vertical diga el tipo de sus niveles con etapas (el requerimiento de obra pide por tipo).
 
-## 85.20261112 — 17/11/2026
+## 20261112.85 — 17/11/2026
 
 - Paquete 1.22: el motivo del re-trabajo es un catálogo por compañía (antes, una lista fija). Cada perfil de vertical trae sus motivos y la compañía los recibe al aplicarlo si no tiene ninguno; los registros anteriores conservan su motivo.
 
-## 84.20261112 — 16/11/2026
+## 20261112.84 — 16/11/2026
 
 - Seguridad: los candados del plan aprobado y del avance validado ya no se abren con un contexto enviado por el cliente (PLAN_FORCE y PROGRESS_FORCE son objetos del servidor).
 - Seguridad: quien ejecuta solo pasa el plan de «Aprobado» a «En ejecución»; cerrar y devolver a borrador es de quien aprueba planes, y cancelar uno vigente, del grupo que fija la compañía. Antes bastaba poder escribir el plan para poner cualquier estado.
 
-## 83.20261112 — 16/11/2026
+## 20261112.83 — 16/11/2026
 
 - Seguridad: validar, rechazar o revertir un avance es de quien valida la ejecución también con una escritura directa; antes quien reportaba podía dejar su avance «Validado» y entraba al ejecutado y a la valorización.
 - Las marcas de contexto que abren un control de exceso son objetos del servidor (EXCEED_CHECKED, FROM_PROCUREMENT, SKIP_RECIPE_AUTHORIZATION): enviadas por el cliente ya no valen.
 
-## 71.20261104 — 04/11/2026
+## 20261104.71 — 04/11/2026
 
 - M117-09: Inicio muestra las obras sin plan en «Por planificar», la más antigua primero; lo que aporta cada puente sale del gancho _construction_home_extra.
 
-## 70.20261102 — 02/11/2026
+## 20261102.70 — 02/11/2026
 
 - El Cronograma usa la rejilla desplazable común del Gantt.
 
-## 69.20261101 — 02/11/2026
+## 20261101.69 — 02/11/2026
 
 - El Cronograma abre el plan desde el que se llama aunque esté reemplazado o cancelado.
 - Cronograma: la columna «Tarea» y las fechas tienen su ancho de lectura; la rejilla se desplaza a lo ancho con su propia barra y su borde con el diagrama se arrastra.
 
-## 68.20261101 — 01/11/2026
+## 20261101.68 — 01/11/2026
 
 - «Árbol de recursos» e «Insumo-producto» abren el plan desde el que se llaman aunque esté reemplazado o cancelado; antes el árbol mostraba el plan más reciente de otra obra.
 
-## 67.20261101 — 01/11/2026
+## 20261101.67 — 01/11/2026
 
 - Los textos de las pestañas de un formulario vuelven a saltar de línea: la ficha de la obra ya no se desborda a lo ancho en «Ajustes» y «Facturación».
 
-## 66.20261101 — 01/11/2026
+## 20261101.66 — 01/11/2026
 
 - Las columnas de nombre (nivel, producto, actividad, recurso) tienen un ancho fijo de lectura: el nombre se parte en dos o tres renglones y la lista se desplaza a lo ancho si no cabe.
 
-## 65.20261101 — 01/11/2026
+## 20261101.65 — 01/11/2026
 
 - Las listas y tablas dinámicas con nombres largos (M116-08) ya no se encogen: la línea del plan, los informes y los pivotes ocupan todo el ancho.
 
-## 64.20261101 — 01/11/2026
+## 20261101.64 — 01/11/2026
 
 - CR-23 y CR-22 a): «Reemplazar lo generado» y el envío de la hoja ya no duplican líneas en la nueva versión; la actividad archivada se reactiva al importar.
 - M116-01 y M116-02: las etapas que se ofrecen (línea del plan, receta, actividad, importadores) son las del perfil de la obra; Pendiente, Medido y Entregado solo aparecen si el perfil mide sus ambientes.
@@ -68,76 +68,76 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - CR-21 y M115-01 a M115-03: el Cronograma abre con el último plan de cada usuario; la barra agrupa las acciones en filas Consultar, Programar y Ejecutar con el nombre de cada acción; el panel de la selección se amplía y muestra ejecutado y saldo a quien ve montos.
 - M115-04 a M115-06, M116-07, M116-08, CR-25 y CR-26: etapa actual y plazo de cada ambiente en el Cronograma, informe «Etapa de los ambientes», carga semanal plan frente a ejecutado con umbrales en Ajustes, ancho máximo de los nombres y ayudas que hablan de producción en taller.
 
-## 57.20261027 — 27/10/2026
+## 20261027.57 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
 
-## 56.20261027 — 27/10/2026
+## 20261027.56 — 27/10/2026
 
 - Paquete 1.12, M112-04: «Modalidad por defecto» en las etapas (personal propio) y «Modalidad» en las actividades. Con el plan aprobado, la modalidad de un ambiente con líneas se cambia en una nueva versión del plan.
 
-## 55.20261027 — 27/10/2026
+## 20261027.55 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 - La tarjeta «Mis obras» del portal conserva el ícono anterior (static/src/img/portal_icon.png).
 
-## 54.20261025 — 27/10/2026
+## 20261025.54 — 27/10/2026
 
 - CR-18, D4: la importación de recetas expone dónde se guardan (`_recipe_scope_values`), para que el puente de ventas guarde las recetas de una cotización sin obra fuera de la biblioteca.
 
-## 53.20261025 — 26/10/2026
+## 20261025.53 — 26/10/2026
 
 - CR-05: en la receta, la línea «% del costo directo de un grupo de partidas» no tiene monto propio («Se calcula en el plan») y la receta muestra «más 2 % del costo directo de ‹nivel›»; el monto de la receta depende también de la forma de cálculo, el grupo, el nivel, el rendimiento y las personas.
 - CR-05: el libro de recetas acepta la columna «Nivel del porcentaje» (código de la especialidad o sub-especialidad de la obra).
 
-## 52.20261025 — 25/10/2026
+## 20261025.52 — 25/10/2026
 
 - El exceso del avance que espera aprobación avisa con una actividad a cada usuario de «Ejecución: aprueba» de la compañía (antes, solo al primero del grupo).
 
-## 51.20261025 — 25/10/2026
+## 20261025.51 — 25/10/2026
 
 - Avance sobre el saldo del plan según la política del plan para la contrata: «Bloquear» lo rechaza como antes; «Solo alerta» lo marca y deja validarlo; «Aprobación adicional» lo deja «Excede el plan» con una actividad para la jefatura de proyectos, que lo aprueba con «Aprobar exceso» (queda en el registro de excesos autorizados) antes de que el supervisor lo valide. Si cambia la cantidad, se vuelve a aprobar.
 
-## 50.20261016 — 24/10/2026
+## 20261016.50 — 24/10/2026
 
 - Pedido de Allcenter (prueba ZZMONTEC): «Cancelar plan» en un plan aprobado o en ejecución sin documentos abiertos ni despachos o consumos; se activa por compañía en Ajustes ‣ Planificación de obra, con el grupo que puede hacerlo (por defecto, Administrador).
 
-## 49.20261016 — 24/10/2026
+## 20261016.49 — 24/10/2026
 
 - Requerimiento CREVAL v1.0, 6.4: modalidad de ejecución por partida (personal propio, contrata solo de mano de obra o contrata a todo costo). La receta trae la modalidad por defecto y su actividad de contrata; la partida la cambia antes de aprobar el plan (después, con una nueva versión). Con contrata de mano de obra, la mano de obra y las herramientas van en una línea de contrata; a todo costo, una sola línea por el costo de la receta con el detalle del APU como referencia.
 - 6.1: equipo propio con tarifa interna por hora (depreciación sobre el valor de reposición, interés, seguro y almacén, mantenimiento y combustible), que es su costo en la receta y en el plan; el uso en obra se registra en la línea del plan y se carga a la cuenta analítica de la obra.
 - 6.2: «Importar recetas y niveles» pide la modalidad de las recetas en lugar de «Mano de obra como»; la sincronización receta ↔ Work Item (v1.8) conserva la forma de cálculo y la modalidad.
 
-## 48.20261016 — 24/10/2026
+## 20261016.48 — 24/10/2026
 
 - Corrección CR-05 de la prueba CREVAL: «% del costo directo de un grupo de partidas» admite el alcance «Nivel elegido», con la especialidad o sub-especialidad sobre la que aplica el porcentaje (por ejemplo, el 2 % del costo directo de Arquitectura en una partida de otra especialidad).
 - Corrección CR-06: «Suministro del cliente» en la línea de la receta y del plan: costo 0 permitido (no bloquea la aprobación), sin compra ni requerimiento, y su ejecutado es lo «Recibido del cliente» en obra.
 
-## 47.20261016 — 24/10/2026
+## 20261016.47 — 24/10/2026
 
 - Corrección CR-04 de la prueba CREVAL: «Importar recetas y niveles» busca el código del recurso en las actividades (por su código o el de su producto) y en los productos, y la línea de contrata o de personal propio lleva los dos; un producto de servicio sin actividad crea su actividad. Personal propio en cualquier unidad (por ejemplo glb) se importa y genera.
 - Generar el plan dice qué receta y qué línea no tienen actividad («R01, línea 3 (Operario)») en la vista previa y al generar, en lugar del mensaje genérico.
 
-## 46.20261016 — 24/10/2026
+## 20261016.46 — 24/10/2026
 
 - Corrección CR-03 de la prueba CREVAL del 24-oct: el costo unitario de la línea de receta y de la línea del plan guarda los decimales de «Precio del producto» (el ladrillo a 0.9661 ya no pasa a 0.97) y la receta redondea su costo por unidad una sola vez. Las recetas importadas antes conservan el costo ya redondeado: vuelva a importarlas.
 
-## 45.20261016 — 24/10/2026
+## 20261016.45 — 24/10/2026
 
 - Quien solo tiene «Plan: consulta» ya ve la aplicación Planificación de obra (antes el menú raíz pedía «Reporta avance»).
 
-## 44.20261016 — 23/10/2026
+## 20261016.44 — 23/10/2026
 
 - Al actualizar desde la 42, los menús, acciones y reglas que en la base citaban al Planificador anterior o a la jefatura reciben los grupos nuevos, y las entradas a la ejecución quedan activas como en una instalación nueva.
 
-## 43.20261016 — 23/10/2026
+## 20261016.43 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: grupos en dos ejes independientes, plan (consulta, planificador, aprueba) y ejecución (reporta avance, ejecuta, valida, aprueba), más los complementos Ve montos, Ingresos y Administrador. El Planificador anterior y la jefatura quedan como grupos de compatibilidad; la migración pasa a cada usuario a los grupos equivalentes sin perder permisos y las reglas de validación de la jefatura a los aprobadores de cada eje.
 - Capítulo 4: dos ajustes de entrada a la ejecución (en Planificación de obra y desde Proyectos), menú por momento (Planificación, Ejecución con Personal propio y Abastecimiento), tablero de obra, tarea de obra con su menú Ejecutar, sección Obra en el tablero del proyecto y menú Ejecutar en la tarea de Proyectos.
 - Capítulo 6: forma de cálculo en la receta y el plan (cantidad, cuadrilla ÷ rendimiento, % de la mano de obra, % del costo directo de un grupo de partidas), fuente del análisis de precio unitario por obra, rótulos de la plantilla de la obra en campos, filtros y agrupaciones, equivalencias de unidades y partidas en otra moneda.
 - 3.12: casillas de firma de los documentos impresos (elaboró, cada nivel de aprobación y conformidad) desde las revisiones de la validación por niveles.
 
-## 42.20261016 — 16/10/2026
+## 20261016.42 — 16/10/2026
 
 - Etapas con sub etapas (v1.8, M18-02 y M18-14): el catálogo de etapas es un árbol numerado («1.1 Armado»); el árbol de recursos, el cronograma y la matriz filtran por etapa padre o sub etapa, el resumen y el control del plan van en ese orden y el cronograma muestra una barra resumen por etapa padre.
 - Metrado como función propia (M18-01), separado del avance; **Aplicar el perfil** abre un asistente con la vista previa de lo que cambia, y los niveles de la obra toman los nombres de la plantilla en formularios, árbol y cronograma.
@@ -147,75 +147,75 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - Políticas de exceso por tipo de recurso en la compañía, la obra y el plan, y registro «Excesos autorizados» con motivo, monto y quién autorizó (M18-05, M18-21).
 - Visibilidad de montos (M18-10): el grupo «Planificación de obra: ve montos» (administrador, jefatura e ingresos) ve costos, precios, presupuestos y saldos; sin él, vistas, árbol, cronograma, matriz, paneles y exportaciones muestran cantidades, fechas y avance. Al actualizar, lo reciben los usuarios que ya usaban el planificador.
 
-## 33.20261013 — 15/10/2026
+## 20261013.33 — 15/10/2026
 
 - Migración de las bases que ya usaban el planificador (v1.7): una compañía sin perfil con obras o tipologías queda con el perfil «Mobiliario», y sus obras con él, sin cambiar su plantilla, sus parámetros ni sus funciones; una obra sin plantilla conserva el árbol clásico.
 - La plantilla de las obras nuevas sale de la compañía (aplicar un perfil la deja con la suya); solo una obra de otro perfil toma la plantilla de ese perfil.
 - Las obras sin compañía reciben el perfil «Mobiliario» cuando todas las compañías de la base quedan con él.
 - Con el núcleo solo, la obra recibe su cuenta analítica al marcarse como obra: sin ella el plan no se podía aprobar.
 
-## 32.20261013 — 15/10/2026
+## 20261013.32 — 15/10/2026
 
 - Perfiles de vertical (v1.7, M17-05): «Construcción por partidas» y «Mobiliario» reúnen plantilla de niveles, etapas, tipos de recurso, puentes, funciones, parámetros de la compañía y planes analíticos; **Aplicar el perfil** en Ajustes los deja en un paso, la pestaña «Desvíos de la compañía» muestra lo que difiere y **Exportar** / **Importar perfil** los pasan entre bases en JSON.
 - Cada obra guarda el perfil con el que nació y toma su plantilla de niveles.
 - Operación nativa (M17-08 a M17-11): la compra masiva agrupa por producto, nivel, etapa, partida o receta; la OF sale de cualquier nivel con etapa de producción; la cuadrilla se arma por rol, una fila por persona; los menús que operan otro documento son accesos directos a su aplicación.
 
-## 31.20261013 — 15/10/2026
+## 20261013.31 — 15/10/2026
 
 - Funciones activables (v1.7, M17-06): bloque «Funciones» en Ajustes para el control, el avance y metrados y cada puente (contratas, compras, cuadrillas, presupuesto, ingresos, producción y mobiliario).
 
-## 30.20261013 — 15/10/2026
+## 20261013.30 — 15/10/2026
 
 - Núcleo y puentes (v1.7, M17-07): el núcleo solo depende de Proyecto, el Gantt, la analítica, los productos y las aprobaciones; compras, contratas, cuadrillas, presupuesto, ventas, fabricación y mobiliario pasan a sus módulos `al_construction_planner_*`. La actualización instala todos los puentes y la suite, sin tocar los datos.
 
-## 29.20261013 — 15/10/2026
+## 20261013.29 — 15/10/2026
 
 - Control por nivel (v1.7): análisis por los niveles de la plantilla, línea base contra versión y desvío; destino de la compra masiva en la plantilla y en la obra; metrado por cantidad; portal en cualquier nivel.
 
-## 28.20261013 — 15/10/2026
+## 20261013.28 — 15/10/2026
 
 - Catálogos de etapas y de tipos de recurso (v1.7, M17-02 y M17-03), con el comportamiento «Equipo».
 - Niveles libres (M17-01): agrupador, unidad de entrega, nivel con etapas, subnivel y nivel de detalle, con las casillas lleva receta, se mide con metrado, se valoriza o factura y recibe avance.
 - Recetas (M17-04): plantillas de ejecución con «Generar desde la receta» e «Importar recetas y niveles» (Excel o Work Items).
 
-## 27.20261013 — 15/10/2026
+## 20261013.27 — 15/10/2026
 
 - La ayuda de la compra masiva ya no menciona el modo «con analítica de la obra», retirado en la v1.6 (M16-02).
 
-## 26.20261013 — 15/10/2026
+## 20261013.26 — 15/10/2026
 
 - Grupo «Planificación de obra: jefatura de proyectos» (v1.6, M16-09): aprueba las reglas de validación del planificador (excesos, liquidaciones, metrados, material extra y la regla del plan), así que funcionan con un reemplazo; el administrador deja de ser el aprobador por defecto. La actualización pasa las reglas existentes a la jefatura y suma a ella a los administradores actuales, que se pueden quitar después.
 - Aprobar cambios, confirmar entregas semanales, anular valorizaciones, aprobar excesos de OC y OF y decidir el descuento a la contrata: lo hace la jefatura (o el administrador).
 - Grupo «Planificación de obra: asistente de proyectos» (M16-10): crea los requerimientos a obra y los envía a aprobación, sin aprobarlos.
 - Avance de armado por el portal (M16-11): las contratas de armado reportan módulo por módulo, probado de punta a punta.
 
-## 25.20261013 — 15/10/2026
+## 20261013.25 — 15/10/2026
 
 - Material extra con aprobación de la jefatura (v1.6, M16-05 y M16-07): todo requerimiento marcado como extra pasa por la regla «Material extra: jefatura de proyectos», esté o no dentro del plan.
 - Pedido de material extra desde el portal (M16-06): el capataz de la contrata elige piso o ambiente, material del plan, cantidad, motivo y foto; queda un requerimiento en borrador, sin reservar stock, con una actividad al responsable de la obra.
 - Corrección: la línea de retención de la factura de la liquidación podía quedar con importe 0 en el asiento (la sincronización de v19 no la recalculaba junto con las líneas de la OC); ahora la factura cuadra con el neto.
 - Descuento a la contrata (M16-08): al aprobar el extra, la jefatura decide descontarlo a una contrata; su siguiente liquidación semanal en la obra lo resta del neto y la factura lleva una línea negativa a la cuenta configurada en Ajustes.
 
-## 24.20261013 — 14/10/2026
+## 20261013.24 — 14/10/2026
 
 - Metrado del ambiente (v1.6, M16-03): el supervisor registra la medida real en ML de mueble bajo, ML de mueble alto y módulos frente a lo planificado; el planificador muestra la diferencia en cantidad y en soles. «Generar metrados» crea los de un piso entero y las medidas se cargan en una lista editable o por Excel.
 - Aprobación del metrado (M16-04): un metrado con diferencia pasa por la validación por niveles de la jefatura de proyectos, y la orden de fabricación de ese ambiente espera la aprobación.
 
-## 23.20261013 — 14/10/2026
+## 20261013.23 — 14/10/2026
 
 - La compra masiva entra siempre como stock general (v1.6, M16-02): se retiró el modo «con analítica de la obra»; el comprado sube en las líneas del plan y el costo cae a la obra al consumir.
 - El comprado de las líneas del plan cuenta solo la parte de cada solicitud en la orden de compra consolidada, no la línea entera.
 
-## 22.20261013 — 13/10/2026
+## 20261013.22 — 13/10/2026
 
 - Ícono propio de la app «Planificación de obra» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.
 
-## 21.20261013 — 13/10/2026
+## 20261013.21 — 13/10/2026
 
 - «Nombre de la obra» en la orden de venta: la obra creada desde la venta se llama «<referencia del cliente> <nombre de la obra>» y toma la referencia como código de obra.
 - Etapas de tarea con «Exige foto de evidencia»: la tarea no pasa a esa etapa sin un adjunto.
 
-## 20.20261013 — 13/10/2026
+## 20261013.20 — 13/10/2026
 
 - Paquete de mejoras v1.5. Plantilla de niveles por obra (agrupadores como torre o etapa, unidad, ambiente, mueble y módulo) con tipo de unidad; árbol, cronograma e importador con niveles variables.
 - Ritmo de programación al generar el plan (pisos por semana o semanas por piso), etapas encadenadas por días hábiles de la obra y fechas acumuladas en ambiente, unidad y piso.
@@ -227,19 +227,19 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - Pestaña «Planificación» en la obra con margen planificado, devengado y contable, y accesos al árbol y al cronograma.
 - Validaciones de datos: tipologías y ambientes repetidos, unidades que no corresponden a su piso y avances posiblemente duplicados.
 
-## 19.20261012 — 12/10/2026
+## 20261012.19 — 12/10/2026
 
 - Menús organizados como Contabilidad: de 8 menús principales a Obras (obras y tareas, plan de recursos, cronograma), Ejecución (avance y contratas), Abastecimiento, Ingresos, Informes (plan, cronograma valorizado, compras) y Configuración (plan de obra, aprobaciones y Gantt); se quita el menú repetido «Precios de compra».
 
-## 18.20261011 — 11/10/2026
+## 20261011.18 — 11/10/2026
 
 - Más rápido con obras grandes: la tabla de valorizaciones previstas de la obra y el control de las líneas al generar ya no reúnen las líneas de una en una.
 
-## 17.20261011 — 11/10/2026
+## 20261011.17 — 11/10/2026
 
 - Generar el plan valida la compañía de las líneas por lotes: en una obra de 7.800 líneas ahorra cerca de 20 segundos.
 
-## 16.20261011 — 11/10/2026
+## 20261011.16 — 11/10/2026
 
 - Generar el plan crea las actividades por metro lineal de la obra con el ML bajo y alto de la tipología cuando los módulos no traen ancho (con ETO siguen bajando al módulo).
 - Las fechas del calendario de ingresos y de las liquidaciones también evitan los feriados nacionales de Perú (pe.public.holiday); los feriados se leen una vez por transacción.
@@ -247,40 +247,40 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - Obras ▸ Obras se abre dentro de Planificación de obra.
 - «Solicitar aprobación» resume cada producto o actividad una vez, con sus líneas y departamentos; la importación ya no muestra un instante «no es un libro Excel válido».
 
-## 15.20261011 — 11/10/2026
+## 20261011.15 — 11/10/2026
 
 - Con el planificador instalado, la aplicación Gantt deja de mostrarse en el menú: el Gantt de todos los proyectos está en Cronograma ▸ Gantt de proyectos y sus colores por estado en Configuración ▸ Colores del Gantt. Al desinstalar el planificador, la aplicación Gantt vuelve a aparecer.
 
-## 14.20261011 — 11/10/2026
+## 20261011.14 — 11/10/2026
 
 - La valorización impresa usa el formato común de los documentos de la suite (el del comprobante A4, módulo al_report_base): recuadro R.U.C./tipo/número con el estado, datos de obra y contrato, partidas con los totales al pie (entregado, confirmado, por valorizar, amortización, fondo de garantía y neto a cobrar), conformidad del cliente y firmas.
 
-## 13.20261011 — 11/10/2026
+## 20261011.13 — 11/10/2026
 
 - Modo oscuro: el panel de recursos del cronograma (P-15) toma el fondo del tema; el diagrama y su barra lo heredan del Gantt de proyectos.
 
-## 11.20261011 — 11/10/2026
+## 20261011.11 — 11/10/2026
 
 - Importar maestro y ETO (fase 12, W-15): libro Excel con catálogo de actividades, tipologías, plantilla de módulos, actividades por ambiente, BOM con etapa y árbol de la obra, o solo con el ETO (código y ancho real de cada módulo).
 - Vista previa sin escribir nada con conteos por hoja y advertencias (BOM sin etapa con su monto, productos que no existen o sin costo, productos repetidos, actividades o tipologías desconocidas, ambientes del ETO que no existen, decimales de más); importación idempotente.
 - «Generar plan» usa el ancho real del módulo del ETO para la instalación y la limpieza por ML.
 - Plantilla vacía y libros de ejemplo de una obra genérica (maestro y ETO) para descargar desde el asistente.
 
-## 10.20261010 — 10/10/2026
+## 20261010.10 — 10/10/2026
 
 - Cronograma valorizado (fase 11, P-22): por obra y semana, costo, ingreso devengado, margen, valorización confirmada, facturado y cobrado en plan (líneas repartidas en los días hábiles de su etapa y calendario de P-21) y real (ejecutado, entregas, valorizaciones, facturas y cobros conciliados), con curva S, fondo de garantía al cierre, Excel, pivote y gráfico.
 - Inicio de la aplicación (P-01) como acción por defecto: obras con plan, planificado, saldo, avance, próximo hito y estado, y «Pendientes de hoy» por grupo con su lista filtrada.
 - Supervisores de obra en el proyecto: el supervisor ve en su inicio solo los avances y liquidaciones por validar de sus obras.
 - Menú «Reportes» (cronograma valorizado, su análisis, control de saldo y precios de compra) y «Cobranza de la obra» en Ingresos.
 
-## 9.20261010 — 10/10/2026
+## 20261010.9 — 10/10/2026
 
 - Calendario e ingresos de la obra (fase 10, P-21): OV del contrato, valorización cada n semanas o en fechas fijas, plazos de presentación, confirmación, factura y cobro, adelanto y fondo de garantía, con valores por defecto en Ajustes y tabla de valorizaciones previstas corridas al siguiente día hábil.
 - Entrega semanal (P-19): una por obra y semana, creada por la acción programada del día de liquidación y confirmada por la Jefatura; avance valorizado de la partida con material consumido, ingreso devengado sin redondear el avance, costo y margen.
 - Valorización con el cliente (P-20): W-13 con las entregas confirmadas hasta el corte, envío con PDF, observaciones con fecha y autor, conformidad obligatoria (W-14) y lo no confirmado por valorizar.
 - «Crear factura» desde la OV con la cantidad entregada al % acumulado confirmado y la valorización en la factura; no se publica por encima de lo confirmado.
 
-## 8.20261010 — 10/10/2026
+## 20261010.8 — 10/10/2026
 
 - Precios de compra del producto (fase 9, P-16): compras confirmadas de una ventana editable en soles al tipo de cambio de su fecha, con ponderado, mediana, desviación, medias móviles de 4 semanas y 3 meses, resumen por semana, mes y proveedor y gráfico semanal con las compras atípicas.
 - «Aplicar costo» (W-12) suma la media móvil de 4 semanas y se abre desde P-16 con la base elegida.
@@ -288,14 +288,14 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - Abastecimiento de la obra (P-18): necesidad por semana de la etapa, stock, OC abiertas, cantidad a comprar, costo del plan y último precio con alerta; la compra masiva sale con los productos marcados.
 - Alertas de abastecimiento (precio sobre el plan, necesidad sin OC a una semana, sin proveedor) y umbral de la alerta de precio en Ajustes.
 
-## 7.20261010 — 10/10/2026
+## 20261010.7 — 10/10/2026
 
 - Cronograma con recursos (fase 8, P-15): el Gantt de proyectos con pisos, departamentos y ambientes y, debajo de cada ambiente, sus etapas (producción, armado, instalación, acabado) enlazadas; monto, avance y contrata en la rejilla y barra clara si la etapa no tiene contrata ni cuadrilla.
 - Etapas del ambiente con fechas: se crean al generar el plan (y con «Crear etapas del cronograma» en los planes ya generados); contrata, cuadrilla, monto y avance salen de sus líneas.
 - Casillas con selección en cascada, panel con los recursos de la selección y los botones de los asistentes W-02 a W-08 con ella; carga semanal por contrata y etapa debajo del diagrama.
 - Arrastrar una etapa desplaza la fecha de necesidad de sus líneas y avisa a Logística de los requerimientos y OC desfasados; «Cambiar fechas» también mueve las etapas.
 
-## 6.20261010 — 10/10/2026
+## 20261010.6 — 10/10/2026
 
 - Control y personal propio (fase 7, P-13): estado de la línea y montos de control (comprometido, real, saldo, % ejecutado) guardados, filtrables y agrupables; pestaña «Control» del plan y «Análisis de control» en pivote y gráfico.
 - La OC con analítica de la obra se contrasta al confirmarla con el presupuesto analítico de su combinación según la política del plan (W-10).
@@ -303,7 +303,7 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - «Cambiar fechas» (W-08): desplaza n días o lleva a una fecha nueva la selección por etapas, recalcula la fecha de necesidad y avisa a Logística con una actividad en los requerimientos y OC desfasados.
 - Revertir un avance validado baja el estado del módulo; los botones del árbol «Asignar cuadrilla» y «Cambiar fechas» quedan activos.
 
-## 5.20261010 — 10/10/2026
+## 20261010.5 — 10/10/2026
 
 - Contratas (fase 5, P-05 a P-07 y P-09): «Asignar contrata» con tarifa vigente, monto y retención por actividad; pone la contrata en las líneas y suma el alcance a la OC de servicio de la contrata en la obra.
 - Avance reportado (AVN) por driver con fotos obligatorias, «Registrar avance» con el saldo por módulo o ambiente y la tolerancia del plan, y «Avances por validar» por obra, contrata y semana.
@@ -311,7 +311,7 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - Liquidación semanal (fase 6, P-08): LIQ por contrata, obra y semana con acción programada en el día de liquidación, aprobación de la jefatura, recepción en la OC y factura con vencimiento el día de pago; «Pagada» con la factura pagada.
 - Semana de la obra configurable (inicio, liquidación y pago) con valores por defecto en Ajustes; feriados al día hábil anterior; el plan no se cierra con liquidaciones pendientes.
 
-## 4.20261010 — 10/10/2026
+## 20261010.4 — 10/10/2026
 
 - Asignaciones y compras (fase 4, P-10 y P-11): cada documento generado desde el plan guarda qué parte corresponde a cada línea; lo comprado, despachado y consumido se reparte por fecha de necesidad.
 - Pedido, comprado, despachado, consumido, saldo, comprometido, real y estado calculado de cada línea (excedida, completa, en compra, parcial, planificada).
@@ -319,20 +319,20 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 - Control de exceso al solicitar la aprobación del requerimiento de obra y al confirmar la OF, según la política del plan, con justificación y revisión adicional de la jefatura (W-10).
 - Menú «Abastecimiento»; las asignaciones abiertas pasan a la versión nueva y el plan no se cierra con documentos abiertos.
 
-## 3.20261010 — 10/10/2026
+## 20261010.3 — 10/10/2026
 
 - Línea base (fase 3, P-03): flujo del plan con «Solicitar aprobación», aprobación por niveles (reglas de aprobación), rechazo a borrador y cierre.
 - La aprobación crea el presupuesto analítico (una línea por combinación de cuentas), congela los montos y deja la versión anterior en «Reemplazado».
 - Asistentes «Aplicar costo» (último precio, ponderado de 3 o 6 meses o manual, con su fecha) y «Nueva versión» (todo o solo saldos, con motivo).
 - Pestaña «Resumen por etapa» y menú «Análisis del plan» con pivote y gráfico.
 
-## 2.20261010 — 10/10/2026
+## 20261010.2 — 10/10/2026
 
 - Árbol de recursos (fase 2, P-02): obra › piso › departamento › ambiente › módulo cargado por niveles, con módulos, ML y montos de cada nivel.
 - Selección en cascada con barra de resumen y panel de recursos acumulados de la selección; filtros por etapa, tipo de recurso, estado del módulo y contrata.
 - Botón «Árbol de recursos» en el plan; el menú «Árbol de la obra» pasa a llamarse «Tareas de la obra».
 
-## 1.20261010 — 10/10/2026
+## 20261010.1 — 10/10/2026
 
 - Primera versión (fase 1): niveles de obra en las tareas, tipologías con módulos, actividades y lista de materiales, actividades y tarifas de contrata, etapa de consumo en la BOM, plan de recursos con versiones y el asistente «Generar plan» con vista previa y advertencias.
 - Ícono propio en el menú principal: edificio de pisos con las barras de su plan.

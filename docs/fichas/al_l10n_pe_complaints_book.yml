@@ -158,50 +158,50 @@ faq:
       art. 12.
 
 novedades:
-  - version: '11.20261027'
+  - version: '20261027.11'
     fecha: 27/10/2026
     cambios:
       - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
-  - version: '10.20261027'
+  - version: '20261027.10'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 9.20261013
+  - version: '20261013.9'
     fecha: 13/10/2026
     cambios:
       - "Ícono propio de la app «Libro de reclamaciones» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo."
-  - version: 8.20261011
+  - version: '20261011.8'
     fecha: 11/10/2026
     cambios:
       - "Hoja de reclamación y aviso del libro con el formato común de los documentos impresos (al_report_base): encabezado con el recuadro R.U.C./hoja/número, secciones en tablas con borde redondeado y pie con la numeración; textos y secciones legales sin cambios."
-  - version: 7.20261009
+  - version: '20261009.7'
     fecha: 09/10/2026
     cambios:
       - "Ícono propio en el menú principal (libro abierto con un signo de admiración), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Soporte; en Aplicaciones sigue el ícono nativo."
-  - version: 6.20261009
+  - version: '20261009.6'
     fecha: 09/10/2026
     cambios:
       - "Etiquetas más cortas en el reclamo: «Fecha de respuesta», «Tipo según el consumidor», «Confirmado por el consumidor», «N.º de hoja de respaldo»; en el libro, «Domicilio». El detalle pasa a la ayuda (?)."
-  - version: 5.20261008
+  - version: '20261008.5'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po."
-  - version: 4.20261008
+  - version: '20261008.4'
     fecha: 08/10/2026
     cambios:
       - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
-  - version: 3.20261008
+  - version: '20261008.3'
     fecha: 08/10/2026
     cambios:
       - "«Obligada al SIREC» es del RUC: las sucursales usan el valor de su raíz."
       - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
-  - version: 2.20261008
+  - version: '20261008.2'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
       - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
-  - version: 1.20261006
+  - version: '20261006.1'
     fecha: 06/10/2026
     cambios:
       - "Primera versión: libros por establecimiento, formulario web sin registro, constancia en PDF, plazo de 15 días hábiles con feriados, oferta de solución, respuesta, SIREC, aviso del Anexo II y multicompañía."

@@ -23,7 +23,7 @@ configuracion:
 - La entrega a rendir o la caja chica va a nombre del contacto del residente.
 requisitos_nota: Se instala automáticamente con `al_construction_portal` y `al_l10n_pe_cash_fund`.
 novedades:
-- version: '1.20261107'
+- version: '20261107.1'
   fecha: 07/11/2026
   cambios:
   - "Puente nuevo (paquete 6, CR-55): comprobantes pagados con el fondo del residente desde el portal de obra, rendición y saldo; sirve con o sin ficha de empleado."

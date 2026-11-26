@@ -28,7 +28,7 @@ sigue el flujo nativo y se descarga.
     'website': 'https://www.altabpo.com',
     'category': 'OL-TOOLS/Apps',
     'icon': '/al_report_preview/static/description/icon.png',
-    'version': '1.20261126',
+    'version': '20261126.1',
     'license': 'OPL-1',
     'depends': ['web', 'base_setup'],
     'data': [

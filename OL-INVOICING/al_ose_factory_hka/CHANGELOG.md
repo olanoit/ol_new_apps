@@ -2,31 +2,31 @@ Historial de cambios — PE - OSE The Factory HKA (AL)
 ====================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_ose_factory_hka.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 5.20261027 — 27/10/2026
+## 20261027.5 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 4.20261012 — 12/10/2026
+## 20261012.4 — 12/10/2026
 
 - La firma por The Factory HKA usa el tipo del comprobante que se envía (20 para el CRE, 40 para el comprobante de percepción de al_l10n_pe_perception) en lugar de fijar el 20.
 
-## 3.20261011 — 11/10/2026
+## 20261011.3 — 11/10/2026
 
 - La reversión del CRE, su plantilla RR y su correlativo pasan a al_l10n_pe_retention (comunes a todos los operadores); este módulo solo decide si la firma, el envío y la reversión van por The Factory HKA. El correlativo RR sigue donde estaba.
 
-## 2.20261010 — 10/10/2026
+## 20261010.2 — 10/10/2026
 
 - Baja de las notas vinculadas a boletas con el resumen diario (RC 1.1, estado 3) que exige SUNAT, en lugar de la comunicación de baja (RA); una baja no mezcla facturas y documentos de boleta ni fechas de emisión distintas.
 - Aviso en el historial cuando una factura o su nota se envía fuera del plazo de SUNAT (tercer día calendario siguiente a la emisión, R.S. 000003-2023/SUNAT).
 - Observaciones del CDR (comprobante aceptado con observaciones) listadas en el historial del comprobante.
 - Documentación funcional del módulo (página «OSE Factory HKA» del sitio de documentación).
 
-## 1.20261009 — 09/10/2026
+## 20261009.1 — 09/10/2026
 
 - Migrado de 17.0 (al_ose_factory_hka y al_ose_factory_hka_retention, unificados): The Factory HKA como operador de l10n_pe_edi con los servicios comunes de Odoo 19 (envío, consulta del CDR y comunicación de baja); el número del archivo en 8 dígitos; sin credenciales o sin WSDL de producción el comprobante queda pendiente con el motivo.
 - Comprobante de retención (CRE) de al_l10n_pe_retention por HKA y su reversión desde el pago (resumen RR: envío del resumen y consulta del ticket).

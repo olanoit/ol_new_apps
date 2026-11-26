@@ -23,95 +23,95 @@ configuracion:
 requisitos_nota: Requiere Enterprise y los módulos OCA de requerimientos de compra y de aprobación
   por niveles. Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
-- version: '26.20261101'
+- version: '20261101.26'
   fecha: 01/11/2026
   cambios:
     - "Paquete 1.16: pruebas de las cuatro etapas (base común, requerimiento y analítica, Cronograma y mueble completo) y de la categoría de los productos de módulo."
-- version: '23.20261027'
+- version: '20261027.23'
   fecha: 27/10/2026
   cambios:
     - "Paquete 1.12: pruebas de costo por etapa, reposición a planta y modalidad de ejecución; el ejemplo de la demostración paga sus actividades a contratas."
-- version: '22.20261027'
+- version: '20261027.22'
   fecha: 27/10/2026
   cambios:
     - "Ícono nuevo: el isotipo de ALTA."
-- version: '21.20261023'
+- version: '20261023.21'
   fecha: 25/10/2026
   cambios:
     - "Pruebas del paquete 1.11 v3 (M111-21, M111-22, M111-23 y detalles del 24-oct) y del 1.7 parte 2 (M17-18 y M17-25), con usuarios sin administración; instala el puente al_construction_planner_mrp_request."
-- version: '20.20261023'
+- version: '20261023.20'
   fecha: 24/10/2026
   cambios:
   - "La prueba del libro de carga incluye la pestaña PLAN (requerimiento CREVAL v1.0, 6.7)."
-- version: '19.20261023'
+- version: '20261023.19'
   fecha: 24/10/2026
   cambios:
   - "Pruebas de la bolsa de herramientas, las capas de la cotización y el libro de APU y presupuesto (requerimiento CREVAL v1.0, 6.1, 6.5 y 6.6)."
-- version: '18.20261023'
+- version: '20261023.18'
   fecha: 24/10/2026
   cambios:
   - "Prueba de la valorización al cliente por avance de la partida con gastos generales, utilidad y descuento en proporción (correcciones CR-01 y CR-12)."
-- version: '17.20261023'
+- version: '20261023.17'
   fecha: 24/10/2026
   cambios:
   - "Corrección CR-08 de la prueba CREVAL: la prueba del re-trabajo marca el pago con su motivo antes de liquidarlo."
-- version: '16.20261023'
+- version: '20261023.16'
   fecha: 23/10/2026
   cambios:
   - "Requerimiento CREVAL v1.0: las pruebas de aprobadores siguen a los grupos en dos ejes (la regla cita Ejecución: aprueba, que la jefatura y el administrador incluyen)."
-- version: '15.20261023'
+- version: '20261023.15'
   fecha: 23/10/2026
   cambios:
   - "Pruebas de los retazos (paquete 1.11, M111-12, fase B): cubrir y quitar retazo, declarar sobrantes con devolución, lote y costo, exceso de lo declarado y exigencia antes de terminar; la orden redondeada se termina sin aviso de consumo."
-- version: '14.20261023'
+- version: '20261023.14'
   fecha: 23/10/2026
   cambios:
   - "Pruebas de las planchas enteras (paquete 1.11, M111-12, fase A): redondeo al confirmar, varias líneas del mismo tablero, tolerancia, orden por abastecimiento, cambio de cantidad, reserva y validación en enteros, compra y comparación con la necesidad."
-- version: '13.20261021'
+- version: '20261021.13'
   fecha: 21/10/2026
   cambios:
   - "Pruebas del despacho por unidad con material sin departamento y con productos de módulo."
-- version: '12.20261021'
+- version: '20261021.12'
   fecha: 21/10/2026
   cambios:
   - "Prueba del departamento tomado de las líneas del requerimiento en el despacho a obra por unidad."
-- version: '11.20261021'
+- version: '20261021.11'
   fecha: 21/10/2026
   cambios:
   - "Prueba de que la solicitud de una versión nueva del plan muestra 0 %."
-- version: '10.20261021'
+- version: '20261021.10'
   fecha: 21/10/2026
   cambios:
   - "Pruebas del paquete 1.11 (M111-02 a M111-06), con una que revisa que ninguna vista del planificador use funciones que el navegador no evalúa."
-- version: '9.20261019'
+- version: '20261019.9'
   fecha: 19/10/2026
   cambios:
   - "Pruebas del paquete 1.10 (fabricación por etapas, despacho por departamento, lote, motivo de posventa y aprobaciones en bloque)."
-- version: '8.20261018'
+- version: '20261018.8'
   fecha: 18/10/2026
   cambios:
   - "Las reglas de aprobación de ejemplo ya no llevan el prefijo «[DEMO]»."
-- version: '7.20261017'
+- version: '20261017.7'
   fecha: 17/10/2026
   cambios:
   - "Los datos de demostración se instalan en una base nueva: las reglas de aprobación de ejemplo apuntaban a un modelo y un grupo sin el prefijo de `al_construction_planner`."
-- version: '6.20261017'
+- version: '20261017.6'
   fecha: 17/10/2026
   cambios:
   - "Pruebas de accesorios con la orden que ya trae los accesorios de su lista de materiales."
-- version: '5.20261017'
+- version: '20261017.5'
   fecha: 17/10/2026
   cambios:
   - "Instala también `al_construction_planner_production`; pruebas de accesorios de armado y presupuestado frente a real (M19-02 y M19-05)."
-- version: '4.20261017'
+- version: '20261017.4'
   fecha: 17/10/2026
   cambios:
   - "Instala también `al_construction_planner_approvals_mrp`; pruebas del exceso en la orden de fabricación (M19-04)."
-- version: '3.20261017'
+- version: '20261017.3'
   fecha: 17/10/2026
   cambios:
   - "Instala también `al_construction_planner_approvals`; pruebas del paquete 1.9 (aprobaciones en la aplicación Aprobaciones y ambiente medido)."
-- version: '2.20261013'
+- version: '20261013.2'
   fecha: 15/10/2026
   cambios:
   - Instala también `al_construction_planner_sale_furniture`; pruebas de operación nativa
@@ -119,7 +119,7 @@ novedades:
     sobre la demo.
   - 'Obra de prueba de la contrata eléctrica: tablero con dos sistemas y cuatro partidas,
     compra masiva por partida, contrata de cableado por punto y control por tablero y sistema.'
-- version: '1.20261013'
+- version: '20261013.1'
   fecha: 15/10/2026
   cambios:
   - 'Módulo nuevo (v1.7, M17-07): reúne los puentes y las pruebas de integración.'

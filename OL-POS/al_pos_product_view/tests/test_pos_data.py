@@ -44,7 +44,7 @@ class TestPosProductViewData(TestPoSCommon):
         arch = etree.parse(path)
         self.assertTrue(arch.xpath("//div[@t-if='alShowFinancials']"))
 
-    # --- Stock en vivo y filtros del catálogo (9.20261027) --------------------
+    # --- Stock en vivo y filtros del catálogo (20261027.9) --------------------
     def _alpv_product(self, name, **vals):
         return self.env['product.product'].create({
             'name': name, 'available_in_pos': True, **vals,

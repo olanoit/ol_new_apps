@@ -28,19 +28,19 @@ configuracion:
   - "Configure los diarios de boleta y factura del TPV y el método de pago con QR."
 
 novedades:
-  - version: '4.20261027'
+  - version: '20261027.4'
     fecha: 27/10/2026
     cambios:
       - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261017
+  - version: '20261017.2'
     fecha: 17/10/2026
     cambios:
       - "Instala también el tema del TPV (al_pos_theme): nombre, logo y colores propios en la caja."
-  - version: 1.20261017
+  - version: '20261017.1'
     fecha: 17/10/2026
     cambios:
       - "Primera versión del paquete de industria."

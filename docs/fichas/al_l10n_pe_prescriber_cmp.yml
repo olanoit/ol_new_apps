@@ -25,19 +25,19 @@ funcionalidades:
   - "Consejo regional, fecha y responsable de la verificación."
 
 novedades:
-  - version: '4.20261027'
+  - version: '20261027.4'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 3.20261018
+  - version: '20261018.3'
     fecha: 18/10/2026
     cambios:
       - "Datos de demostración: colegiaturas verificadas en el portal del CMP con su consejo regional."
-  - version: 2.20261018
+  - version: '20261018.2'
     fecha: 18/10/2026
     cambios:
       - "El portal del CMP pasó a conoceatumedico.cmp.org.pe con inicio de sesión y reCAPTCHA: la consulta automática se reemplaza por la apertura del portal y la verificación registrada."
-  - version: 1.20261018
+  - version: '20261018.1'
     fecha: 18/10/2026
     cambios:
       - "Primera versión: consulta automática del portal antiguo."

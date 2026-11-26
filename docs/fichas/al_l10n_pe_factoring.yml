@@ -260,19 +260,19 @@ campos:
       - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
-  - version: '11.20261027'
+  - version: '20261027.11'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 10.20261018
+  - version: '20261018.10'
     fecha: 21/10/2026
     cambios:
       - "Una factura cedida con recurso tampoco se puede pagar desde sus apuntes, un pago múltiple ni una aplicación de documentos."
-  - version: 9.20261018
+  - version: '20261018.9'
     fecha: 18/10/2026
     cambios:
       - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
-  - version: 8.20261013
+  - version: '20261013.8'
     fecha: 13/10/2026
     cambios:
       - "Contratos de factoring por factor: adelanto, TEA, días mínimos, comisión (% con mínimo, fija e IGV), gastos, cuenta del factor, línea de crédito y límite por cliente, con lo usado y lo disponible."
@@ -281,19 +281,19 @@ novedades:
       - "Factura negociable en la factura: conformidad presunta automática a los 8 días (tarea diaria con aviso 2 días antes), anotación en CAVALI, tenedor, fecha de pago e historial de eventos con orden validado."
       - "CAVALI: paquete para el formulario masivo de Factrack (XML e información adicional), importación de estados y servicios web configurables con registro de envíos (registro, transferencia, pago, reprogramación, conformidad y consulta)."
       - "Notificación al cliente en PDF por correo; cobro recibido por la empresa y transferencia al factor; prórroga del vencimiento; archivo de la cesión en Excel; desembolsos parciales."
-  - version: 7.20261012
+  - version: '20261012.7'
     fecha: 12/10/2026
     cambios:
       - "Menú en Perú ▸ Clientes ▸ Factoring; análisis y costo financiero en Informes ▸ Análisis."
-  - version: 6.20261012
+  - version: '20261012.6'
     fecha: 12/10/2026
     cambios:
       - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): factor, cliente y tres operaciones: sin recurso desembolsada, con recurso desembolsada con intereses devengados y una en borrador."
-  - version: 5.20261011
+  - version: '20261011.5'
     fecha: 11/10/2026
     cambios:
       - "El neto pendiente de la factura cedida usa la misma regla de retención que el comprobante impreso y el XML: entre agentes de retención no se retiene."
-  - version: 4.20261010
+  - version: '20261010.4'
     fecha: 10/10/2026
     cambios:
       - "Factura negociable (DU 013-2020): conformidad expresa o presunta (8 días calendario) o disconformidad, que impide ceder; fecha de anotación en CAVALI; aviso si la factura es al contado."
@@ -302,16 +302,16 @@ novedades:
       - "Comisión facturada por el factor: se elige su factura de proveedor y el descuento la paga (el IGV queda como crédito fiscal en ella)."
       - "Sin recurso: pérdida del retenido no liberado (6741). Con recurso en moneda extranjera: la obligación se cancela al cambio histórico y la diferencia va a diferencia de cambio."
       - "Costo financiero por operación y menú Perú ▸ Factoring ▸ Costo financiero."
-  - version: 3.20261010
+  - version: '20261010.3'
     fecha: 10/10/2026
     cambios:
       - "Una factura cedida que sigue pendiente no se puede pagar con «Pagar» (la cobra el factor): aviso en la factura y el cobro se registra desde la operación."
-  - version: 2.20261010
+  - version: '20261010.2'
     fecha: 10/10/2026
     cambios:
       - "Con recurso la factura ya no se da por pagada al cederla: sigue pendiente en la cuenta del cliente (NIIF 9), en su saldo, vencimientos y recordatorios, y queda pagada con el cobro del factor; la recompra solo devuelve el adelanto."
       - "Datos de demostración «DEMO FAC» (tools/factoring_demo_data.py) y capturas de la ficha."
-  - version: 1.20261010
+  - version: '20261010.1'
     fecha: 10/10/2026
     cambios:
       - "Primera versión: operaciones de factoring con y sin recurso sobre las facturas de cliente (cesión, desembolso, devengo de intereses, cobro del factor y recompra), cuentas del PCGE por modalidad y moneda, «Ceder a factoring» desde la lista de facturas, pestaña Factoring en la factura y menú Perú ▸ Factoring con análisis."

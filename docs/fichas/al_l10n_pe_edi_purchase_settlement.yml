@@ -247,23 +247,23 @@ faq:
       avisa si ya pasan de 75 UIT.
 
 novedades:
-  - version: '5.20261027'
+  - version: '20261027.5'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 4.20261018
+  - version: '20261018.4'
     fecha: 18/10/2026
     cambios:
       - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
-  - version: 3.20261012
+  - version: '20261012.3'
     fecha: 12/10/2026
     cambios:
       - "Menú en Perú ▸ Proveedores ▸ Comprobantes."
-  - version: 2.20261012
+  - version: '20261012.2'
     fecha: 12/10/2026
     cambios:
       - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): productora de café sin RUC y dos liquidaciones de compra (una confirmada por enviar y otra en borrador), sin enviar nada a SUNAT."
-  - version: 1.20261011
+  - version: '20261011.1'
     fecha: 11/10/2026
     cambios:
       - "Liquidación de compra electrónica (tipo 04): diario con serie L###, retención del IGV y de la renta (1,5 %, 4 % en el oro, nada hasta S/ 700) e importe total neto."

@@ -46,7 +46,7 @@ faq:
       El cierre usa un costo en destino sobre las órdenes: Odoo reparte el
       cargo entre el inventario que queda y el costo de ventas de lo vendido.
 novedades:
-- version: '1.20261029'
+- version: '20261029.1'
   fecha: 29/10/2026
   cambios:
   - "Primera versión: costo hora desde la planilla, importar tareo, cierre de costos del mes (ajuste de mano de obra y bolsas de CIF) y costo por elemento."

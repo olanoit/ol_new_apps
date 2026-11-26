@@ -80,15 +80,15 @@ requisitos_nota: >-
   a internet en la caja.
 
 novedades:
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261014
+  - version: '20261014.2'
     fecha: 16/10/2026
     cambios:
       - "Sin token configurado, el TPV dice que la consulta de RUC o DNI no está configurada, en vez de «no se encontraron datos»."
-  - version: 1.20261014
+  - version: '20261014.1'
     fecha: 14/10/2026
     cambios:
       - "Primera versión: crear el cliente del TPV desde su RUC o DNI con los datos de SUNAT, sin duplicados."

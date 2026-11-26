@@ -206,40 +206,40 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
-  - version: '17.20261027'
+  - version: '20261027.17'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '16.20261019'
+  - version: '20261019.16'
     fecha: 19/10/2026
     cambios:
       - "Las tarjetas de regalo y las recargas del monedero ya no llevan el impuesto inafecto: no entran en el comprobante (Informe SUNAT 097-2010). Lo hace el nuevo módulo al_l10n_pe_pos_loyalty, que se instala solo."
       - "El ticket con formato de comprobante admite líneas, pagos y notas que otros módulos ajustan para que diga lo mismo que el comprobante."
-  - version: '15.20261018'
+  - version: '20261018.15'
     fecha: 18/10/2026
     cambios:
       - "También la recarga del monedero electrónico de Odoo lleva el impuesto inafecto, aunque no haya un programa de monedero."
-  - version: '14.20261018'
+  - version: '20261018.14'
     fecha: 18/10/2026
     cambios:
       - "Las tarjetas de regalo y las recargas del monedero llevan el impuesto inafecto: sin impuesto la boleta no se emitía y una venta cobrada con Niubiz o Culqi quedaba pagada pero sin cerrar en la caja."
-  - version: 13.20261008
+  - version: '20261008.13'
     fecha: 14/10/2026
     cambios:
       - "Con el pago en línea del TPV (QR que el cliente paga en su teléfono), el ticket ya no deja el TPV en blanco: el encabezado de l10n_pe_edi_pos leía la factura antes de que llegara."
-  - version: 12.20261008
+  - version: '20261008.12'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
-  - version: 11.20261008
+  - version: '20261008.11'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 10.20261007
+  - version: '20261007.10'
     fecha: 07/10/2026
     cambios:
       - "«Emisión SUNAT retenida» pasa a «Facturación PE ▸ Comprobante electrónico»."
-  - version: 9.20261007
+  - version: '20261007.9'
     fecha: 07/10/2026
     cambios:
       - "Corregido: se podía emitir factura a un cliente con 11 dígitos cuyo tipo de documento no es RUC (SUNAT la rechaza); ahora se exige el tipo RUC en caja y en el servidor."
@@ -247,11 +247,11 @@ novedades:
       - "El ticket muestra todos los totales del XML (ISC, IVAP, gratuitas, exportación, otros tributos) y la tasa real del IGV."
       - "Si el comprobante electrónico no llegó a emitirse, el ticket lo indica y no muestra un número inventado."
       - "El QR del ticket usa el documento de la empresa cliente, como el XML."
-  - version: 8.20261006
+  - version: '20261006.8'
     fecha: 06/10/2026
     cambios:
       - "Corregido: una boleta elegida en caja para un cliente con RUC salía como factura (tipo 01) numerada en la serie de boletas, y SUNAT la rechazaba (error 1001). Ahora el tipo de comprobante es siempre el elegido en caja."
-  - version: 7.20260721
+  - version: '20260721.7'
     fecha: 27/09/2026
     cambios:
       - "Devoluciones: la nota de crédito de una factura se emite en el diario de facturas (antes caía en el de boletas); devolver un «Recibo» sin comprobante ya no genera un comprobante electrónico."

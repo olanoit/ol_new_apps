@@ -33,7 +33,7 @@ El asiento contable no cambia: todo ocurre al generar el XML.
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_edi_downpayment_discount/static/description/icon.png',
-    'version': '6.20261027',
+    'version': '20261027.6',
     'license': 'OPL-1',
     'countries': ['pe'],
     # sale: los anticipos nacen del asistente de facturación del pedido

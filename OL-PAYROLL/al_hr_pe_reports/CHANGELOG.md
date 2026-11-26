@@ -2,80 +2,80 @@ Historial de cambios — Planillas Perú - Documentos y bancos (AL)
 ================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 24.20261027 — 27/10/2026
+## 20261027.24 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 23.20261012 — 12/10/2026
+## 20261012.23 — 12/10/2026
 
 - Pagos masivos bancarios pasa a Recibos de nómina ▸ Pagos y contabilidad; plantillas de contrato en Configuración ▸ Tipos y plantillas.
 
-## 22.20261011 — 11/10/2026
+## 20261011.22 — 11/10/2026
 
 - Boleta de pago, certificado de trabajo, carta de retiro CTS, certificado de rentas de 5.ª categoría y contrato de trabajo con el formato del comprobante A4 de la suite (al_report_base): encabezado con logo, datos de la compañía y recuadro del documento, tablas en blanco y negro con cabecera gris y pie con la compañía y «Página X de Y».
 - La boleta conserva todos sus datos (trabajador, días y horas, suspensiones, ingresos y descuentos enfrentados, neto en letras, aportes del empleador, firmas y nota del D.S. 001-98-TR); el neto va en un recuadro destacado y el periodo en el recuadro del documento.
 - Las tablas del cuerpo del contrato (p. ej. la de firmas) ya no salen con bordes fantasma.
 
-## 21.20261009 — 09/10/2026
+## 20261009.21 — 09/10/2026
 
 - Chatter en el pago masivo bancario (TXT): historial de diario, fecha de pago y estado.
 - El contador de pagos masivos del lote se llama «N.º de pagos masivos» (ya no repite la etiqueta de la lista).
 
-## 20.20261008 — 08/10/2026
+## 20261008.20 — 08/10/2026
 
 - Pago masivo finalizado: nombre, cuenta de cargo y configuración del banco de solo lectura, como el diario, la fecha y la glosa.
 
-## 19.20261008 — 08/10/2026
+## 20261008.19 — 08/10/2026
 
 - Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.
 
-## 18.20261008 — 08/10/2026
+## 20261008.18 — 08/10/2026
 
 - Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
 
-## 17.20261008 — 08/10/2026
+## 20261008.17 — 08/10/2026
 
 - Cifrado de la boleta y diarios de pago masivo en Ajustes ▸ Nómina ▸ Perú.
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
 
-## 16.20261008 — 08/10/2026
+## 20261008.16 — 08/10/2026
 
 - Métodos de botón con la convención de Odoo (action_print_certificate, action_print_letter, action_generate_multipayment, action_open_multipayments).
 
-## 15.20261008 — 08/10/2026
+## 20261008.15 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
 - La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
 
-## 14.20261008 — 08/10/2026
+## 20261008.14 — 08/10/2026
 
 - Certificado de quinta: el año se elige de una lista.
 - La plantilla de contrato del trabajador pasa a «Planilla PE ▸ Contrato de trabajo»; título en la plantilla; nombre legible en las líneas de pago masivo; estados con insignia.
 
-## 13.20261007 — 07/10/2026
+## 20261007.13 — 07/10/2026
 
 - Opción para cifrar la boleta enviada por correo con el número de documento del trabajador (Parámetros principales ▸ Envío de boletas), como en v18. La impresión no cambia.
 
-## 12.20261007 — 07/10/2026
+## 20261007.12 — 07/10/2026
 
 - El enlace de confirmación de la boleta caduca a los 90 días del envío; reenviar la boleta lo renueva.
 
-## 11.20261007 — 07/10/2026
+## 20261007.11 — 07/10/2026
 
 - Certificado de 5ta: el impuesto a la renta se calcula con la escala progresiva sobre la renta imponible (antes copiaba la retención) y el saldo por regularizar muestra la diferencia real, también con retenciones de otros empleadores.
 
-## 10.20261007 — 07/10/2026
+## 20261007.10 — 07/10/2026
 
 - TXT bancarios: Interbank en dólares ya no multiplica el total de cabecera; los haberes con cuenta de cargo en otra moneda se convierten a la fecha de pago; BBVA CTS usa el tipo de proceso configurado; el checksum de BCP CTS cuenta solo las cuentas del archivo; Scotiabank limpia los nombres antes de ajustarlos, usa el mismo tipo de documento en CTS y valida cuentas de 10 dígitos sin guiones.
 - Una boleta con neto negativo (adelanto o préstamo mayor que el ingreso) ya se puede imprimir y enviar.
 
-## 9.20260925 — 27/09/2026
+## 20260925.9 — 27/09/2026
 
 - El TXT bancario solo paga boletas validadas o pagadas, no se puede generar con el lote aún abierto y deja fuera las cuentas en una moneda distinta a la de la cuenta de cargo.
 - La cabecera del TXT cuenta solo a los trabajadores que se pagan, así el banco no rechaza el archivo cuando alguien tiene neto cero; generar de nuevo reemplaza el archivo anterior.
@@ -90,24 +90,24 @@ Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 
 - El bloque de contrato de la ficha del trabajador se restringe al personal de nómina.
 
-## 7.20260827 — 27/08/2026
+## 20260827.7 — 27/08/2026
 
 - El TXT de Interbank vuelve a salir con el formato completo de 380 caracteres por línea.
 
-## 6.20260816 — 18/08/2026
+## 20260816.6 — 18/08/2026
 
 - Nueva boleta de pago rediseñada.
 - Plantillas de contrato en Configuración ▸ Perú ▸ Documentos y Pagos masivos bancarios al final del menú de Nómina.
 
-## 4.20260802 — 03/08/2026
+## 20260802.4 — 03/08/2026
 
 - Un solo botón de impresión para la boleta en todos los caminos.
 - Neto y sobretiempo correctos en regímenes con estructura propia.
 
-## 3.20260722 — 26/07/2026
+## 20260722.3 — 26/07/2026
 
 - TXT bancario desde el lote: neto de la regla configurada y sin error por el número de boleta.
 
-## 2.20260722 — 25/07/2026
+## 20260722.2 — 25/07/2026
 
 - Primera versión en Odoo 19: boleta, certificados, contratos y pago masivo bancario.

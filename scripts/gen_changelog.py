@@ -21,7 +21,7 @@ FICHAS = REPO_ROOT / 'docs' / 'fichas'
 
 
 class _Loader(yaml.SafeLoader):
-    """Lee los números como texto: ``version: 4.20260810`` no debe perder el
+    """Lee los números como texto: ``version: 20260810.10`` no debe perder el
     cero final al convertirse en float."""
 
 
@@ -46,7 +46,7 @@ def build(module_dir, ficha):
     lines = [
         title, '=' * len(title), '',
         'Una entrada por versión publicada, la más reciente arriba; el número es',
-        'el `version` de `__manifest__.py` (`N.AAAAMMDD`).', '',
+        'el `version` de `__manifest__.py` (`AAAAMMDD.N`).', '',
         f'Generado desde `docs/fichas/{ficha.name}` (sección `novedades`) con',
         '`python3 scripts/gen_changelog.py`: no editar a mano.',
     ]

@@ -2,32 +2,32 @@ Historial de cambios — PE - Depósitos a plazo y garantías (AL)
 ==============================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_l10n_pe_term_deposit.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 7.20261028 — 28/10/2026
+## 20261028.7 — 28/10/2026
 
 - La tasa y la cuenta del ITF de los depósitos tienen etiqueta propia y ya no se confunden con las del módulo del ITF en los filtros y en Ajustes.
 
-## 6.20261027 — 27/10/2026
+## 20261027.6 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 5.20261018 — 18/10/2026
+## 20261018.5 — 18/10/2026
 
 - Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
 
-## 4.20261012 — 12/10/2026
+## 20261012.4 — 12/10/2026
 
 - Menú en Perú ▸ Tesorería ▸ Depósitos y garantías; análisis en Informes ▸ Análisis.
 
-## 3.20261012 — 12/10/2026
+## 20261012.3 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): depósito a plazo con intereses devengados, otro por vencer, fondo en garantía de una carta fianza y depósito en garantía de un alquiler liberado en parte.
 
-## 2.20261010 — 10/10/2026
+## 20261010.2 — 10/10/2026
 
 - ITF (Ley 28194) opcional por depósito sobre el capital en la apertura, la cancelación y la liberación, con tasa y cuenta (6412) en Ajustes; los intereses y la renovación sin dinero nuevo están exonerados (Informe SUNAT 025-2004-SUNAT/2B0000).
 - Penalidad por cancelación anticipada en el asistente: va a su cuenta o rebaja el ingreso por intereses.
@@ -35,6 +35,6 @@ Generado desde `docs/fichas/al_l10n_pe_term_deposit.yml` (sección `novedades`) 
 - Depósitos en moneda extranjera: aviso si sus cuentas no están marcadas para el cierre de tipo de cambio de la suite.
 - Reportes Perú ▸ Tesorería ▸ Cartera vigente (entidad, moneda y mes de vencimiento) e Intereses devengados (por depósito y mes); cada asiento queda enlazado a su depósito.
 
-## 1.20261010 — 10/10/2026
+## 20261010.1 — 10/10/2026
 
 - Primera versión: depósitos a plazo, fondos en garantía y depósitos en garantía entregados con apertura, devengo mensual de intereses (TEA, base 360/365), vencimiento con aviso, cancelación (también anticipada), renovación manual o automática con o sin capitalización y liberación parcial de garantías; menú Perú ▸ Tesorería.

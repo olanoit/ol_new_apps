@@ -224,15 +224,15 @@ faq:
       mismo número.
 
 novedades:
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261012
+  - version: '20261012.2'
     fecha: 12/10/2026
     cambios:
       - "Menú en Perú ▸ Tesorería ▸ Entregas a rendir."
-  - version: 1.20261011
+  - version: '20261011.1'
     fecha: 11/10/2026
     cambios:
       - "Primera versión: entregas a rendir y caja chica con entrega, rendición con facturas de proveedor, planilla de movilidad con tope diario (4 % de la RMV), devolución, reembolso, reposición y cierre conciliado; planilla y liquidación impresas."

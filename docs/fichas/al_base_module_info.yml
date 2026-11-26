@@ -126,15 +126,15 @@ faq:
       como siempre.
 
 novedades:
-  - version: '4.20261027'
+  - version: '20261027.4'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 3.20261026
+  - version: '20261026.3'
     fecha: 26/10/2026
     cambios:
       - "Prueba multicompañía: excepciones justificadas del flujo de caja y del cierre de caja (apuntes de sucursales)."
-  - version: 2.20261008
+  - version: '20261008.2'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."

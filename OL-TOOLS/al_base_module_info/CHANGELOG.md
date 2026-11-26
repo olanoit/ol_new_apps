@@ -2,20 +2,20 @@ Historial de cambios — Aplicaciones - Ficha completa del módulo (AL)
 ====================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_base_module_info.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 4.20261027 — 27/10/2026
+## 20261027.4 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 3.20261026 — 26/10/2026
+## 20261026.3 — 26/10/2026
 
 - Prueba multicompañía: excepciones justificadas del flujo de caja y del cierre de caja (apuntes de sucursales).
 
-## 2.20261008 — 08/10/2026
+## 20261008.2 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - Prueba de control multicompañía para todos los módulos de la suite (reglas, check_company y compañía de solo lectura).

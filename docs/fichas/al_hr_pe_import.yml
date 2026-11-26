@@ -522,41 +522,41 @@ faq:
       cabecera. Parta siempre de la plantilla descargada.
 
 novedades:
-  - version: '12.20261027'
+  - version: '20261027.12'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 11.20261012
+  - version: '20261012.11'
     fecha: 12/10/2026
     cambios:
       - "Importar desde Excel pasa a Configuración ▸ Importar desde Excel."
-  - version: 10.20261011
+  - version: '20261011.10'
     fecha: 11/10/2026
     cambios:
       - "Modo oscuro: la barra y las tarjetas de conteo del progreso de importación toman los tonos del tema oscuro de Odoo; el modo claro no cambia."
-  - version: 9.20261008
+  - version: '20261008.9'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
-  - version: 8.20261008
+  - version: '20261008.8'
     fecha: 08/10/2026
     cambios:
       - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
-  - version: 7.20261008
+  - version: '20261008.7'
     fecha: 08/10/2026
     cambios:
       - "Pruebas al día con los nuevos nombres de los métodos de beneficios."
-  - version: 6.20261008
+  - version: '20261008.6'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
       - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
-  - version: 5.20261007
+  - version: '20261007.5'
     fecha: 07/10/2026
     cambios:
       - "Seguridad: un valor del archivo que empieza por «=» ya no se escribe como fórmula en el Excel de resultados."
-  - version: 4.20260816
+  - version: '20260816.4'
     fecha: 27/09/2026
     cambios:
       - Solo se puede importar en una compañía a la que el usuario tiene acceso.
@@ -565,17 +565,17 @@ novedades:
       - Límite de 20 MB por archivo y 50 000 filas por hoja.
       - Una importación sin avance durante 30 minutos se marca como interrumpida en vez de quedarse «Procesando».
       - El botón «Importar desde Excel» solo aparece a quien puede usar el asistente.
-  - version: 3.20260816
+  - version: '20260816.3'
     fecha: 18/08/2026
     cambios:
       - Menú «Importar desde Excel» al final de Nómina.
-  - version: 2.20260722
+  - version: '20260722.2'
     fecha: 26/07/2026
     cambios:
       - La plantilla se descarga sin guardar el asistente.
       - Opción para adaptar el código de las reglas salariales de la versión anterior.
       - Las asistencias aceptan el documento además del nombre.
-  - version: 1.20260722
+  - version: '20260722.1'
     fecha: 25/07/2026
     cambios:
       - Primera versión para Odoo 19. Motor de importación con progreso en vivo e importadores de planilla.

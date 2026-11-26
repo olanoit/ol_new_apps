@@ -16,15 +16,15 @@ funcionalidades:
   - "Otras presentaciones (blíster, tira) → el código de la unidad del producto (NIU)."
 
 novedades:
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261018
+  - version: '20261018.2'
     fecha: 18/10/2026
     cambios:
       - "Datos de demostración: clientes con DNI (boleta) y RUC (factura)."
-  - version: 1.20261018
+  - version: '20261018.1'
     fecha: 18/10/2026
     cambios:
       - "Primera versión (prototipo E0)."

@@ -28,7 +28,7 @@ Un documento por compañía y periodo con todo lo que se declara en el 621:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_monthly_tax/static/description/icon.png',
-    'version': '5.20261027',
+    'version': '20261027.5',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

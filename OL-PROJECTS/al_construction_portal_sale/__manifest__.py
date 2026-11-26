@@ -26,7 +26,7 @@ cuando llega a Odoo.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_portal_sale/static/description/icon.png',
-    'version': '1.20261107',
+    'version': '20261107.1',
     # LGPL-3 como el portal y el puente de Ventas del planificador.
     'license': 'LGPL-3',
     'countries': ['pe'],

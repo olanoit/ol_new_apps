@@ -2,61 +2,61 @@ Historial de cambios — Planillas Perú - Contabilización (AL)
 ============================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 15.20261104 — 04/11/2026
+## 20261104.15 — 04/11/2026
 
 - Reparto por centro de costo: se reparte solo por el plan de los centros; las claves de otros planes viajan con cada parte y lo que no suma 100 % queda sin centro de costo.
 
-## 14.20261103 — 03/11/2026
+## 20261103.14 — 03/11/2026
 
 - Asiento por centro de costo: las cuentas por pagar ya no llevan analítica, porque su abono anulaba el gasto del centro.
 - Opciones nuevas: una línea de gasto por centro de costo y exigir centro de costo; el asistente avisa qué trabajadores no lo tienen.
 - La provisión mensual reparte el gasto según el tareaje del periodo, como el sueldo.
 
-## 13.20261027 — 27/10/2026
+## 20261027.13 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 12.20261012 — 12/10/2026
+## 20261012.12 — 12/10/2026
 
 - «Asiento de planilla por lote» pasa a Recibos de nómina ▸ Pagos y contabilidad y «Cuentas por condición» a Configuración ▸ Salario; se quita el menú principal «Contabilidad».
 
-## 11.20261010 — 10/10/2026
+## 20261010.11 — 10/10/2026
 
 - Cuentas por condición en las reglas salariales (pestaña Contabilidad de la regla y Nómina ▸ Contabilidad ▸ Cuentas por condición): otra cuenta de cargo o de abono según el tipo de trabajador (T08), el departamento o el centro de costo; gana la fila más específica y lo vacío conserva la cuenta de la regla. Recupera la cuenta por centro de costo de v18.
 - Asiento de planilla por lote con el reparto del tareaje: con «Asiento de lote con analítica», la distribución de cada boleta sale de los días u horas por centro de costo (regla > tareaje > ficha); con cuentas por centro de costo, el importe se parte por centro de costo antes de elegir la cuenta.
 
-## 10.20261008 — 08/10/2026
+## 20261008.10 — 08/10/2026
 
 - Liquidación: el botón «Generar asiento» de cada cesado solo aparece mientras no tiene asiento, y su «No R.» se bloquea al generarlo.
 
-## 9.20261008 — 08/10/2026
+## 20261008.9 — 08/10/2026
 
 - Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.
 
-## 8.20261008 — 08/10/2026
+## 20261008.8 — 08/10/2026
 
 - Diario, contacto, analítica y cuentas de beneficios sociales en Ajustes ▸ Nómina ▸ Perú (por compañía).
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
 
-## 7.20261008 — 08/10/2026
+## 20261008.7 — 08/10/2026
 
 - Métodos de botón con la convención de Odoo (action_load_provisions, action_open_move_wizard, action_generate_move, action_open_move); el asiento se abre con el ícono de Odoo (fa-bars).
 
-## 6.20261008 — 08/10/2026
+## 20261008.6 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
 
-## 5.20261007 — 07/10/2026
+## 20261007.5 — 07/10/2026
 
 - Corregido: si la nómina estándar ya había contabilizado las boletas una por una, el asiento peruano del lote duplicaba el gasto; ahora lo impide y explica cómo configurarlo.
 
-## 4.20260816 — 27/09/2026
+## 20260816.4 — 27/09/2026
 
 - Los asientos de CTS, gratificación, liquidación y provisiones usan siempre las cuentas de la compañía del documento, aunque la compañía activa sea otra; y configurar los parámetros de una compañía ya no cambia las cuentas de otra.
 - El «ajuste por redondeo» solo admite descuadres de céntimos: si falta una cuenta de cargo o de abono, el asiento avisa en lugar de mandar la diferencia a la cuenta de ajuste.
@@ -67,6 +67,6 @@ Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 
 - El menú pasa a llamarse Contabilidad y se ordena al final del flujo de Nómina.
 
-## 2.20260722 — 25/07/2026
+## 20260722.2 — 25/07/2026
 
 - Primera versión en Odoo 19: asiento de planilla por lote por ORM, asientos de beneficios sociales y analítica nativa opcional.

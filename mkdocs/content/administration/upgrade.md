@@ -5,8 +5,9 @@ actualizar el módulo en esa base y reiniciar Odoo.
 
 ## Conceptos
 
-- **Versión** `N.AAAAMMDD`: contador del módulo y fecha del cambio. Odoo la
-  muestra como `19.0.N.AAAAMMDD`.
+- **Versión** `AAAAMMDD.N`: fecha del cambio y contador del módulo. Odoo la
+  muestra como `19.0.AAAAMMDD.N`. Hasta el 26/11/2026 el orden era el inverso
+  (`N.AAAAMMDD`); una base con una versión antigua se actualiza igual.
 - **Novedades**: el `CHANGELOG.md` de cada módulo y las
   [novedades de la suite](../applications/novedades.md) dicen qué cambió en
   cada versión.

@@ -41,55 +41,55 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
-  - version: '13.20261027'
+  - version: '20261027.13'
     fecha: 27/10/2026
     cambios:
       - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
-  - version: '12.20261027'
+  - version: '20261027.12'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '11.20261019'
+  - version: '20261019.11'
     fecha: 19/10/2026
     cambios:
       - "Instala las tarjetas de regalo y el monedero con el criterio de SUNAT: su venta no lleva comprobante y su canje paga la boleta con el IGV completo."
-  - version: '10.20261019'
+  - version: '20261019.10'
     fecha: 19/10/2026
     cambios:
       - "Instala la tienda en línea de la botica (receta validada por el Q.F., genéricos primero) y los convenios con EPS y empresas."
-  - version: '9.20261019'
+  - version: '20261019.9'
     fecha: 19/10/2026
     cambios:
       - "Instala las mejoras de la suite: tratamientos crónicos y recompra, faltantes y sugerido de compra, y fidelización por DNI sin medicamentos con receta."
-  - version: 8.20261018
+  - version: '20261018.8'
     fecha: 18/10/2026
     cambios:
       - "Instala las pasarelas Niubiz y Culqi y el cobro con pasarelas en el TPV: cada una es un método de pago de la caja con su logo."
-  - version: 7.20261018
+  - version: '20261018.7'
     fecha: 18/10/2026
     cambios:
       - "La demostración de la botica se reparte entre los módulos de la suite (cada uno se prueba solo); el paquete agrega las categorías del rubro y los productos no farmacéuticos."
-  - version: 6.20261017
+  - version: '20261017.6'
     fecha: 18/10/2026
     cambios:
       - "Botica de demostración: 14 medicamentos de marcas inventadas (genéricos y de marca, con receta, controlados, insulina), presentaciones, listado de genéricos, médicos y puntos de control."
-  - version: 5.20261017
+  - version: '20261017.5'
     fecha: 18/10/2026
     cambios:
       - "Instala también los controlados (libros y balance) y DIGEMID (Observatorio, genéricos, reacciones adversas, IGV)."
-  - version: 4.20261017
+  - version: '20261017.4'
     fecha: 18/10/2026
     cambios:
       - "Instala también la receta y la dispensación y la consulta del médico en el CMP."
-  - version: 3.20261017
+  - version: '20261017.3'
     fecha: 18/10/2026
     cambios:
       - "Instala la suite de farmacia de OL-HEALTH (maestro, almacenamiento y venta por presentación); sus datos farmacéuticos del producto pasan al maestro y se migran."
-  - version: 2.20261017
+  - version: '20261017.2'
     fecha: 17/10/2026
     cambios:
       - "Instala también el tema del TPV (al_pos_theme): nombre, logo y colores propios en la caja."
-  - version: 1.20261017
+  - version: '20261017.1'
     fecha: 17/10/2026
     cambios:
       - "Primera versión del paquete de industria."

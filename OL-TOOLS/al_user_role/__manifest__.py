@@ -34,7 +34,7 @@
     'category': 'OL-TOOLS/Apps',
     # Amplía Ajustes ▸ Usuarios y compañías: usa el ícono nativo de Ajustes.
     'icon': '/base/static/description/settings.png',
-    'version': '1.20261113',
+    'version': '20261113.1',
     # LGPL-3: adapta código de base_user_role* (OCA, LGPL-3), ver scripts/areas.py.
     'license': 'LGPL-3',
     # web: se hereda ir.http.session_info, definido en web.

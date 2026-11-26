@@ -78,11 +78,11 @@ requisitos_nota: >-
   RENIEC; si no, el cliente escribe su nombre.
 
 novedades:
-  - version: '2.20261027'
+  - version: '20261027.2'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 1.20261014
+  - version: '20261014.1'
     fecha: 14/10/2026
     cambios:
       - "Primera versión: boleta o factura en el checkout y consulta del RUC o DNI que llena el nombre y la dirección."

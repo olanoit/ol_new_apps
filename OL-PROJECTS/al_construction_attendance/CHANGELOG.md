@@ -2,43 +2,43 @@ Historial de cambios — Sedes, marcación y costo de personal de obra (AL)
 ========================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_construction_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 14.20261111 — 16/11/2026
+## 20261111.14 — 16/11/2026
 
 - Quiosco: cinco documentos o PIN errados seguidos lo pausan 10 minutos; la sede muestra hasta cuándo, y cambiar la clave del quiosco levanta la pausa.
 - Rendimiento: «Con asistencia» de los avances consulta solo las contratas, obras y fechas que se muestran, y su filtro se resuelve en la base de datos.
 - Rendimiento: cada marcación rehace los jornales ejecutados de quien marca, no los de toda la obra.
 
-## 7.20261101 — 01/11/2026
+## 20261101.7 — 01/11/2026
 
 - D2: el cierre de costo de mano de obra reparte el costo de cada persona entre las líneas del plan donde trabajó, por sus jornales ejecutados de cuadrilla y con la analítica de cada línea; lo que no tiene turno queda como antes.
 - D2: la pestaña de horas del cierre muestra el reparto por línea del plan.
 
-## 6.20261027 — 27/10/2026
+## 20261027.6 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 5.20261021 — 23/10/2026
+## 20261021.5 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, 4.3: la asistencia pasa a la sección Personal propio de Ejecución en el menú por momento.
 
-## 4.20261021 — 21/10/2026
+## 20261021.4 — 21/10/2026
 
 - Paquete 1.11, M111-01: «Con asistencia» del avance se calcula sin los permisos del usuario, así que la liquidación, la lista de avances y «Avances sin asistencia» abren sin grupos de Nómina; las sedes de obra siguen privadas de Nómina y la obra se lee o exporta sin ese campo.
 
-## 3.20261016 — 16/10/2026
+## 20261016.3 — 16/10/2026
 
 - La asistencia de la cuadrilla actualiza el ejecutado de sus días (v1.8); costo diario por empleado y categoría del rol; sedes de planta y creación automática de la sede de la obra.
 
-## 2.20261013 — 13/10/2026
+## 20261013.2 — 13/10/2026
 
 - La marcación con ubicación (app o quiosco de Odoo) sin sede toma la sede más cercana de la compañía y calcula su distancia y si está fuera de rango.
 
-## 1.20261013 — 13/10/2026
+## 20261013.1 — 13/10/2026
 
 - Sede de obra con ubicación, radio, hora límite de ingreso, etapa por defecto y quiosco de marcación con clave propia.
 - Quiosco para el personal propio y el de las contratas (documento o PIN), con avisos de fuera de hora, fuera del radio y SCTR vencido.

@@ -2,36 +2,36 @@ Historial de cambios — Gantt de Proyectos — Asistente IA (AL)
 =============================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_project_gantt_ai.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 9.20261027 — 27/10/2026
+## 20261027.9 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 8.20261013 — 13/10/2026
+## 20261013.8 — 13/10/2026
 
 - Usa el ícono de la app Gantt de la suite.
 
-## 7.20261011 — 11/10/2026
+## 20261011.7 — 11/10/2026
 
 - Modo oscuro: el panel del asistente, sus mensajes y las propuestas toman los colores del tema oscuro de Odoo (antes quedaban sobre fondo blanco).
 
-## 6.20261010 — 10/10/2026
+## 20261010.6 — 10/10/2026
 
 - Modelo por defecto de Anthropic actualizado a claude-opus-5-5 (el más reciente).
 
-## 5.20261008 — 08/10/2026
+## 20261008.5 — 08/10/2026
 
 - Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.
 
-## 4.20261008 — 08/10/2026
+## 20261008.4 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 
-## 3.20260817 — 27/09/2026
+## 20260817.3 — 27/09/2026
 
 - Desmarcar «Enviar personas asignadas» en los ajustes ahora sí evita que los nombres se envíen al proveedor. Si ya lo había desmarcado, vuelva a guardarlo.
 - El asistente ya no propone cambiar el avance cuando lo calcula Odoo con las horas, ni la fecha de inicio si la instalación no la guarda.

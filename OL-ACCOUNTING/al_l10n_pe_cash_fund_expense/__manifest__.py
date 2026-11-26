@@ -23,7 +23,7 @@ Los gastos sin fondo siguen como en Odoo.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_cash_fund_expense/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '20261027.2',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['hr_expense', 'al_l10n_pe_cash_fund', 'l10n_latam_invoice_document'],

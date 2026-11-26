@@ -20,38 +20,38 @@ configuracion:
 requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
-- version: '9.20261101'
+- version: '20261101.9'
   fecha: 16/11/2026
   cambios:
     - "Seguridad: confirmar una orden de compra que pasa el presupuesto con la marca de «ya revisado» en el contexto ya no se salta el asistente ni la autorización de la jefatura."
     - "Seguridad: el resultado del control de presupuesto de la orden lo escribe el sistema; ya no se puede escribir a mano."
-- version: '8.20261101'
+- version: '20261101.8'
   fecha: 01/11/2026
   cambios:
     - "D3: ajuste «Planes que controla el presupuesto»: la compra se compara solo con las líneas del presupuesto que coinciden en esos planes; vacío, como antes."
     - "M116-05: el presupuesto nativo del plan se rehace con las cuentas actuales (niveles y rubro) sin perder lo comprometido ni lo real."
     - "M116-01: la etapa del consumo que llega sin etapa se elige entre las del perfil de la obra."
-- version: '6.20261027'
+- version: '20261027.6'
   fecha: 27/10/2026
   cambios:
     - "Paquete 1.12, M112-02: el consumo de una orden de obra ya no recibe la primera etapa de fabricación del hook de apuntes: la trae el movimiento."
-- version: '5.20261027'
+- version: '20261027.5'
   fecha: 27/10/2026
   cambios:
     - "Ícono nuevo: el isotipo de ALTA."
-- version: '4.20261016'
+- version: '20261016.4'
   fecha: 26/10/2026
   cambios:
   - "CR-16: el apunte de un consumo sin Fabricación instalada ya no lee la orden de fabricación del movimiento."
-- version: '3.20261016'
+- version: '20261016.3'
   fecha: 24/10/2026
   cambios:
   - "Al cancelar un plan aprobado o en ejecución, su presupuesto analítico queda Cancelado."
-- version: '2.20261016'
+- version: '20261016.2'
   fecha: 16/10/2026
   cambios:
   - "El control de presupuesto usa la política de exceso de material del plan (v1.8, M18-05)."
-- version: '1.20261013'
+- version: '20261013.1'
   fecha: 15/10/2026
   cambios:
   - 'Puente nuevo (v1.7, M17-07): el presupuesto analítico sale del núcleo.'

@@ -29,11 +29,11 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_base_module_info](al_base_module_info/) | 5.20261027 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
-[al_docs_help](al_docs_help/) | 14.20261027 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
-[al_mcp_server](al_mcp_server/) | 11.20261027 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
-[al_report_base](al_report_base/) | 5.20261126 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
-[al_report_preview](al_report_preview/) | 1.20261126 | OPL-1 | Abre los reportes PDF en una pestaña del navegador en vez de descargarlos: todos, o solo los reportes que se elijan.
-[al_user_role](al_user_role/) | 1.20261113 | LGPL-3 | Administra los permisos y menús de los usuarios por roles (perfiles) con vigencia, compañía e historial
-[ol_licencia_perpetua](ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes
+[al_base_module_info](al_base_module_info/) | 20261027.5 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
+[al_docs_help](al_docs_help/) | 20261027.14 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
+[al_mcp_server](al_mcp_server/) | 20261027.11 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
+[al_report_base](al_report_base/) | 20261126.5 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
+[al_report_preview](al_report_preview/) | 20261126.1 | OPL-1 | Abre los reportes PDF en una pestaña del navegador en vez de descargarlos: todos, o solo los reportes que se elijan.
+[al_user_role](al_user_role/) | 20261113.1 | LGPL-3 | Administra los permisos y menús de los usuarios por roles (perfiles) con vigencia, compañía e historial
+[ol_licencia_perpetua](ol_licencia_perpetua/) | 20260717.1 | OPL-1 | Override enterprise subscription for testing purposes
 [//]: # (end addons)

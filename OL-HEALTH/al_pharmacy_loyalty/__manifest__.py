@@ -30,7 +30,7 @@ premios ni canjes, y menos el de los que necesitan receta.
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_loyalty/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '20261027.2',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'pos_loyalty', 'sale_loyalty'],
     'data': ['views/loyalty_program_views.xml'],

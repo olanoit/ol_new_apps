@@ -2,59 +2,59 @@ Historial de cambios — Planificación de obra: aprobaciones (AL)
 ===============================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 12.20261104 — 16/11/2026
+## 20261104.12 — 16/11/2026
 
 - Seguridad: pedir la aprobación de un requerimiento o de un plan con la marca de «ya aprobado» en el contexto ya no se salta la ruta de Aprobaciones; la marca es un objeto del servidor.
 
-## 11.20261104 — 07/11/2026
+## 20261104.11 — 07/11/2026
 
 - Paquete 6, CR-50: la regla 7.4 con Aprobaciones usa el revisor de la opción de la compañía (jefe o residente de la obra). Corrige el envío a Aprobaciones de un requerimiento pedido desde el portal de obra (el nombre del tipo de aprobación se leía con el usuario de portal).
 
-## 10.20261104 — 04/11/2026
+## 20261104.10 — 04/11/2026
 
 - M117-13: categoría propia para el requerimiento interno en Ajustes, y aprobación con nombre «Aprobación de requerimiento interno · documento · área».
 
-## 9.20261031 — 01/11/2026
+## 20261031.9 — 01/11/2026
 
 - M116-03 (M114-02): con «Material fuera del plan» y la obra sin plan, la solicitud cuenta cada línea como material fuera del plan al costo del producto, con la marca «Obra sin plan» y ese resumen.
 - M116-03: con «Pasar al jefe de la obra», el requerimiento sin regla pasa al jefe de la obra también con la aplicación Aprobaciones, igual que con la validación por niveles.
 
-## 8.20261027 — 27/10/2026
+## 20261027.8 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 7.20261021 — 25/10/2026
+## 20261021.7 — 25/10/2026
 
 - Paquete 1.11, M111-21: con «Aplicación Aprobaciones», el requerimiento interno va a Aprobaciones con el jefe del departamento de quien pide o, sin jefe, con el grupo de la opción M111-19 C; sin grupo se aprueba al solicitarlo, como con los niveles.
 
-## 6.20261021 — 23/10/2026
+## 20261021.6 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba). La oficina técnica sale de la selección y equivale a Plan: planificador más Ejecución: valida.
 
-## 5.20261021 — 21/10/2026
+## 20261021.5 — 21/10/2026
 
 - La solicitud de una versión nueva del plan muestra 0 % de exceso: lo que sube frente a la versión vigente solo elige los tramos de la tabla de rutas.
 
-## 4.20261021 — 21/10/2026
+## 20261021.4 — 21/10/2026
 
 - Paquete 1.11, M111-02: el asistente «Rechazar» vuelve a abrir desde la solicitud y desde la lista (la vista usaba len(), que el navegador no evalúa).
 - M111-05: el «Exceso %» de la solicitud es el del documento de origen con su regla (la orden de fabricación según la base del margen de la compañía); el mayor % por material sigue en cada línea.
 - M111-06: presupuestado, ya pedido, saldo y % del requerimiento salen de todas las líneas del plan del material bajo el nivel y la etapa, aunque el pedido ya tenga asignada solo una parte.
 
-## 3.20261019 — 19/10/2026
+## 20261019.3 — 19/10/2026
 
 - Paquete 1.10, M110-07: la lista de Aprobaciones muestra documento, obra, «En el plan», exceso % y cantidad, con filtros «Me toca aprobar» y «Fuera del plan», y aprueba o rechaza en bloque solo las que le tocan al usuario.
 - M110-08: la solicitud muestra presupuestado, ya pedido, saldo, pedido y exceso; con saldo negativo el exceso nunca supera lo pedido. Una solicitud ya aprobada cuyo documento siguió no se rechaza desde Aprobaciones.
 
-## 2.20261017 — 17/10/2026
+## 20261017.2 — 17/10/2026
 
 - Tipo de documento «Orden de fabricación» en la tabla de rutas (con el puente de aprobaciones en fabricación) y los campos de la solicitud se recalculan al crearla.
 
-## 1.20261017 — 17/10/2026
+## 20261017.1 — 17/10/2026
 
 - Puente nuevo (paquete 1.9, M19-03 y M19-07): plan y requerimiento de obra en Aprobaciones, con tabla de rutas, tramos en escalera, aprobadores por grupo, aprobar o rechazar desde el documento y el resultado de vuelta.

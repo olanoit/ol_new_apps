@@ -2,29 +2,29 @@ Historial de cambios — Búsqueda RUC/DNI desde SUNAT
 ===================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 23.20261027 — 27/10/2026
+## 20261027.23 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 22.20261012 — 16/10/2026
+## 20261012.22 — 16/10/2026
 
 - Sin token no se habilita la consulta: el contacto oculta «Actualizar desde API» y avisa qué falta y dónde se configura; los Ajustes dicen si la consulta de RUC o de DNI no podrá funcionar y qué conexiones no tienen token.
 - Cada conexión trae el enlace de registro del proveedor («Registro del token») y avisa en su formulario y en la lista cuando le falta el token.
 
-## 21.20261012 — 14/10/2026
+## 20261012.21 — 14/10/2026
 
 - Consulta de RUC o DNI sin crear el contacto (nombre, dirección y ubigeo): la usan la tienda en línea peruana y la creación de clientes desde el TPV.
 
-## 20.20261012 — 12/10/2026
+## 20261012.20 — 12/10/2026
 
 - La unicidad de ciudades (nombre y departamento) solo se valida en Perú: ya no impide instalar módulos oficiales con ciudades homónimas de otros países, como la nómina de EE. UU. que se instala sola en bases con demo.
 
-## 19.20261011 — 11/10/2026
+## 20261011.19 — 11/10/2026
 
 - «Actualizar desde API» completa la ficha RUC con las demás conexiones cuando la primera que responde solo trae los datos básicos, y avisa con el motivo si ninguna la trae (por ejemplo, el portal SUNAT responde 403 fuera del Perú).
 - Pestaña SUNAT en el contacto con la ficha RUC completa: tipo de contribuyente, fechas de inscripción, inicio y baja, sistemas de emisión y contabilidad, comercio exterior, comprobantes físicos y electrónicos, emisor electrónico, PLE y padrones.
@@ -33,37 +33,37 @@ Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 - El parser del portal SUNAT lee cada dato por su etiqueta; Decolecta (endpoint ruc/full) y el mapeo admiten fechas.
 - Contacto nuevo con RUC por defecto en compañías peruanas; DNI lo pasa a persona y RUC a empresa.
 
-## 18.20261010 — 10/10/2026
+## 20261010.18 — 10/10/2026
 
 - El método de la conexión se muestra como «Método HTTP» (antes salía «Http Method»); ficha con las etiquetas en español.
 
-## 17.20261009 — 09/10/2026
+## 20261009.17 — 09/10/2026
 
 - Conexiones RUC/DNI con chatter: historial de nombre, prioridad, habilitación, motor, tipo de documento y URL (nunca de tokens ni credenciales).
 - Etiqueta más corta: «Importar representantes».
 
-## 16.20261008 — 08/10/2026
+## 20261008.16 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.
 
-## 15.20261008 — 08/10/2026
+## 20261008.15 — 08/10/2026
 
 - Una sucursal sin conexiones RUC/DNI propias consulta con las de su RUC (el token se contrata una vez); la regla de registro deja ver las de las compañías superiores y la siembra ya no crea conexiones en sucursales.
 
-## 14.20261008 — 08/10/2026
+## 20261008.14 — 08/10/2026
 
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
 
-## 13.20261008 — 08/10/2026
+## 20261008.13 — 08/10/2026
 
 - El botón de consulta del documento del contacto llama a action_update_document (convención de Odoo).
 
-## 12.20261008 — 08/10/2026
+## 20261008.12 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
 
-## 11.20261007 — 07/10/2026
+## 20261007.11 — 07/10/2026
 
 - Corregido: la actualización diaria del padrón desmarcaba cada noche «agente de retención» o «buen contribuyente» puestos a mano; ahora una corrección que contradice al padrón queda como manual y se respeta.
 - La consulta automática al escribir el RUC es rápida también contra el portal de SUNAT (sin reintentos y con espera corta), para no bloquear el formulario.
@@ -71,7 +71,7 @@ Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 - Un RUC con dígito verificador inválido ya no se consulta, y una respuesta con formato inesperado se trata como fallo de la conexión (pasa a la siguiente) en vez de mostrar un error técnico.
 - Al cambiar el documento se limpian estado, condición y padrones del anterior; un contacto nunca consultado ya no aparece como «ACTIVO».
 
-## 10.20260828 — 27/09/2026
+## 20260828.10 — 27/09/2026
 
 - El token de cada conexión solo lo ven los administradores; el resto de usuarios sigue consultando RUC y DNI con normalidad.
 - Cada compañía ve solo sus propias conexiones RUC/DNI y sus mapeos.
@@ -86,19 +86,19 @@ Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 
 - Menús de la app Perú reordenados; consultas RUC/DNI agrupadas en Configuración.
 
-## 8.20260828 — 28/08/2026
+## 20260828.8 — 28/08/2026
 
 - Los ajustes de RUC/DNI se ven dentro de la sección Perú de Ajustes (antes salían en blanco).
 - Padrón SUNAT y conexiones RUC/DNI también en la app Perú.
 
-## 6.20260827 — 27/08/2026
+## 20260827.6 — 27/08/2026
 
 - Buen contribuyente y agente de retención editables en el contacto, como fuente única de las excepciones de retención.
 
-## 5.20260815 — 18/08/2026
+## 20260815.5 — 18/08/2026
 
 - Nueva conexión Decolecta (RUC contra SUNAT y DNI contra RENIEC), añadida también en bases ya instaladas.
 
-## 1.20260717 — 16/07/2026
+## 20260717.1 — 16/07/2026
 
 - Consulta configurable por datos, mapeo de campos, fallback en cascada y padrón SUNAT con descarga diaria.

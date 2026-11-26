@@ -2,40 +2,40 @@ Historial de cambios — PE - Reporte de Guía de Remisión Electrónica (AL)
 ========================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_l10n_pe_delivery_guide_report.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 13.20261027 — 27/10/2026
+## 20261027.13 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 12.20261012 — 12/10/2026
+## 20261012.12 — 12/10/2026
 
 - Guías en Perú ▸ Clientes ▸ Comprobantes; análisis en Informes ▸ Análisis; vehículos solo en Configuración ▸ Comprobantes electrónicos.
 
-## 11.20261008 — 08/10/2026
+## 20261008.11 — 08/10/2026
 
 - Menú Perú ▸ Guías de remisión: guías con su estado SUNAT (por enviar en amarillo, con error en rojo), pendientes de enviar, vehículos y análisis por motivo y mes.
 - Datos de la guía de remisión y del transporte en la página Logística PE de la transferencia (grupos Guía de remisión y Transporte); la página «EDI PE» de l10n_pe_edi_stock queda oculta y las etiquetas siguen la convención de la suite.
 
-## 10.20261008 — 08/10/2026
+## 20261008.10 — 08/10/2026
 
 - Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección.
 - Tablas de datos solo con el borde exterior (sin líneas entre filas); las líneas quedan solo en las tablas de detalle.
 - Pie de página común en cada página: compañía, R.U.C., domicilio, contacto, fecha de impresión y «Página X de Y».
 - Guía de remisión con el estilo común de los comprobantes PE en blanco y negro: recuadro R.U.C./tipo/número, bloques de datos en tablas con borde redondeado y el detalle de bienes con la información adicional y el QR en una sola tabla.
 
-## 9.20261008 — 08/10/2026
+## 20261008.9 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 
-## 8.20261007 — 07/10/2026
+## 20261007.8 — 07/10/2026
 
 - La fecha de emisión impresa es la del XML enviado a SUNAT; el destinatario es la empresa cliente; las cantidades no se redondean a dos decimales y el detalle tiene una línea por movimiento, como el XML.
 
-## 7.20260828 — 27/09/2026
+## 20260828.7 — 27/09/2026
 
 - El **remitente** es la empresa (razón social y RUC), igual que en el XML enviado a SUNAT; antes salían los datos del almacén, a veces vacíos.
 - Nuevos bloques **Punto de partida** y **Punto de llegada** con la dirección y el ubigeo.
@@ -47,11 +47,11 @@ Generado desde `docs/fichas/al_l10n_pe_delivery_guide_report.yml` (sección `nov
 
 - Vehículos dentro de la sección **Comprobantes electrónicos** de la configuración de la app Perú.
 
-## 5.20260828 — 28/08/2026
+## 20260828.5 — 28/08/2026
 
 - Los vehículos de la guía, antes solo en Inventario, también desde la app Perú.
 - Pruebas de la agrupación por producto y unidad, lotes y peso.
 
-## 4.20260719 — 25/07/2026
+## 20260719.4 — 25/07/2026
 
 - Versión para Odoo 19: reporte independiente del de facturas, agrupación de bienes con lotes y peso con respaldo.

@@ -38,28 +38,28 @@ funcionalidades:
   - "Las obras de mobiliario llenan su maestro con el puente de mobiliario."
 
 novedades:
-  - version: '28.20261111'
+  - version: '20261111.28'
     fecha: 16/11/2026
     cambios:
       - "Seguridad: «Pasar a la cotización» del presupuestador comprueba que pueda ver la cotización antes de escribirla; antes podía pasar un presupuesto a una cotización de otro vendedor."
-  - version: '17.20261104'
+  - version: '20261104.17'
     fecha: 04/11/2026
     cambios:
       - "M117-08: un lote grande recalcula el libro una sola vez, y agregar reglas de validación sin solape deja de copiar todas las reglas de la pestaña. Una ampliación de 1,700 filas pasa de más de 6 min a unos 40 s."
-  - version: '16.20261104'
+  - version: '20261104.16'
     fecha: 04/11/2026
     cambios:
       - "M117-16: el menú de la hoja se llama «Hoja de venta» en una hoja de venta; la validación avisa a los ganchos si fue silenciosa."
-  - version: '15.20261104'
+  - version: '20261104.15'
     fecha: 04/11/2026
     cambios:
       - "M117-09: botón «Hoja de trabajo» en la sección Controlar de la ficha del planificador, con versión y estado, y estado de la hoja en «Por planificar» de Inicio."
-  - version: '14.20261104'
+  - version: '20261104.14'
     fecha: 04/11/2026
     cambios:
       - "M117-04: vaciar una pestaña ya no quita sus listas desplegables, y las listas fijas rechazan al escribir un valor que no está en la lista."
       - "M117-03: cada versión guarda la acción que la originó."
-  - version: '13.20261101'
+  - version: '20261101.13'
     fecha: 01/11/2026
     cambios:
       - "M116-09: el perfil de la obra define el tipo de hoja (presupuesto o maestro de mobiliario); un solo menú «Planificación de obra» con las opciones de cada hoja; las columnas se reconocen por su clave aunque se renombre el encabezado."
@@ -68,29 +68,29 @@ novedades:
       - "CR-22 g: INSUMOS y APU llevan el código al final y una columna «Para elegir»; APU_DETALLE elige insumo y receta por nombre con una lista que filtra al escribir, y una banda de color marca cada receta."
       - "M113-11 y M113-12: la hoja guarda su estado, versión y último envío; la ficha de la obra tiene el botón con la versión y el estado y el bloque «Hoja de trabajo»."
       - "Corrección: la hoja de Odoo 19 no tiene `REPT`; esas fórmulas pasan a `TEXTBEFORE` y `TEXTAFTER`, y una migración repara las hojas ya creadas, también las anteriores al paquete 1.16."
-  - version: '6.20261027'
+  - version: '20261027.6'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '5.20261016'
+  - version: '20261016.5'
     fecha: 27/10/2026
     cambios:
     - "CR-18, a: todas las celdas se guardan como texto (la hoja con números no abría: «content.startsWith is not a function»); migración que convierte las hojas de trabajo existentes sin perder sus revisiones."
     - "CR-18, c y d: PRESUPUESTO con las columnas A a W del libro 6.6 y sus fórmulas (metrado y costo ofertado, precio unitario, costo real, parcial de venta y reserva); «Traer de Odoo» reescribe esa pestaña completa, llena «Costo unitario sin APU» de las partidas sin receta con su costo o su precio (D1) y los % de gastos generales, imprevistos, utilidad y descuento de OBRA desde la cotización, con 6 decimales."
     - "CR-18, D3 y D4: «Enviar al planificador: presupuesto» queda deshabilitado con la cotización confirmada; la hoja de una cotización sin obra trae la biblioteca de recetas y sus insumos."
-  - version: '4.20261016'
+  - version: '20261016.4'
     fecha: 24/10/2026
     cambios:
     - "Requerimiento CREVAL v1.0, 6.7: la hoja de trabajo es genérica, sin dependencia de mobiliario: presupuesto, APU y plan con las hojas del libro de carga (6.6), menú Planificación de obra (validar, enviar con destino presupuesto o plan, actualizar insumos, traer de Odoo, nueva versión) y copias numeradas. El maestro de mobiliario pasa al puente al_construction_planner_spreadsheet_furniture."
-  - version: '3.20261016'
+  - version: '20261016.3'
     fecha: 23/10/2026
     cambios:
     - "Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba)."
-  - version: 2.20261016
+  - version: '20261016.2'
     fecha: 16/10/2026
     cambios:
       - "Hoja de trabajo de la oficina técnica (v1.8, M18-22): resúmenes con tablas dinámicas, listas dependientes, referencias de productos y categorías; el envío al planificador crea los productos nuevos."
-  - version: 1.20261013
+  - version: '20261013.1'
     fecha: 13/10/2026
     cambios:
       - "Hoja de trabajo de la obra en Documentos con una pestaña por hoja del maestro y la pestaña REFERENCIAS con listas de Odoo de actividades y tipologías."

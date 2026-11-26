@@ -69,55 +69,55 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
-  - version: '13.20261027'
+  - version: '20261027.13'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '12.20261023'
+  - version: '20261023.12'
     fecha: 23/10/2026
     cambios:
       - "Ayuda de las pantallas nuevas del requerimiento CREVAL v1.0: condiciones y valorización de contratas, ejecución desde el tablero de obra, grupos en dos ejes y receta, presupuesto y moneda."
-  - version: '11.20261023'
+  - version: '20261023.11'
     fecha: 23/10/2026
     cambios:
       - "Mapa de pantallas actualizado a 487: requerimiento interno, productos por despachar, planchas enteras y retazos (paquete 1.11)."
-  - version: 10.20261022
+  - version: '20261022.10'
     fecha: 22/10/2026
     cambios:
       - "Mapa de pantallas actualizado a 481: predicción de pago de Cobranza."
-  - version: 9.20261022
+  - version: '20261022.9'
     fecha: 22/10/2026
     cambios:
       - "Mapa de pantallas actualizado a 479: agencias externas, comisiones, planes de comisión y cobranza judicial de Cobranza."
-  - version: 8.20261022
+  - version: '20261022.8'
     fecha: 22/10/2026
     cambios:
       - "Mapa de pantallas actualizado a 468: Cobranza (reclamos, centrales, provisión, tasas máximas del BCRP), recaudación bancaria, cierre de caja, flujo proyectado, cheques, farmacia y tablero de la app Perú."
-  - version: 7.20261012
+  - version: '20261012.7'
     fecha: 12/10/2026
     cambios:
       - "Mapa de pantallas con los módulos de pagos masivos, declaración mensual (621), validación de comprobantes y DUA de importación (302 pantallas)."
-  - version: 6.20261012
+  - version: '20261012.6'
     fecha: 12/10/2026
     cambios:
       - "Mapa de pantallas ampliado a 300 con los módulos de caja chica y entregas a rendir, renta de 4.ª categoría, percepciones y liquidación de compra."
-  - version: 5.20261011
+  - version: '20261011.5'
     fecha: 11/10/2026
     cambios:
       - "Ayuda contextual para los CRE sin pago y las notas de crédito descontadas en un CRE."
-  - version: 4.20261011
+  - version: '20261011.4'
     fecha: 11/10/2026
     cambios:
       - "Ayuda contextual para la lista de retenciones sufridas por factura."
-  - version: 3.20261011
+  - version: '20261011.3'
     fecha: 11/10/2026
     cambios:
       - "Ayuda en el catálogo de actividades económicas y en la ficha RUC del contacto."
-  - version: 2.20261011
+  - version: '20261011.2'
     fecha: 11/10/2026
     cambios:
       - "Mapa de pantallas actualizado con las secciones de la documentación del Gantt y del cronograma de la obra."
-  - version: 1.20261011
+  - version: '20261011.1'
     fecha: 11/10/2026
     cambios:
       - "Botón ? en la barra superior y en la cabecera de los asistentes que abre la página de la documentación de la pantalla, en su sección."

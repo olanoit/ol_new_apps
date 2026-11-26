@@ -2,31 +2,31 @@ Historial de cambios — Servidor MCP para Odoo (AL)
 ==================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`). Este módulo no tiene ficha
+el `version` de `__manifest__.py` (`AAAAMMDD.N`). Este módulo no tiene ficha
 en `docs/fichas/`: el historial se mantiene a mano y debe coincidir con el
 de `static/description/index.html`.
 
-## 11.20261027 — 27/10/2026
+## 20261027.11 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
 
-## 10.20261027 — 27/10/2026
+## 20261027.10 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 8.20261009 — 09/10/2026
+## 20261009.8 — 09/10/2026
 
 - Ícono propio en el menú principal (nodo central conectado a tres extremos), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de IA; en Aplicaciones y Ajustes sigue el ícono nativo.
 
-## 7.20261008 — 08/10/2026
+## 20261008.7 — 08/10/2026
 
 - Traducciones al español de las etiquetas heredadas regeneradas (`i18n/es.po`).
 
-## 6.20261008 — 08/10/2026
+## 20261008.6 — 08/10/2026
 
 - Ícono nativo de la app de IA de Odoo en Aplicaciones, Ajustes y el menú principal.
 
-## 5.20261005 — 05/10/2026
+## 20261005.5 — 05/10/2026
 
 - Interfaz, comentarios, README y ficha completamente en español.
 - Etiquetas heredadas de los mixins traducidas (`i18n/es.po`).
@@ -34,7 +34,7 @@ de `static/description/index.html`.
 - El dueño de un token puede renombrarlo aunque no sea administrador.
 - Las cabeceras de las tablas del portal usan la etiqueta del campo.
 
-## 4.20260825 — 28/09/2026
+## 20260825.4 — 28/09/2026
 
 - Los trabajos asíncronos se ejecutan como el usuario que los lanzó.
 - Se aplican los alcances (scopes) y las restricciones del token.
@@ -43,7 +43,7 @@ de `static/description/index.html`.
 - Escapado de HTML y XML en las respuestas.
 - Reglas de acceso nuevas.
 
-## 3.20260825 — 25/08/2026
+## 20260825.3 — 25/08/2026
 
 - Incorporado a la suite (antes `lm_mcp_server`), con licencia OPL-1.
 - OAuth 2.0 con PKCE y tokens de acceso personal.

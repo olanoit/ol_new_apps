@@ -89,7 +89,7 @@ ejemplos:
       etiquetas, que suelen enviarse a una impresora térmica desde el archivo.
 
 novedades:
-  - version: '1.20261126'
+  - version: '20261126.1'
     fecha: 26/11/2026
     cambios:
       - "Los reportes PDF se abren en una pestaña del navegador en vez de descargarse."

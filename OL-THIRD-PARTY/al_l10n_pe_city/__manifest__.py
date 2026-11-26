@@ -13,7 +13,7 @@
     'category': 'Accounting/Localizations',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/contacts/static/description/icon.png',
-    'version': '3.20261008',
+    'version': '20261008.3',
     'license': 'LGPL-3',
 
     'depends': ['base_address_extended'],

@@ -42,15 +42,15 @@ configuracion:
 requisitos_nota: Se instala automáticamente con `al_construction_portal`, `al_construction_planner_furniture`
   y `al_construction_planner_mrp_request`. Licencia LGPL-3 como el portal y el planificador.
 novedades:
-- version: '3.20261117'
+- version: '20261117.3'
   fecha: 18/11/2026
   cambios:
   - "Recepción: el despacho de módulos lleva su título también en la lista de la recepción por producto."
-- version: '2.20261117'
+- version: '20261117.2'
   fecha: 18/11/2026
   cambios:
   - "Avance de la contrata: el driver del departamento se suma por unidad (antes, una cantidad por actividad)."
-- version: '1.20261117'
+- version: '20261117.1'
   fecha: 17/11/2026
   cambios:
   - "Puente nuevo (paquete 1.22, etapa 2): ficha del departamento en «Avance», recepción de módulos por departamento con entrega parcial y reposición del módulo dañado, pedido de reposición a planta, marca de ambiente medido, avance por sub etapa con un solo envío y avance de la contrata con su driver y «Esta semana»; cada función se activa en el perfil de vertical y funciona sin señal."

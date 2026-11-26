@@ -19,19 +19,19 @@ configuracion:
 requisitos_nota: Se instala automáticamente con `al_construction_planner_subcontract` y `al_construction_planner_purchase`.
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
-- version: '4.20261027'
+- version: '20261027.4'
   fecha: 16/11/2026
   cambios:
     - "Seguridad: «Descontado en» del material extra lo pone el sistema al preparar o anular la liquidación; ya no se puede escribir a mano para que el extra figure como descontado o vaya a la liquidación de otra contrata."
-- version: '3.20261027'
+- version: '20261027.3'
   fecha: 27/10/2026
   cambios:
     - "Ícono nuevo: el isotipo de ALTA."
-- version: '2.20261013'
+- version: '20261013.2'
   fecha: 23/10/2026
   cambios:
   - "Requerimiento CREVAL v1.0, 3.7: con condiciones de contrata, el material extra descontado entra como deductivo de tipo «Material extra» de la orden."
-- version: '1.20261013'
+- version: '20261013.1'
   fecha: 15/10/2026
   cambios:
   - 'Puente nuevo (v1.7, M17-07): el descuento del material extra (M16-08) une las contratas

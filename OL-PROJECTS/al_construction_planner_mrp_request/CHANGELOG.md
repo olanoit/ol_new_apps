@@ -2,36 +2,36 @@ Historial de cambios — Planificación de obra: producción y requerimiento de 
 =====================================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_construction_planner_mrp_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 7.20261031 — 16/11/2026
+## 20261031.7 — 16/11/2026
 
 - Seguridad: la orden, el despacho y el estado de la reposición a planta los pone el sistema. Antes solo eran de lectura en la vista, y un solicitante podía apuntar su reposición a una orden de fabricación ajena y cancelarla.
 
-## 6.20261031 — 01/11/2026
+## 20261031.6 — 01/11/2026
 
 - M114-05: si la lista del producto es del almacén del tipo de reposición de Ajustes, «Pedir reposición a planta» usa ese tipo.
 
-## 5.20261027 — 27/10/2026
+## 20261027.5 — 27/10/2026
 
 - Paquete 1.12, M112-03: «Pedir reposición a planta» crea la orden en la planta de la lista del producto, con su lista y el tipo de ese almacén que pide motivo. Sin lista, o sin ese tipo, avisa y no crea una orden vacía.
 
-## 4.20261027 — 27/10/2026
+## 20261027.4 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 3.20261025 — 26/10/2026
+## 20261025.3 — 26/10/2026
 
 - CR-16: aquí se suman al plan los consumos de las órdenes de fabricación al validar (antes en el puente de compras, que no depende de Fabricación).
 
-## 2.20261025 — 25/10/2026
+## 20261025.2 — 25/10/2026
 
 - La reposición a planta avisa al jefe de producción o, sin él, a los responsables de Fabricación, y lo deja como responsable de la orden; nunca a quien pide (verificación en dev1).
 
-## 1.20261025 — 25/10/2026
+## 20261025.1 — 25/10/2026
 
 - Paquete 1.11, M111-22: «Cubrir con retazo» y «Quitar retazo» en el despacho del requerimiento de obra; la línea cuenta la fracción cubierta y su redondeo; el despacho a la preproducción de una planta usa el tipo «Elegir componentes» del almacén.
 - Paquete 1.11, M111-23: «Pedir reposición a planta» (menú Requerimientos y botón del requerimiento): orden en borrador en el tipo de reposición con el motivo, actividad al jefe de producción, estados según la orden y el despacho, y despacho a obra al terminar.

@@ -221,7 +221,7 @@ faq:
       manda la última que eligió cada usuario.
 
 novedades:
-  - version: '9.20261027'
+  - version: '20261027.9'
     fecha: 13/11/2026
     cambios:
       - "Stock al día de la ubicación de la caja en las filas y también en las tarjetas de la cuadrícula (badge verde o rojo), con botón «Actualizar stock»."
@@ -231,23 +231,23 @@ novedades:
       - "Bajo el precio de la lista, el descuento o recargo de la tarifa sobre el precio de venta; las reglas de tarifa por variante ya se aplican."
       - "Ficha del producto: una tarjeta de inventario por almacén, con el de la caja resaltado."
       - "Opción por caja «Limpiar la búsqueda al añadir» (activada por defecto)."
-  - version: '8.20261027'
+  - version: '20261027.8'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 7.20261011
+  - version: '20261011.7'
     fecha: 11/10/2026
     cambios:
       - "Modo oscuro del TPV: el botón de información de las tarjetas y la sombra de las filas de la lista se adaptan al tema oscuro."
-  - version: 6.20261009
+  - version: '20261009.6'
     fecha: 09/10/2026
     cambios:
       - "Etiqueta más corta en la etiqueta de producto: «Filtro del TPV»."
-  - version: 5.20261008
+  - version: '20261008.5'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 4.20260925
+  - version: '20260925.4'
     fecha: 27/09/2026
     cambios:
       - "En la ficha de producto del TPV, los precios y totales del pedido vuelven a ocultarse a los empleados con permisos mínimos (Empleados activo), como en el Odoo estándar."
@@ -258,7 +258,7 @@ novedades:
     cambios:
       - "El cajero ya puede guardar su vista preferida desde Mis preferencias: antes fallaba con «No tienes permiso para modificar registros Usuario»."
       - "La ficha de producto del TPV vuelve a abrirse con Empleados instalado: los bloques nativos que el módulo reubica dejan un marcador en su sitio, porque otros módulos se anclan a ellos."
-  - version: 2.20260721
+  - version: '20260721.2'
     fecha: 25/08/2026
     cambios:
       - Licencia OPL-1 en toda la suite.

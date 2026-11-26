@@ -724,78 +724,78 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
-  - version: '36.20261027'
+  - version: '20261027.36'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 35.20261012
+  - version: '20261012.35'
     fecha: 12/10/2026
     cambios:
       - "Menús de Nómina con el patrón de la app Perú: las secciones de la localización (Parámetros, Seguridad social, Catálogos SUNAT, Tipos y plantillas) pasan al segundo nivel de Configuración, sin el submenú «Perú» que obligaba a un cuarto nivel; periodos en Parámetros, derechohabientes en Seguridad social, T21 en Catálogos SUNAT y suspensiones de labores en Entradas de trabajo."
-  - version: 34.20261010
+  - version: '20261010.34'
     fecha: 10/10/2026
     cambios:
       - "Punto de extensión `_l10n_pe_tareaje_distribution` en la boleta: el reparto del costo por centro de costo según el tareaje (lo calcula Asistencia y lo usa el asiento de planilla por lote)."
-  - version: 33.20261009
+  - version: '20261009.33'
     fecha: 09/10/2026
     cambios:
       - "Chatter en la configuración principal de planillas y en los derechohabientes: historial de cambios del RMV, representante legal, regla del neto, vigencia, baja y acreditación del vínculo."
       - "Etiquetas más cortas en el derechohabiente: «Documento sustentatorio» y «N.º del sustento» (el detalle va en la ayuda)."
-  - version: 32.20261008
+  - version: '20261008.32'
     fecha: 08/10/2026
     cambios:
       - "El periodo de la boleta y del lote se bloquea con el estado, como la estructura y las fechas nativas (boleta validada, pagada o cancelada; lote fuera de «Listo»)."
-  - version: 31.20261008
+  - version: '20261008.31'
     fecha: 08/10/2026
     cambios:
       - "Abrir Ajustes desde otras apps (p. ej. al crear un almacén) sin permisos de planillas ya no falla por la configuración principal."
       - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
-  - version: 30.20261008
+  - version: '20261008.30'
     fecha: 08/10/2026
     cambios:
       - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
-  - version: 29.20261008
+  - version: '20261008.29'
     fecha: 08/10/2026
     cambios:
       - "Una boleta generada antes de existir un concepto de días (p. ej. horas nocturnas HTN) ya no falla al calcular: el concepto ausente vale cero (antes KeyError('HTN') en la regla NOCT)."
-  - version: 28.20261008
+  - version: '20261008.28'
     fecha: 08/10/2026
     cambios:
       - "Configuración principal de planillas: una por compañía, creada sola (ya no corta ningún flujo) y editable en Ajustes ▸ Nómina ▸ Perú (SCTR, representante y firma); el menú abre la de la compañía activa."
       - "Asistentes con _check_company_auto y check_company."
-  - version: 27.20261008
+  - version: '20261008.27'
     fecha: 08/10/2026
     cambios:
       - "Botones con la convención de Odoo (action_<verbo>): exportadores PLAME/AFPNet/resumen como action_export_*. Migración que renombra los botones en las vistas guardadas para que la actualización no falle."
-  - version: 26.20261008
+  - version: '20261008.26'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
       - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
-  - version: 25.20261008
+  - version: '20261008.25'
     fecha: 08/10/2026
     cambios:
       - "Nuevo widget «year_selection»: el año se elige de una lista que va del próximo año hacia atrás y avanza sola cada enero (sin catálogo ni cron; el campo sigue siendo entero). Se usa en la UIT (15 años atrás) y en los beneficios."
       - "Empleado: página «Planilla PE» con pestañas internas (Identificación, T-Registro con E17/E29/E30, Domicilio), en vez de repartir los datos por «Personal» y «Nómina»; los demás módulos de planillas cuelgan sus pestañas de ahí. Nómina: «Planilla PE ▸ Cálculo». Nombres legibles (UIT, RMV, suspensiones, estudios) y títulos en periodos y parámetros."
-  - version: 24.20261007
+  - version: '20261007.24'
     fecha: 07/10/2026
     cambios:
       - "Tasas AFP automáticas desde la SBS: un proceso diario lee la tabla oficial de comisiones y primas (comisión sobre flujo, prima de seguros, aporte y remuneración máxima asegurable) y actualiza las AFP; también hay un botón «Actualizar tasas desde la SBS» en Afiliaciones. Si la página no responde o la tabla no cuadra, no se toca nada. La remuneración máxima asegurable pasa a S/ 12 732,70 (octubre-diciembre 2026)."
-  - version: 23.20261007
+  - version: '20261007.23'
     fecha: 07/10/2026
     cambios:
       - "Resumen de planilla en Excel desde el lote (menú del lote ▸ Resumen de planilla): una fila por trabajador y una columna por concepto, con totales, y una hoja por concepto con su código SUNAT y categoría para conciliar con contabilidad."
-  - version: 22.20261007
+  - version: '20261007.22'
     fecha: 07/10/2026
     cambios:
       - "SCTR (D.S. 003-98-SA) en la estructura general: reglas de salud y pensión para quien tiene la cobertura marcada, con tasas y entidad contratada en Parámetros principales ▸ SCTR. El PLAME declara el código de la entidad: salud 0806 (EsSalud) u 0810 (EPS), pensión 0813 (ONP) u 0814 (aseguradora)."
-  - version: 21.20261007
+  - version: '20261007.21'
     fecha: 07/10/2026
     cambios:
       - "Nueva regla «Indemnización vacacional» (INDVAC, PLAME 0504): llega al neto y a la renta extraordinaria de 5ta, sin pagar aportes."
       - "Corregido: la indemnización genérica (INDEM) se declaraba en el PLAME como CTS (0904); ahora usa 0501, indemnización por despido."
-  - version: 20.20261007
+  - version: '20261007.20'
     fecha: 07/10/2026
     cambios:
       - "PLAME: el tipo de documento sale con dos dígitos (01 = DNI) en el .rem, el .jor y el .toc; antes salía «1» y el PLAME lo rechazaba."
@@ -805,11 +805,11 @@ novedades:
       - "Las reglas salariales redondean con el criterio SUNAT (2,675 → 2,68), no con el redondeo al par de Python."
       - "Corregido: la indemnización (input INDEM) aparecía en la boleta pero no llegaba al neto a pagar."
       - "Devolución de 5ta: si al cese o en diciembre se retuvo de más, la boleta devuelve el exceso; en el PLAME esa retención se declara en 0."
-  - version: 19.20261007
+  - version: '20261007.19'
     fecha: 07/10/2026
     cambios:
       - "Sobretasa nocturna (nueva regla NOCT y tipo de entrada «Horas trabajo nocturno»): quien trabaja de noche no cobra menos de la RMV + 35 % (D.S. 007-2002-TR, art. 8), en proporción a sus horas nocturnas. Entra en el básico del mes, así que la toman AFP, ONP, EsSalud y 5ta. Microempresa, practicantes y construcción civil quedan fuera."
-  - version: 18.20261007
+  - version: '20261007.18'
     fecha: 07/10/2026
     cambios:
       - "Remuneración Mínima Vital por fecha de vigencia (nueva tabla «RMV»): cada boleta toma la vigente al cierre de su periodo. Incluye S/ 1 230 desde el 01/10/2026 (D.S. 015-2026-TR); antes era un único valor de S/ 1 130 por compañía. La asignación familiar sale del 10 % de esa RMV."
@@ -817,7 +817,7 @@ novedades:
       - "Corregido: los códigos de excepción y de tipo de trabajo de AFPnet tenían rótulos de jornada; marcar a un trabajador a tiempo parcial con «I» anulaba sus aportes. Ahora siguen la guía de AFPnet y el pensionista por jubilación tampoco aporta."
       - "La asignación familiar se paga también en un mes completo de vacaciones (la remuneración vacacional es la ordinaria); EsSalud y EPS aplican la base mínima de la RMV también con EPS; «mayor de 65» se mide al cierre del periodo de la boleta."
       - "El .jor del PLAME ya no resta dos veces vacaciones y subsidios, y declara horas y minutos sin truncar."
-  - version: 16.20260925
+  - version: '20260925.16'
     fecha: 27/09/2026
     cambios:
       - "AFP y ONP se calculan por el tipo de afiliación y sus tasas, no por el nombre de la entidad: renombrar una AFP ya no deja su aporte en cero."
@@ -835,32 +835,32 @@ novedades:
   - fecha: 24/09/2026
     cambios:
       - "Los datos privados del trabajador (identificación PLAME, domicilio, T-Registro y estudios) se restringen a Recursos Humanos, en la ficha y en la definición de cada campo: sin esa restricción, un usuario interno sin permiso recibía un error de acceso al abrir un empleado y el TPV no llegaba a abrir."
-  - version: 14.20260901
+  - version: '20260901.14'
     fecha: 16/09/2026
     cambios:
       - "UIT 2026 corregida a S/ 5.500 (D.S. N.° 301-2025-EF); venía con el valor de 2025. Al actualizar se corrige en la base si no se había cambiado a mano."
-  - version: 13.20260901
+  - version: '20260901.13'
     fecha: 01/09/2026
     cambios:
       - Instalación corregida en bases de datos nuevas.
-  - version: 11.20260816
+  - version: '20260816.11'
     fecha: 18/08/2026
     cambios:
       - Configuración ▸ Perú reorganizada en grupos; los catálogos SUNAT, juntos y con su número de tabla.
-  - version: 10.20260803
+  - version: '20260803.10'
     fecha: 03/08/2026
     cambios:
       - Periodos semanales colgados del mes y periodo PLAME en el lote.
-  - version: 9.20260802
+  - version: '20260802.9'
     fecha: 02/08/2026
     cambios:
       - Derechohabientes con asignación familiar por edad y exportación para la macro de SUNAT.
       - Carga masiva del T-Registro (E04, E05, E11, E17, E29 y E30) con validación previa.
-  - version: 5.20260722
+  - version: '20260722.5'
     fecha: 26/07/2026
     cambios:
       - Arreglos hallados en las pruebas funcionales de la planilla.
-  - version: 4.20260722
+  - version: '20260722.4'
     fecha: 25/07/2026
     cambios:
       - Primera versión para Odoo 19. Ficha laboral en la versión del empleado, catálogos PLAME, reglas salariales y exportadores PLAME/AFPNet.

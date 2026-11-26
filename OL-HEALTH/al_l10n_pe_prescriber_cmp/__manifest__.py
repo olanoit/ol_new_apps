@@ -22,7 +22,7 @@ Reemplaza la lectura automática del portal antiguo de al_peru_medico_data
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_l10n_pe_prescriber_cmp/static/description/icon.png',
-    'version': '4.20261027',
+    'version': '20261027.4',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'l10n_pe'],
     'data': [

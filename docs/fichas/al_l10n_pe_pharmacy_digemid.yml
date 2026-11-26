@@ -38,28 +38,28 @@ configuracion:
   - "Importe el listado de genéricos esenciales en **Farmacia ▸ Configuración ▸ Catálogos**."
 
 novedades:
-  - version: '6.20261027'
+  - version: '20261027.6'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '5.20261019'
+  - version: '20261019.5'
     fecha: 19/10/2026
     cambios:
       - "La fecha límite de rectificación del Observatorio descuenta los feriados del calendario laboral de la compañía."
-  - version: '4.20261019'
+  - version: '20261019.4'
     fecha: 19/10/2026
     cambios:
       - "Observatorio según la Directiva 176: Excel con CodEstab, CodProd, Precio 1 (empaque) y Precio 2 (unidad) con IGV; solo medicamentos y biológicos a la venta y con stock."
       - "Envíos al Observatorio por local y mes: primera carga completa, luego solo cambios, plazo de rectificación de 7 días hábiles y recordatorio mensual para el director técnico."
-  - version: '3.20261019'
+  - version: '20261019.3'
     fecha: 19/10/2026
     cambios:
       - "Cartel A4 de los productos de empresas vinculadas para exhibir en el local (DS 020-2024-SA, art. 32-B)."
-  - version: 2.20261018
+  - version: '20261018.2'
     fecha: 18/10/2026
     cambios:
       - "Datos de demostración: códigos del Observatorio con precios por informar, régimen del IGV, autorización del establecimiento, listado de genéricos esenciales y dos reacciones adversas."
-  - version: 1.20261018
+  - version: '20261018.1'
     fecha: 18/10/2026
     cambios:
       - "Primera versión (entrega 3 del plan)."

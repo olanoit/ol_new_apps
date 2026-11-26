@@ -24,7 +24,7 @@ gasto o variación de existencias, por el valor del movimiento:
     'website': 'https://www.altabpo.com',
     'category': 'OL-INVENTORY/Apps',
     'icon': '/al_l10n_pe_stock_consumption/static/description/icon.png',
-    'version': '1.20261103',
+    'version': '20261103.1',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['stock_account'],

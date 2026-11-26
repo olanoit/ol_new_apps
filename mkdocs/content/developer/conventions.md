@@ -37,7 +37,11 @@ Reglas que siguen todos los módulos de la suite, además de las
 
 - Nombre técnico con prefijo `al_`; el módulo va en la carpeta de su área.
 - `category`: `'<carpeta del área>/Apps'` (por ejemplo `'OL-INVENTORY/Apps'`).
-- `version`: `N.AAAAMMDD`.
+- `version`: `AAAAMMDD.N`: primero la fecha del cambio y después el contador
+  del módulo, que sube en 1 con cada cambio y no se reinicia (`20261126.25`,
+  luego `20261127.26`). Las carpetas de `migrations/` anteriores al 26/11/2026
+  conservan el formato antiguo `19.0.N.AAAAMMDD`: no se renombran, porque
+  Odoo volvería a ejecutarlas; las nuevas se nombran `19.0.AAAAMMDD.N`.
 - Licencia OPL-1, salvo las excepciones de `scripts/areas.py`.
 - Textos de origen en español, con solo la primera letra en mayúscula.
   Comentarios en español.

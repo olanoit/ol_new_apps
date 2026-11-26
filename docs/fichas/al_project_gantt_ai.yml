@@ -178,31 +178,31 @@ faq:
       máximos de respuesta**. No hay cuota por usuario.
 
 novedades:
-  - version: '9.20261027'
+  - version: '20261027.9'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 8.20261013
+  - version: '20261013.8'
     fecha: 13/10/2026
     cambios:
       - "Usa el ícono de la app Gantt de la suite."
-  - version: 7.20261011
+  - version: '20261011.7'
     fecha: 11/10/2026
     cambios:
       - "Modo oscuro: el panel del asistente, sus mensajes y las propuestas toman los colores del tema oscuro de Odoo (antes quedaban sobre fondo blanco)."
-  - version: 6.20261010
+  - version: '20261010.6'
     fecha: 10/10/2026
     cambios:
       - "Modelo por defecto de Anthropic actualizado a claude-opus-5-5 (el más reciente)."
-  - version: 5.20261008
+  - version: '20261008.5'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
-  - version: 4.20261008
+  - version: '20261008.4'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 3.20260817
+  - version: '20260817.3'
     fecha: 27/09/2026
     cambios:
       - "Desmarcar «Enviar personas asignadas» en los ajustes ahora sí evita que los nombres se envíen al proveedor. Si ya lo había desmarcado, vuelva a guardarlo."

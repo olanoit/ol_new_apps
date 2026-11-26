@@ -34,7 +34,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_pos_vendedor/static/description/icon.png',
-    'version': '5.20261027',
+    'version': '20261027.5',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',

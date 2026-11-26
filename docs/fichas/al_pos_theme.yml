@@ -265,7 +265,7 @@ faq:
       nombre, logo y colores.
 
 novedades:
-  - version: '8.20261027'
+  - version: '20261027.8'
     fecha: 13/11/2026
     cambios:
       - "Teclado numérico por caja (Ajustes ▸ Apariencia): visible, oculto con botón para abrirlo o sin teclado; el mismo estado en la venta y en el pago, y sin línea seleccionada queda deshabilitado en vez de desaparecer."
@@ -278,28 +278,28 @@ novedades:
       - "Categorías con el botón «Todas», marca en la categoría actual y borde en sus ancestros."
       - "El indicador de sincronización de la barra superior ya no parpadea con cada llamada corta al servidor."
       - "La pantalla del cliente muestra el cambio sin signo menos."
-  - version: '7.20261027'
+  - version: '20261027.7'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
       - "El favicon y el ícono de la app del TPV siguen siendo la caja registradora neutra (static/src/img/icon.svg)."
-  - version: '6.20261022'
+  - version: '20261022.6'
     fecha: 22/10/2026
     cambios:
       - "El buscador enfocado muestra un solo halo (antes se veían dos anillos, uno dentro del otro); igual en el buscador del historial de tickets."
-  - version: '5.20261022'
+  - version: '20261022.5'
     fecha: 22/10/2026
     cambios:
       - "Las categorías se muestran u ocultan desde la caja con el botón «Categorías» de la barra superior; el ajuste de la caja (ahora «Mostrar u ocultar categorías») activa ese botón. Cada dispositivo recuerda la elección."
-  - version: '4.20261022'
+  - version: '20261022.4'
     fecha: 22/10/2026
     cambios:
       - "Ajuste «Ocultar categorías de productos» por caja en Apariencia."
-  - version: '3.20261018'
+  - version: '20261018.3'
     fecha: 18/10/2026
     cambios:
       - "El nombre de la marca en la barra (cuando la caja no tiene logo) va a la izquierda y con puntos suspensivos: un nombre largo ya no se corta por el principio."
-  - version: 2.20261008
+  - version: '20261008.2'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."

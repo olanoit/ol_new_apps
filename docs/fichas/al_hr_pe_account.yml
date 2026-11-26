@@ -589,56 +589,56 @@ faq:
       liquidación no la pierda.
 
 novedades:
-  - version: '15.20261104'
+  - version: '20261104.15'
     fecha: 04/11/2026
     cambios:
       - "Reparto por centro de costo: se reparte solo por el plan de los centros; las claves de otros planes viajan con cada parte y lo que no suma 100 % queda sin centro de costo."
-  - version: '14.20261103'
+  - version: '20261103.14'
     fecha: 03/11/2026
     cambios:
       - "Asiento por centro de costo: las cuentas por pagar ya no llevan analítica, porque su abono anulaba el gasto del centro."
       - "Opciones nuevas: una línea de gasto por centro de costo y exigir centro de costo; el asistente avisa qué trabajadores no lo tienen."
       - "La provisión mensual reparte el gasto según el tareaje del periodo, como el sueldo."
-  - version: '13.20261027'
+  - version: '20261027.13'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 12.20261012
+  - version: '20261012.12'
     fecha: 12/10/2026
     cambios:
       - "«Asiento de planilla por lote» pasa a Recibos de nómina ▸ Pagos y contabilidad y «Cuentas por condición» a Configuración ▸ Salario; se quita el menú principal «Contabilidad»."
-  - version: 11.20261010
+  - version: '20261010.11'
     fecha: 10/10/2026
     cambios:
       - "Cuentas por condición en las reglas salariales (pestaña Contabilidad de la regla y Nómina ▸ Contabilidad ▸ Cuentas por condición): otra cuenta de cargo o de abono según el tipo de trabajador (T08), el departamento o el centro de costo; gana la fila más específica y lo vacío conserva la cuenta de la regla. Recupera la cuenta por centro de costo de v18."
       - "Asiento de planilla por lote con el reparto del tareaje: con «Asiento de lote con analítica», la distribución de cada boleta sale de los días u horas por centro de costo (regla > tareaje > ficha); con cuentas por centro de costo, el importe se parte por centro de costo antes de elegir la cuenta."
-  - version: 10.20261008
+  - version: '20261008.10'
     fecha: 08/10/2026
     cambios:
       - "Liquidación: el botón «Generar asiento» de cada cesado solo aparece mientras no tiene asiento, y su «No R.» se bloquea al generarlo."
-  - version: 9.20261008
+  - version: '20261008.9'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés."
-  - version: 8.20261008
+  - version: '20261008.8'
     fecha: 08/10/2026
     cambios:
       - "Diario, contacto, analítica y cuentas de beneficios sociales en Ajustes ▸ Nómina ▸ Perú (por compañía)."
       - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
-  - version: 7.20261008
+  - version: '20261008.7'
     fecha: 08/10/2026
     cambios:
       - "Métodos de botón con la convención de Odoo (action_load_provisions, action_open_move_wizard, action_generate_move, action_open_move); el asiento se abre con el ícono de Odoo (fa-bars)."
-  - version: 6.20261008
+  - version: '20261008.6'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
-  - version: 5.20261007
+  - version: '20261007.5'
     fecha: 07/10/2026
     cambios:
       - "Corregido: si la nómina estándar ya había contabilizado las boletas una por una, el asiento peruano del lote duplicaba el gasto; ahora lo impide y explica cómo configurarlo."
-  - version: 4.20260816
+  - version: '20260816.4'
     fecha: 27/09/2026
     cambios:
       - "Los asientos de CTS, gratificación, liquidación y provisiones usan siempre las cuentas de la compañía del documento, aunque la compañía activa sea otra; y configurar los parámetros de una compañía ya no cambia las cuentas de otra."
@@ -648,7 +648,7 @@ novedades:
   - fecha: 18/08/2026
     cambios:
       - El menú pasa a llamarse Contabilidad y se ordena al final del flujo de Nómina.
-  - version: 2.20260722
+  - version: '20260722.2'
     fecha: 25/07/2026
     cambios:
       - "Primera versión en Odoo 19: asiento de planilla por lote por ORM, asientos de beneficios sociales y analítica nativa opcional."

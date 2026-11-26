@@ -320,23 +320,23 @@ faq:
       (art. 3.2 de la R.S. 058-2006/SUNAT).
 
 novedades:
-  - version: '5.20261027'
+  - version: '20261027.5'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 4.20261018
+  - version: '20261018.4'
     fecha: 18/10/2026
     cambios:
       - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
-  - version: 3.20261012
+  - version: '20261012.3'
     fecha: 12/10/2026
     cambios:
       - "Menús en Perú ▸ Clientes y Proveedores ▸ Detracciones, retenciones y percepciones; resúmenes en SUNAT ▸ Declaraciones."
-  - version: 2.20261012
+  - version: '20261012.2'
     fecha: 12/10/2026
     cambios:
       - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): agente de percepción con tres ventas, dos cobradas con su comprobante de percepción, y dos percepciones sufridas (proveedor agente e importación)."
-  - version: 1.20261012
+  - version: '20261012.1'
     fecha: 12/10/2026
     cambios:
       - "Primera versión: cálculo en la factura (2 %, 0,5 % y 1 %, con las exclusiones del reglamento), XML de la factura (operación 2001, cargo del catálogo 53 y monto con la percepción) y leyenda en el PDF."

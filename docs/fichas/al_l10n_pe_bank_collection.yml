@@ -68,38 +68,38 @@ pasos:
     imagen: screenshots/v3-response.png
 
 novedades:
-  - version: '8.20261027'
+  - version: '20261027.8'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 7.20261022
+  - version: '20261022.7'
     fecha: 22/10/2026
     cambios:
       - "El acceso a convenios y formatos en los Ajustes de Cobranza sigue el diseño de las apps de Odoo, con enlace a la guía."
-  - version: 6.20261022
+  - version: '20261022.6'
     fecha: 22/10/2026
     cambios:
       - "Accesos a los convenios y formatos de recaudación en Cobranza ▸ Configuración ▸ Ajustes, bloque «Cobro, agencias y comisiones»."
-  - version: 5.20261022
+  - version: '20261022.5'
     fecha: 22/10/2026
     cambios:
       - "La respuesta no ofrece «Crear pagos y conciliar» si no hay cobros por pagar y muestra el estado de cada cobro a la vista."
-  - version: 4.20261022
+  - version: '20261022.4'
     fecha: 22/10/2026
     cambios:
       - "Scotiabank: validación parcial (una línea por cliente, importe libre) y validación de importes (catálogo de tipos de pago en el convenio), con sus archivos de resultados."
       - "La respuesta guarda la referencia y el tipo de pago informados por el banco."
-  - version: 3.20261022
+  - version: '20261022.3'
     fecha: 22/10/2026
     cambios:
       - "Formato de Scotiabank (validación completa): archivo de cobranza de 200 posiciones y archivo de resultados, según la macro oficial del banco."
-  - version: 2.20261022
+  - version: '20261022.2'
     fecha: 22/10/2026
     cambios:
       - "Formato oficial de BBVA (ficha técnica E1891 V21): archivo de entrada de datos de 360 bytes y respuesta de 152 bytes."
       - "Motor de formatos: códigos de carga por banco, caracteres que se cambian por espacios, equivalencias por campo (tipo de documento, canal), fecha de bloqueo, versión del envío del día y registro de totales."
       - "La respuesta identifica el documento aunque el banco haya quitado caracteres (BBVA cambia «/» por espacio)."
-  - version: 1.20261022
+  - version: '20261022.1'
     fecha: 22/10/2026
     cambios:
       - "Primera versión: convenios, formatos configurables con el CREP del BCP, archivo de deudores, respuesta del banco con pagos y conciliación automática."

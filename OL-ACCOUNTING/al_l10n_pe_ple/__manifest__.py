@@ -73,7 +73,7 @@ NO se reimplementan.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_ple/static/description/icon.png',
-    'version': '27.20261027',
+    'version': '20261027.27',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

@@ -24,7 +24,7 @@ por internet y las billeteras.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '3.20261027',
+    'version': '20261027.3',
     'license': 'OPL-1',
     'depends': ['payment'],
     'data': [

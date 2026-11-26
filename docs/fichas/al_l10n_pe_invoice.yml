@@ -380,39 +380,39 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
-  - version: '25.20261126'
+  - version: '20261126.25'
     fecha: 26/11/2026
     cambios:
       - "El botón Vista previa de la factura y el portal del cliente muestran el formato Comprobante electrónico (A4), igual que Imprimir y el envío por correo; la descarga desde el portal sin PDF generado también. Si el cliente o el diario tienen otro formato elegido, manda ese."
-  - version: '24.20261126'
+  - version: '20261126.24'
     fecha: 26/11/2026
     cambios:
       - "Los formatos se llaman «Comprobante electrónico (A4)» (antes CPE A4) y «Comprobante electrónico (ticket)» (antes CPE Ticket) en el menú Imprimir y en el envío por correo."
-  - version: '23.20261126'
+  - version: '20261126.23'
     fecha: 26/11/2026
     cambios:
       - "Facturas de compañías peruanas: el botón Imprimir y el envío por correo usan por defecto el formato CPE A4. Si el cliente o el diario tienen otro formato elegido, manda ese. CPE A4 y CPE Ticket se pueden elegir como formato de factura en el cliente y en el diario."
-  - version: '22.20261027'
+  - version: '20261027.22'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 21.20261018
+  - version: '20261018.21'
     fecha: 18/10/2026
     cambios:
       - "Las líneas sin producto (descuento de una NC, intereses de una ND) imprimen «Servicio» en la columna Unidad, como la unidad ZZ del XML."
-  - version: 20.20261011
+  - version: '20261011.20'
     fecha: 11/10/2026
     cambios:
       - "El XML de la factura informa la retención del IGV del cliente agente como cargo/descuento global con el código 62 del catálogo 53 (MultiplierFactorNumeric, importe y base), el mismo importe que rebaja el neto pendiente."
-  - version: 19.20261011
+  - version: '20261011.19'
     fecha: 11/10/2026
     cambios:
       - "El «Monto neto pendiente de pago» y las cuotas (XML y PDF A4 y ticket) ya no incluyen la retención del IGV cuando el cliente es agente de retención (R.S. 193-2020/SUNAT, numeral 2.1)."
-  - version: 18.20261008
+  - version: '20261008.18'
     fecha: 08/10/2026
     cambios:
       - "Ticket: datos de la compañía al final (nombre, R.U.C., domicilio fiscal, teléfono, correo y web)."
-  - version: 17.20261008
+  - version: '20261008.17'
     fecha: 08/10/2026
     cambios:
       - "Encabezado común (plantilla al_account_base.report_pe_document_header): nombre de la compañía, domicilio fiscal, teléfono y correo con etiqueta y recuadro R.U.C./tipo/número; más espacio entre el encabezado y la primera sección."
@@ -420,29 +420,29 @@ novedades:
       - "Pie de página común en cada página: compañía, R.U.C., domicilio, contacto, fecha de impresión y «Página X de Y»."
       - "Comprobante A4 con el estilo común de los comprobantes PE en blanco y negro: encabezado con recuadro R.U.C./tipo/número, datos del adquirente en tabla, y líneas, totales, importe en letras, detracción e información adicional con QR en una sola tabla; cuotas y cuentas bancarias con la misma cabecera gris."
       - "Ticket 80 mm: recuadro del documento con R.U.C., cabecera gris oscuro del detalle y totales e importe en letras en la misma tabla."
-  - version: 16.20261008
+  - version: '20261008.16'
     fecha: 08/10/2026
     cambios:
       - "La pestaña «Documentos EDI» (estado del envío al OSE, errores y descarga del XML) pasa a «Facturación PE ▸ Envío electrónico» y la ve el equipo de facturación, no solo el modo desarrollador."
-  - version: 15.20261008
+  - version: '20261008.15'
     fecha: 08/10/2026
     cambios:
       - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
-  - version: 14.20261008
+  - version: '20261008.14'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 13.20261007
+  - version: '20261007.13'
     fecha: 07/10/2026
     cambios:
       - "La página «Peruvian EDI» de l10n_pe_edi se reemplaza por «Facturación PE ▸ Comprobante electrónico» (motivos y leyendas), con la OC externa; la detracción va detrás. Test de estructura del formulario."
-  - version: 12.20261007
+  - version: '20261007.12'
     fecha: 07/10/2026
     cambios:
       - "Corregido: al facturar a un contacto de una empresa, el A4 imprimía el nombre del contacto y su documento (vacío); ahora muestra la empresa y su RUC, como el XML y el QR."
       - "Corregido: las notas de crédito y débito ya no imprimen forma de pago ni cuadro de cuotas, que el XML no lleva."
       - "A crédito, el A4 y el ticket muestran el monto neto pendiente de pago (total menos detracción) y las cuotas, como exige la R.S. 193-2020/SUNAT; el ticket no mostraba ninguno de los dos."
-  - version: 11.20260828
+  - version: '20260828.11'
     fecha: 27/09/2026
     cambios:
       - "Las exportaciones y las operaciones gratuitas tienen su propia fila en el pie (**Op. exportación**, **Op. gratuitas**): antes la exportación no se sumaba y lo gratuito salía como «otros tributos», y el PDF no cuadraba con el XML."
@@ -453,16 +453,16 @@ novedades:
   - fecha: 14/09/2026
     cambios:
       - "Certificados digitales dentro de la sección **Comprobantes electrónicos** de la configuración de la app Perú."
-  - version: 8.20260828
+  - version: '20260828.8'
     fecha: 28/08/2026
     cambios:
       - Los certificados digitales, antes solo en Contabilidad, también desde la app Perú.
-  - version: 7.20260827
+  - version: '20260827.7'
     fecha: 27/08/2026
     cambios:
       - El descuento global vuelve a imprimirse; en Odoo 19 salía siempre en cero.
       - Pruebas del desglose de IGV, exonerado, inafecto e ICBPER, moneda extranjera, notas de crédito, cuotas y descuento.
-  - version: 6.20260719
+  - version: '20260719.6'
     fecha: 25/07/2026
     cambios:
       - "Versión para Odoo 19: formatos A4 y ticket, QR del XML firmado, monto en letras nativo y desglose tributario almacenado."

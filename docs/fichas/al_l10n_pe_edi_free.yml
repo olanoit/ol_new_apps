@@ -90,11 +90,11 @@ faq:
       al XML de cada escenario (gravado, exonerado, inafecto y mixto).
 
 novedades:
-  - version: '2.20261027'
+  - version: '20261027.2'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 1.20261021
+  - version: '20261021.1'
     fecha: 21/10/2026
     cambios:
       - "Primera versión: impuesto gratuito exonerado/inafecto, afectación 37 gratuita, leyenda 1002 y contado automáticos, validación de las reglas 2641, 3110 y 3111 al publicar y botón Transferencia gratuita."

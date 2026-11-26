@@ -2,24 +2,24 @@ Historial de cambios — PE - Traslados internos y bienes de terceros (AL)
 ========================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_l10n_pe_stock_transfer.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 5.20261027 — 27/10/2026
+## 20261027.5 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 4.20261018 — 18/10/2026
+## 20261018.4 — 18/10/2026
 
 - Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
 
-## 3.20261012 — 12/10/2026
+## 20261012.3 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): dos almacenes con establecimiento anexo, andamios propios y de terceros, dos traslados a la obra, una compra recogida en el proveedor y la devolución al propietario.
 
-## 2.20261010 — 10/10/2026
+## 20261010.2 — 10/10/2026
 
 - Catálogo 20 completo para la empresa: se añaden 02 Compra, 06 Devolución, 07 Recojo de bienes transformados, 08 Importación y 09 Exportación (anexo de la R.S. 240-2024/SUNAT); 13 «Otros» con descripción obligatoria que va en la guía; 08 y 09 exigen la DAM o DS.
 - Guía en recepciones que traslada la empresa (02, 07, 08): parte del proveedor, llega al almacén y la empresa es destinataria.
@@ -27,6 +27,6 @@ Generado desde `docs/fichas/al_l10n_pe_stock_transfer.yml` (sección `novedades`
 - Partida y llegada propias con el RUC de la empresa y el código de establecimiento anexo en todas las guías; la guía impresa usa el mismo destinatario, punto de llegada y motivo que el XML.
 - Datos de demostración «DEMO TRAS» (tools/stock_transfer_demo_data.py), capturas y guía funcional.
 
-## 1.20261010 — 10/10/2026
+## 20261010.1 — 10/10/2026
 
 - Primera versión: guía de remisión en transferencias internas entre establecimientos (motivo 04, destinatario = remitente, código de establecimiento anexo en partida y llegada) y bienes de terceros visibles en la transferencia, con filtros en existencias, movimientos y transferencias, y el propietario en las observaciones de la guía y en la guía impresa.

@@ -2,20 +2,20 @@ Historial de cambios — Gantt de Proyectos — Website (AL)
 ========================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_project_gantt_website.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 13.20261027 — 27/10/2026
+## 20261027.13 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 12.20261008 — 08/10/2026
+## 20261008.12 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 
-## 11.20260818 — 27/09/2026
+## 20260818.11 — 27/09/2026
 
 - El menú «Gantt» del sitio solo lo ven los usuarios con acceso al Gantt (antes lo veían también visitantes y clientes del portal).
 - El PDF descargado desde el sitio respeta los filtros, la escala, la ruta crítica y la línea base que se están viendo.

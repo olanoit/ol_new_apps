@@ -120,31 +120,31 @@ configuracion:
   - "En la pasarela, «Cobrar en el TPV»; luego agregar el método a la caja con la sesión cerrada."
 
 novedades:
-  - version: '7.20261027'
+  - version: '20261027.7'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '6.20261018'
+  - version: '20261018.6'
     fecha: 18/10/2026
     cambios:
       - "Antes de mostrar el QR de la pasarela se revisa que el comprobante de la venta se pueda emitir: si no (por ejemplo, una línea sin impuesto en la boleta), el cajero ve el motivo y no se cobra."
-  - version: '5.20261018'
+  - version: '20261018.5'
     fecha: 18/10/2026
     cambios:
       - "El logo de la pasarela ocupa el mismo cuadro de 30 px que los demás íconos de la pantalla de pago."
-  - version: '4.20261018'
+  - version: '20261018.4'
     fecha: 18/10/2026
     cambios:
       - "El método de pago del TPV usa la tarjeta de 240 × 160 de la pasarela (como las imágenes de los métodos de pago de Odoo) cuando su módulo la trae."
-  - version: '3.20261018'
+  - version: '20261018.3'
     fecha: 18/10/2026
     cambios:
       - "El logo de la pasarela se ve más ancho, sobre fondo blanco y sin invertir en modo oscuro, para que la marca se lea en la pantalla de pago."
-  - version: '2.20261018'
+  - version: '20261018.2'
     fecha: 18/10/2026
     cambios:
       - "Cada método de pago en línea lleva el logo de su pasarela en la pantalla de pago del TPV (también los ya creados)."
-  - version: '1.20261018'
+  - version: '20261018.1'
     fecha: 18/10/2026
     cambios:
       - "Primera versión: un método de pago del TPV por pasarela y devoluciones a la tarjeta."

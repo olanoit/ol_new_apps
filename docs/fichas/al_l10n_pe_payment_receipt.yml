@@ -70,15 +70,15 @@ faq:
       como el asistente de pago.
 
 novedades:
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261021
+  - version: '20261021.2'
     fecha: 21/10/2026
     cambios:
       - "Pagos con varios socios (pago múltiple): «Varios» en la cabecera y el socio de cada comprobante en el detalle."
-  - version: 1.20261021
+  - version: '20261021.1'
     fecha: 21/10/2026
     cambios:
       - "Primera versión: series RI/RE por diario, PDF con detalle de lo aplicado, monto en letras, firmas y envío por correo."

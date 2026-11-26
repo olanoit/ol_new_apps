@@ -2,24 +2,24 @@ Historial de cambios — TPV - Vendedor por orden (AL)
 ====================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_pos_vendedor.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 5.20261027 — 27/10/2026
+## 20261027.5 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 4.20261011 — 11/10/2026
+## 20261011.4 — 11/10/2026
 
 - Modo oscuro del TPV: la ventana «Seleccionar vendedor» (buscador, tarjetas, estrella, ayuda y pie) se adapta al tema oscuro de la caja.
 
-## 3.20261008 — 08/10/2026
+## 20261008.3 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 
-## 2.20260721 — 27/09/2026
+## 20260721.2 — 27/09/2026
 
 - Los vendedores autorizados ya no pueden iniciar sesión en la caja como cajeros: solo se eligen como vendedor de la venta.
 - El TPV ya no recibe el PIN ni el código de barras de los vendedores; sin Empleados activo en la caja, solo se cargan los vendedores de la lista y no todos los empleados de la compañía.

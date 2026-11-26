@@ -2,104 +2,104 @@ Historial de cambios — Planificación de obra: todos los puentes (AL)
 ====================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 26.20261101 — 01/11/2026
+## 20261101.26 — 01/11/2026
 
 - Paquete 1.16: pruebas de las cuatro etapas (base común, requerimiento y analítica, Cronograma y mueble completo) y de la categoría de los productos de módulo.
 
-## 23.20261027 — 27/10/2026
+## 20261027.23 — 27/10/2026
 
 - Paquete 1.12: pruebas de costo por etapa, reposición a planta y modalidad de ejecución; el ejemplo de la demostración paga sus actividades a contratas.
 
-## 22.20261027 — 27/10/2026
+## 20261027.22 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 21.20261023 — 25/10/2026
+## 20261023.21 — 25/10/2026
 
 - Pruebas del paquete 1.11 v3 (M111-21, M111-22, M111-23 y detalles del 24-oct) y del 1.7 parte 2 (M17-18 y M17-25), con usuarios sin administración; instala el puente al_construction_planner_mrp_request.
 
-## 20.20261023 — 24/10/2026
+## 20261023.20 — 24/10/2026
 
 - La prueba del libro de carga incluye la pestaña PLAN (requerimiento CREVAL v1.0, 6.7).
 
-## 19.20261023 — 24/10/2026
+## 20261023.19 — 24/10/2026
 
 - Pruebas de la bolsa de herramientas, las capas de la cotización y el libro de APU y presupuesto (requerimiento CREVAL v1.0, 6.1, 6.5 y 6.6).
 
-## 18.20261023 — 24/10/2026
+## 20261023.18 — 24/10/2026
 
 - Prueba de la valorización al cliente por avance de la partida con gastos generales, utilidad y descuento en proporción (correcciones CR-01 y CR-12).
 
-## 17.20261023 — 24/10/2026
+## 20261023.17 — 24/10/2026
 
 - Corrección CR-08 de la prueba CREVAL: la prueba del re-trabajo marca el pago con su motivo antes de liquidarlo.
 
-## 16.20261023 — 23/10/2026
+## 20261023.16 — 23/10/2026
 
 - Requerimiento CREVAL v1.0: las pruebas de aprobadores siguen a los grupos en dos ejes (la regla cita Ejecución: aprueba, que la jefatura y el administrador incluyen).
 
-## 15.20261023 — 23/10/2026
+## 20261023.15 — 23/10/2026
 
 - Pruebas de los retazos (paquete 1.11, M111-12, fase B): cubrir y quitar retazo, declarar sobrantes con devolución, lote y costo, exceso de lo declarado y exigencia antes de terminar; la orden redondeada se termina sin aviso de consumo.
 
-## 14.20261023 — 23/10/2026
+## 20261023.14 — 23/10/2026
 
 - Pruebas de las planchas enteras (paquete 1.11, M111-12, fase A): redondeo al confirmar, varias líneas del mismo tablero, tolerancia, orden por abastecimiento, cambio de cantidad, reserva y validación en enteros, compra y comparación con la necesidad.
 
-## 13.20261021 — 21/10/2026
+## 20261021.13 — 21/10/2026
 
 - Pruebas del despacho por unidad con material sin departamento y con productos de módulo.
 
-## 12.20261021 — 21/10/2026
+## 20261021.12 — 21/10/2026
 
 - Prueba del departamento tomado de las líneas del requerimiento en el despacho a obra por unidad.
 
-## 11.20261021 — 21/10/2026
+## 20261021.11 — 21/10/2026
 
 - Prueba de que la solicitud de una versión nueva del plan muestra 0 %.
 
-## 10.20261021 — 21/10/2026
+## 20261021.10 — 21/10/2026
 
 - Pruebas del paquete 1.11 (M111-02 a M111-06), con una que revisa que ninguna vista del planificador use funciones que el navegador no evalúa.
 
-## 9.20261019 — 19/10/2026
+## 20261019.9 — 19/10/2026
 
 - Pruebas del paquete 1.10 (fabricación por etapas, despacho por departamento, lote, motivo de posventa y aprobaciones en bloque).
 
-## 8.20261018 — 18/10/2026
+## 20261018.8 — 18/10/2026
 
 - Las reglas de aprobación de ejemplo ya no llevan el prefijo «[DEMO]».
 
-## 7.20261017 — 17/10/2026
+## 20261017.7 — 17/10/2026
 
 - Los datos de demostración se instalan en una base nueva: las reglas de aprobación de ejemplo apuntaban a un modelo y un grupo sin el prefijo de `al_construction_planner`.
 
-## 6.20261017 — 17/10/2026
+## 20261017.6 — 17/10/2026
 
 - Pruebas de accesorios con la orden que ya trae los accesorios de su lista de materiales.
 
-## 5.20261017 — 17/10/2026
+## 20261017.5 — 17/10/2026
 
 - Instala también `al_construction_planner_production`; pruebas de accesorios de armado y presupuestado frente a real (M19-02 y M19-05).
 
-## 4.20261017 — 17/10/2026
+## 20261017.4 — 17/10/2026
 
 - Instala también `al_construction_planner_approvals_mrp`; pruebas del exceso en la orden de fabricación (M19-04).
 
-## 3.20261017 — 17/10/2026
+## 20261017.3 — 17/10/2026
 
 - Instala también `al_construction_planner_approvals`; pruebas del paquete 1.9 (aprobaciones en la aplicación Aprobaciones y ambiente medido).
 
-## 2.20261013 — 15/10/2026
+## 20261013.2 — 15/10/2026
 
 - Instala también `al_construction_planner_sale_furniture`; pruebas de operación nativa (compras con tres proveedores, spools de tuberías, cuadrilla por rol) y del perfil mobiliario sobre la demo.
 - Obra de prueba de la contrata eléctrica: tablero con dos sistemas y cuatro partidas, compra masiva por partida, contrata de cableado por punto y control por tablero y sistema.
 
-## 1.20261013 — 15/10/2026
+## 20261013.1 — 15/10/2026
 
 - Módulo nuevo (v1.7, M17-07): reúne los puentes y las pruebas de integración.

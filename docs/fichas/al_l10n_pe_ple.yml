@@ -1009,80 +1009,80 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
-  - version: '27.20261027'
+  - version: '20261027.27'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 26.20261012
+  - version: '20261012.26'
     fecha: 12/10/2026
     cambios:
       - "Menús en Perú ▸ SUNAT ▸ Libros PLE (con los formatos 10.1 a 10.4 en la misma sección) y Libros PLE nativos."
-  - version: 25.20261012
+  - version: '20261012.25'
     fecha: 12/10/2026
     cambios:
       - "Las notas cuyo original no está en Odoo toman los datos escritos en «Comprobante modificado» (8.4 y 14.4) y ya no bloquean el TXT."
       - "Los informes PLE de Odoo reciben el comprobante con CDR rechazado como anulado (importe cero, nota 4 del anexo 2 de la R.S. 112-2021/SUNAT) en lugar de marcarlo como error."
       - "DAM y DSI (tipos 50-54) numeradas aduana-año-régimen-número: el 8.4 lleva la aduana en el campo 8, el año de la DAM (del número) en el 9 y el número en el 10; el total es base + IGV + otros derechos, sin la cuenta puente del valor en aduana (el campo 21 ya no sale negativo)."
-  - version: 24.20261011
+  - version: '20261011.24'
     fecha: 11/10/2026
     cambios:
       - "RCE 8.1/8.4: las retenciones de la liquidación de compra (IGV y renta, al_l10n_pe_edi_purchase_settlement) no reducen el importe total del comprobante, como ya pasaba con la retención del IGV."
-  - version: 23.20261009
+  - version: '20261009.23'
     fecha: 09/10/2026
     cambios:
       - "Etiqueta más corta en el activo: «Doc. de autorización» del cambio de método de depreciación."
-  - version: 22.20261008
+  - version: '20261008.22'
     fecha: 08/10/2026
     cambios:
       - "Tipo de operación (tabla 12) y consignación de la transferencia en el grupo Libros electrónicos (PLE) de la página Logística PE."
-  - version: 21.20261008
+  - version: '20261008.21'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po."
-  - version: 20.20261008
+  - version: '20261008.20'
     fecha: 08/10/2026
     cambios:
       - "Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar."
-  - version: 19.20261008
+  - version: '20261008.19'
     fecha: 08/10/2026
     cambios:
       - "Los libros son del RUC: desde una sucursal el nombre del archivo y la cabecera llevan el RUC de la raíz, y retenciones 4.1, consignaciones, costos, inversiones 3.8, activos 3.9/7.1 y patrimonio 3.19 recogen lo de toda la compañía (raíz y sucursales), como ya hacían el diario y los registros de compras y ventas."
-  - version: 18.20261008
+  - version: '20261008.18'
     fecha: 08/10/2026
     cambios:
       - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
-  - version: 17.20261008
+  - version: '20261008.17'
     fecha: 08/10/2026
     cambios:
       - "Libros simplificados del RUC: las sucursales usan el valor de su raíz."
       - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
-  - version: 16.20261008
+  - version: '20261008.16'
     fecha: 08/10/2026
     cambios:
       - "Botones XLSX 12.1/13.1 del asistente de inventario con la convención de Odoo (action_export_xlsx_12_1 / _13_1)."
-  - version: 15.20261008
+  - version: '20261008.15'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas."
       - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
-  - version: 14.20261007
+  - version: '20261007.14'
     fecha: 07/10/2026
     cambios:
       - "Los datos del RCE (clasificación y estado), la importación y no domiciliados de l10n_pe_reports y el tipo de transacción de los asientos pasan a «Contabilidad PE ▸ Registros electrónicos»."
-  - version: 13.20261007
+  - version: '20261007.13'
     fecha: 07/10/2026
     cambios:
       - "RVIE 14.4: una nota de crédito o débito de venta sin el comprobante que modifica (campos 29-32) bloquea el TXT con la lista de notas a corregir, como ya hacía el RCE 8.4 con las de compra; las anuladas no bloquean (van en cero)."
-  - version: 12.20261007
+  - version: '20261007.12'
     fecha: 07/10/2026
     cambios:
       - "RVIE 14.4: un comprobante con CDR rechazado por SUNAT (códigos 2000-3999) se anota en cero, como los anulados (nota 4 del anexo 2 de la RS 112-2021). En Odoo 19 sigue publicado y «por enviar», así que antes iba con sus importes; las excepciones 0100-1999 (no recibido, se reenvía) no cuentan como rechazo."
-  - version: 11.20261007
+  - version: '20261007.11'
     fecha: 07/10/2026
     cambios:
       - "Corregido: el registro de compras (8.4 y 8.5) y el de ventas (14.4) informaban los comprobantes en dólares con los importes en dólares. Ahora van en soles, con la moneda y el tipo de cambio aparte, como los declara la contabilidad real (13 223,10 USD se informan como 46 214,73 con T.C. 3,495)."
-  - version: 10.20261007
+  - version: '20261007.10'
     fecha: 07/10/2026
     cambios:
       - "Libros del asistente (retenciones, consignaciones, simplificados, activos, costos y libro 3): cada línea del TXT cierra con «|», como los archivos del PLE; antes el validador podía rechazarlos."
@@ -1092,7 +1092,7 @@ novedades:
       - "Activos y libro 3: los activos cerrados y archivados ya no desaparecen del 7.1 ni del 3.9; código de cuenta correcto aunque la compañía activa sea otra; depreciación importada y fecha de inicio de uso corregidas; porcentaje máximo 100; 7.3 y 7.4 validan catálogo, cuotas y monto; no se repiten filas del 10.3 ni del 3.19."
       - "Excel de revisión: importes como número, archivos de los libros nativos con extensión .xlsx y encabezados con el nombre real del campo."
       - "El TXT del 8.4 se bloquea si hay notas de crédito o débito sin enlazar al comprobante que modifican (SUNAT las rechazaría) y lista cuáles son; el Excel de revisión se sigue generando para encontrarlas."
-  - version: 9.20261007
+  - version: '20261007.9'
     fecha: 07/10/2026
     cambios:
       - "Corregido: el TXT del RCE 8.4 salía con 41 campos y el anexo 8 pide 37 (los campos 38 a 41 no van en el archivo); el Excel de revisión los sigue mostrando."
@@ -1100,7 +1100,7 @@ novedades:
       - "Las sucursales se incluyen en los libros de la compañía y sus importes por grupo de impuestos ya no salen en cero."
       - "La base imponible ya no incluye el ISC; el 8.3 y el 14.2 separan gravado, exonerado e inafecto; el 14.2 informa los anulados (estado 2) y lleva T.C. 1.000 en soles; el 8.3 marca estado 6 o 7 para comprobantes de periodos anteriores."
       - "Las notas de débito informan el documento que modifican en el 8.3/14.2, el 5.4 ya no mezcla cuentas de otras compañías y el campo 31 del 8.4 lleva la aduana del documento modificado."
-  - version: 8.20260828
+  - version: '20260828.8'
     fecha: 27/09/2026
     cambios:
       - "El RCE 8.4 ya no incluye los comprobantes del 8.5 (tipo 00) ni los recibos por honorarios (02)."
@@ -1118,26 +1118,26 @@ novedades:
       - "Excel de revisión en todos los libros PLE: botones XLSX junto a los TXT de la localización oficial (1.1, 1.2, 5.1, 5.3, 6.1, Libro 3 y 12.1 / 13.1), con el formato del resto del módulo."
       - "Encabezados tomados del Anexo 2 oficial de SUNAT, que acompaña al módulo junto con la nomenclatura de los archivos."
       - "La fila de encabezados del Excel crece cuando el nombre del campo es largo."
-  - version: 6.20260828
+  - version: '20260828.6'
     fecha: 14/09/2026
     cambios:
       - "Registro de Activos Fijos (PLE 7.1) en pantalla, con botones TXT 7.1, XLSX 7.1, TXT 7.3 y TXT 7.4."
       - La depreciación del 7.1 ya no suma los asientos de baja o venta; los activos dados de baja salen del registro.
-  - version: 5.20260828
+  - version: '20260828.5'
     fecha: 28/08/2026
     cambios:
       - La ficha del producto vuelve a abrirse con el campo Clasificación RCE.
-  - version: 4.20260815
+  - version: '20260815.4'
     fecha: 18/08/2026
     cambios:
       - "RCE 8.4 y 8.5 y RVIE 14.4 con la estructura oficial, extraídos sin el error de base de datos."
       - Clasificación y estado RCE en productos y facturas de proveedor.
       - Botón XLSX en los informes del RCE y del RVIE.
-  - version: 3.20260719
+  - version: '20260719.3'
     fecha: 19/07/2026
     cambios:
       - Excel de revisión por formato y sección propia en Ajustes ▸ Perú.
-  - version: 1.20260718
+  - version: '20260718.1'
     fecha: 19/07/2026
     cambios:
       - "Libros 7, 4.1, 9, 3.8/3.9/3.19/3.23, 10 y simplificados en la app Perú, con guía funcional y datos de demostración."

@@ -82,27 +82,27 @@ configuracion:
   - "Para la percepción aduanera, instale Percepciones del IGV y configure su cuenta de percepciones por aplicar."
 
 novedades:
-  - version: '6.20261028'
+  - version: '20261028.6'
     fecha: 28/10/2026
     cambios:
       - "El campo ISC de la DUA tiene etiqueta propia («ISC de la DUA») y ya no se confunde con el ISC del comprobante en los filtros; el formulario sigue mostrando «ISC»."
-  - version: '5.20261027'
+  - version: '20261027.5'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 4.20261018
+  - version: '20261018.4'
     fecha: 18/10/2026
     cambios:
       - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
-  - version: 3.20261012
+  - version: '20261012.3'
     fecha: 12/10/2026
     cambios:
       - "Menú en Perú ▸ Proveedores ▸ Comprobantes."
-  - version: 2.20261012
+  - version: '20261012.2'
     fecha: 12/10/2026
     cambios:
       - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): importación de diez motobombas con recepción, factura del exterior, gastos del agente y la DAM publicada con su costo en destino."
-  - version: 1.20261012
+  - version: '20261012.1'
     fecha: 12/10/2026
     cambios:
       - "DUA (tipo 50 y 52) como documento de compra con el número de la DAM (aduana-año-régimen-número) que leen el PLE y el SIRE."

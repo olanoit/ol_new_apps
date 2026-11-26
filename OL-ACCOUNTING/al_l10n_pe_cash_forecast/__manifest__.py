@@ -22,7 +22,7 @@ Flujo de caja proyectado
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_cash_forecast/static/description/icon.png',
-    'version': '3.20261027',
+    'version': '20261027.3',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_account_base'],

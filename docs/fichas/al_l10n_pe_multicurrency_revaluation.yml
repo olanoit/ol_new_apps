@@ -155,27 +155,27 @@ faq:
     respuesta: No. El informe queda como el nativo, sin la columna T.C.
 
 novedades:
-  - version: '7.20261027'
+  - version: '20261027.7'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 6.20261012
+  - version: '20261012.6'
     fecha: 12/10/2026
     cambios:
       - "Menú en Perú ▸ Contabilidad ▸ Cierre del mes."
-  - version: 5.20261009
+  - version: '20261009.5'
     fecha: 09/10/2026
     cambios:
       - "Etiqueta más corta en la cuenta: «T.C. de revaluación» (el detalle pasa a la ayuda)."
-  - version: 4.20261008
+  - version: '20261008.4'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 3.20261007
+  - version: '20261007.3'
     fecha: 07/10/2026
     cambios:
       - "Corregido: las cuentas con T.C. compra o venta se revaluaban con el que SUNAT muestra con fecha del informe, que es el cierre del día hábil anterior. Ahora usan el cierre de operaciones de la fecha del informe (art. 34 del Reglamento de la LIR), que SUNAT publica con fecha del día siguiente."
-  - version: 2.20260916
+  - version: '20260916.2'
     fecha: 27/09/2026
     cambios:
       - "Si se escribe a mano un tipo de cambio en el filtro del informe, ese valor se usa también en las cuentas marcadas con T.C. compra o venta."

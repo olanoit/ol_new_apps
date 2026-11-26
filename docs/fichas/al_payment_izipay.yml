@@ -223,20 +223,20 @@ faq:
       La opción automática de Izipay anularía el pago completo.
 
 novedades:
-  - version: '4.20261027'
+  - version: '20261027.4'
     fecha: 27/10/2026
     cambios:
       - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
       - "La imagen del proveedor de pago no cambia: pasa a static/img/izipay_icon.png."
-  - version: '2.20261018'
+  - version: '20261018.2'
     fecha: 18/10/2026
     cambios:
       - "Ícono con esquinas redondeadas y el logotipo más grande, y tarjeta de 240 × 160 para el método de pago del TPV."
-  - version: 1.20261014
+  - version: '20261014.1'
     fecha: 14/10/2026
     cambios:
       - "Primera versión: formulario emergente de Izipay, confirmación en el servidor y por IPN firmada, anulación y devoluciones totales o parciales, soles y dólares."

@@ -470,28 +470,28 @@ faq:
       facturas y notas.
 
 novedades:
-  - version: '14.20261103'
+  - version: '20261103.14'
     fecha: 03/11/2026
     cambios:
       - "El asiento de destino ya no crea un segundo apunte analítico: el centro de costo se carga una sola vez, desde el comprobante de origen."
       - "Al actualizar, una migración borra los apuntes duplicados de los asientos de destino anteriores: los informes analíticos de periodos pasados bajan a su valor correcto."
-  - version: '13.20261027'
+  - version: '20261027.13'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 12.20261012
+  - version: '20261012.12'
     fecha: 12/10/2026
     cambios:
       - "Menú en Perú ▸ Contabilidad ▸ Cierre del mes (Asientos de destino y Destinos por cuenta)."
-  - version: 11.20261009
+  - version: '20261009.11'
     fecha: 09/10/2026
     cambios:
       - "Destino de cuenta con chatter: historial de cambios de cuenta principal, cuenta destino y porcentaje."
-  - version: 10.20261008
+  - version: '20261008.10'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po."
-  - version: 9.20261008
+  - version: '20261008.9'
     fecha: 08/10/2026
     cambios:
       - "Sentido y cuenta de carga como campos delegados a la raíz (patrón de Odoo): las sucursales los heredan de solo lectura."
@@ -502,21 +502,21 @@ novedades:
       - "Multicompañía con el mismo patrón que Odoo 19 usa para el código de la cuenta: el reparto, la carga propia y «Desactivar destinos» son de cada compañía raíz (campos por compañía) y sus sucursales usan la configuración de su RUC; la regla de acceso es la de cuentas y diarios (parent_of). La migración lleva los valores existentes a cada raíz según su sentido 6→9 / 9→6."
       - "Nuevo asistente «Destinos del periodo» (Perú ▸ Destinos y Contabilidad ▸ Cierre): cuadre 79 vs Elemento 9 y regeneración de los destinos del rango."
       - "Compañías nuevas: sentido 6→9 por defecto, el que indica el PCGE."
-  - version: 7.20261008
+  - version: '20261008.7'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 6.20261007
+  - version: '20261007.6'
     fecha: 07/10/2026
     cambios:
       - "Los destinos de la factura pasan a la pestaña interna «Contabilidad PE ▸ Destinos»."
-  - version: 5.20261007
+  - version: '20261007.5'
     fecha: 07/10/2026
     cambios:
       - "Corregido: restablecer y volver a publicar un comprobante consumía otro número del diario de destinos y dejaba huecos en el correlativo; ahora conserva su número salvo que cambie el periodo."
       - "Las líneas del asiento de destino (clase 9) llevan la analítica de la línea de origen."
       - "Si al republicar ya no queda nada que distribuir, el asiento de destino anterior se cancela en vez de quedar en borrador."
-  - version: 4.20260828
+  - version: '20260828.4'
     fecha: 27/09/2026
     cambios:
       - "Eliminar un asiento de destino ya no borra el comprobante de origen. Al eliminar un comprobante en borrador, su asiento de destino se elimina con él."
@@ -525,15 +525,15 @@ novedades:
       - "Con varias compañías, el sentido de la dinámica (6→9 o 9→6) se toma de la compañía del comprobante y no de la compañía activa."
       - "Desde la lista de destinos ya se pueden cargar las líneas de una en una. La suma del 100 % se comprueba al guardar la cuenta y al generar el asiento."
       - "Se retira el enlace a la plantilla de importación, que apuntaba a un archivo inexistente."
-  - version: 3.20260828
+  - version: '20260828.3'
     fecha: 14/09/2026
     cambios:
       - "El menú de la app Perú pasa a **Configuración ▸ Cuentas de la localización ▸ Destinos por cuenta**."
-  - version: 2.20260828
+  - version: '20260828.2'
     fecha: 28/08/2026
     cambios:
       - Acceso a los destinos desde la app Perú.
-  - version: 1.20260717
+  - version: '20260717.1'
     fecha: 19/07/2026
     cambios:
       - Asiento de destino automático en el diario GA, en los dos sentidos.

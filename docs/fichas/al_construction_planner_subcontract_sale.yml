@@ -20,15 +20,15 @@ configuracion:
 requisitos_nota: Se instala automáticamente con `al_construction_planner_subcontract` y `al_construction_planner_sale`.
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
-- version: '4.20261112'
+- version: '20261112.4'
   fecha: 16/11/2026
   cambios:
     - "Las escrituras del sistema sobre un plan aprobado usan la marca del servidor PLAN_FORCE (un contexto enviado por el cliente ya no abre el plan)."
-- version: '2.20261027'
+- version: '20261027.2'
   fecha: 27/10/2026
   cambios:
     - "Ícono nuevo: el isotipo de ALTA."
-- version: '1.20261023'
+- version: '20261023.1'
   fecha: 23/10/2026
   cambios:
   - "Puente nuevo (requerimiento CREVAL v1.0, 3.9): «Agregar a la orden de contrata» desde el cambio de obra aprobado, con la ampliación por aprobar cuando la orden pasa su monto aprobado."

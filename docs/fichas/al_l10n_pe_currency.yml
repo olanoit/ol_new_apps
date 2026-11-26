@@ -409,40 +409,40 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
-  - version: '16.20261027'
+  - version: '20261027.16'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 15.20261012
+  - version: '20261012.15'
     fecha: 21/10/2026
     cambios:
       - "T.C. pactado en cobros y pagos: reemplaza a la compra o venta de SUNAT en esa operación; un cobro en soles de una factura en dólares queda pagado con la diferencia en 676 o 776."
-  - version: 14.20261012
+  - version: '20261012.14'
     fecha: 12/10/2026
     cambios:
       - "Menús en Perú ▸ Tesorería ▸ Tipo de cambio."
-  - version: 13.20261008
+  - version: '20261008.13'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po."
-  - version: 12.20261008
+  - version: '20261008.12'
     fecha: 08/10/2026
     cambios:
       - "El token de Decolecta/apis.net se toma de la compañía o, en una sucursal, de su RUC."
-  - version: 11.20261008
+  - version: '20261008.11'
     fecha: 08/10/2026
     cambios:
       - "Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company)."
-  - version: 10.20261008
+  - version: '20261008.10'
     fecha: 08/10/2026
     cambios:
       - "Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent)."
-  - version: 9.20261008
+  - version: '20261008.9'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
       - "La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa."
-  - version: 8.20261007
+  - version: '20261007.8'
     fecha: 07/10/2026
     cambios:
       - "Corregido: las tasas cargadas desde el BCRP quedaban un día hábil adelantadas (el cierre SBS del viernes es el T.C. SUNAT del sábado al lunes). Ahora cada fecha toma el cierre anterior, como publica SUNAT, y los fines de semana y feriados también quedan registrados. Al actualizar, las tasas del BCRP ya cargadas se recargan con la fecha correcta."
@@ -450,7 +450,7 @@ novedades:
       - "La actualización automática ya no pisa una tasa registrada a mano y no reescribe una tasa que no cambió."
       - "La carga por mes funciona aunque el mes no se haya elegido en pantalla, y ninguna carga registra fechas futuras."
       - "La consulta al BCRP se reintenta si el servicio devuelve una respuesta vacía."
-  - version: 7.20260901
+  - version: '20260901.7'
     fecha: 27/09/2026
     cambios:
       - "Cargar el tipo de cambio ya no falla en bases con sucursales: la tasa se guarda en la compañía principal, de la que la toman sus sucursales."
@@ -466,21 +466,21 @@ novedades:
   - fecha: 14/09/2026
     cambios:
       - Menús de la app Perú reordenados.
-  - version: 5.20260901
+  - version: '20260901.5'
     fecha: 01/09/2026
     cambios:
       - "Corrección: al crear una factura el tipo de T.C. se conoce antes de calcular la tasa, que ya no cae siempre en venta."
-  - version: 4.20260828
+  - version: '20260828.4'
     fecha: 28/08/2026
     cambios:
       - Grupo **Tipo de cambio** en la app Perú con el asistente, la lista de tasas y el cierre; la lista gana la columna de moneda.
-  - version: 3.20260816
+  - version: '20260816.3'
     fecha: 18/08/2026
     cambios:
       - Compra o venta por factura y por pago, con criterio configurable para ventas y compras.
       - Nuevas fuentes BCRP y Decolecta; tasa nativa y venta coherentes.
       - Revisión de las cuentas de diferencia de cambio 676 / 776.
-  - version: 1.20260717
+  - version: '20260717.1'
     fecha: 16/07/2026
     cambios:
       - Tipo de cambio compra/venta SUNAT, actualización diaria y T.C. aplicado en las facturas.

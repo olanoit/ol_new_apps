@@ -2,54 +2,54 @@ Historial de cambios — Gantt de Proyectos — Backend (AL)
 ========================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 22.20261102 — 02/11/2026
+## 20261102.22 — 02/11/2026
 
 - Selector de proyectos: nombres completos y la búsqueda en la misma línea que las etiquetas.
 
-## 21.20261102 — 02/11/2026
+## 20261102.21 — 02/11/2026
 
 - Los proyectos se eligen como etiquetas (como un campo many2many_tags) en vez de un botón por proyecto.
 - El Gantt ya no abre con todos los proyectos: abre con la última selección del usuario o, la primera vez, con el proyecto de la tarea modificada más reciente. Desde la ficha de un proyecto abre ese proyecto.
 - Modo oscuro: los estilos propios usan las variables de Odoo y se ajustan solos.
 
-## 20.20261101 — 01/11/2026
+## 20261101.20 — 01/11/2026
 
 - M115-02: los botones de la barra admiten grupo y etiqueta; con grupos, la barra se arma en una fila por grupo y el contador de la selección queda en la primera. Sin grupos, como antes.
 
-## 19.20261027 — 27/10/2026
+## 20261027.19 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
 
-## 18.20261027 — 27/10/2026
+## 20261027.18 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 17.20261013 — 13/10/2026
+## 20261013.17 — 13/10/2026
 
 - Ícono propio de la app «Gantt» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.
 
-## 16.20261011 — 11/10/2026
+## 20261011.16 — 11/10/2026
 
 - Modo oscuro: el diagrama (dhtmlxGantt), la barra de herramientas, el formulario de tarea, el menú contextual y las marcas de la ruta crítica, la línea base y los días no laborables toman los colores del tema oscuro de Odoo; el modo claro no cambia.
 
-## 15.20261010 — 10/10/2026
+## 20261010.15 — 10/10/2026
 
 - Puntos de extensión para pantallas que reutilizan el diagrama heredando su componente (como el cronograma de la planificación de obra): opciones extra para los datos, filas y columnas propias, casillas de selección en cascada con barra de selección y botones propios, y paneles a la derecha y debajo del diagrama. Sin heredarlo, el Gantt se ve y funciona igual.
 
-## 14.20261009 — 09/10/2026
+## 20261009.14 — 09/10/2026
 
 - Ícono propio en el menú principal (barras escalonadas de un diagrama de Gantt), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de Proyecto; en Aplicaciones sigue el ícono nativo.
 
-## 13.20261008 — 08/10/2026
+## 20261008.13 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 
-## 12.20260818 — 27/09/2026
+## 20260818.12 — 27/09/2026
 
 - Al desmarcar un proyecto ya no desaparece de la barra: se puede volver a marcar, y «Todos» recupera todos los proyectos visibles.
 - Arrastrar una barra solo guarda sus fechas; ya no reescribe responsables, etiquetas ni horas con lo que había en pantalla.

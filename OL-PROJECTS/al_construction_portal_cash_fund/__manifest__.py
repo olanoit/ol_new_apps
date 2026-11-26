@@ -28,7 +28,7 @@ Funciona sin señal: cada registro entra a la cola del portal.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_portal_cash_fund/static/description/icon.png',
-    'version': '1.20261107',
+    'version': '20261107.1',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_construction_portal', 'al_l10n_pe_cash_fund'],

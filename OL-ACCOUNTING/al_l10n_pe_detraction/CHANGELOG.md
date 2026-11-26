@@ -2,72 +2,72 @@ Historial de cambios — PE - Detracciones SPOT (AL)
 ==================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 26.20261027 — 27/10/2026
+## 20261027.26 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 25.20261018 — 18/10/2026
+## 20261018.25 — 18/10/2026
 
 - Los datos de demostración llevan nombres reales (Servicio de asesoría empresarial, Consultores Asociados del Sur S.A.C., Ventas y Compras con detracción) en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
 
-## 24.20261012 — 12/10/2026
+## 20261012.24 — 12/10/2026
 
 - Menús en Perú ▸ Clientes y Proveedores ▸ Detracciones, retenciones y percepciones; productos en Configuración ▸ Tributos SUNAT; análisis en Informes ▸ Análisis.
 
-## 23.20261012 — 12/10/2026
+## 20261012.23 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): servicio sujeto al SPOT (037, 12 %), una venta con su detracción y una compra con el depósito y la constancia.
 
-## 22.20261011 — 11/10/2026
+## 20261011.22 — 11/10/2026
 
 - Importación de constancias de depósito desde el archivo de SUNAT (Excel o CSV) con vista previa: llena número y fecha de la constancia en compras y ventas y, opcionalmente, registra el depósito.
 
-## 21.20261008 — 08/10/2026
+## 20261008.21 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.
 
-## 20.20261008 — 08/10/2026
+## 20261008.20 — 08/10/2026
 
 - Menú Perú ▸ Detracciones con facturas de venta y de proveedor, depósitos, depósito masivo, productos y análisis (tabla dinámica y gráfico).
 - Cada depósito registrado queda enlazado a su comprobante; los anteriores se enlazan al actualizar.
 
-## 19.20261008 — 08/10/2026
+## 20261008.19 — 08/10/2026
 
 - Las etiquetas de las vistas ya no muestran «SPOT»: Tipo de detracción, bloque Detracción, menú y Ajustes Detracciones, Tipo de operación de la detracción.
 - La detracción del producto (tipo, código del catálogo 54 y porcentaje) pasa a la pestaña Contabilidad, en un bloque propio; código y porcentaje quedan de solo lectura cuando hay tipo.
 - Un producto con solo el código del catálogo 54 (sin tipo) ya da a la factura su tipo de detracción; antes la factura calculaba el porcentaje pero quedaba sin tipo y el TXT sin código. La migración asigna el tipo a esos productos.
 
-## 18.20261008 — 08/10/2026
+## 20261008.18 — 08/10/2026
 
 - Depósito masivo desde una sucursal: cabecera, titular (modo proveedor) y correlativo del lote son los del RUC, compartido por todas sus sucursales.
 
-## 17.20261008 — 08/10/2026
+## 20261008.17 — 08/10/2026
 
 - Los asistentes validan en el servidor que lo que reciben sea de su compañía (_check_company_auto y check_company).
 
-## 16.20261008 — 08/10/2026
+## 20261008.16 — 08/10/2026
 
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
 
-## 15.20261008 — 08/10/2026
+## 20261008.15 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
 
-## 14.20261007 — 07/10/2026
+## 20261007.14 — 07/10/2026
 
 - La detracción pasa a la pestaña interna «Facturación PE ▸ Detracción». La constancia que l10n_pe_reports mostraba aparte en la factura de proveedor ya no sale duplicada.
 
-## 13.20261007 — 07/10/2026
+## 20261007.13 — 07/10/2026
 
 - Corregido: en facturas en moneda extranjera la detracción se calculaba sobre el total en soles de la factura, que depende del T.C. elegido (compra o editado a mano). Ahora se convierte siempre al T.C. venta oficial de la fecha de emisión, como manda la R.S. 183-2004/SUNAT, y coincide con el monto que va en el XML. Ejemplo: US$ 1 180 con venta 3.80 y factura a compra 3.70 daba S/ 524 en vez de S/ 538.
 
-## 12.20260827 — 27/09/2026
+## 20260827.12 — 27/09/2026
 
 - Con la detracción separada en el asiento, las cuotas de la factura electrónica a crédito ya no incluyen la detracción ni la restan dos veces.
 - El depósito masivo del Banco de la Nación deja fuera los comprobantes que ya tienen constancia, y valida también los elegidos a mano (publicados, de la compañía y de la modalidad).
@@ -85,27 +85,27 @@ Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) co
 - Contraste del catálogo con la página de SUNAT: botón en el catálogo, historial de contrastes, aplicación manual de las diferencias y acción planificada mensual con actividad cuando cambian.
 - Mínimo del Anexo 1 (códigos 001 y 003) actualizado a S/ 2.750, media UIT de 2026.
 
-## 6.20260827 — 14/09/2026
+## 20260827.6 — 14/09/2026
 
 - La app Perú agrupa las detracciones en su propio menú: **Perú ▸ Detracciones**; el catálogo pasa a **Configuración ▸ Tributos SUNAT**.
 
-## 5.20260827 — 27/08/2026
+## 20260827.5 — 27/08/2026
 
 - Con el reparto activo, registrar el depósito ya no da por pagada la deuda con el proveedor.
 
-## 4.20260815 — 18/08/2026
+## 20260815.4 — 18/08/2026
 
 - Depósito masivo de detracciones para el Banco de la Nación, cuenta de detracciones en el contacto y tipo de operación SPOT en la factura.
 
-## 3.20260719 — 19/07/2026
+## 20260719.3 — 19/07/2026
 
 - Bloque propio **Detracciones (SPOT)** en los Ajustes de Perú.
 
-## 2.20260719 — 19/07/2026
+## 20260719.2 — 19/07/2026
 
 - Reparto opcional de la detracción dentro del asiento de la factura.
 - Constancia de detracción en el PLE 8.3.
 
-## 1.20260719 — 19/07/2026
+## 20260719.1 — 19/07/2026
 
 - Primera versión: catálogo 54, cálculo en facturas, tipo de operación 1001 y registro del depósito con constancia.

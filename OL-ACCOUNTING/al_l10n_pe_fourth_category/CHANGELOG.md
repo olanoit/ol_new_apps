@@ -2,28 +2,28 @@ Historial de cambios — PE - Retención de renta de 4.ª categoría (AL)
 ====================================================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_l10n_pe_fourth_category.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 5.20261027 — 27/10/2026
+## 20261027.5 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 4.20261018 — 18/10/2026
+## 20261018.4 — 18/10/2026
 
 - Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
 
-## 3.20261012 — 12/10/2026
+## 20261012.3 — 12/10/2026
 
 - Recibos en Perú ▸ Proveedores ▸ Comprobantes; suspensiones en Detracciones, retenciones y percepciones; PLAME y certificado en SUNAT ▸ Declaraciones.
 
-## 2.20261012 — 12/10/2026
+## 20261012.2 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): dos prestadores y tres recibos por honorarios pagados: con retención, bajo el tope y con constancia de suspensión.
 
-## 1.20261012 — 12/10/2026
+## 20261012.1 — 12/10/2026
 
 - Retención de 4.ª categoría automática en los recibos por honorarios: 8 % del importe total cuando supera S/ 1 500 y la compañía es agente de retención; tasa, tope y cuenta en Ajustes.
 - Suspensiones de retención por prestador con la constancia del Formulario Virtual 1609, vigentes del día siguiente a su emisión al 31 de diciembre.

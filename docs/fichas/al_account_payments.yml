@@ -287,49 +287,49 @@ faq:
       actualizaciones del módulo no los sobrescriben.
 
 novedades:
-  - version: '11.20261027'
+  - version: '20261027.11'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 10.20261012
+  - version: '20261012.10'
     fecha: 12/10/2026
     cambios:
       - "«Compra y venta de moneda» pasa a Perú ▸ Tesorería ▸ Tipo de cambio."
-  - version: 9.20261012
+  - version: '20261012.9'
     fecha: 12/10/2026
     cambios:
       - "Aviso (no bloqueo) de pago con fecha futura en el asistente de registro y en el pago; al publicarlo queda anotado en su historial."
-  - version: 8.20261011
+  - version: '20261011.8'
     fecha: 11/10/2026
     cambios:
       - "Diarios que exigen el número de operación del banco para confirmar pagos."
       - "Asistente **Compra y venta de moneda**: dos pagos entre cuentas propias al tipo de cambio del banco y la diferencia con el del sistema como ganancia o pérdida por diferencia de cambio."
-  - version: 7.20261008
+  - version: '20261008.7'
     fecha: 08/10/2026
     cambios:
       - "Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po."
-  - version: 6.20261008
+  - version: '20261008.6'
     fecha: 08/10/2026
     cambios:
       - "Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú)."
-  - version: 5.20261007
+  - version: '20261007.5'
     fecha: 07/10/2026
     cambios:
       - "Tabla 10 de medios de pago según el anexo vigente: el 011 no es «letras de cambio» sino documentos de EDPYMES y cooperativas no autorizadas a captar depósitos; nuevos 012 y 013 (tarjetas de empresas no financieras y del exterior); descripciones completas de 006, 007 y 010."
-  - version: 4.20260828
+  - version: '20260828.4'
     fecha: 27/09/2026
     cambios:
       - "El catálogo SUNAT de medios de pago queda de solo lectura para los usuarios internos. Solo el administrador contable puede crear, cambiar o eliminar medios de pago."
       - "El módulo declara su dependencia de la localización peruana (l10n_pe), que ya necesitaba."
-  - version: 3.20260828
+  - version: '20260828.3'
     fecha: 14/09/2026
     cambios:
       - "El catálogo pasa a **Perú ▸ Configuración ▸ Tributos SUNAT ▸ Medios de pago**."
-  - version: 2.20260828
+  - version: '20260828.2'
     fecha: 28/08/2026
     cambios:
       - Acceso al catálogo desde la app Perú.
-  - version: 1.20260721
+  - version: '20260721.1'
     fecha: 25/07/2026
     cambios:
       - Catálogo de medios de pago SUNAT y campos en el pago y en el asistente de pago.

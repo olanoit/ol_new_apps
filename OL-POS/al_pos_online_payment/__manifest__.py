@@ -22,7 +22,7 @@ pasarela. Se instala solo con el pago en línea del TPV.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_pos_online_payment/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '20261027.2',
     'license': 'OPL-1',
     'depends': ['pos_online_payment'],
     'assets': {

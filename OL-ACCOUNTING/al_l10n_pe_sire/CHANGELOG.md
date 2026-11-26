@@ -2,16 +2,16 @@ Historial de cambios — Perú - SIRE (RVIE / RCE)
 ===============================================
 
 Una entrada por versión publicada, la más reciente arriba; el número es
-el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 23.20261027 — 27/10/2026
+## 20261027.23 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
 
-## 22.20261012 — 20/10/2026
+## 20261012.22 — 20/10/2026
 
 - Validación al publicar: cada factura, boleta o nota pasa por las reglas del RVIE o el RCE al publicarse (avisar, impedir o no validar, por compañía).
 - Regla nueva: boleta de más de S/ 700 con el documento y el nombre del cliente. Aviso (no bloquea) de compras con más de 12 periodos, sin crédito fiscal.
@@ -19,56 +19,56 @@ Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 - Bitácora de cada llamada a la API SIRE (90 días, sin guardar el token) y botón Probar conexión en Ajustes.
 - Propuesta manual en ZIP, clasificación de la tabla 30 sugerida al publicar, retención de renta de no domiciliados calculada y periodo SIRE visible desde la factura.
 
-## 21.20261012 — 12/10/2026
+## 20261012.21 — 12/10/2026
 
 - Menú en Perú ▸ SUNAT ▸ SIRE.
 
-## 20.20261012 — 12/10/2026
+## 20261012.20 — 12/10/2026
 
 - El documento modificado de las notas cuyo original no está en Odoo sale de los datos escritos en la nota, también para decidir si va como descuento.
 - Total de la DAM y la DSI (tipos 50-54) en el RCE: base + IGV + otros derechos, sin la cuenta puente del valor en aduana.
 
-## 19.20261011 — 11/10/2026
+## 20261011.19 — 11/10/2026
 
 - RCE: las retenciones de la liquidación de compra (IGV y renta, al_l10n_pe_edi_purchase_settlement) no reducen el importe total del comprobante, como ya pasaba con la retención del IGV.
 
-## 18.20261009 — 09/10/2026
+## 20261009.18 — 09/10/2026
 
 - Operaciones SIRE con chatter: historial del estado, del ticket y de los ajustes posteriores.
 - Etiquetas más cortas en no domiciliados: «Clase de bien o servicio», «Aplica art. 76 LIR», «Doc. del crédito fiscal», «País del beneficiario», «Comprobantes (ND)»…; el texto completo pasa a la ayuda (?).
 
-## 17.20261008 — 08/10/2026
+## 20261008.17 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.
 
-## 16.20261008 — 08/10/2026
+## 20261008.16 — 08/10/2026
 
 - Los años se muestran sin separador de miles (2026, no 2.026) y no se suman al agrupar.
 
-## 15.20261008 — 08/10/2026
+## 20261008.15 — 08/10/2026
 
 - El asistente de acciones SIRE valida la compañía (sus comprobantes pueden ser de sucursales del RUC).
 
-## 14.20261008 — 08/10/2026
+## 20261008.14 — 08/10/2026
 
 - Las credenciales de la API SIRE son del RUC: se configuran en la compañía raíz y las sucursales usan las suyas.
 - Ajustes por compañía con el ícono de Odoo «valores por compañía» (company_dependent).
 
-## 13.20261008 — 08/10/2026
+## 20261008.13 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).
 - Multicompañía según la guía de Odoo 19: _check_company_auto y check_company en las relaciones; Odoo impide mezclar registros de compañías distintas.
 - La compañía es de solo lectura en los formularios y listas: se toma de la compañía activa.
 
-## 12.20261007 — 07/10/2026
+## 20261007.12 — 07/10/2026
 
 - Los datos SIRE de la factura de proveedor van a «Contabilidad PE ▸ Registros electrónicos» y la pestaña de no domiciliados a «Contabilidad PE ▸ No domiciliado (SIRE)».
 
-## 11.20261007 — 07/10/2026
+## 20261007.11 — 07/10/2026
 
 - Las notas 87 y 88 sin comprobante de origen también se marcan como observación y bloquean el reemplazo (antes solo las 07 y 08); las anuladas no.
 
-## 10.20261007 — 07/10/2026
+## 20261007.10 — 07/10/2026
 
 - Transferencias gratuitas exoneradas (21) o inafectas (31-37) van a «valor de las operaciones gratuitas», no a la base exonerada o inafecta; manda la afectación de la línea del comprobante.
 - Exclusión definitiva y tipo de cambio por comprobante: si SUNAT falla a mitad, lo ya hecho queda registrado en el historial y se avisa cuál falló (antes el error borraba el registro de exclusiones que SUNAT ya había aplicado).
@@ -76,18 +76,18 @@ Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 - Otras acciones en SUNAT: el asistente solo ofrece las del libro abierto y los comprobantes de ese libro y compañía (con sus sucursales).
 - Ajustes de periodos anteriores (anexo 13): una compra toma el periodo de su fecha contable, como el RCE, y no el de emisión.
 
-## 9.20261007 — 07/10/2026
+## 20261007.9 — 07/10/2026
 
 - RVIE: un comprobante con CDR rechazado por SUNAT (códigos 2000-3999) va en cero y con estado 2, como los anulados; antes, al seguir publicado en Odoo, se comparaba con sus importes.
 
-## 8.20261007 — 07/10/2026
+## 20261007.8 — 07/10/2026
 
 - Registro de compras: ya no anota compras anuladas (la norma lo prohíbe); el ISC de un ítem gravado va en su base; IVAP, exportación y líneas sin impuesto van al campo 21; DAM y DSI con aduana, año y número (antes faltaba el año y SUNAT rechazaba la fila). No domiciliados: valor de la adquisición completo y convenio «00» por defecto.
 - Ventas y compras: una línea gratuita ya no aparece como «otros tributos» negativos y la retención del 3 % ya no reduce el total; tipo de cambio de la factura (y el del documento modificado en las notas); proveedor con tipo «VAT» genérico informado como RUC o DNI; sucursales incluidas con el RUC de la compañía principal; razón social sin «|», «/» ni «\».
 - Envíos a SUNAT: tras un envío procesado con errores, o tras eliminar el reemplazo o el preliminar, el periodo admite un nuevo envío (antes quedaba bloqueado); el preliminar solo se registra con el envío concluido; un estado de ticket desconocido se sigue consultando en vez de darse por fallido; la propuesta se descarga como indica el manual (todos sus archivos); un token rechazado o un cambio de credenciales pide token nuevo; un periodo con error ya no detiene la consulta automática de los demás.
 - La descarga manual del reemplazo valida las líneas igual que el envío por la API, y su nombre lleva el indicador de moneda de la compañía.
 
-## 7.20261006 — 06/10/2026
+## 20261006.7 — 06/10/2026
 
 - Historial de operaciones con SUNAT por periodo: ticket, archivo enviado y reportes; los tickets se consultan solos y los reportes (inconsistencias del envío, resumen, preliminar, constancia de recepción) quedan adjuntos.
 - Tipo de cambio: envío masivo al RVIE y al RCE (anexo 10) e individual al RVIE.
@@ -97,14 +97,14 @@ Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 - Eliminaciones en SUNAT (solo responsables) y reintegro, crédito fiscal especial y prorrata del RCE.
 - Corregido: el ticket de las cargas TUS llega como texto plano y no se leía; el reemplazo del RVIE añadía una columna CLU vacía.
 
-## 6.20261006 — 06/10/2026
+## 20261006.6 — 06/10/2026
 
 - Validación de las líneas del sistema antes del envío: RUC con dígito verificador, tipo de comprobante, serie y número, IGV frente a la base, total, moneda y tipo de cambio, fechas y notas sin comprobante modificado. Con observaciones, el reemplazo no se envía.
 - Los tickets de la propuesta y del envío se consultan solos, con espera creciente; la propuesta se descarga al terminar y, si SUNAT falla, queda una actividad para revisarlo.
 - RCE: columnas DG, DGNG y DNG según el grupo del impuesto de la compra.
 - Corregido: las líneas negativas (anticipos, descuentos) se sumaban a la base en vez de restar, y las líneas sin impuesto se informaban como gravadas sin IGV.
 
-## 5.20260803 — 27/09/2026
+## 20260803.5 — 27/09/2026
 
 - Las credenciales de la API SIRE (usuario y clave SOL, client ID y secret) y el token solo los ven y editan los administradores; antes cualquier usuario interno podía leerlos.
 - Solo los usuarios contables pueden solicitar, aceptar o reemplazar la propuesta y registrar el preliminar; un usuario de solo lectura ya no puede enviar nada a SUNAT.
@@ -120,17 +120,17 @@ Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 
 - Menú SIRE ordenado en la app Perú y campos de comparación en Configuración ▸ Tributos SUNAT.
 
-## 3.20260803 — 03/08/2026
+## 20260803.3 — 03/08/2026
 
 - Envío a SUNAT por API: aceptar propuesta, enviar reemplazo, consultar envío y registrar preliminar.
 - Resumen de la comparación en el periodo y aviso de CAR repetido.
 - Comparación más rápida en periodos con miles de comprobantes.
 
-## 2.20260719 — 19/07/2026
+## 20260719.2 — 19/07/2026
 
 - Etiquetas en español en nombres, estados y campos de comparación.
 - Sección propia en Ajustes ▸ Perú.
 
-## 1.20260719 — 19/07/2026
+## 20260719.1 — 19/07/2026
 
 - Propuesta RVIE y RCE por API o carga manual, comparación por CAR, XLSX y TXT de reemplazo.

@@ -73,11 +73,11 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
-  - version: '21.20261112'
+  - version: '20261112.21'
     fecha: 18/11/2026
     cambios:
       - "Recepción: un puente puede titular sus entregas en la lista (el despacho de módulos de mobiliario)."
-  - version: '20.20261112'
+  - version: '20261112.20'
     fecha: 17/11/2026
     cambios:
       - "Paquete 1.22: el portal sigue el perfil de vertical de la obra. El inicio, la barra y los servicios muestran solo las funciones activas (Avance, Parte diario y tareo, Deductivos y fondo de garantía); una función apagada responde con un mensaje claro."
@@ -85,45 +85,45 @@ novedades:
       - "«Avance» se abre agrupado por los niveles superiores de la obra (Piso › Departamento o Especialidad › Sub-especialidad), con contadores, filtros «Con saldo» y «Atrasadas» y búsqueda."
       - "El motivo del re-trabajo se elige del catálogo de la compañía; el menú pasa a «Motivos del portal»."
       - "Ficha de la obra: botón «Portal de obra» con el ingreso, el QR y el personal del portal."
-  - version: '19.20261112'
+  - version: '20261112.19'
     fecha: 16/11/2026
     cambios:
       - "Tareo: los jornales del tareo se rehacen solo para las personas de la marcación (acompaña el cambio de la asistencia de obra)."
-  - version: '18.20261112'
+  - version: '20261112.18'
     fecha: 16/11/2026
     cambios:
       - "La contrata recibe en su parte diario solo su empresa y sus avances del día, no los de las demás contratas de la obra."
       - "Rendimiento: la sincronización del portal y la bandeja «Por validar» consultan lo reportado de todas las partidas de una vez, no partida por partida."
       - "Fotos: el portal solo guarda imágenes JPG, PNG o WebP (el tipo se lee del contenido) y hasta 10 por registro."
       - "Un registro con un dato mal formado se rechaza con su motivo en vez de quedar reintentándose en «Por enviar»."
-  - version: '17.20261112'
+  - version: '20261112.17'
     fecha: 15/11/2026
     cambios:
       - "Seguridad: asignar el PIN y desbloquear el ingreso por QR piden permiso para modificar al personal del portal (antes cualquier usuario con sesión podía cambiar el PIN de otra persona)."
       - "Seguridad: el ingreso con usuario y clave no da acceso a un usuario con verificación en dos pasos; esa persona entra con el QR de la obra y su PIN."
       - "Recepción: la obra confirma hasta lo enviado en cada entrega; lo que llegó de más lo regulariza el almacén."
-  - version: '13.20261027'
+  - version: '20261027.13'
     fecha: 07/11/2026
     cambios:
       - "Pestaña Obra: la curva de avance y el Gantt llegan hasta hoy aunque el plan haya terminado antes (encontrado en la prueba del paquete 6 en creval-dev)."
-  - version: '12.20261027'
+  - version: '20261027.12'
     fecha: 07/11/2026
     cambios:
       - "Paquete 6, CR-57: avisos al celular con la aplicación cerrada (envío web nativo de Odoo): pedido urgente por aprobar, entrega en camino a la obra (acción programada cada 15 minutos), avance reportado fuera del radio de la obra y avance validado o rechazado a quien lo reportó. Qué aviso recibe cada papel se configura en «Avisos al celular»; la persona los activa en la aplicación. Tocar el aviso abre la pantalla del registro."
       - "Paquete 6, CR-55: acceso «Gasto con mi fondo» en «Mi día» cuando está instalado el puente con la caja chica (al_construction_portal_cash_fund)."
-  - version: '11.20261027'
+  - version: '20261027.11'
     fecha: 07/11/2026
     cambios:
       - "Paquete 6, CR-58: pestaña «Obra» del residente. Resumen con el avance físico real (el mismo del tablero de obra del escritorio) frente al programado a hoy, partidas atrasadas, avances por validar, pedidos abiertos y personal de hoy, curva de avance y avance por especialidad; montos solo si la compañía lo permite (Ajustes). Semana: partidas que inician y terminan esta semana y las que inician la siguiente, con aviso de las que inician sin contrata ni cuadrilla y de las que terminan en riesgo (umbral en Ajustes). Tareas: partidas en columnas que calcula Odoo (solo lectura); tocar una abre el registro de su avance."
       - "Paquete 6, CR-54: Gantt liviano para celular y tablet, de solo lectura, con el avance validado como relleno, las partidas atrasadas, los hitos y la línea de hoy; zoom de semana y mes. Las cuatro vistas funcionan sin señal con los datos de la última sincronización."
-  - version: '10.20261027'
+  - version: '20261027.10'
     fecha: 07/11/2026
     cambios:
       - "Paquete 6, CR-56: un parte diario por persona y día (también lo envía la contrata). El residente ve los partes del día y quién no envió, y con «Cerrar el día» arma el parte diario de obra (personal, avances, restricciones, ocurrencias, fotos y su comentario) y lo envía en PDF al «Contacto del cliente en obra»; sin contacto, queda en la obra. Los partes quedan «Revisado por el residente»."
       - "Paquete 6, CR-51: deductivo de contrata con foto desde el portal (por monto o por cantidad al precio de la partida en la orden); queda «Pendiente» y entra en la siguiente valorización."
       - "Paquete 6, CR-52: solicitud de contrata o de cuadrilla adicional como actividad en la partida para el jefe de la obra, con su estado (Pedida, Asignada, Cancelada)."
       - "Accesos a un toque en «Mi día» (cambio del cliente, deductivo, pedir cuadrilla o contrata)."
-  - version: '9.20261027'
+  - version: '20261027.9'
     fecha: 07/11/2026
     cambios:
       - "Paquete 6, CR-48: rol «Residente de obra» en el portal, sin usuario interno (puede ser un locador sin ficha de empleado). Ve lo del capataz y la oficina técnica, más «Mi día» (contadores y agenda de hoy por urgencia) y su barra Inicio, Bandejas, Obra y Por enviar. Con el QR y el PIN no tiene el rol Residente. «Aprobador por defecto de la obra» en el personal del portal."
@@ -131,36 +131,36 @@ novedades:
       - "Paquete 6, CR-50: bandeja «Por aprobar» con saldo del plan y exceso por línea; aprobar lo pedido, el saldo u otra cantidad menor, o rechazar con motivo; con validación por niveles y con Aprobaciones. Revisor por campo «Residente de la obra» y opción «Pasar al residente de la obra» para los requerimientos sin regla."
       - "Paquete 6, regla «Sin señal»: validar, rechazar y aprobar entran a la cola; Odoo vuelve a comprobar el registro al recibirlos y rechaza la decisión con el motivo si cambió."
       - "Tablet: lista y detalle lado a lado en las bandejas."
-  - version: '8.20261027'
+  - version: '20261027.8'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: '7.20261025'
+  - version: '20261025.7'
     fecha: 27/10/2026
     cambios:
     - "CR-16, criterio 5: «En buen estado» crea la devolución nativa del despacho recibido (stock.return.picking, con el movimiento de origen, el requerimiento y la partida), lista para que el almacén la valide; al validarse baja «Despachado»."
     - "CR-16, criterio 6 (D5): «Dañado» ya no desecha: crea el traslado de la obra a su sububicación «Dañados», con la foto y el motivo (obligatorio), listo para validar; «Despachado» no cambia. Se retira el ajuste «Devolución de lo dañado» (Bajas)."
     - "Lo que está en «Dañados» ya no aparece para devolver; después de una recepción o una devolución, la pantalla Devolución se actualiza sola (sin «Actualizar»)."
-  - version: '6.20261025'
+  - version: '20261025.6'
     fecha: 26/10/2026
     cambios:
     - "CR-16, criterio 5: ajuste «Devolución de lo dañado»: lo que la obra devuelve como dañado vuelve en su propia transferencia a esa ubicación (Bajas del almacén); vacío, se desecha en la obra como antes."
-  - version: '5.20261025'
+  - version: '20261025.5'
     fecha: 26/10/2026
     cambios:
     - "CR-17: el rol no repite el tipo cuando la actividad ya lo dice («Drywall (contrata)»)."
-  - version: '4.20261025'
+  - version: '20261025.4'
     fecha: 26/10/2026
     cambios:
     - "CR-17: Avance, Requerimientos y Cuadrilla y tareo muestran el código y el nombre de la partida, con su nivel superior y el rol; ya no la ruta interna. El servicio agrega task_code, task_name, parent_label y role_label sin quitar los campos anteriores; lo guardado sin señal se envía igual."
     - "CR-17: el catálogo de Requerimientos busca por producto y por código o nombre de la partida."
     - "7.1: el parte diario lista los avances reportados y validados del día con su estado. 7.2: el tareo dice partida y rol en cada columna y agrupa por partida. 7.3: el requerimiento interno pedido desde el portal queda en la obra."
     - "Tareo: la marcación de la cuadrilla registra las horas del tareo completas; la salida se corre lo que dura el almuerzo del horario del empleado (Odoo lo descuenta de las horas trabajadas)."
-  - version: '3.20261025'
+  - version: '20261025.3'
     fecha: 25/10/2026
     cambios:
     - "Avance sobre el saldo más la tolerancia según la política del plan, como en el prototipo: con aprobación adicional se envía como exceso y lo aprueba la jefatura; con solo alerta se envía con aviso; con bloqueo no se guarda."
-  - version: '2.20261024'
+  - version: '20261024.2'
     fecha: 24/10/2026
     cambios:
     - "Pantallas según el prototipo «Portal de obra CREVAL»: ingreso con la marca de la empresa, mostrar la clave y «Mantener la sesión en este celular»; QR leído con la cámara; inicio con la semana de la obra y los contadores de avances por validar, pedidos en aprobación y entregas de hoy."
@@ -168,7 +168,7 @@ novedades:
     - "Parte diario ya llenado con el personal propio que marcó hoy, cada contrata de la obra y los avances del día; cuadrilla en dos columnas en la tablet con Presente/Falta y total de 8 horas."
     - "Requerimientos con los materiales de las recetas de la cuadrilla; recepción con el estado de cada producto (completo, faltan, llegó de más); devolución eligiendo cada producto."
     - "Contrata: tarjeta de la orden (contratado, valorizado, fondo y deductivos), detalle con las partidas de más avance, el re-trabajo no pagado, el neto que descuenta el adelanto, los pagos y el PDF del valorizado y de la factura."
-  - version: '1.20261024'
+  - version: '20261024.1'
     fecha: 24/10/2026
     cambios:
     - "Primera versión: aplicación de obra instalable y sin señal con servicios JSON, ingreso por QR y PIN, parte diario, tareo por partida, catálogos con kits, recepción y devolución (requerimiento CREVAL v1.0, 4.11)."

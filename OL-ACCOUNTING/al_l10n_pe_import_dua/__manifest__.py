@@ -28,7 +28,7 @@ simplificada) se registra como un documento de compra a nombre de la Aduana:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_import_dua/static/description/icon.png',
-    'version': '6.20261028',
+    'version': '20261028.6',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

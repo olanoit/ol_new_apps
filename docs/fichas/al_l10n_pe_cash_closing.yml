@@ -88,15 +88,15 @@ faq:
       métodos de pago, en los asientos de esa caja.
 
 novedades:
-  - version: '3.20261027'
+  - version: '20261027.3'
     fecha: 27/10/2026
     cambios:
       - "Ícono nuevo: el isotipo de ALTA."
-  - version: 2.20261026
+  - version: '20261026.2'
     fecha: 26/10/2026
     cambios:
       - "Multicompañía: movimientos y arqueo con control de compañía y compañía de solo lectura en las vistas."
-  - version: 1.20261021
+  - version: '20261021.1'
     fecha: 21/10/2026
     cambios:
       - "Primera versión: cierre diario por caja con saldo según libros, arqueo por denominación, asiento del faltante o sobrante, bloqueo del día, reapertura y PDF."
