@@ -182,9 +182,13 @@
                                                     <td class="pe-doc-label">Otros tributos</td>
                                                     <td class="text-end"><span t-out="o.l10n_pe_edi_amount_others" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                                                 </tr>
+                                                <!-- Una sola celda: con dos, wkhtmltopdf deja una
+                                                     costura visible en el fondo gris. -->
                                                 <tr class="cpe-grand">
-                                                    <td>IMPORTE TOTAL</td>
-                                                    <td class="text-end"><span t-out="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
+                                                    <td colspan="2">
+                                                        <span class="cpe-grand-amount" t-out="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                        IMPORTE TOTAL
+                                                    </td>
                                                 </tr>
                                             </table>
                                         </td>

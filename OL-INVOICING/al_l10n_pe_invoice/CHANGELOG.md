@@ -7,7 +7,7 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 20261126.27 — 26/11/2026
+## 20261126.28 — 26/11/2026
 
 - Comprobante electrónico (A4) con diseño nuevo: importe total destacado en un bloque de totales a la derecha, con el importe en letras a su izquierda; columnas del detalle marcadas con líneas verticales y sin rayas entre filas; datos del cliente más juntos y con el nombre en negrita.
 - En el A4, Condición, Tipo de cambio, Vendedor y pedido solo aparecen cuando tienen valor; la detracción va en un recuadro gris propio con sus datos en columnas, y el QR lleva su leyenda y el resumen de la firma.

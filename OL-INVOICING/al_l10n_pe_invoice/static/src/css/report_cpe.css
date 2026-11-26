@@ -94,8 +94,12 @@
 }
 
 /* El fondo del total sigue la esquina redondeada de la tabla */
-.cpe-a4 .cpe-totals .cpe-grand td:last-child {
+.cpe-a4 .cpe-totals .cpe-grand td {
     border-bottom-right-radius: 4px;
+}
+
+.cpe-a4 .cpe-totals .cpe-grand .cpe-grand-amount {
+    float: right;
 }
 
 /* --- Detracción: aviso en recuadro gris --- */

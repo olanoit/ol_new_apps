@@ -7,7 +7,7 @@ from odoo.tests import tagged
 
 @tagged('post_install', 'post_install_l10n', '-at_install')
 class TestCpeReportLayout(AccountTestInvoicingCommon):
-    """Diseño del comprobante A4 y del ticket (versión 27)."""
+    """Diseño del comprobante A4 y del ticket (versión 28)."""
 
     @classmethod
     @AccountTestInvoicingCommon.setup_country('pe')

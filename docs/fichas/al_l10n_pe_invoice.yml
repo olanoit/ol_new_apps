@@ -381,7 +381,7 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
-  - version: '20261126.27'
+  - version: '20261126.28'
     fecha: 26/11/2026
     cambios:
       - "Comprobante electrónico (A4) con diseño nuevo: importe total destacado en un bloque de totales a la derecha, con el importe en letras a su izquierda; columnas del detalle marcadas con líneas verticales y sin rayas entre filas; datos del cliente más juntos y con el nombre en negrita."
