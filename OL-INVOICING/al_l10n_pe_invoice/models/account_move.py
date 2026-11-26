@@ -308,6 +308,17 @@ class AccountMove(models.Model):
             lambda l: not l.tax_ids).mapped('price_subtotal'))
         return tax_amounts
 
+    def _cpe_report_blank_lines(self, lines):
+        """Filas en blanco que completan el detalle del comprobante A4.
+
+        Cuenta lo que ocupa cada línea (una descripción de varios renglones
+        ocupa varias filas) y devuelve cuántas faltan para el mínimo de la
+        compañía. Con suficientes líneas, o con el mínimo en 0, no agrega nada.
+        """
+        self.ensure_one()
+        used = sum(len((line.name or '').splitlines()) or 1 for line in lines)
+        return max(0, self.company_id.cpe_min_detail_lines - used)
+
     def _get_invoice_pdf_proforma(self):
         """Proforma (descarga del portal sin PDF generado) con el formato predeterminado.
 

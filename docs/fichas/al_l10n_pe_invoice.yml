@@ -300,6 +300,7 @@ funcionalidades:
       - Vínculo de la factura con su orden de venta y OC. externa en el pedido.
       - Marca de crédito con el mismo criterio que el XML (vencimiento posterior a la emisión).
       - Botón Imprimir de la factura directo al Comprobante electrónico (A4).
+      - "Detalle del A4 completado con filas en blanco hasta un mínimo por compañía (10 por defecto; 0 lo desactiva)."
       - "Vista previa de la factura (portal del cliente) con el Comprobante electrónico (A4), igual que Imprimir y Enviar."
   - grupo: Menú
     items:
@@ -380,6 +381,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: '20261126.26'
+    fecha: 26/11/2026
+    cambios:
+      - "El detalle del Comprobante electrónico (A4) se completa con filas en blanco cuando tiene pocas líneas, para que no se vea compacto. El mínimo (10 por defecto) se cambia en Ajustes ▸ Perú ▸ Comprobantes electrónicos ▸ Filas mínimas del detalle; con 0 no se agregan."
   - version: '20261126.25'
     fecha: 26/11/2026
     cambios:

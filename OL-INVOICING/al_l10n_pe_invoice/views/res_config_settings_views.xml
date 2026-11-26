@@ -22,6 +22,10 @@
                             </div>
                         </div>
                     </setting>
+                    <setting company_dependent="1" string="Filas mínimas del detalle"
+                             help="El detalle del comprobante A4 se completa con filas en blanco hasta este número, para que un comprobante con pocos productos no se vea compacto. Con 0 no se agregan filas.">
+                        <field name="cpe_min_detail_lines"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

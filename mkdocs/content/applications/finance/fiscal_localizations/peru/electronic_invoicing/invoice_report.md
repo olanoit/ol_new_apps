@@ -31,6 +31,10 @@ El comprobante impreso muestra:
 2. Vaya a **Perú ‣ Configuración ‣ Ajustes ‣ Comprobantes electrónicos** y, si
    el A4 debe llevar firmas, active **Firma y eslogan en el reporte**, elija el
    **Representante** y escriba el **Eslogan**.
+   En el mismo bloque, **Filas mínimas del detalle** indica hasta cuántas
+   filas se completa el detalle del A4 con filas en blanco cuando el
+   comprobante tiene pocas líneas (10 al instalar). Una descripción de varios
+   renglones cuenta por cada renglón. Escriba `0` para no agregar filas.
 3. Complete el logo y los datos de la compañía: dirección con distrito,
    teléfono y correo.
 4. Registre la cuenta en el Banco de la Nación en la compañía si vende bienes o

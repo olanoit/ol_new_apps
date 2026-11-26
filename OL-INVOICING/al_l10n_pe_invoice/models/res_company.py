@@ -22,6 +22,13 @@ class ResCompany(models.Model):
         string='Activar firmas',
         help='Muestra el bloque de firma y "recibido conforme" en el reporte A4 de comprobantes.',
     )
+    cpe_min_detail_lines = fields.Integer(
+        string='Filas mínimas del detalle',
+        default=10,
+        help='El detalle del comprobante A4 se completa con filas en blanco hasta '
+             'llegar a este número, para que un comprobante con pocos productos no '
+             'se vea compacto. Con 0 no se agregan filas.',
+    )
 
 
 class ResConfigSettings(models.TransientModel):
@@ -33,3 +40,5 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.company_eslogan_pdf', readonly=False)
     represent_id = fields.Many2one(
         related='company_id.represent_id', readonly=False)
+    cpe_min_detail_lines = fields.Integer(
+        related='company_id.cpe_min_detail_lines', readonly=False)

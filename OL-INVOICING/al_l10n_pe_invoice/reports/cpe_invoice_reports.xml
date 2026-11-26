@@ -154,6 +154,12 @@
                             <td class="text-end" t-if="has_discount"><span t-out="line.discount"/></td>
                             <td class="text-end"><span t-out="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                         </tr>
+                        <!-- Filas en blanco hasta el mínimo de la compañía: un
+                             comprobante con pocas líneas no queda compacto. -->
+                        <tr t-foreach="range(o._cpe_report_blank_lines(lines))" t-as="blank"
+                            class="cpe-blank-line">
+                            <td t-att-colspan="ncols">&#160;</td>
+                        </tr>
                     </tbody>
                     <tfoot>
                         <tr class="pe-doc-subtotal pe-doc-first" t-if="o.l10n_pe_edi_amount_base">
