@@ -23,6 +23,9 @@ para todos los reportes o solo para los que se elijan.
   agrega `Content-Disposition: inline` con el nombre de archivo del reporte
   (`print_report_name`). `/report/download` no cambia.
 
+Con `al_account_base` instalado, el puente `al_l10n_pe_report_preview`
+(`auto_install`) repite el ajuste en **Ajustes ▸ Perú**.
+
 No instalar junto con `prt_report_attachment_preview` (Cetmix): ese módulo
 abre todos los PDF sin mirar la configuración.
 

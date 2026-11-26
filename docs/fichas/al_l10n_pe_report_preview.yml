@@ -1,0 +1,42 @@
+titulo: Reportes PDF en el navegador en los ajustes de Perú
+subtitulo: >-
+  El ajuste para abrir los reportes PDF en el navegador, también en la página
+  Perú de Ajustes.
+categoria: Localización Perú · Herramientas
+etiquetas: [Reportes, PDF, Ajustes de Perú, Se instala solo]
+
+destacados_intro: >-
+  Quien configura la localización peruana encuentra el ajuste de los reportes
+  junto a los demás ajustes de Perú.
+destacados:
+  - icono: "▤"
+    titulo: En Ajustes ▸ Perú
+    texto: >-
+      Bloque **Reportes PDF** con las opciones **Todos los reportes** y **Solo
+      los reportes elegidos**.
+  - icono: "="
+    titulo: El mismo ajuste
+    texto: >-
+      Es el ajuste de **Ajustes generales**: cambiarlo en un lugar lo cambia
+      en el otro.
+  - icono: "0"
+    titulo: Se instala solo
+    texto: >-
+      Aparece cuando están instalados la aplicación Perú y **Reportes PDF en
+      el navegador**.
+
+pasos_intro: >-
+  No requiere configuración propia.
+pasos:
+  - titulo: Elegir el alcance desde Perú
+    ruta: Ajustes ▸ Perú ▸ Reportes PDF
+    texto: >-
+      Elija **Todos los reportes** o **Solo los reportes elegidos** y guarde.
+      **Elegir por reporte** abre la lista de reportes PDF para decidir uno
+      por uno.
+
+novedades:
+  - version: '20261126.1'
+    fecha: 26/11/2026
+    cambios:
+      - "Bloque Reportes PDF en Ajustes ▸ Perú, con el mismo ajuste de Ajustes generales y el acceso a la lista por reporte."

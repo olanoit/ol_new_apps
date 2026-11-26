@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- El mismo ajuste de Ajustes generales ▸ Reportes PDF, en la página
+         Perú. Prioridad dentro del rango de los bloques de los módulos
+         (60-65), antes del bloque Documentación (1000). -->
+    <record id="res_config_settings_view_form_pe_report_preview" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pe.report.preview</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="65"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Reportes PDF" name="pe_report_preview_block">
+                    <setting string="Abrir los reportes en el navegador" id="pe_report_preview_setting"
+                             help="Los reportes PDF (comprobantes, guías, boletas y demás) se abren en una pestaña nueva en vez de descargarse. Es el mismo ajuste de Ajustes generales.">
+                        <field name="al_report_preview_scope" widget="radio"/>
+                        <div class="mt8">
+                            <button name="%(al_report_preview.action_report_preview_reports)d" type="action"
+                                    string="Elegir por reporte" icon="oi-arrow-right"
+                                    class="btn-link p-0"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,5 +1,5 @@
 ---
-modulos: [al_report_preview]
+modulos: [al_report_preview, al_l10n_pe_report_preview]
 ---
 
 # Reportes PDF en el navegador
@@ -23,6 +23,10 @@ las facturas.
     | **Solo los reportes elegidos** | Los reportes se descargan, como en Odoo estándar, salvo los reportes marcados como **Abrir en el navegador** |
 
 4. Haga clic en **Guardar**.
+
+Con la aplicación **Perú** instalada, el mismo ajuste está también en
+**Ajustes ‣ Perú ‣ Reportes PDF** (módulo `al_l10n_pe_report_preview`, que se
+instala solo). Es un único ajuste: cambiarlo en un lugar lo cambia en el otro.
 
 ## Elegir por reporte
 
