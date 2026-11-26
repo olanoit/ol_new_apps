@@ -28,7 +28,7 @@ inventario y proyectos sin arrastrar dependencias entre ellos.
     'category': 'OL-TOOLS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_report_base/static/description/icon.png',
-    'version': '3.20261027',
+    'version': '4.20261126',
     'license': 'OPL-1',
     'depends': ['web'],
     'data': [

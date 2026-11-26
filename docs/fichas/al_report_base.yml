@@ -40,6 +40,10 @@ pasos:
     imagen: screenshots/01-factura-a4.png
 
 novedades:
+  - version: '4.20261126'
+    fecha: 26/11/2026
+    cambios:
+      - "La cabecera gris de las tablas sigue el borde redondeado: ya no se pinta en ángulo recto en las esquinas superiores (comprobantes, guías, boletas, valorizaciones, kárdex y demás documentos con este diseño)."
   - version: '3.20261027'
     fecha: 27/10/2026
     cambios:

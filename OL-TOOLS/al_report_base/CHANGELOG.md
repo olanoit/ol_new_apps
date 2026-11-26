@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_report_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261126 — 26/11/2026
+
+- La cabecera gris de las tablas sigue el borde redondeado: ya no se pinta en ángulo recto en las esquinas superiores (comprobantes, guías, boletas, valorizaciones, kárdex y demás documentos con este diseño).
+
 ## 3.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

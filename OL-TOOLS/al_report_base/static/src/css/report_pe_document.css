@@ -87,6 +87,23 @@
     font-weight: bold;
 }
 
+/* La cabecera que abre la tabla sigue el borde redondeado: sin esto el
+   fondo gris se pinta en ángulo recto y asoma por fuera de las esquinas.
+   Radio interior = 5px del borde exterior - 1px de su grosor. Solo la fila
+   que está arriba de todo (thead, o primer tbody con o sin colgroup); una
+   cabecera a media tabla sigue recta. */
+.pe-doc-table > thead > .pe-doc-thead:first-child > :first-child,
+.pe-doc-table > tbody:first-child > .pe-doc-thead:first-child > :first-child,
+.pe-doc-table > colgroup + tbody > .pe-doc-thead:first-child > :first-child {
+    border-top-left-radius: 4px;
+}
+
+.pe-doc-table > thead > .pe-doc-thead:first-child > :last-child,
+.pe-doc-table > tbody:first-child > .pe-doc-thead:first-child > :last-child,
+.pe-doc-table > colgroup + tbody > .pe-doc-thead:first-child > :last-child {
+    border-top-right-radius: 4px;
+}
+
 .pe-doc-table .pe-doc-subheader > td {
     font-weight: bold;
 }
