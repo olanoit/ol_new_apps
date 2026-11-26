@@ -158,7 +158,11 @@
     overflow: hidden;
 }
 
+/* «Página X de Y» solo existe en el PDF: wkhtmltopdf rellena los números.
+   En la vista HTML (vista previa del portal) quedaría «Página de», así que
+   se oculta aquí y report_pe_document_pdf.css la muestra en el PDF. */
 .pe-doc-footer-page {
+    display: none;
     float: right;
 }
 

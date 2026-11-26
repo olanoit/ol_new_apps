@@ -1,0 +1,6 @@
+/* Solo en el bundle del PDF (web.report_assets_pdf): la numeración de
+   páginas que report_pe_document.css oculta en la vista HTML. La regla
+   lleva dos clases para ganar sin depender del orden de los bundles. */
+.pe-doc-footer .pe-doc-footer-page {
+    display: block;
+}

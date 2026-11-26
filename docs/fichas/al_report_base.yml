@@ -40,6 +40,10 @@ pasos:
     imagen: screenshots/01-factura-a4.png
 
 novedades:
+  - version: '5.20261126'
+    fecha: 26/11/2026
+    cambios:
+      - "La vista previa en pantalla (portal del cliente) ya no muestra «Página de» sin números en el pie: la numeración de páginas sale solo en el PDF."
   - version: '4.20261126'
     fecha: 26/11/2026
     cambios:

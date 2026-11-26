@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_report_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261126 — 26/11/2026
+
+- La vista previa en pantalla (portal del cliente) ya no muestra «Página de» sin números en el pie: la numeración de páginas sale solo en el PDF.
+
 ## 4.20261126 — 26/11/2026
 
 - La cabecera gris de las tablas sigue el borde redondeado: ya no se pinta en ángulo recto en las esquinas superiores (comprobantes, guías, boletas, valorizaciones, kárdex y demás documentos con este diseño).
