@@ -381,6 +381,12 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: '20261126.27'
+    fecha: 26/11/2026
+    cambios:
+      - "Comprobante electrónico (A4) con diseño nuevo: importe total destacado en un bloque de totales a la derecha, con el importe en letras a su izquierda; columnas del detalle marcadas con líneas verticales y sin rayas entre filas; datos del cliente más juntos y con el nombre en negrita."
+      - "En el A4, Condición, Tipo de cambio, Vendedor y pedido solo aparecen cuando tienen valor; la detracción va en un recuadro gris propio con sus datos en columnas, y el QR lleva su leyenda y el resumen de la firma."
+      - "Ticket de 80 mm con diseño nuevo: importe total grande entre dos reglas, cada línea con la descripción a todo el ancho y debajo «cantidad × precio», cabecera del detalle sin fondo gris, datos del cliente en dos columnas y QR más grande."
   - version: '20261126.26'
     fecha: 26/11/2026
     cambios:

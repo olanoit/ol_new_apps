@@ -42,70 +42,73 @@
                     <div>N.º <span t-out="o.l10n_latam_document_number or o.name"/></div>
                 </div>
 
-                <!-- DATOS DEL CLIENTE -->
-                <ul class="cpe-ticket-info">
-                    <li>
-                        <strong>Señor(es):</strong>
-                        <span t-field="partner.name"/>
-                    </li>
-                    <li>
-                        <strong><span t-out="partner.l10n_latam_identification_type_id.name or 'Doc.'"/>:</strong>
-                        <span t-field="partner.vat"/>
-                    </li>
-                    <li t-if="o.partner_id.street">
-                        <strong>Dirección:</strong>
-                        <span t-field="o.partner_id.street"/>
-                    </li>
-                    <li>
-                        <strong>Emisión:</strong>
-                        <span t-field="o.invoice_date"
-                              t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
-                    </li>
-                    <li t-if="o.invoice_date_due">
-                        <strong>Vencimiento:</strong>
-                        <span t-field="o.invoice_date_due"
-                              t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
-                    </li>
-                    <li t-if="payment_means">
-                        <strong>Forma de pago:</strong>
-                        <span t-out="payment_means"/>
-                    </li>
-                    <li>
-                        <strong>Moneda:</strong>
-                        <span t-out="o._l10n_pe_report_currency_label()"/>
-                    </li>
-                    <li t-if="o.invoice_origin">
-                        <strong>Origen:</strong>
-                        <span t-field="o.invoice_origin"/>
-                    </li>
-                </ul>
+                <!-- DATOS DEL CLIENTE: etiqueta y valor en dos columnas -->
+                <table class="cpe-ticket-kv">
+                    <tr>
+                        <td class="cpe-k">Señor(es)</td>
+                        <td><strong><span t-field="partner.name"/></strong></td>
+                    </tr>
+                    <tr>
+                        <td class="cpe-k"><span t-out="partner.l10n_latam_identification_type_id.name or 'Doc.'"/></td>
+                        <td><span t-field="partner.vat"/></td>
+                    </tr>
+                    <tr t-if="o.partner_id.street">
+                        <td class="cpe-k">Dirección</td>
+                        <td><span t-field="o.partner_id.street"/></td>
+                    </tr>
+                    <tr>
+                        <td class="cpe-k">Emisión</td>
+                        <td><span t-field="o.invoice_date"
+                                  t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                    </tr>
+                    <tr t-if="o.invoice_date_due">
+                        <td class="cpe-k">Vencimiento</td>
+                        <td><span t-field="o.invoice_date_due"
+                                  t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                    </tr>
+                    <tr t-if="payment_means">
+                        <td class="cpe-k">Forma de pago</td>
+                        <td><span t-out="payment_means"/></td>
+                    </tr>
+                    <tr>
+                        <td class="cpe-k">Moneda</td>
+                        <td><span t-out="o._l10n_pe_report_currency_label()"/></td>
+                    </tr>
+                    <tr t-if="o.invoice_origin">
+                        <td class="cpe-k">Origen</td>
+                        <td><span t-field="o.invoice_origin"/></td>
+                    </tr>
+                </table>
 
                 <!-- DETALLE, TOTALES E IMPORTE EN LETRAS: una sola tabla -->
                 <t t-set="lines"
                    t-value="o.invoice_line_ids.filtered(lambda l: l.display_type not in ('line_section', 'line_note'))"/>
-                <t t-set="has_discount" t-value="any(l.discount for l in lines)"/>
-                <t t-set="ncols" t-value="5 if has_discount else 4"/>
+                <!-- Dos columnas: la descripción ocupa todo el ancho y debajo va
+                     «cantidad × precio» con el importe de la línea. -->
+                <t t-set="ncols" t-value="2"/>
                 <t t-set="discount_amount" t-value="o.get_amount_discount()"/>
                 <table class="cpe-ticket-lines">
                     <thead>
                         <tr>
-                            <th>Cant.</th>
-                            <th>Descripción</th>
-                            <th>P.U.</th>
-                            <th t-if="has_discount">Desc.%</th>
-                            <th>Total</th>
+                            <th class="cpe-th-desc">Descripción</th>
+                            <th class="cpe-th-amount">Importe</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr t-foreach="lines" t-as="line">
-                            <td class="cpe-ctr"><span t-field="line.quantity"/></td>
-                            <td><span t-field="line.name"/></td>
-                            <td class="cpe-num"><span t-out="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
-                            <td class="cpe-ctr" t-if="has_discount">
-                                <span t-out="'%.2f' % line.discount"/>
-                            </td>
-                            <td class="cpe-num"><span t-out="line.price_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
-                        </tr>
+                        <t t-foreach="lines" t-as="line">
+                            <tr class="cpe-desc">
+                                <td colspan="2"><span t-field="line.name"/></td>
+                            </tr>
+                            <tr class="cpe-calc">
+                                <td>
+                                    <span t-field="line.quantity"/>
+                                    <span t-if="line.product_uom_id" t-field="line.product_uom_id.name"/>
+                                    × <span t-out="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    <t t-if="line.discount"> · Desc. <span t-out="'%.2f' % line.discount"/> %</t>
+                                </td>
+                                <td class="cpe-num"><span t-out="line.price_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                            </tr>
+                        </t>
                     </tbody>
                     <tfoot>
                         <tr class="cpe-first" t-if="o.l10n_pe_edi_amount_base">
@@ -229,21 +232,21 @@
                 </table>
 
                 <!-- USUARIO Y FECHA -->
-                <ul class="cpe-ticket-info">
-                    <li>
-                        <strong>Usuario:</strong>
-                        <span t-field="o.user_id.name"/>
-                    </li>
-                    <li>
-                        <strong>Fecha y hora:</strong>
-                        <span t-field="o.create_date"/>
-                    </li>
-                </ul>
+                <table class="cpe-ticket-kv">
+                    <tr>
+                        <td class="cpe-k">Usuario</td>
+                        <td><span t-field="o.user_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td class="cpe-k">Fecha y hora</td>
+                        <td><span t-field="o.create_date"/></td>
+                    </tr>
+                </table>
 
                 <!-- QR OFICIAL SUNAT (solo si el XML firmado ya fue generado) -->
                 <div class="cpe-ticket-qr" t-if="extra_edi_vals.get('qr_str')">
                     <img alt="QR SUNAT"
-                         t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s&amp;quiet=%s' % ('QR', quote_plus(extra_edi_vals['qr_str']), 110, 110, 0)"/>
+                         t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s&amp;quiet=%s' % ('QR', quote_plus(extra_edi_vals['qr_str']), 130, 130, 0)"/>
                 </div>
 
                 <div class="cpe-ticket-footer">

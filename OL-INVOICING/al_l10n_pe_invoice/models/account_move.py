@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from itertools import zip_longest
+
 from odoo import api, fields, models
+from odoo.tools import format_date
 
 
 class AccountMove(models.Model):
@@ -307,6 +310,49 @@ class AccountMove(models.Model):
         tax_amounts['exonerated'] += sum(self.invoice_line_ids.filtered(
             lambda l: not l.tax_ids).mapped('price_subtotal'))
         return tax_amounts
+
+    def _l10n_pe_report_party_rows(self):
+        """Filas del recuadro del adquirente del A4: ``[((etiqueta, valor), (etiqueta, valor))]``.
+
+        Izquierda, quién compra; derecha, fechas y condiciones. Un dato sin
+        valor (condición de pago, tipo de cambio, vendedor, pedido) no deja
+        su etiqueta vacía: la fila se arma solo con lo que hay.
+        """
+        self.ensure_one()
+        _ = self.env._
+        buyer = self.commercial_partner_id
+        rate = self._l10n_pe_report_exchange_rate()
+        order_ref = self.external_purchase or self.sale_id.external_purchase
+
+        def date(value):
+            return value and format_date(self.env, value, date_format='dd/MM/yyyy')
+
+        left = [
+            (_("Señor(es)"), buyer.name),
+            (buyer.l10n_latam_identification_type_id.name or _("Doc."), buyer.vat),
+            (_("Dirección"), self._l10n_pe_report_partner_address()),
+            (_("Forma de pago"), self._l10n_pe_report_payment_means()),
+            (_("Pedido de venta"), self.sale_id.name),
+        ]
+        right = [
+            (_("Fecha de emisión"), date(self.invoice_date)),
+            (_("Fecha de vencimiento"), date(self.invoice_date_due)),
+            (_("Moneda"), self._l10n_pe_report_currency_label()),
+            (_("Condición"), self.invoice_payment_term_id.name),
+            (_("Tipo de cambio"), rate and '%s %.3f' % (self.company_currency_id.symbol, rate)),
+            (_("Vendedor"), self.invoice_user_id.name),
+            (_("O/C externa"), order_ref),
+        ]
+        # Las tres primeras de la izquierda van siempre: identifican al adquirente.
+        left = left[:3] + [pair for pair in left[3:] if pair[1]]
+        right = [pair for pair in right if pair[1]]
+        return list(zip_longest(left, right, fillvalue=('', '')))
+
+    @api.model
+    def _l10n_pe_report_qr_digest(self, qr_str):
+        """Resumen (DigestValue) de la firma: el último dato del texto del QR de SUNAT."""
+        parts = [part.strip() for part in (qr_str or '').split('|')]
+        return parts[9] if len(parts) > 9 else ''
 
     def _cpe_report_blank_lines(self, lines):
         """Filas en blanco que completan el detalle del comprobante A4.

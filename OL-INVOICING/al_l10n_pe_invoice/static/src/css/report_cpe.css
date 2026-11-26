@@ -25,6 +25,115 @@
     margin: 0 auto;
 }
 
+/* --- Adquirente: etiquetas discretas, valores juntos y nombre destacado --- */
+.cpe-a4 .cpe-party td {
+    padding: 3px 8px;
+}
+
+.cpe-a4 .cpe-party .cpe-party-label {
+    color: #444;
+    white-space: nowrap;
+}
+
+.cpe-a4 .cpe-party .cpe-party-name {
+    font-size: 11.5px;
+    font-weight: bold;
+}
+
+/* --- Detalle: columnas marcadas, sin rayas entre filas --- */
+.cpe-a4 .cpe-detail > thead > tr > td + td {
+    border-left: 1px solid #7a7a7a;
+}
+
+.cpe-a4 .cpe-detail > tbody > tr > td + td {
+    border-left: 1px solid #bfbfbf;
+}
+
+.cpe-a4 .cpe-detail > tbody > tr + tr > td {
+    border-top: none;
+}
+
+/* --- Pie del detalle: importe en letras | totales --- */
+.cpe-a4 .cpe-detail > tfoot > .cpe-sum > .cpe-sum-cell {
+    border-top: 1px solid #000;
+    padding: 0;
+}
+
+.cpe-a4 .cpe-sum-cell .cpe-words {
+    padding: 8px 10px;
+    vertical-align: top;
+}
+
+.cpe-a4 .cpe-sum-cell .cpe-totals-cell {
+    border-left: 1px solid #000;
+    padding: 0;
+    width: 36%;
+}
+
+.cpe-a4 .cpe-totals {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.cpe-a4 .cpe-totals td {
+    border-top: 1px solid #bfbfbf;
+    padding: 4px 8px;
+}
+
+.cpe-a4 .cpe-totals tr:first-child td {
+    border-top: none;
+}
+
+.cpe-a4 .cpe-totals .cpe-grand td {
+    background-color: #e6e6e6;
+    border-top: 1px solid #000;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 7px 8px;
+}
+
+/* El fondo del total sigue la esquina redondeada de la tabla */
+.cpe-a4 .cpe-totals .cpe-grand td:last-child {
+    border-bottom-right-radius: 4px;
+}
+
+/* --- Detracción: aviso en recuadro gris --- */
+.cpe-a4 .cpe-spot,
+.cpe-a4 .cpe-legal {
+    page-break-inside: avoid;
+}
+
+.cpe-a4 .cpe-spot td {
+    background-color: #f0f0f0;
+}
+
+.cpe-a4 .cpe-spot tr:first-child td {
+    border-radius: 4px 4px 0 0;
+    padding-bottom: 1px;
+}
+
+.cpe-a4 .cpe-spot tr:last-child td:first-child {
+    border-bottom-left-radius: 4px;
+}
+
+.cpe-a4 .cpe-spot tr:last-child td:last-child {
+    border-bottom-right-radius: 4px;
+}
+
+/* --- Información adicional + QR con su leyenda --- */
+.cpe-a4 .cpe-legal .cpe-qr-cell {
+    color: #444;
+    font-size: 8.5px;
+    text-align: center;
+    width: 170px;
+    word-break: break-all;
+}
+
+.cpe-a4 .cpe-legal .cpe-qr-cell img {
+    margin-bottom: 3px;
+}
+
 /* --- Firmas (tabla de maquetación: sin las líneas fantasma de Bootstrap) --- */
 .cpe-signatures {
     width: 100%;
@@ -132,20 +241,43 @@
     margin-bottom: 1px;
 }
 
+/* Datos del cliente: etiqueta y valor alineados en dos columnas */
+.cpe-ticket-kv {
+    margin: 4px 0;
+}
+
+.cpe-ticket-kv td {
+    padding: 1px 2px;
+    vertical-align: top;
+}
+
+.cpe-ticket-kv .cpe-k {
+    color: #333;
+    white-space: nowrap;
+    width: 30%;
+}
+
 .cpe-ticket-lines {
     margin: 5px 0;
     font-size: 9px;
 }
 
-/* Cabecera del detalle: el gris oscuro suave de los comprobantes PE */
+/* Cabecera del detalle sin fondo: negrita entre dos reglas imprime limpio
+   en térmica (un fondo oscuro sale manchado y gasta cabezal). */
 .cpe-ticket-lines th {
-    border: none;
-    background-color: #595959;
-    color: #fff;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
     padding: 3px 2px;
-    text-align: center;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+.cpe-ticket-lines .cpe-th-desc {
+    text-align: left;
+}
+
+.cpe-ticket-lines .cpe-th-amount {
+    text-align: right;
 }
 
 .cpe-ticket-lines td {
@@ -154,13 +286,19 @@
     vertical-align: top;
 }
 
+/* Cada línea: descripción a todo el ancho y debajo «cantidad × precio» */
+.cpe-ticket-lines .cpe-desc td {
+    font-weight: bold;
+    padding-bottom: 0;
+}
+
+.cpe-ticket-lines .cpe-calc td {
+    padding-top: 0;
+}
+
 .cpe-ticket-lines .cpe-num {
     text-align: right;
     white-space: nowrap;
-}
-
-.cpe-ticket-lines .cpe-ctr {
-    text-align: center;
 }
 
 /* Totales e importe en letras al pie de la misma tabla del detalle */
@@ -169,8 +307,7 @@
 }
 
 .cpe-ticket-lines .cpe-label {
-    text-align: right;
-    font-weight: bold;
+    text-align: left;
 }
 
 .cpe-ticket-lines .cpe-first td {
@@ -178,16 +315,21 @@
     padding-top: 4px;
 }
 
+/* Importe total: grande y entre dos reglas */
 .cpe-ticket-lines .cpe-total-row td {
-    border-top: 1px solid #000;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
     font-weight: bold;
-    font-size: 11px;
-    padding-top: 3px;
+    font-size: 14px;
+    padding: 5px 2px;
+}
+
+.cpe-ticket-lines .cpe-total-row .cpe-label {
+    font-weight: bold;
 }
 
 .cpe-ticket-lines .cpe-words-row td {
-    border-top: 1px dashed #000;
-    padding-top: 3px;
+    padding-top: 4px;
     font-size: 8.5px;
     font-weight: bold;
     text-transform: uppercase;
