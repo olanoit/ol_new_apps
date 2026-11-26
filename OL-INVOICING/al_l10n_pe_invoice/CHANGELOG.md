@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261126 — 26/11/2026
+
+- Facturas de compañías peruanas: el botón Imprimir y el envío por correo usan por defecto el formato CPE A4. Si el cliente o el diario tienen otro formato elegido, manda ese. CPE A4 y CPE Ticket se pueden elegir como formato de factura en el cliente y en el diario.
+
 ## 22.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
