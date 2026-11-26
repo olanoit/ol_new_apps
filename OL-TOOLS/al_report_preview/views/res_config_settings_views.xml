@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_report_preview" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.al.report.preview</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='integration']" position="before">
+                <block title="Reportes PDF" name="al_report_preview">
+                    <setting string="Abrir los reportes en el navegador"
+                             help="Los reportes PDF se abren en una pestaña nueva en vez de descargarse. Cada reporte puede seguir este ajuste, abrirse siempre o descargarse siempre.">
+                        <field name="al_report_preview_scope" widget="radio"/>
+                        <div class="mt8">
+                            <button name="%(al_report_preview.action_report_preview_reports)d" type="action"
+                                    string="Elegir por reporte" icon="oi-arrow-right"
+                                    class="btn-link"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

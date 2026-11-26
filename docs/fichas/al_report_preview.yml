@@ -1,0 +1,96 @@
+titulo: Reportes PDF en el navegador
+subtitulo: >-
+  Los reportes PDF se abren en una pestaña del navegador en vez de
+  descargarse: todos, o solo los reportes que se elijan.
+categoria: Herramientas · Reportes
+etiquetas: [Reportes, PDF, Vista previa, Configurable por reporte]
+
+destacados_intro: >-
+  Ver el documento antes de guardarlo o imprimirlo, sin llenar la carpeta de
+  descargas.
+destacados:
+  - icono: "▤"
+    titulo: En una pestaña nueva
+    texto: >-
+      El PDF se muestra con el visor del navegador, con su nombre de archivo;
+      desde ahí se imprime o se guarda.
+  - icono: "∀"
+    titulo: Todos o solo algunos
+    texto: >-
+      Un ajuste general decide si se abren **todos los reportes** o **solo los
+      reportes elegidos**.
+  - icono: "§"
+    titulo: Reporte por reporte
+    texto: >-
+      Cada reporte puede seguir el ajuste general, abrirse siempre en el
+      navegador o descargarse siempre.
+  - icono: "↓"
+    titulo: Nunca deja sin reporte
+    texto: >-
+      Si el navegador bloquea la pestaña, el reporte se descarga como en Odoo
+      estándar.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo descarga cada reporte PDF. Quien revisa muchas facturas, guías o
+    boletas termina con decenas de archivos que solo quería mirar. Con este
+    módulo el documento se abre en una pestaña y se descarga solo cuando
+    hace falta.
+  nota: >-
+    **Convive con Odoo.** El PDF lo genera la ruta nativa del reporte; el
+    módulo solo pide al navegador que lo muestre en línea. La descarga nativa
+    no cambia.
+
+pasos_intro: >-
+  Con el módulo instalado, todos los reportes PDF se abren en el navegador.
+  Lo demás es opcional.
+pasos:
+  - titulo: Elegir el alcance
+    ruta: Ajustes ▸ Ajustes generales ▸ Reportes PDF
+    texto: >-
+      **Todos los reportes** abre cada PDF en una pestaña. **Solo los reportes
+      elegidos** deja la descarga de Odoo y abre en el navegador solo los
+      reportes marcados.
+  - titulo: Elegir por reporte
+    ruta: Ajustes ▸ Ajustes generales ▸ Reportes PDF ▸ Elegir por reporte
+    texto: >-
+      La lista muestra los reportes PDF. En la columna **Al imprimir** se
+      elige **Según el ajuste general**, **Abrir en el navegador** o
+      **Descargar**; la columna **Se abre en el navegador** muestra el
+      resultado.
+  - titulo: Imprimir
+    ruta: Cualquier documento ▸ Imprimir
+    texto: >-
+      El reporte se abre en una pestaña nueva con el visor del navegador.
+
+funcionalidades:
+  - grupo: Configuración
+    items:
+      - "Ajuste general: todos los reportes PDF o solo los reportes elegidos."
+      - "Opción por reporte: según el ajuste general, abrir en el navegador o descargar."
+      - "Lista de reportes PDF editable en línea, con filtros por opción."
+  - grupo: Al imprimir
+    items:
+      - "Vale para el menú Imprimir y para los botones que imprimen (por ejemplo, Imprimir de la factura)."
+      - "El PDF se muestra con el mismo nombre de archivo que tendría la descarga."
+      - "Si el navegador bloquea la pestaña o falta wkhtmltopdf, el reporte se descarga como en Odoo estándar."
+
+ejemplos:
+  - titulo: Solo las facturas en el navegador
+    texto: >-
+      En **Ajustes generales ▸ Reportes PDF** elija **Solo los reportes
+      elegidos**. En **Elegir por reporte**, busque el reporte de la factura
+      y ponga **Abrir en el navegador**. Las facturas se abren en una pestaña;
+      los demás reportes se descargan.
+  - titulo: Todo en el navegador, menos las etiquetas
+    texto: >-
+      Deje **Todos los reportes** y ponga **Descargar** en los reportes de
+      etiquetas, que suelen enviarse a una impresora térmica desde el archivo.
+
+novedades:
+  - version: '1.20261126'
+    fecha: 26/11/2026
+    cambios:
+      - "Los reportes PDF se abren en una pestaña del navegador en vez de descargarse."
+      - "Ajuste general (todos los reportes o solo los elegidos) y opción por reporte (según el ajuste general, abrir en el navegador o descargar)."

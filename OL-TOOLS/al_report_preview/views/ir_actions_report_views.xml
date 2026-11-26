@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="act_report_xml_view_form_preview" model="ir.ui.view">
+        <field name="name">ir.actions.report.form.al.preview</field>
+        <field name="model">ir.actions.report</field>
+        <field name="inherit_id" ref="base.act_report_xml_view"/>
+        <field name="arch" type="xml">
+            <field name="paperformat_id" position="after">
+                <field name="al_preview_mode" invisible="report_type != 'qweb-pdf'"/>
+                <field name="al_preview_in_browser" invisible="report_type != 'qweb-pdf'"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="act_report_xml_view_search_preview" model="ir.ui.view">
+        <field name="name">ir.actions.report.search.al.preview</field>
+        <field name="model">ir.actions.report</field>
+        <field name="inherit_id" ref="base.act_report_xml_search_view"/>
+        <field name="arch" type="xml">
+            <field name="model" position="after">
+                <filter string="Reportes PDF" name="al_pdf_reports"
+                        domain="[('report_type', '=', 'qweb-pdf')]"/>
+                <separator/>
+                <filter string="Abrir en el navegador" name="al_preview_forced"
+                        domain="[('al_preview_mode', '=', 'preview')]"/>
+                <filter string="Descargar" name="al_download_forced"
+                        domain="[('al_preview_mode', '=', 'download')]"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Lista propia, editable en línea, para elegir reporte por reporte. -->
+    <record id="view_report_preview_list" model="ir.ui.view">
+        <field name="name">ir.actions.report.list.al.preview</field>
+        <field name="model">ir.actions.report</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <list string="Reportes PDF" editable="bottom" create="0" delete="0">
+                <field name="name" readonly="1"/>
+                <field name="model" readonly="1"/>
+                <field name="report_name" readonly="1" optional="hide"/>
+                <field name="al_preview_mode"/>
+                <field name="al_preview_in_browser"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_report_preview_reports" model="ir.actions.act_window">
+        <field name="name">Reportes PDF en el navegador</field>
+        <field name="res_model">ir.actions.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_report_preview_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('base.act_report_xml_view')})]"/>
+        <field name="search_view_id" ref="base.act_report_xml_search_view"/>
+        <field name="domain">[('report_type', '=', 'qweb-pdf')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay reportes PDF</p>
+        </field>
+    </record>
+
+</odoo>
