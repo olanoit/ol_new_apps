@@ -85,6 +85,13 @@ flowchart TD
     **Imprimir** de la factura usa el Comprobante electrónico (A4). El formato no depende del
     operador: funciona igual con la localización nativa que con un OSE.
 
+### Vista previa y portal del cliente
+
+El botón **Vista previa** de la factura abre la página que ve el cliente en
+el portal. El documento que muestra es el **Comprobante electrónico (A4)**,
+el mismo de **Imprimir** y del envío por correo. Si el cliente o el diario
+tienen otro formato de factura elegido, la vista previa usa ese.
+
 ### Desglose tributario
 
 Ejemplo con la boleta **B001-00000001**: productos gravados, un libro

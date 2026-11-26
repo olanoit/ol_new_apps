@@ -300,6 +300,7 @@ funcionalidades:
       - Vínculo de la factura con su orden de venta y OC. externa en el pedido.
       - Marca de crédito con el mismo criterio que el XML (vencimiento posterior a la emisión).
       - Botón Imprimir de la factura directo al Comprobante electrónico (A4).
+      - "Vista previa de la factura (portal del cliente) con el Comprobante electrónico (A4), igual que Imprimir y Enviar."
   - grupo: Menú
     items:
       - "Certificados digitales accesibles desde **Perú ▸ Configuración ▸ Comprobantes electrónicos**."
@@ -379,6 +380,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: '25.20261126'
+    fecha: 26/11/2026
+    cambios:
+      - "El botón Vista previa de la factura y el portal del cliente muestran el formato Comprobante electrónico (A4), igual que Imprimir y el envío por correo; la descarga desde el portal sin PDF generado también. Si el cliente o el diario tienen otro formato elegido, manda ese."
   - version: '24.20261126'
     fecha: 26/11/2026
     cambios:

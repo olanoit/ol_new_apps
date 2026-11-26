@@ -307,3 +307,26 @@ class AccountMove(models.Model):
         tax_amounts['exonerated'] += sum(self.invoice_line_ids.filtered(
             lambda l: not l.tax_ids).mapped('price_subtotal'))
         return tax_amounts
+
+    def _get_invoice_pdf_proforma(self):
+        """Proforma (descarga del portal sin PDF generado) con el formato predeterminado.
+
+        El nativo siempre usa ``account.account_invoices``. Si el formato
+        predeterminado de la factura es otro (comprobante electrónico A4 en
+        compañías peruanas), la proforma sale con ese; en el resto de casos
+        se deja el nativo.
+        """
+        self.ensure_one()
+        report = self.env['account.move.send']._get_default_pdf_report_id(self)
+        generic = self.env.ref('account.account_invoices', raise_if_not_found=False)
+        if not report or report == generic:
+            return super()._get_invoice_pdf_proforma()
+        Report = self.env['ir.actions.report'].with_company(self.company_id)
+        content, report_type = Report._pre_render_qweb_pdf(
+            report.report_name, self.ids, data={'proforma': True})
+        content_by_id = Report._get_splitted_report(report.report_name, content, report_type)
+        return {
+            'filename': self._get_invoice_proforma_pdf_report_filename(),
+            'filetype': 'pdf',
+            'content': content_by_id[self.id],
+        }

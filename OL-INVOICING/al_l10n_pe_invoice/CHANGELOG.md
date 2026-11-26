@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 25.20261126 — 26/11/2026
+
+- El botón Vista previa de la factura y el portal del cliente muestran el formato Comprobante electrónico (A4), igual que Imprimir y el envío por correo; la descarga desde el portal sin PDF generado también. Si el cliente o el diario tienen otro formato elegido, manda ese.
+
 ## 24.20261126 — 26/11/2026
 
 - Los formatos se llaman «Comprobante electrónico (A4)» (antes CPE A4) y «Comprobante electrónico (ticket)» (antes CPE Ticket) en el menú Imprimir y en el envío por correo.
