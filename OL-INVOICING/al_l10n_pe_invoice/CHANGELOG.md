@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261126.29 — 26/11/2026
+
+- El recuadro gris del A4 admite avisos de una sola fila (leyenda de percepción).
+
 ## 20261126.28 — 26/11/2026
 
 - Comprobante electrónico (A4) con diseño nuevo: importe total destacado en un bloque de totales a la derecha, con el importe en letras a su izquierda; columnas del detalle marcadas con líneas verticales y sin rayas entre filas; datos del cliente más juntos y con el nombre en negrita.

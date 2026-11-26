@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_l10n_pe_perception.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261126.6 — 26/11/2026
+
+- La leyenda de percepción del Comprobante electrónico (A4) va en un recuadro gris propio, como la detracción, acorde al diseño nuevo del comprobante.
+
 ## 20261027.5 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

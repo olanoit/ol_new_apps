@@ -381,6 +381,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: '20261126.29'
+    fecha: 26/11/2026
+    cambios:
+      - "El recuadro gris del A4 admite avisos de una sola fila (leyenda de percepción)."
   - version: '20261126.28'
     fecha: 26/11/2026
     cambios:

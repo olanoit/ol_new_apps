@@ -117,6 +117,12 @@
     padding-bottom: 1px;
 }
 
+/* Recuadro de una sola fila (p. ej. la leyenda de percepción) */
+.cpe-a4 .cpe-spot tr:first-child:last-child td {
+    border-radius: 4px;
+    padding-bottom: 4px;
+}
+
 .cpe-a4 .cpe-spot tr:last-child td:first-child {
     border-bottom-left-radius: 4px;
 }

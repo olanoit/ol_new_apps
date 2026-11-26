@@ -105,20 +105,23 @@
         <field name="domain" eval="[('l10n_pe_edi_perception_number', '!=', False)]"/>
     </record>
 
-    <!-- Leyenda del comprobante A4 de la factura (R.S. 058-2006/SUNAT, 11.1) -->
+    <!-- Leyenda del comprobante A4 de la factura (R.S. 058-2006/SUNAT, 11.1):
+         recuadro propio, como el de la detracción, y antes de él. -->
     <template id="report_cpe_invoice_a4_perception" inherit_id="al_l10n_pe_invoice.report_cpe_invoice_a4_document">
-        <xpath expr="//tr[@t-if='o.l10n_pe_detraction_applies']" position="before">
-            <tr class="pe-doc-note" t-if="o.l10n_pe_perception_code">
-                <td t-att-colspan="ncols">
-                    <strong>Operación sujeta a percepción del IGV</strong>
-                    (<span t-out="'%g' % o.l10n_pe_perception_rate"/> %): percepción
-                    <span t-out="o.l10n_pe_perception_amount"
-                          t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>;
-                    total por cobrar con la percepción
-                    <span t-out="o._l10n_pe_perception_total_pen()"
-                          t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>.
-                </td>
-            </tr>
+        <xpath expr="//table[hasclass('cpe-spot')]" position="before">
+            <table class="pe-doc-table cpe-spot cpe-perception mb-2" t-if="o.l10n_pe_perception_code">
+                <tr>
+                    <td>
+                        <strong>Operación sujeta a percepción del IGV</strong>
+                        (<span t-out="'%g' % o.l10n_pe_perception_rate"/> %): percepción
+                        <span t-out="o.l10n_pe_perception_amount"
+                              t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>;
+                        total por cobrar con la percepción
+                        <span t-out="o._l10n_pe_perception_total_pen()"
+                              t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>.
+                    </td>
+                </tr>
+            </table>
         </xpath>
     </template>
 </odoo>
