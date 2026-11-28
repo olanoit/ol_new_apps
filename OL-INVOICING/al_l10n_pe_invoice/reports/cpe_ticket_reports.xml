@@ -110,7 +110,9 @@
                             </tr>
                         </t>
                     </tbody>
-                    <tfoot>
+                    <!-- Segundo tbody y no tfoot: wkhtmltopdf repite el tfoot en
+                         cada página de un ticket largo. -->
+                    <tbody class="cpe-ticket-sum">
                         <tr class="cpe-first" t-if="o.l10n_pe_edi_amount_base">
                             <td t-att-colspan="ncols - 1" class="cpe-label">Op. gravadas</td>
                             <td class="cpe-num"><span t-out="o.l10n_pe_edi_amount_base" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
@@ -158,7 +160,7 @@
                         <tr class="cpe-words-row">
                             <td t-att-colspan="ncols">SON: <span t-out="o._l10n_pe_edi_amount_to_text()"/></td>
                         </tr>
-                    </tfoot>
+                    </tbody>
                 </table>
 
                 <!-- NOTA DE CRÉDITO / DÉBITO: documento que modifica y motivo.

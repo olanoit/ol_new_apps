@@ -381,6 +381,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: '20261128.30'
+    fecha: 28/11/2026
+    cambios:
+      - "En un Comprobante electrónico (A4) de varias páginas, los totales salen una sola vez, al final del detalle; antes se repetían al pie de cada página. Lo mismo en un ticket largo."
   - version: '20261126.29'
     fecha: 26/11/2026
     cambios:

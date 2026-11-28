@@ -87,3 +87,16 @@ class TestCpeReportLayout(AccountTestInvoicingCommon):
         self.assertIn('IMPORTE TOTAL', total)
         client = tree.xpath("//table[contains(@class, 'cpe-ticket-kv')]")[0].text_content()
         self.assertIn(self.invoice.commercial_partner_id.name, client)
+
+    def test_a4_totals_once_at_the_end_of_the_body(self):
+        """wkhtmltopdf repite el tfoot en cada página: los totales van en el cuerpo."""
+        tree = self._tree('report_cpe_invoice_a4_main')
+        detail = tree.xpath("//table[contains(@class, 'cpe-detail')]")[0]
+        self.assertFalse(detail.xpath('./tfoot'))
+        self.assertIn('cpe-sum', detail.xpath('./tbody/tr[last()]')[0].get('class'))
+
+    def test_ticket_totals_not_in_tfoot(self):
+        tree = self._tree('report_cpe_ticket_main')
+        table = tree.xpath("//table[contains(@class, 'cpe-ticket-lines')]")[0]
+        self.assertFalse(table.xpath('./tfoot'))
+        self.assertTrue(table.xpath("./tbody[contains(@class, 'cpe-ticket-sum')]/tr[contains(@class, 'cpe-total-row')]"))

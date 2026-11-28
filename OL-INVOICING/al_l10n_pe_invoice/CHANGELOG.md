@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261128.30 — 28/11/2026
+
+- En un Comprobante electrónico (A4) de varias páginas, los totales salen una sola vez, al final del detalle; antes se repetían al pie de cada página. Lo mismo en un ticket largo.
+
 ## 20261126.29 — 26/11/2026
 
 - El recuadro gris del A4 admite avisos de una sola fila (leyenda de percepción).

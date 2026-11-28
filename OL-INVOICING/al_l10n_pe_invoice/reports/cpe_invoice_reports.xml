@@ -126,10 +126,11 @@
                             class="cpe-blank-line">
                             <td t-foreach="range(ncols)" t-as="blank_col">&#160;</td>
                         </tr>
-                    </tbody>
-                    <tfoot>
                         <!-- Importe en letras a la izquierda y bloque de totales a la
-                             derecha, con el importe total destacado. -->
+                             derecha, con el importe total destacado. Va como última
+                             fila del cuerpo y no en un tfoot: wkhtmltopdf repite el
+                             tfoot al pie de cada página y los totales salían también
+                             en las páginas intermedias. -->
                         <tr class="cpe-sum">
                             <td t-att-colspan="ncols" class="cpe-sum-cell">
                                 <table class="pe-doc-plain">
@@ -196,7 +197,7 @@
                                 </table>
                             </td>
                         </tr>
-                    </tfoot>
+                    </tbody>
                 </table>
 
                 <!-- DETRACCIÓN (al_l10n_pe_detraction): recuadro propio -->
