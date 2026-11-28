@@ -31,7 +31,7 @@ módulo y las páginas de la documentación que lo declaran (``modulos:``);
     'category': 'OL-TOOLS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_docs_help/static/description/icon.png',
-    'version': '20261027.14',
+    'version': '20261127.15',
     'license': 'OPL-1',
     'depends': ['web'],
     'data': [

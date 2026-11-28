@@ -679,7 +679,8 @@ class ConstructionResourcePlan(models.Model):
                 'project': project.display_name,
                 'plans': [{
                     'id': plan.id,
-                    'display_name': plan.display_name,
+                    # M125-05: el selector agrupa por obra; aquí va el nombre corto.
+                    'display_name': plan._construction_short_name(),
                     'project_id': [project.id, project.display_name],
                     'state': plan.state,
                     'label': '%s · v%s · %s' % (plan.name, plan.version, states[plan.state]),

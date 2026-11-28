@@ -96,7 +96,8 @@ export class ConstructionIoMatrix extends Component {
                 PLAN,
                 [["state", "not in", ["cancel", "replaced"]]],
                 ["display_name", "project_id"],
-                { order: "id desc" }
+                // M125-05: el selector suma la obra; el plan va con su nombre corto.
+                { order: "id desc", context: { construction_plan_short_name: true } }
             );
             // El plan pedido aparece en el selector aunque esté reemplazado.
             const wanted = this.state.planId;

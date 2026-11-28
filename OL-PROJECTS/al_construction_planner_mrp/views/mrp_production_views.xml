@@ -30,4 +30,90 @@
         </field>
     </record>
 
-    </odoo>
+    
+    <!-- Paquete 1.25, M125-02: el requerimiento de fabricación a la vista. -->
+    <record id="mrp_production_form_view_mrp_request" model="ir.ui.view">
+        <field name="name">mrp.production.form.mrp.request</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']/*[1]" position="before">
+                <button name="action_view_construction_request" type="object" class="oe_stat_button"
+                        icon="fa-industry" invisible="not construction_mrp_request_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Requerimiento</span>
+                        <span class="o_stat_value"><field name="construction_mrp_request_id" readonly="1" options="{'no_open': True}"/></span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]/h1" position="inside">
+                <button name="action_view_construction_request" type="object"
+                        class="btn btn-sm btn-light border text-primary ms-3 align-self-center fs-6 fw-normal text-nowrap"
+                        invisible="not construction_mrp_request_id">
+                    Requerimiento de fabricación · <field name="construction_mrp_request_id" readonly="1" class="d-inline" options="{'no_open': True}"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_tree_view_mrp_request" model="ir.ui.view">
+        <field name="name">mrp.production.list.mrp.request</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="construction_mrp_request_id" string="Requerimiento" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_mrp_production_filter_mrp_request" model="ir.ui.view">
+        <field name="name">mrp.production.search.mrp.request</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="construction_mrp_request_id"/>
+            </field>
+            <filter name="product" position="before">
+                <filter string="Requerimiento de fabricación" name="group_construction_request"
+                        context="{'group_by': 'construction_mrp_request_id'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <!-- M125-02, punto 4 (decisión del 27-nov): el menú del planificador abre
+         las órdenes en borrador agrupadas por requerimiento. -->
+    <record id="action_planner_productions" model="ir.actions.act_window">
+        <field name="name">Órdenes de fabricación</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_mode">list,kanban,form,calendar,pivot,graph</field>
+        <field name="search_view_id" ref="mrp.view_mrp_production_filter"/>
+        <field name="context">{'search_default_filter_draft': 1, 'search_default_group_construction_request': 1, 'construction_request_long_name': True, 'default_company_id': allowed_company_ids[0]}</field>
+    </record>
+
+    <!-- M125-02, punto 7: el requerimiento en la entrega a producción. -->
+    <record id="view_picking_form_mrp_request" model="ir.ui.view">
+        <field name="name">stock.picking.form.mrp.request</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="construction_mrp_request_id" invisible="not construction_mrp_request_id"
+                       groups="stock.group_stock_user"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_internal_search_mrp_request" model="ir.ui.view">
+        <field name="name">stock.picking.search.mrp.request</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="construction_mrp_request_id" groups="stock.group_stock_user"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

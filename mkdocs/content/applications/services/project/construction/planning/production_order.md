@@ -20,23 +20,90 @@ comparación de módulo a obra y por etapa.
 3. En **Rutas de aprobación** queda la fila **Accesorios de armado: oficina
    técnica**, con el jefe de proyectos como seguidor.
 
+## Requerimiento de fabricación
+
+El pedido a producción queda guardado como **Requerimiento de fabricación**,
+con número propio (RQF/AAAA/NNNNN). Sirve igual en mobiliario (tipologías) y en
+construcción por partidas (líneas de producción del plan).
+
+### Pedir a producción
+
+1. En la obra, pestaña **Planificación**, abra **Árbol de recursos**. El plan
+   debe estar aprobado o en curso.
+2. Marque los ambientes, por ejemplo los de un piso.
+3. Haga clic en **Requerimiento de fabricación**, revise la vista previa y
+   elija **Una OF por** (Piso o Selección).
+4. Haga clic en **Crear requerimiento de fabricación**. Se abre el
+   requerimiento con sus ambientes («Piso / Departamento / Ambiente ·
+   Tipología») y sus órdenes en **Borrador**.
+
+Cada orden lleva el requerimiento a la vista (etiqueta junto al número y
+botón **Requerimiento**) y su **Documento origen** es «RQF/AAAA/NNNNN ·
+agrupador · tipología». El plan de recursos deja un mensaje con el enlace al
+requerimiento.
+
+Los requerimientos se abren en **Planificación de obra ‣ Abastecimiento ‣
+Requerimientos de fabricación**, en **Fabricación ‣ Operaciones ‣
+Requerimientos de fabricación** y con el botón **Requerimientos de
+fabricación** de la pestaña **Planificación** de la obra.
+
+### Estado
+
+| Estado | Cuándo (sin contar las órdenes canceladas) |
+|---|---|
+| Borrador | Todas en borrador |
+| Confirmado parcial | Unas confirmadas, otras en borrador |
+| Confirmado | Ninguna en borrador y no todas hechas |
+| Producido | Todas hechas |
+| Cancelado | Todas canceladas |
+
+### Seguir el pedido
+
+- **Órdenes de fabricación**: las órdenes del requerimiento. El menú
+  **Planificación de obra ‣ Abastecimiento ‣ Órdenes de fabricación** las abre
+  en borrador y agrupadas por requerimiento; el menú de Fabricación abre como
+  siempre.
+- **Órdenes de corte**: las órdenes hijas de otra planta. Llevan el
+  requerimiento, pero no cuentan en su estado.
+- **Entregas a producción**: las transferencias que llevan el número. En
+  **Inventario ‣ Transferencias**, busque **Requerimiento de fabricación**
+  para encontrar todas las entregas, salidas y recepciones de un pedido.
+
+### Cancelar
+
+**Cancelar** en el requerimiento abre un diálogo:
+
+- si todas sus órdenes siguen en borrador, las cancela todas y el
+  requerimiento queda **Cancelado**;
+- si alguna ya pasó a producción, la muestra arriba (no se cancela) y debajo
+  las que siguen en borrador, con **Cancelar las órdenes en borrador** y
+  **Volver**;
+- sin órdenes en borrador, solo informa.
+
+Los ambientes de las órdenes canceladas vuelven a la vista previa del
+asistente. El historial del requerimiento dice quién canceló y qué órdenes.
+
 ## Fecha confirmada por el jefe de producción
 
-Cada orden que crea el asistente **Orden de fabricación** del plan lleva la
-actividad **Revisar y confirmar fecha** para el **Jefe de producción** de
-**Ajustes ‣ Fabricación ‣ Órdenes del plan de obra** (vacío: el responsable de
-la orden). La nota de la actividad trae la fecha del cronograma.
+Con **El jefe de producción confirma la fecha de cada orden** activado en
+**Ajustes ‣ Fabricación ‣ Órdenes del plan de obra**, el **Jefe de
+producción** (vacío: los responsables de Fabricación) recibe **una actividad
+por requerimiento**: «Revisar y confirmar las órdenes del requerimiento». La
+nota lista cada orden con la fecha del cronograma de sus etapas de producción
+o el aviso de que sus ambientes no la tienen.
 
-El jefe de producción escribe la **Fecha confirmada** en la orden. Esa fecha:
+El jefe de producción abre el requerimiento, entra a cada orden, escribe la
+**Fecha confirmada** y la confirma. Esa fecha:
 
 - queda como **Fecha límite** nativa de la orden;
 - es el nuevo fin de la etapa de producción de sus ambientes en el
   cronograma, con la misma duración, y empuja las etapas siguientes como al
-  arrastrar la barra;
-- marca la actividad como hecha.
+  arrastrar la barra.
 
-Con la casilla **El jefe de producción confirma la fecha de cada orden**
-apagada, las órdenes se crean sin actividad.
+Cuando ninguna orden del requerimiento queda en borrador, la actividad se
+cierra sola, con la fecha confirmada de cada orden en el comentario. Una orden
+creada fuera del asistente con plan de obra conserva su propia actividad
+**Revisar y confirmar fecha**. Con la casilla apagada no hay actividad.
 
 Los avisos del asistente (**Ya en una OF**, metrado por aprobar, sin lista de
 materiales, sin marcar como medidos) nombran cada ambiente con su

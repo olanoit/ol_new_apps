@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261127.90 — 27/11/2026
+
+- M125-05: el plan de recursos se muestra como «número · vN · obra» en campos, listas y mensajes, y se busca también por el nombre de la obra.
+
 ## 20261120.87 — 20/11/2026
 
 - Gancho para que la vertical nombre lo que tiene tipo en el requerimiento de obra («ambiente»).

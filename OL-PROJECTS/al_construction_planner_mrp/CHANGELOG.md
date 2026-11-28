@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261127.21 — 27/11/2026
+
+- M125-01: el asistente «Requerimiento de fabricación» guarda un documento con número propio (RQF/AAAA/NNNNN): obra, plan, quién lo pidió, ambientes y las órdenes que generó; se abre al crearlo. Menús en Planificación de obra › Abastecimiento y en Manufactura › Operaciones, y botón en la pestaña «Planificación» de la obra.
+- M125-02: la orden muestra su requerimiento (etiqueta y botón); la lista se filtra y agrupa por requerimiento; la orden de corte y las transferencias llevan su número como referencia y se buscan por él.
+- M125-03: el jefe de producción recibe una actividad por requerimiento, que se cierra sola al confirmar la última orden.
+- M125-04: «Cancelar» el requerimiento cancela las órdenes en borrador y muestra las que ya pasaron a producción.
+
 ## 20261112.19 — 16/11/2026
 
 - Seguridad: confirmar una orden de fabricación que pide más que el plan con las marcas de «ya revisado» o «desde abastecimiento» en el contexto ya no se salta la política (tampoco «bloquear»).

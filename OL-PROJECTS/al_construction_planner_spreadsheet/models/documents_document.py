@@ -467,7 +467,8 @@ class DocumentsDocument(models.Model):
             if item:
                 items[item] = items.get(item, 0.0) + line.amount_planned
         self.construction_control_date = fields.Datetime.now()
-        return {'plan': plan.display_name or '',
+        # M125-05: la hoja es de la obra; el plan va con su nombre corto.
+        return {'plan': plan._construction_short_name() if plan else '',
                 'items': {item: plan.currency_id.round(amount) if plan.currency_id else amount
                           for item, amount in items.items()}}
 

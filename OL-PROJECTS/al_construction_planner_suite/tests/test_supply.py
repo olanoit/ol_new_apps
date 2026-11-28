@@ -241,7 +241,8 @@ class TestSupply(PlannerCommon):
         self.assertEqual(wizard.line_ids.group_task_id, self.floor)
         self.assertEqual(wizard.line_ids.space_count, 2)
         action = wizard.action_create()
-        production = self.env['mrp.production'].browse(action['res_id'])
+        # M125-01: el asistente abre el requerimiento de fabricación.
+        production = self.env[action['res_model']].browse(action['res_id']).production_ids
         self.assertEqual(production.product_id, self.kitchen.product_variant_id)
         self.assertEqual(production.product_qty, 2)
         self.assertEqual(production.construction_space_task_ids, self.space_501 | self.space_502)
@@ -279,7 +280,8 @@ class TestSupply(PlannerCommon):
         ).create({'group_by': 'selection'})
         self.assertFalse(wizard.line_ids.group_task_id)
         self.assertEqual(wizard.line_ids.space_count, 1)
-        production = self.env['mrp.production'].browse(wizard.action_create()['res_id'])
+        production = self.env['construction.manufacturing.request'].browse(
+            wizard.action_create()['res_id']).production_ids
         hinge_move = production.move_raw_ids.filtered(lambda m: m.product_id == self.p_hinge)
         hinge_move.product_uom_qty = 25  # el plan del Dpto 501 tiene 10
         with self.assertRaises(UserError):
@@ -307,7 +309,8 @@ class TestSupply(PlannerCommon):
         wizard = self.env['construction.plan.production.wizard'].with_context(
             default_plan_id=self.plan.id, construction_selection_task_ids=[self.apt_501.id],
         ).create({'group_by': 'selection'})
-        production = self.env['mrp.production'].browse(wizard.action_create()['res_id'])
+        production = self.env['construction.manufacturing.request'].browse(
+            wizard.action_create()['res_id']).production_ids
         hinge_move = production.move_raw_ids.filtered(lambda m: m.product_id == self.p_hinge)
         hinge_move.product_uom_qty = 25  # el plan del Dpto 501 tiene 10
         as_buyer = production.with_user(self.buyer)

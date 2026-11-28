@@ -7,6 +7,8 @@ tipología del ambiente; los componentes de las etapas de fabricación suben
 lo consumido de las líneas del plan."""
 from collections import defaultdict
 
+from markupsafe import Markup
+
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
@@ -134,13 +136,41 @@ class ConstructionPlanProductionWizard(models.TransientModel):
         """Valores propios de cada puente para la orden de la línea."""
         return {}
 
+    def _prepare_request_values(self, lines):
+        """Cabecera del requerimiento de fabricación (paquete 1.25, M125-01)."""
+        self.ensure_one()
+        plan = self.plan_id
+        return {
+            'company_id': plan.company_id.id,
+            'project_id': plan.project_id.id,
+            'plan_id': plan.id,
+            'date': self.date_start,
+            'user_id': self.env.user.id,
+            'production_head_ids': [Command.set(
+                plan.company_id._construction_production_heads().ids)],
+            'group_by': self.group_by,
+            'picking_type_id': self.picking_type_id.id,
+            'space_task_ids': [Command.set(lines.space_task_ids.ids)],
+        }
+
     def action_create(self):
+        """Crea el requerimiento de fabricación y, con su número, las órdenes
+        (paquete 1.25, M125-01). El número llega a la orden de corte y a las
+        transferencias con una referencia nativa, como la propia de cada
+        orden (M125-02)."""
         self.ensure_one()
         plan = self.plan_id
         plan._check_supply_wizard_state()
         lines = self.line_ids.filtered(lambda l: l.space_count)
         if not lines:
             raise UserError(self.env._('No hay ambientes por fabricar en esta selección.'))
+        Request = self.env['construction.manufacturing.request']
+        name = Request._construction_next_number(plan.company_id)
+        # La referencia nativa lleva el número del requerimiento; sus órdenes
+        # y movimientos se le agregan cuando existen.
+        reference = self.env['stock.reference'].create({'name': name})
+        request = Request.create(dict(
+            self._prepare_request_values(lines), name=name, reference_id=reference.id))
         productions = self.env['mrp.production']
         for line in lines:
             bom = line.bom_id
@@ -152,31 +182,40 @@ class ConstructionPlanProductionWizard(models.TransientModel):
                 'picking_type_id': self._production_picking_type(bom).id,
                 'date_start': self.date_start,
                 'origin': ' · '.join(filter(None, [
-                    plan.display_name, line.group_task_id.display_name,
+                    request.name, line.group_task_id.display_name,
                     line.typology_id.code or line.product_id.default_code])),
                 'company_id': plan.company_id.id,
                 'construction_plan_id': plan.id,
                 'construction_space_task_ids': [Command.set(line.space_task_ids.ids)],
                 'project_id': plan.project_id.id,
+                'construction_mrp_request_id': request.id,
+                'construction_group_task_id': line.group_task_id.id,
+                'construction_typology_id': line.typology_id.id,
             }
             vals.update(self._production_extra_values(line))
             productions |= self.env['mrp.production'].create(vals)
+        # La referencia propia de cada orden la crea Odoo al crearla; la del
+        # requerimiento se agrega a las órdenes y a sus movimientos, y Odoo la
+        # pasa a lo que nace de ellos al confirmar.
+        reference.write({
+            'production_ids': [Command.set(productions.ids)],
+            'move_ids': [Command.set(
+                (productions.move_raw_ids | productions.move_finished_ids).ids)],
+        })
         productions._construction_sync_allocations()
-        # M17-18: el jefe de producción revisa y confirma la fecha de cada una.
+        # M17-18 y M125-03: el jefe de producción revisa y confirma la fecha;
+        # una actividad por requerimiento.
         productions._construction_schedule_date_review()
         plan._mark_in_progress()
-        plan.message_post(body=self.env._(
-            'Órdenes de fabricación: %s.', ', '.join(productions.mapped('name'))))
-        action = {
+        plan.message_post(body=Markup('%s %s') % (
+            self.env._('Requerimiento de fabricación'), request._get_html_link()))
+        return {
             'type': 'ir.actions.act_window',
-            'name': self.env._('Órdenes de fabricación'),
-            'res_model': 'mrp.production',
+            'name': self.env._('Requerimiento de fabricación'),
+            'res_model': request._name,
+            'res_id': request.id,
+            'view_mode': 'form',
         }
-        if len(productions) == 1:
-            action.update(view_mode='form', res_id=productions.id)
-        else:
-            action.update(view_mode='list,form', domain=[('id', 'in', productions.ids)])
-        return action
 
 
 class ConstructionPlanProductionWizardLine(models.TransientModel):

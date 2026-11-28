@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.25, M125-01: el requerimiento de fabricación. -->
+    <record id="construction_manufacturing_request_view_form" model="ir.ui.view">
+        <field name="name">construction.manufacturing.request.form</field>
+        <field name="model">construction.manufacturing.request</field>
+        <field name="arch" type="xml">
+            <form string="Requerimiento de fabricación" create="0" duplicate="0">
+                <header>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            invisible="state in ('cancel', 'done')" data-hotkey="z"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,partial,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_productions" type="object" class="oe_stat_button"
+                                icon="fa-wrench">
+                            <field name="production_count" widget="statinfo" string="Órdenes de fabricación"/>
+                        </button>
+                        <button name="action_view_cut_productions" type="object" class="oe_stat_button"
+                                icon="fa-cut" invisible="not cut_production_count">
+                            <field name="cut_production_count" widget="statinfo" string="Órdenes de corte"/>
+                        </button>
+                        <button name="action_view_pickings" type="object" class="oe_stat_button"
+                                icon="fa-truck" invisible="not picking_count">
+                            <field name="picking_count" widget="statinfo" string="Entregas a producción"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <span class="text-muted">Requerimiento de fabricación</span>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" invisible="1"/>
+                            <field name="project_id"/>
+                            <field name="plan_id" context="{'construction_plan_short_name': True}"/>
+                            <field name="group_by"/>
+                            <field name="picking_type_id" invisible="not picking_type_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="production_head_ids" widget="many2many_avatar_user"/>
+                        </group>
+                    </group>
+                    <div class="o_form_label fw-bold mb-1">Ambientes</div>
+                    <field name="space_labels" nolabel="1" readonly="1"/>
+                    <notebook>
+                        <page string="Órdenes de fabricación" name="productions">
+                            <field name="production_ids" readonly="1" nolabel="1">
+                                <list create="0" delete="0"
+                                      decoration-muted="state == 'cancel'" decoration-info="state == 'draft'">
+                                    <field name="name"/>
+                                    <field name="construction_group_task_id"/>
+                                    <field name="construction_typology_id"/>
+                                    <field name="product_id" optional="hide"/>
+                                    <field name="picking_type_id" string="Planta"/>
+                                    <field name="construction_date_confirmed"/>
+                                    <field name="construction_exceed_state" widget="badge"
+                                           decoration-success="construction_exceed_state == 'ok'"
+                                           decoration-danger="construction_exceed_state == 'exceeded'"
+                                           decoration-info="construction_exceed_state == 'approved'"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note" nolabel="1" placeholder="Notas del requerimiento"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_manufacturing_request_view_list" model="ir.ui.view">
+        <field name="name">construction.manufacturing.request.list</field>
+        <field name="model">construction.manufacturing.request</field>
+        <field name="arch" type="xml">
+            <list string="Requerimientos de fabricación" create="0"
+                  decoration-muted="state == 'cancel'" decoration-info="state == 'draft'">
+                <field name="name" decoration-bf="1"/>
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="plan_id" optional="hide" context="{'construction_plan_short_name': True}"/>
+                <field name="group_by" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="production_count" string="Órdenes" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'" decoration-warning="state == 'partial'"
+                       decoration-success="state in ('confirmed', 'done')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_manufacturing_request_view_search" model="ir.ui.view">
+        <field name="name">construction.manufacturing.request.search</field>
+        <field name="model">construction.manufacturing.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="user_id"/>
+                <field name="production_ids" string="Orden de fabricación"/>
+                <filter string="Mis requerimientos" name="mine" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Borrador" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmado parcial" name="partial" domain="[('state', '=', 'partial')]"/>
+                <filter string="Confirmado" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Producido" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Cancelado" name="cancel" domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter string="Mis actividades" name="my_activities"
+                        domain="[('activity_user_id', '=', uid)]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Fecha" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_manufacturing_request" model="ir.actions.act_window">
+        <field name="name">Requerimientos de fabricación</field>
+        <field name="res_model">construction.manufacturing.request</field>
+        <field name="view_mode">list,form,activity</field>
+        <field name="search_view_id" ref="construction_manufacturing_request_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay requerimientos de fabricación</p>
+            <p>Se crean desde el árbol de recursos de la obra, con «Requerimiento de fabricación».</p>
+        </field>
+    </record>
+
+    <!-- M125-04: cancelar el requerimiento. -->
+    <record id="construction_manufacturing_request_cancel_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.manufacturing.request.cancel.wizard.form</field>
+        <field name="model">construction.manufacturing.request.cancel.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="request_id" invisible="1"/>
+                <div invisible="not started_production_ids">
+                    <p class="fw-bold">Este requerimiento tiene órdenes que ya pasaron a producción y no se cancelan:</p>
+                    <field name="started_production_ids" nolabel="1" readonly="1">
+                        <list create="0" delete="0">
+                            <field name="name" string="Orden"/>
+                            <field name="construction_typology_id"/>
+                            <field name="product_id" optional="hide"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </div>
+                <div invisible="not draft_production_ids">
+                    <p class="fw-bold" invisible="not started_production_ids">¿Cancelar las órdenes que siguen en borrador?</p>
+                    <p class="fw-bold" invisible="started_production_ids">Se cancelan todas las órdenes del requerimiento, que siguen en borrador:</p>
+                    <field name="draft_production_ids" nolabel="1" readonly="1">
+                        <list create="0" delete="0">
+                            <field name="name" string="Orden"/>
+                            <field name="construction_typology_id"/>
+                            <field name="product_id" optional="hide"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </div>
+                <div class="alert alert-info" role="status" invisible="draft_production_ids">
+                    No queda ninguna orden en borrador que cancelar.
+                </div>
+                <footer>
+                    <button name="action_cancel_drafts" type="object" class="btn-primary"
+                            string="Cancelar las órdenes en borrador" invisible="not draft_production_ids"
+                            data-hotkey="q"/>
+                    <button string="Volver" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- M125-01, punto 11: el botón en la pestaña «Planificación» de la obra. -->
+    <record id="project_project_view_form_mrp_request" model="ir.ui.view">
+        <field name="name">project.project.form.mrp.request</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_construction_open_tree']" position="after">
+                <button name="action_view_construction_mrp_requests" type="object" icon="fa-industry"
+                        class="btn-secondary" groups="al_construction_planner.group_planner_user">
+                    Requerimientos de fabricación
+                    <span class="badge text-bg-light ms-1"><field name="construction_mrp_request_count"/></span>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

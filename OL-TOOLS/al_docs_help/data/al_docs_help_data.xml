@@ -843,6 +843,22 @@
         <field name="path">applications/services/project/construction/planning/levels_typologies/#plantilla-de-niveles</field>
         <field name="section">Plantilla de niveles</field>
     </record>
+    <record id="help_construction_manufacturing_request" model="al.docs.help">
+        <field name="key">construction.manufacturing.request</field>
+        <field name="kind">model</field>
+        <field name="name">Requerimiento de fabricación</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#requerimiento-de-fabricación</field>
+        <field name="section">Requerimiento de fabricación</field>
+    </record>
+    <record id="help_construction_manufacturing_request_cancel_wizard" model="al.docs.help">
+        <field name="key">construction.manufacturing.request.cancel.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Cancelar el requerimiento de fabricación</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#requerimiento-de-fabricación</field>
+        <field name="section">Requerimiento de fabricación</field>
+    </record>
     <record id="help_construction_master_import_wizard" model="al.docs.help">
         <field name="key">construction.master.import.wizard</field>
         <field name="kind">model</field>
@@ -1174,10 +1190,10 @@
     <record id="help_construction_portal_reason" model="al.docs.help">
         <field name="key">construction.portal.reason</field>
         <field name="kind">model</field>
-        <field name="name">Motivo del residente en el portal de obra</field>
-        <field name="module">al_construction_portal</field>
-        <field name="path">applications/services/project/construction/material_requests/</field>
-        <field name="section">Requerimientos de materiales</field>
+        <field name="name">Motivo de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_portal_service" model="al.docs.help">
         <field name="key">construction.portal.service</field>

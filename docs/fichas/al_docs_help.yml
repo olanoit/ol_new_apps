@@ -69,6 +69,10 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
+  - version: '20261127.15'
+    fecha: 27/11/2026
+    cambios:
+      - "Mapa de pantallas actualizado a 584: requerimiento de fabricación (paquete 1.25) y reportes PDF en el navegador."
   - version: '20261027.13'
     fecha: 27/10/2026
     cambios:

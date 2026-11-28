@@ -14,3 +14,5 @@ from . import production_date_review
 from . import stock_move
 from . import manufacturing_texts
 from . import plan_header
+from . import manufacturing_request
+from . import mrp_production_request

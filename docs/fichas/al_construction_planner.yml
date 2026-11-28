@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '20261127.90'
+    fecha: 27/11/2026
+    cambios:
+      - "M125-05: el plan de recursos se muestra como «número · vN · obra» en campos, listas y mensajes, y se busca también por el nombre de la obra."
   - version: '20261120.87'
     fecha: 20/11/2026
     cambios:

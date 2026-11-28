@@ -39,6 +39,8 @@ class ConstructionResourcePlan(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'tier.validation']
     _order = 'project_id, version desc'
     _check_company_auto = True
+    # M125-05: en un campo de plan también se busca por el nombre de la obra.
+    _rec_names_search = ['name', 'project_id.name']
     # Aprobación multinivel (OCA base_tier_validation), mismo patrón que
     # al_construction_material_request: las revisiones se piden con
     # «Solicitar aprobación» y la última aprobación pasa el plan a «Aprobado».
@@ -512,9 +514,27 @@ class ConstructionResourcePlan(models.Model):
                 'historia de la obra.'))
 
     @api.depends('name', 'project_id', 'version')
+    @api.depends_context('construction_plan_short_name')
     def _compute_display_name(self):
+        """Paquete 1.25, M125-05: «número · vN · obra», para reconocer el plan
+        en cualquier campo, lista o mensaje. Donde la pantalla ya muestra la
+        obra, el contexto ``construction_plan_short_name`` deja «número · vN»."""
+        short = self.env.context.get('construction_plan_short_name')
         for plan in self:
-            plan.display_name = '%s · v%s' % (plan.name, plan.version) if plan.name else ''
+            if not plan.name:
+                plan.display_name = ''
+                continue
+            label = plan._construction_short_name()
+            # Solo el nombre de la obra del plan: quien ve el plan puede no
+            # tener acceso a la ficha de la obra (planta, almacén).
+            project_sudo = plan.project_id.sudo()
+            plan.display_name = label if short or not project_sudo \
+                else '%s · %s' % (label, project_sudo.display_name)
+
+    def _construction_short_name(self):
+        """«número · vN»: el nombre del plan sin la obra (M125-05)."""
+        self.ensure_one()
+        return '%s · v%s' % (self.name, self.version) if self.name else ''
 
     # ------------------------------------------------------------------
     # Acciones

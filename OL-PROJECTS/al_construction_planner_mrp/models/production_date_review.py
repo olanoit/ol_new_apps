@@ -70,18 +70,28 @@ class MrpProduction(models.Model):
         return self.sudo().construction_space_task_ids.construction_stage_ids.filtered(
             lambda s: s.stage in codes)
 
+    def _construction_date_review_note(self):
+        """La fecha del cronograma de las etapas de producción de la orden o
+        el aviso de que sus ambientes no la tienen."""
+        self.ensure_one()
+        stages = self._construction_production_stages()
+        proposed = max(stages.mapped('date_end')) if stages else False
+        return self.env._('Fecha del cronograma: %s.', proposed) if proposed else \
+            self.env._('Los ambientes de la orden no tienen etapa de producción en el '
+                       'cronograma.')
+
     def _construction_schedule_date_review(self):
-        """Actividad «Revisar y confirmar fecha» al jefe de producción."""
-        for production in self:
+        """Actividad «Revisar y confirmar fecha» al jefe de producción, por
+        orden. Las órdenes de un requerimiento de fabricación la reciben en
+        el requerimiento, una para todas (paquete 1.25, M125-03)."""
+        requests = self.construction_mrp_request_id
+        requests._construction_schedule_review()
+        for production in self - requests.production_ids:
             company = production.company_id
             if not company.construction_production_date_review:
                 continue
             users = company._construction_production_heads() or production.user_id
-            stages = production._construction_production_stages()
-            proposed = max(stages.mapped('date_end')) if stages else False
-            note = self.env._('Fecha del cronograma: %s.', proposed) if proposed else \
-                self.env._('Los ambientes de la orden no tienen etapa de producción en el '
-                           'cronograma.')
+            note = production._construction_date_review_note()
             for user in users:
                 production.activity_schedule(
                     DATE_REVIEW_ACTIVITY, user_id=user.id, note=note,

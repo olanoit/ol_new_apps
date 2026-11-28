@@ -25,7 +25,10 @@ que elija.
 1. Vaya a **Planificación de obra ‣ Obras ‣ Plan de recursos ‣ Planes de recursos ‣ Nuevo** y elija
    la obra. El plan recibe el número `PLR/AAAA/#####` · v1 en borrador. Cada
    obra tiene como máximo un plan vigente (aprobado o en ejecución) y uno en
-   preparación (borrador o en aprobación).
+   preparación (borrador o en aprobación). En campos, listas y mensajes el
+   plan se nombra con su obra («PLR/AAAA/##### · v1 · obra») y se busca también
+   por el nombre de la obra; donde la pantalla ya muestra la obra (selectores
+   del árbol de recursos y de la matriz insumo-producto) va sin ella.
 2. Haga clic en **Generar plan** y elija los ambientes, los tipos de recurso y
    las etapas (**1.1 Producción de piezas**, **1.2 Armado**, **2.1
    Instalación** y **2.2 Acabado**). La vista previa muestra, sin escribir nada, las tareas a crear

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261127.15 — 27/11/2026
+
+- Mapa de pantallas actualizado a 584: requerimiento de fabricación (paquete 1.25) y reportes PDF en el navegador.
+
 ## 20261027.13 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

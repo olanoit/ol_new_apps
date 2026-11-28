@@ -137,8 +137,8 @@ class TestNativeProduction(PlannerCommon):
         self.assertEqual(wizard.line_ids.mapped('qty'), [3.0, 3.0])
         self.assertEqual(set(wizard.line_ids.mapped('product_id')), {self.spool_product})
         action = wizard.action_create()
-        productions = self.env['mrp.production'].search(action.get('domain') or
-                                                        [('id', '=', action.get('res_id'))])
+        # M125-01: el asistente abre el requerimiento de fabricación.
+        productions = self.env[action['res_model']].browse(action['res_id']).production_ids
         self.assertEqual(len(productions), 2)
         production = productions.filtered(lambda p: self.spools[0] in p.construction_space_task_ids)
         pipe_lines = self.site_plan.line_ids.filtered(

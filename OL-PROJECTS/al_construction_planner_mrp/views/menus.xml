@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_planner_productions" name="&#xD3;rdenes de fabricaci&#xF3;n" parent="al_construction_planner.menu_planner_supply" action="mrp.mrp_production_action" sequence="30" groups="mrp.group_mrp_user"/>
+    <!-- Paquete 1.25, M125-02: agrupado por requerimiento y en borrador. -->
+    <menuitem id="menu_planner_productions" name="&#xD3;rdenes de fabricaci&#xF3;n" parent="al_construction_planner.menu_planner_supply" action="action_planner_productions" sequence="30" groups="mrp.group_mrp_user"/>
+    <!-- M125-01, punto 10. -->
+    <menuitem id="menu_planner_manufacturing_requests" name="Requerimientos de fabricaci&#xF3;n" parent="al_construction_planner.menu_planner_supply" action="action_construction_manufacturing_request" sequence="29" groups="mrp.group_mrp_user,al_construction_planner.group_planner_user"/>
+    <menuitem id="menu_mrp_manufacturing_requests" name="Requerimientos de fabricaci&#xF3;n" parent="mrp.menu_mrp_manufacturing" action="action_construction_manufacturing_request" sequence="11" groups="mrp.group_mrp_user"/>
 </odoo>

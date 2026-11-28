@@ -59,7 +59,8 @@ class ConstructionSupplyBoard(models.AbstractModel):
         result = {
             'project_id': project.id,
             'plan_id': plan.id,
-            'plan_name': plan.display_name or '',
+            # M125-05: la obra ya está en el selector de la pantalla.
+            'plan_name': plan._construction_short_name() if plan else '',
             'plan_state': plan.state or '',
             'weeks': [fields.Date.to_string(week) for week in week_starts],
             'horizon_end': fields.Date.to_string(horizon_end),

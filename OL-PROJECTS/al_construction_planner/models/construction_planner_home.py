@@ -56,7 +56,7 @@ class ConstructionPlannerHome(models.AbstractModel):
                 'project_id': project.id,
                 'project_name': project.display_name,
                 'plan_id': plan.id,
-                'plan_name': '%s · v%s' % (plan.name, plan.version),
+                'plan_name': plan._construction_short_name(),
                 'period': '%s → %s' % (format_date(self.env, plan.date_start, date_format='dd/MM'),
                                        format_date(self.env, plan.date_end, date_format='dd/MM')),
                 'amount_total': plan.amount_total if approved and show_amounts else False,

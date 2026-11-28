@@ -2,3 +2,4 @@
 from . import plan_production_wizard
 from . import remnant_cover_wizard
 from . import cut_closing_wizard
+from . import manufacturing_request_cancel_wizard

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.25, M125-01: secuencia del requerimiento de fabricación. Cada
+         compañía recibe la suya con este prefijo al crear su primer
+         requerimiento; el prefijo se cambia en Ajustes › Técnico › Secuencias. -->
+    <data noupdate="1">
+        <record id="seq_construction_manufacturing_request" model="ir.sequence">
+            <field name="name">Requerimiento de fabricación</field>
+            <field name="code">construction.manufacturing.request.template</field>
+            <field name="prefix">RQF/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+    <!-- M125-03: una actividad por requerimiento para el jefe de producción. -->
+    <record id="mail_activity_manufacturing_request_review" model="mail.activity.type">
+        <field name="name">Revisar y confirmar órdenes</field>
+        <field name="summary">Revisar y confirmar las órdenes del requerimiento</field>
+        <field name="res_model">construction.manufacturing.request</field>
+        <field name="icon">fa-calendar-check-o</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

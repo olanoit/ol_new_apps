@@ -469,7 +469,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 'construction_project_id': project.id,
                 'construction_plan_id': plan.id,
                 'construction_specialty': self.specialty,
-                'origin': '%s · %s' % (project.display_name, plan.display_name),
+                'origin': '%s · %s' % (project.display_name, plan._construction_short_name()),
             })
         elif order_sudo.construction_plan_id != plan:
             order_sudo.construction_plan_id = plan

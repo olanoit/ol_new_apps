@@ -40,5 +40,8 @@ class StockRule(models.Model):
                     'construction_space_task_ids': [
                         Command.set(parents.construction_space_task_ids.ids)],
                     'construction_parent_id': parents.id,
+                    # Paquete 1.25, M125-02: la orden de corte muestra el
+                    # requerimiento de la madre (sin contar en su estado).
+                    'construction_mrp_request_id': parents.construction_mrp_request_id.id,
                 })
         return mo_values

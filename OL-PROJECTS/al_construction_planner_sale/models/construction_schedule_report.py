@@ -325,7 +325,8 @@ class ConstructionScheduleReport(models.Model):
         return {
             'project_id': project.id,
             'project_name': project.display_name,
-            'plan_name': plan.display_name or '',
+            # M125-05: la obra ya está en el selector de la pantalla.
+            'plan_name': plan._construction_short_name() if plan else '',
             'currency_symbol': currency.symbol,
             'currency_position': currency.position,
             'rows': rows,
