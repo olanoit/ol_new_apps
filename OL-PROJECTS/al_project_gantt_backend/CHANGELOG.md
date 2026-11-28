@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261128.23 — 28/11/2026
+
+- Gantt: al planificar una actividad, si el asistente abre otra pantalla, el diálogo se cierra y la navegación sigue respondiendo.
+
 ## 20261102.22 — 02/11/2026
 
 - Selector de proyectos: nombres completos y la búsqueda en la misma línea que las etiquetas.

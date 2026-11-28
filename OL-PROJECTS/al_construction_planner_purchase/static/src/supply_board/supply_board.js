@@ -9,7 +9,7 @@
  * abre sus precios de compra (P-16). Todo lo calcula el servidor
  * (`construction.supply.board.get_board`).
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, status, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
@@ -156,7 +156,13 @@ export class ConstructionSupplyBoard extends Component {
             productIds,
             this.options,
         ]);
-        await this.action.doAction(action, { onClose: () => this.load() });
+        await this.action.doAction(action, {
+            onClose: () => {
+                if (status(this) !== "destroyed") {
+                    this.load().catch(() => {});
+                }
+            },
+        });
     }
 
     async openPrices(row) {

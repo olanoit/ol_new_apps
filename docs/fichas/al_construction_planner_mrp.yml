@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '20261128.22'
+  fecha: 28/11/2026
+  cambios:
+    - "Orden de fabricación: la etiqueta «Requerimiento de fabricación · RQF/…» junto al número sale en una sola línea."
 - version: '20261127.21'
   fecha: 27/11/2026
   cambios:

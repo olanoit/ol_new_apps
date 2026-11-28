@@ -10,7 +10,7 @@
  * aquí; el orden elegido se recuerda por usuario en el navegador. Sin
  * indicadores (sin el puente de ventas) queda la tabla de planes de P-01.
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, status, useState } from "@odoo/owl";
 import { browser } from "@web/core/browser/browser";
 import { registry } from "@web/core/registry";
 import { user } from "@web/core/user";
@@ -287,7 +287,11 @@ export class ConstructionPlannerHome extends Component {
                 tag: "al_construction_planner_sale.indicator_sheet",
                 name: _t("Ficha · %s", work.project_name),
                 context: { construction_project_id: work.project_id },
-            }, { onClose: () => this.load() });
+            }, { onClose: () => {
+                if (status(this) !== "destroyed") {
+                    this.load().catch(() => {});
+                }
+            } });
             return;
         }
         const action = await this.orm.call(HOME, "action_open_plan", [work.plan_id]);
@@ -345,7 +349,13 @@ export class ConstructionPlannerHome extends Component {
     }
 
     async openPending(item) {
-        await this.action.doAction(item.action, { onClose: () => this.load() });
+        await this.action.doAction(item.action, {
+            onClose: () => {
+                if (status(this) !== "destroyed") {
+                    this.load().catch(() => {});
+                }
+            },
+        });
     }
 
     // ------------------------------------------------------------------

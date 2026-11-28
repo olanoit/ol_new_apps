@@ -48,9 +48,9 @@
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]/h1" position="inside">
                 <button name="action_view_construction_request" type="object"
-                        class="btn btn-sm btn-light border text-primary ms-3 align-self-center fs-6 fw-normal text-nowrap"
+                        class="btn btn-sm btn-light border text-primary ms-3 align-self-center fs-6 fw-normal text-nowrap d-inline-flex align-items-center gap-1"
                         invisible="not construction_mrp_request_id">
-                    Requerimiento de fabricación · <field name="construction_mrp_request_id" readonly="1" class="d-inline" options="{'no_open': True}"/>
+                    <span>Requerimiento de fabricación ·</span><field name="construction_mrp_request_id" readonly="1" class="w-auto" options="{'no_open': True}"/>
                 </button>
             </xpath>
         </field>

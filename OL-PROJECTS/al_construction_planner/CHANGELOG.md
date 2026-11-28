@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261128.92 — 28/11/2026
+
+- Cronograma, inicio y menús Programar/Ejecutar del plan: al abrir un asistente o ficha que lleva a otra pantalla, el diálogo se cierra y la navegación sigue respondiendo (misma corrección que el árbol de recursos).
+
 ## 20261128.91 — 28/11/2026
 
 - Árbol de recursos: al crear un requerimiento de fabricación (o cualquier asistente que abre otra pantalla), el diálogo se cierra; antes quedaba abierto encima y la navegación dejaba de responder hasta recargar la página.

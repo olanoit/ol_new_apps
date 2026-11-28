@@ -4,7 +4,7 @@
  * manda el servidor (``construction_header_actions``) con su grupo, su estado y
  * las de cada puente; un grupo sin opciones no se muestra.
  */
-import { Component } from "@odoo/owl";
+import { Component, status } from "@odoo/owl";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { _t } from "@web/core/l10n/translation";
@@ -37,13 +37,19 @@ export class ConstructionPlanActions extends Component {
         if (!(await record.save())) {
             return;
         }
-        const reload = () => record.load();
+        // Como onClose no devuelve la promesa: si la acción abre otra pantalla,
+        // el formulario ya no existe y su recarga no terminaría nunca.
+        const reload = () => {
+            if (status(this) !== "destroyed") {
+                record.load().catch(() => {});
+            }
+        };
         if (item.kind === "object") {
             const result = await this.orm.call(record.resModel, item.target, [[record.resId]]);
             if (result && typeof result === "object") {
                 await this.action.doAction(result, { onClose: reload });
             } else {
-                await reload();
+                await record.load();
             }
             return;
         }

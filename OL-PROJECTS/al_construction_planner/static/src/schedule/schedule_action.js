@@ -24,7 +24,7 @@
  * `g<ambiente>_<etapa>` para las etapas padre (v1.8, M18-02): barras resumen
  * de sus sub etapas en el ambiente.
  */
-import { useState } from "@odoo/owl";
+import { status, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { formatFloat } from "@web/core/utils/numbers";
@@ -662,7 +662,11 @@ export class ConstructionScheduleAction extends GanttAction {
                 views: [[false, "form"]],
                 target: "new",
             },
-            { onClose: () => this.reload() }
+            { onClose: () => {
+                if (status(this) !== "destroyed") {
+                    this.reload().catch(() => {});
+                }
+            } }
         );
     }
 
@@ -871,7 +875,11 @@ export class ConstructionScheduleAction extends GanttAction {
                 construction_selection_project: false,
                 construction_selection_stages: stages,
             },
-            onClose: () => this.reload(),
+            onClose: () => {
+                if (status(this) !== "destroyed") {
+                    this.reload().catch(() => {});
+                }
+            },
         });
     }
 

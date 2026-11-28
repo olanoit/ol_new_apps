@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261128.34 — 28/11/2026
+
+- Tablero de abastecimiento: al comprar desde el tablero, si el asistente abre otra pantalla, el diálogo se cierra y la navegación sigue respondiendo.
+
 ## 20261120.31 — 20/11/2026
 
 - La línea traída del plan por tipo lleva siempre la cuenta Rubro de su tipo, aunque las líneas del plan se hayan generado antes de configurar el Rubro.

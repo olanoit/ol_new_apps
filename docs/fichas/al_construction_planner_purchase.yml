@@ -31,6 +31,10 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '20261128.34'
+  fecha: 28/11/2026
+  cambios:
+    - "Tablero de abastecimiento: al comprar desde el tablero, si el asistente abre otra pantalla, el diálogo se cierra y la navegación sigue respondiendo."
 - version: '20261120.31'
   fecha: 20/11/2026
   cambios:

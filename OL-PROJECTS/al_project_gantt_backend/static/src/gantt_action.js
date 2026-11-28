@@ -7,7 +7,7 @@
  * tipo de vista de Odoo. Los datos vienen siempre del módulo base a través de
  * `project.project.get_gantt_data()`.
  */
-import { Component, onMounted, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
+import { Component, onMounted, onWillStart, onWillUnmount, status, useRef, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { Layout } from "@web/search/layout";
 import { useService } from "@web/core/utils/hooks";
@@ -799,7 +799,11 @@ export class GanttAction extends Component {
                     default_res_model: "project.task",
                 },
             },
-            { onClose: () => this.reload() }
+            { onClose: () => {
+                if (status(this) !== "destroyed") {
+                    this.reload().catch(() => {});
+                }
+            } }
         );
     }
 

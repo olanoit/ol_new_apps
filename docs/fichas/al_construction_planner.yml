@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '20261128.92'
+    fecha: 28/11/2026
+    cambios:
+      - "Cronograma, inicio y menús Programar/Ejecutar del plan: al abrir un asistente o ficha que lleva a otra pantalla, el diálogo se cierra y la navegación sigue respondiendo (misma corrección que el árbol de recursos)."
   - version: '20261128.91'
     fecha: 28/11/2026
     cambios:

@@ -230,6 +230,10 @@ faq:
       oficial y elija contra cuál comparar.
 
 novedades:
+  - version: '20261128.23'
+    fecha: 28/11/2026
+    cambios:
+      - "Gantt: al planificar una actividad, si el asistente abre otra pantalla, el diálogo se cierra y la navegación sigue respondiendo."
   - version: '20261102.22'
     fecha: 02/11/2026
     cambios:

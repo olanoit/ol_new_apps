@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261128.22 — 28/11/2026
+
+- Orden de fabricación: la etiqueta «Requerimiento de fabricación · RQF/…» junto al número sale en una sola línea.
+
 ## 20261127.21 — 27/11/2026
 
 - M125-01: el asistente «Requerimiento de fabricación» guarda un documento con número propio (RQF/AAAA/NNNNN): obra, plan, quién lo pidió, ambientes y las órdenes que generó; se abre al crearlo. Menús en Planificación de obra › Abastecimiento y en Manufactura › Operaciones, y botón en la pestaña «Planificación» de la obra.
