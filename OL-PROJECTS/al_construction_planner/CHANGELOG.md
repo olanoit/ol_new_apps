@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`AAAAMMDD.N`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20261128.91 — 28/11/2026
+
+- Árbol de recursos: al crear un requerimiento de fabricación (o cualquier asistente que abre otra pantalla), el diálogo se cierra; antes quedaba abierto encima y la navegación dejaba de responder hasta recargar la página.
+
 ## 20261127.90 — 27/11/2026
 
 - M125-05: el plan de recursos se muestra como «número · vN · obra» en campos, listas y mensajes, y se busca también por el nombre de la obra.

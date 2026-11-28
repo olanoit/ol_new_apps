@@ -8,7 +8,7 @@
  * Todo lo acumulado lo calcula el servidor
  * (`construction.resource.plan.get_tree_nodes` y `get_selection_summary`).
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, status, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
@@ -236,7 +236,15 @@ export class ConstructionPlanTree extends Component {
                     .map((key) => parseInt(key)),
                 construction_selection_project: keys.includes(ROOT_KEY),
             },
-            onClose: () => this.reload(),
+            // Sin devolver la promesa: si el asistente abre otra pantalla
+            // (p. ej. el requerimiento de fabricación), el árbol ya no existe,
+            // su recarga nunca termina y el cliente web, que espera a onClose
+            // para cerrar el diálogo, lo dejaba abierto y la navegación rota.
+            onClose: () => {
+                if (status(this) !== "destroyed") {
+                    this.reload().catch(() => {});
+                }
+            },
         });
     }
 

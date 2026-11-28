@@ -11,16 +11,34 @@ const env = () => odoo.__WOWL_DEBUG__.root.env;
  */
 registry.category("web_tour.tours").add("al_construction_package125_create", {
     steps: () => [
+        // Por el árbol de recursos, como el usuario: así la prueba ve si el
+        // diálogo del asistente se cierra al abrir el requerimiento.
         {
-            content: "Abrir «Requerimiento de fabricación» del plan",
+            content: "Abrir el árbol de recursos",
             trigger: ".o_main_navbar",
             run: async () => {
-                const [plan] = await env().services.orm.search(
-                    "construction.resource.plan", [["name", "=", "PLR-M125"]], { limit: 1 });
                 await env().services.action.doAction(
-                    "al_construction_planner_mrp.action_plan_production_wizard",
-                    { additionalContext: { default_plan_id: plan, construction_selection_project: true } });
+                    "al_construction_planner.action_construction_plan_tree");
             },
+        },
+        {
+            content: "Elegir el plan de la obra",
+            trigger: ".o_action select:has(option:contains(PLR-M125))",
+            run: ({ anchor }) => {
+                const option = [...anchor.options].find((o) => o.text.includes("PLR-M125"));
+                anchor.value = option.value;
+                anchor.dispatchEvent(new Event("change", { bubbles: true }));
+            },
+        },
+        {
+            content: "Marcar toda la obra",
+            trigger: "tr.o_cp_tree_row:first-child:contains(MOMEN) .o_cp_check",
+            run: "click",
+        },
+        {
+            content: "Abrir «Requerimiento de fabricación»",
+            trigger: ".o_action button:contains(Requerimiento de fabricación)",
+            run: "click",
         },
         { trigger: ".modal .o_field_widget[name=line_ids] .o_data_row" },
         {

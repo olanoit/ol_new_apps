@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '20261128.91'
+    fecha: 28/11/2026
+    cambios:
+      - "Árbol de recursos: al crear un requerimiento de fabricación (o cualquier asistente que abre otra pantalla), el diálogo se cierra; antes quedaba abierto encima y la navegación dejaba de responder hasta recargar la página."
   - version: '20261127.90'
     fecha: 27/11/2026
     cambios:

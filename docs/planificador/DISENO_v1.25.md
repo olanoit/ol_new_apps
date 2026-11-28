@@ -182,7 +182,7 @@ tabla de borradores con «Se cancelan todas las órdenes del requerimiento». Si
 |---|---|
 | `TestPackage125` | Con la jefatura de proyectos y el jefe de producción, sin administrador: creación, ambientes, origen, mensaje del plan, secuencia por compañía, estados, cabecera protegida, botones, menús, marca de la orden, duplicado, agrupación, actividad (encendida, apagada, sin jefe), cancelación (todo en borrador y con una orden confirmada), ambientes libres de nuevo, nombre del plan y búsqueda por obra |
 | `TestPackage125Chain` | Dos plantas con entrega a producción: la orden de corte hija y las transferencias llevan la referencia; búsqueda por requerimiento en transferencias |
-| `TestScreens125` | Prueba de pantalla: asistente, formulario, botones inteligentes, marca en la orden, lista agrupada y diálogo de cancelación (`static/tests/tours/package125_request_tour.js`) |
+| `TestScreens125` | Prueba de pantalla, entrando por el árbol de recursos (así comprueba que el diálogo del asistente se cierra): asistente, formulario, botones inteligentes, marca en la orden, lista agrupada y diálogo de cancelación (`static/tests/tours/package125_request_tour.js`) |
 
 Se ajustaron las pruebas que leían la orden en la acción del asistente
 (`test_supply.py`, `test_native_v17.py`): la acción abre ahora el requerimiento.
