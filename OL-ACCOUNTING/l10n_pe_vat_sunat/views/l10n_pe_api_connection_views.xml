@@ -15,6 +15,7 @@
                        widget="boolean" optional="show"/>
                 <field name="needs_token" column_invisible="1"/>
                 <field name="signup_url" widget="url" optional="hide"/>
+                <field name="documentation_url" widget="url" optional="show"/>
                 <field name="enabled" widget="boolean_toggle"/>
             </list>
         </field>
@@ -50,6 +51,8 @@
                             <field name="enabled" widget="boolean_toggle"/>
                         </group>
                         <group>
+                            <field name="documentation_url" widget="url"
+                                   placeholder="https://… (documentación oficial del proveedor)"/>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
